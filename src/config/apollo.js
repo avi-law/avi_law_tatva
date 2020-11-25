@@ -14,5 +14,7 @@ const schema = makeAugmentedSchema({
 module.exports = new ApolloServer({
   context: { driver },
   schema,
-  formatError
+  formatError,
+  introspection: true,
+  playground: true
 });

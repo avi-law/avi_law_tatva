@@ -5,6 +5,7 @@ module.exports = {
   },
   LOG_TYPE_ID: {
     LOGIN_WITH_WRONG_CREDENTIALS: 4,
-    LOGIN_WITH_WRONG_PASSWORD: 5
+    LOGIN_WITH_WRONG_PASSWORD: 5,
+    LOGIN_SUCCESS: 6
   }
 };
