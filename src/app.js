@@ -1,5 +1,5 @@
 const express = require('express');
-const server = require('./config/apollo');
+const { server } = require('./config');
 require('dotenv').config();
 
 const app = express();

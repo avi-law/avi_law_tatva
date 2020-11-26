@@ -8,24 +8,23 @@ const typeDefs = gql`
   }
 
   type User_State {
-    user_pref_NL_AT: Boolean
-    user_email: String
-    user_title_post: String
-    user_pref_NL_EU: Boolean
+    user_id: Int
+    user_first_name: String
+    user_middle_name: String
     user_last_name: String
+    user_email: String
     user_pwd: String
     user_gdpr_accepted: Int
+    user_title_post: String
     user_sex: String
-    user_first_name: String
+    user_pref_NL_AT: Boolean
     user_pref_NL_CH: Boolean
-    user_id: Int
-    user_title_pre: String
     user_pref_NL_DE: Boolean
+    user_pref_NL_EU: Boolean
+    user_title_pre: String
     user_acronym: String
-    user_middle_name: String
     user_pref_country: Int
     user_rmk: String
-    user: [User]
   }
 
   type Customer {
@@ -165,8 +164,33 @@ const typeDefs = gql`
     inv_name_01: String
   }
 
+  type loginCustomerStatesCustom {
+    user_is_cust_admin: Boolean
+    cust_gtc_accepted: String
+    cust_id: ID
+    cust_acc_until: String
+    user_to: String
+  }
+
+  type UserLoginCustom {
+    user_id: ID,
+    user_email: String
+    user_surf_lang: String
+    user_2nd_lang: String
+    user_1st_lang: String
+    user_pwd: String
+    cust_states: [loginCustomerStatesCustom]
+    user_pref_country: String
+    user_gdpr_accepted: String
+  }
+
+  type UserLogin {
+    User: UserLoginCustom
+    token: String
+  }
+
   type Mutation {
-    login(email: String!, password: String!): User_State
+    login(email: String!, password: String!): UserLogin
   }
 `;
 
