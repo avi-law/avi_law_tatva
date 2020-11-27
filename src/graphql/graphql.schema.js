@@ -198,6 +198,11 @@ const typeDefs = gql`
     user_to: String
   }
 
+  type userAddresses {
+    user_address_en: String,
+    user_address_de: String
+  }
+
   type UserLoginCustom {
     user_id: ID,
     user_email: String
@@ -205,14 +210,20 @@ const typeDefs = gql`
     user_2nd_lang: String
     user_1st_lang: String
     user_pwd: String
-    cust_states: [loginCustomerStatesCustom]
     user_pref_country: String
     user_gdpr_accepted: String
+    cust_states: [loginCustomerStatesCustom]
+    user_addresses: [userAddresses]
+    user_NL_state: [String]
   }
 
   type UserLogin {
-    User: UserLoginCustom
+    user: UserLoginCustom
     token: String
+    lang: String
+    loginStatus: Boolean
+    loginMessage: String
+    loginFailedCode: String
   }
 
   type Mutation {

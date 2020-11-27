@@ -37,15 +37,9 @@ const auth = {
    * @param {string} type
    * @return token string
    */
-  generateToken(user) {
+  generateToken(data) {
     const token = jwt.sign(
-      {
-        user_id: user.user_id || 0,
-        user_email: user.user_email,
-        user_1st_lang: user.user_1st_lang,
-        user_2nd_lang: user.user_2nd_lang,
-        user_pref_country: user.user_pref_country
-      },
+      {...data },
       jwtSecret,
       { expiresIn: jwtExpiresIn }
     );
