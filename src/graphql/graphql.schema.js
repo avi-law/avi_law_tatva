@@ -1,6 +1,9 @@
 const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
+
+  directive @isAuthenticated on OBJECT | FIELD_DEFINITION
+
   type User {
     user_id: ID!
     has_user_state: [User_State] @relation(name: "HAS_USER_STATE", direction: "OUT")
@@ -203,7 +206,7 @@ const typeDefs = gql`
     user_address_de: String
   }
 
-  type UserLoginCustom {
+  type UserCustomLogin {
     user_id: ID,
     user_email: String
     user_surf_lang: String
@@ -217,8 +220,8 @@ const typeDefs = gql`
     user_NL_state: [String]
   }
 
-  type UserLogin {
-    user: UserLoginCustom
+  type UserCustom {
+    user: UserCustomLogin
     token: String
     lang: String
     loginStatus: Boolean
@@ -227,7 +230,9 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    login(email: String!, password: String!): UserLogin
+    login(email: String!, password: String!): UserCustom
+    acceptGTC(accept: Boolean!): UserCustom @isAuthenticated
+    acceptGDPR(accept: Boolean!): UserCustom @isAuthenticated
   }
 `;
 

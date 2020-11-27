@@ -4,15 +4,29 @@ const driver = require('./db');
 const typeDefs = require('../graphql/graphql.schema');
 const resolvers = require('../graphql/resolver');
 const formatError = require('../graphql/formatError');
+const IsAuthenticatedDirective = require('../graphql/directive/auth-directive');
 
 
 const schema = makeAugmentedSchema({
   typeDefs,
   resolvers,
+  schemaDirectives: {
+    isAuthenticated: IsAuthenticatedDirective,
+  },
+  config: {
+    auth: {
+      hasScope: true
+    }
+  }
 });
 
 module.exports = new ApolloServer({
-  context: { driver },
+  context: ({ req }) => {
+    return {
+      driver,
+      req
+    };
+  },
   schema,
   formatError,
   introspection: true,

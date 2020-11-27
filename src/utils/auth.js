@@ -38,11 +38,7 @@ const auth = {
    * @return token string
    */
   generateToken(data) {
-    const token = jwt.sign(
-      {...data },
-      jwtSecret,
-      { expiresIn: jwtExpiresIn }
-    );
+    const token = jwt.sign({ ...data }, jwtSecret, { algorithm: 'HS256' }, { expiresIn: jwtExpiresIn });
     return token;
   },
 };

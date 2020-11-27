@@ -1,4 +1,3 @@
-const { now } = require('lodash');
 const _ = require('lodash');
 const driver = require('../../../config/db');
 const { constants, auth, common } = require('../../../utils');
@@ -73,7 +72,7 @@ RETURN {
   user_addresses: user_addresses
 } AS User;`;
 
-module.exports = async (object, params) => {
+module.exports = async (object, params, ctx, info) => {
   let session = driver.session();
   let loginStatus = false;
   let loginFailedCode = null;
@@ -133,7 +132,7 @@ module.exports = async (object, params) => {
             if (o.user_is_cust_admin) return o;
           });
           if (userToCustomerAdmin.length > 0) {
-            loginFailedCode = 'GTC_NOT_ACCEPTED';
+            loginFailedCode = constants.LOGIN_FAILED_STATUS.GTC_NOT_ACCEPTED;
             return {
               loginStatus,
               loginFailedCode,
@@ -151,11 +150,11 @@ module.exports = async (object, params) => {
           }
           // Log for GTC not accepted user
           // await session.run(getCommonLogginQuery(), { type: constants.LOG_TYPE_ID., ...params });
-          throw new Error(common.getMessage('GTC_NOT_ACCEPTED', userSurfLang));
+          // throw new Error(common.getMessage('GTC_NOT_ACCEPTED', userSurfLang));
         }
       }
-      if (userStateInformation.user_gdpr_accepted) {
-        loginFailedCode = 'GDPR_NOT_ACCEPTED';
+      if (!userStateInformation.user_gdpr_accepted) {
+        loginFailedCode = constants.LOGIN_FAILED_STATUS.GDPR_NOT_ACCEPTED;
         return {
           loginStatus,
           loginFailedCode,
