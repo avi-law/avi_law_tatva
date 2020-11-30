@@ -218,6 +218,8 @@ const typeDefs = gql`
     cust_states: [loginCustomerStatesCustom]
     user_addresses: [userAddresses]
     user_NL_state: [String]
+    user_last_login: String
+    user_login_count: Int
   }
 
   type UserCustom {
@@ -230,7 +232,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    login(email: String!, password: String!): UserCustom
+    login(user_email: String!, user_pwd: String!): UserCustom
     acceptGTC(accept: Boolean!): UserCustom @isAuthenticated
     acceptGDPR(accept: Boolean!): UserCustom @isAuthenticated
   }

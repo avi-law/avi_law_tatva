@@ -4,8 +4,13 @@ const { constants, auth, common } = require('../../../utils');
 
 const query = `
 MATCH (us:User_State)<-[r1:HAS_USER_STATE]-()
-WHERE us.user_email = $email AND r1.to IS NULL
+WHERE us.user_email = $user_email AND r1.to IS NULL
 RETURN us as userState`;
+
+const manageLoginCountQuery = `
+MATCH (us:User_State {user_email: $user_email})
+SET us.user_login_count = us.user_login_count + 1
+SET us.user_last_login = apoc.date.currentTimestamp();`;
 
 /**
  * Get common logging query function
@@ -14,16 +19,20 @@ RETURN us as userState`;
 const getCommonLogginQuery = (otherParams = null) => {
   otherParams = otherParams ? `, ${otherParams}` : '';
   return `MATCH (a: Log_Type { log_type_id: $type })
-  MATCH (b:User)-[HAS_USER_STATE]->(:User_State { user_email: $email } )
+  MATCH (b:User)-[HAS_USER_STATE]->(:User_State { user_email: $user_email } )
   MERGE (b)<-[:LOG_FOR_USER]-(:Log { log_timestamp: apoc.date.currentTimestamp() ${otherParams} })-[:HAS_LOG_TYPE]->(a);`;
 };
 
+const logICustomerGTCQuery = `MATCH (a: Log_Type { log_type_id: $type })
+MATCH (c:Customer)<-[USER_TO_CUSTOMER]-(:User)-[HAS_USER_STATE]->(:User_State {user_email: $user_email})
+MERGE (c)<-[:LOG_FOR_CUSTOMER]-(:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a);`;
+
 const logInvalidEmailQuery = `
 MATCH (n:Log_Type { log_type_id: $type } )
-MERGE(:Log { log_timestamp: apoc.date.currentTimestamp(), log_par_01: $email, log_par_02: $password })-[:HAS_LOG_TYPE]-> (n);`;
+MERGE(:Log { log_timestamp: apoc.date.currentTimestamp(), log_par_01: $user_email, log_par_02: $password })-[:HAS_LOG_TYPE]-> (n);`;
 
 const getUserStateInformationQUery = `
-MATCH (us:User_State {user_email: $email })<-[r1:HAS_USER_STATE]-(u:User)
+MATCH (us:User_State {user_email: $user_email })<-[r1:HAS_USER_STATE]-(u:User)
 WHERE r1.to IS NULL
   Call { With u MATCH (u:User)-[r2:USER_TO_CUSTOMER]->(c:Customer)-[r3:HAS_CUST_STATE]->(cs:Customer_State)
     WHERE r3.to IS NULL
@@ -69,7 +78,9 @@ RETURN {
   user_pref_country: cou.iso_3166_1_alpha_2,
   cust_states: cust_states,
   user_NL_state: user_NL_state,
-  user_addresses: user_addresses
+  user_addresses: user_addresses,
+  user_last_login: us.user_last_login,
+  user_login_count: us.user_login_count
 } AS User;`;
 
 module.exports = async (object, params, ctx, info) => {
@@ -84,9 +95,9 @@ module.exports = async (object, params, ctx, info) => {
 
     if (userState && userState[0]) {
       // if (!auth.comparePassword(userState[0].user_pwd, params.password)) {
-      if (userState[0].user_pwd !== params.password) {
+      if (userState[0].user_pwd !== params.user_pwd) {
         // Log invalid password query
-        await session.run(getCommonLogginQuery('log_par_01: $email'), {
+        await session.run(getCommonLogginQuery('log_par_01: $user_email'), {
           type: constants.LOG_TYPE_ID.LOGIN_WITH_WRONG_PASSWORD,
           ...params,
         });
@@ -106,7 +117,7 @@ module.exports = async (object, params, ctx, info) => {
         currentDate.setHours(0, 0, 0, 0);
         let userToCustomerValidTo = _.filter(customerStates, (state) => {
           if (state.user_to) {
-          return state;
+            return state;
           }
         });
         if (userToCustomerValidTo.length === 0) {
@@ -116,11 +127,14 @@ module.exports = async (object, params, ctx, info) => {
 
         let validUserToCustomer = _.filter(userToCustomerValidTo, (o) => {
           if (new Date(o.cust_acc_until) >= currentDate) {
-          return o;
+            return o;
           }
         });
         if (validUserToCustomer.length === 0) {
-          await session.run(getCommonLogginQuery(), { type: constants.LOG_TYPE_ID.CUSTOMER_LINKED_ACCOUNT_EXPIRED, ...params });
+          await session.run(getCommonLogginQuery(), {
+            type: constants.LOG_TYPE_ID.CUSTOMER_LINKED_ACCOUNT_EXPIRED,
+            ...params,
+          });
           throw new Error(common.getMessage('CUSTOMER_LINKED_ACCOUNT_EXPIRED', userSurfLang));
         }
 
@@ -149,8 +163,15 @@ module.exports = async (object, params, ctx, info) => {
             };
           }
           // Log for GTC not accepted user
-          // await session.run(getCommonLogginQuery(), { type: constants.LOG_TYPE_ID., ...params });
-          // throw new Error(common.getMessage('GTC_NOT_ACCEPTED', userSurfLang));
+          await session.run(getCommonLogginQuery('log_par_01: $user_email'), {
+            type: constants.LOG_TYPE_ID.GTC_NOT_ACCEPTED,
+            ...params,
+          });
+          await session.run(logICustomerGTCQuery, {
+            type: constants.LOG_TYPE_ID.CUSTOMER_GTC_NOT_ACCEPTED,
+            ...params,
+          });
+          throw new Error(common.getMessage('GTC_NOT_ACCEPTED', userSurfLang));
         }
       }
       if (!userStateInformation.user_gdpr_accepted) {
@@ -175,6 +196,7 @@ module.exports = async (object, params, ctx, info) => {
         type: constants.LOG_TYPE_ID.LOGIN_SUCCESS,
         ...params,
       });
+      await session.run(manageLoginCountQuery, { ...params });
       loginStatus = true;
       session.close();
       return {
