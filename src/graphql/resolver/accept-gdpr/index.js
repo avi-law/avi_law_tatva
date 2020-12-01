@@ -1,4 +1,3 @@
-const _ = require("lodash");
 const driver = require("../../../config/db");
 const { constants, auth, common } = require("../../../utils");
 
@@ -9,7 +8,7 @@ const {
   updateGDPRAccept,
 } = require("../../../neo4j/query");
 
-module.exports = async (object, params, ctx, info) => {
+module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userSurfLang = user.user_surf_lang;
   const email = user.user_email;

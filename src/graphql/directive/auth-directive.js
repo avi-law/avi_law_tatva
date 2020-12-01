@@ -78,7 +78,7 @@ const checkValidRequest = (ctx, payload) => {
 };
 
 class IsAuthenticatedDirective extends SchemaDirectiveVisitor {
-  static getDirectiveDeclaration(directiveName, schema) {
+  static getDirectiveDeclaration() {
     return new GraphQLDirective({
       name: "isAuthenticated",
       locations: [DirectiveLocation.FIELD_DEFINITION, DirectiveLocation.OBJECT],

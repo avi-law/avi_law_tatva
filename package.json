@@ -6,10 +6,7 @@
   "scripts": {
     "start:dev": "nodemon node .",
     "start": "node .",
-    "build": "babel src --out-dir dist",
-    "prettier": "prettier --config ./.prettierrc --write \"**/*.js\"",
-    "pretest": "eslint --ignore-path .gitignore .",
-    "lint": "yarn prettier --write --check --config ./.prettierrc \"**/*.js\" && eslint --fix ./src"
+    "lint": "eslint --ignore-path .gitignore ."
   },
   "keywords": [
     "Node",

@@ -11,7 +11,7 @@ const {
   logInvalidEmailQuery,
 } = require("../../../neo4j/query");
 
-module.exports = async (object, params, ctx, info) => {
+module.exports = async (object, params) => {
   const session = driver.session();
   let loginStatus = false;
   let loginFailedCode = null;
