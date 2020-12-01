@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const { jwtSecret, jwtExpiresIn } = require('../config/application');
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const { jwtSecret, jwtExpiresIn } = require("../config/application");
 
 const auth = {
   /**
@@ -12,12 +12,8 @@ const auth = {
   hashPassword(password, saltRounds = 10) {
     return bcrypt
       .genSalt(saltRounds)
-      .then((salt) => {
-        return bcrypt.hash(password, salt);
-      })
-      .then((hash) => {
-        return hash;
-      });
+      .then((salt) => bcrypt.hash(password, salt))
+      .then((hash) => hash);
   },
 
   /**
@@ -38,7 +34,12 @@ const auth = {
    * @return token string
    */
   generateToken(data) {
-    const token = jwt.sign({ ...data }, jwtSecret, { algorithm: 'HS256' }, { expiresIn: jwtExpiresIn });
+    const token = jwt.sign(
+      { ...data },
+      jwtSecret,
+      { algorithm: "HS256" },
+      { expiresIn: jwtExpiresIn }
+    );
     return token;
   },
 };

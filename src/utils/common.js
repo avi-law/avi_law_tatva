@@ -1,4 +1,4 @@
-const constants  = require('./constants');
+const constants = require("./constants");
 /**
  * get message
  *
@@ -6,11 +6,14 @@ const constants  = require('./constants');
  * @param data
  * @returns {*}
  */
-const getMessage = (messageKey, lang = 'en') => {
-  lang = lang.toUpperCase();
+const getMessage = (messageKey, lang = "en") => {
+  const currentLang = lang.toUpperCase();
   let message = constants.MESSAGE.EN[messageKey];
-  if(constants.MESSAGE[lang] && constants.MESSAGE[lang][messageKey]) {
-    message = constants.MESSAGE[lang][messageKey];
+  if (
+    constants.MESSAGE[currentLang] &&
+    constants.MESSAGE[currentLang][messageKey]
+  ) {
+    message = constants.MESSAGE[currentLang][messageKey];
   }
   if (message) {
     return message;
@@ -19,5 +22,5 @@ const getMessage = (messageKey, lang = 'en') => {
 };
 
 module.exports = {
-  getMessage
+  getMessage,
 };
