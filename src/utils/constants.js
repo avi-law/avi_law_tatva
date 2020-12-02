@@ -3,7 +3,8 @@ module.exports = {
     EN: {
       LOGIN_SUCCESS: "Login successfully.",
       INVALID_LOGIN_EMAIL: "Invalid login email address.",
-      INVALID_LOGIN_PASSWORD: "invalid login password.",
+      INVALID_LOGIN_PASSWORD: "Invalid login password.",
+      USER_NOT_FOUND: "User not found",
       USER_ACCOUNT_EXPIRED:
         "Your user account has expired. For renewal, please contact office@avi-law.com.",
       CUSTOMER_LINKED_ACCOUNT_EXPIRED:
@@ -19,6 +20,7 @@ module.exports = {
     },
     DE: {
       LOGIN_SUCCESS: "Anmeldung erfolgreich.",
+      USER_NOT_FOUND: "User not found",
       GDPR_NOT_ACCEPTED:
         "Die Benützung unseres Webportals setzt voraus, dass Sie unsere Datenschutzbestimmungen akzeptieren.",
       USER_ACCOUNT_EXPIRED:

@@ -19,7 +19,7 @@ const typeDefs = gql`
     user_last_name: String
     user_email: String
     user_pwd: String
-    user_gdpr_accepted: Int
+    user_gdpr_accepted: Float
     user_title_post: String
     user_sex: String
     user_pref_NL_AT: Boolean
@@ -153,7 +153,7 @@ const typeDefs = gql`
     cust_name_02: String
     cust_name_01: String
     cust_rate: Float
-    cust_gtc_accepted: Int
+    cust_gtc_accepted: Float
     cust_order_no: String
     cust_alt_inv_city: String
     cust_contact_user_salut: String
@@ -217,7 +217,7 @@ const typeDefs = gql`
     cust_gtc_accepted: String
     cust_id: ID
     cust_acc_until: String
-    user_to: String
+    user_to: Float
   }
 
   type userAddresses {
@@ -225,7 +225,7 @@ const typeDefs = gql`
     user_address_de: String
   }
 
-  type UserCustomLogin {
+  type UserCustom {
     user_id: ID
     user_email: String
     user_surf_lang: String
@@ -233,7 +233,7 @@ const typeDefs = gql`
     user_1st_lang: String
     user_pwd: String
     user_pref_country: String
-    user_gdpr_accepted: String
+    user_gdpr_accepted: Float
     cust_states: [loginCustomerStatesCustom]
     user_addresses: [userAddresses]
     user_NL_state: [String]
@@ -241,8 +241,8 @@ const typeDefs = gql`
     user_login_count: Int
   }
 
-  type UserCustom {
-    user: UserCustomLogin
+  type UserCustomLogin {
+    user: UserCustom
     token: String
     lang: String
     loginStatus: Boolean
@@ -251,10 +251,13 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    login(user_email: String!, user_pwd: String!): UserCustom
-    acceptGTC(accept: Boolean!): UserCustom @isAuthenticated
-    acceptGDPR(accept: Boolean!): UserCustom @isAuthenticated
+    login(user_email: String!, user_pwd: String!): UserCustomLogin
+    acceptGTC(accept: Boolean!): UserCustomLogin @isAuthenticated
+    acceptGDPR(accept: Boolean!): UserCustomLogin @isAuthenticated
     encryptPassword(limit: Int): Boolean @isAuthenticated
+  }
+  type Query {
+    user: User_State @isAuthenticated
   }
 `;
 

@@ -3,7 +3,7 @@ MATCH (us:User_State {user_email: $user_email })<-[r1:HAS_USER_STATE]-(u:User)
 WHERE r1.to IS NULL
   Call { With u MATCH (u:User)-[r2:USER_TO_CUSTOMER]->(c:Customer)-[r3:HAS_CUST_STATE]->(cs:Customer_State)
     WHERE r3.to IS NULL
-    RETURN collect({ cust_id: cs.cust_id, cust_acc_until: toString(cs.cust_acc_until), cust_gtc_accepted: toString(cs.cust_gtc_accepted), user_is_cust_admin: r2.user_is_cust_admin, user_to: toString(r2.to) } ) AS cust_states }
+    RETURN collect({ cust_id: cs.cust_id, cust_acc_until: toString(cs.cust_acc_until), cust_gtc_accepted: cs.cust_gtc_accepted, user_is_cust_admin: r2.user_is_cust_admin, user_to: r2.to } ) AS cust_states }
   Call { With us MATCH (us:User_State)-[r8:USER_WANTS_NL_FROM_COUNTRY]->(cou:Country)
     WHERE r8.to IS NULL
     RETURN collect(cou.iso_3166_1_alpha_2) AS user_NL_state
@@ -38,7 +38,7 @@ RETURN {
   user_id: us.user_id,
   user_email: us.user_email,
   user_pwd: us.user_pwd,
-  user_gdpr_accepted: toString(us.user_gdpr_accepted),
+  user_gdpr_accepted: us.user_gdpr_accepted,
   user_surf_lang: l1.iso_639_1,
   user_1st_lang: l2.iso_639_1,
   user_2nd_lang: l3.iso_639_1,
@@ -54,6 +54,12 @@ exports.loginQuery = `
 MATCH (us:User_State)<-[r1:HAS_USER_STATE]-()
 WHERE us.user_email = $user_email AND r1.to IS NULL
 RETURN us as userState`;
+
+exports.getUserDetails = `
+MATCH (us:User_State)<-[r1:HAS_USER_STATE]-()
+WHERE us.user_id = $user_id
+RETURN us
+LIMIT 1`;
 
 // Get common logging query function
 exports.getCommonUserStateLogginQuery = (otherParams = null) => {

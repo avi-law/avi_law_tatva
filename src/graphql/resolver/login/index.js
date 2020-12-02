@@ -48,7 +48,7 @@ module.exports = async (object, params) => {
         const currentDate = new Date();
         currentDate.setHours(0, 0, 0, 0);
         const userToCustomerValidTo = _.filter(customerStates, (state) => {
-          if (state.user_to) {
+          if (!state.user_to) {
             return state;
           }
         });
