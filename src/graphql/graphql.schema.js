@@ -254,6 +254,7 @@ const typeDefs = gql`
     login(user_email: String!, user_pwd: String!): UserCustom
     acceptGTC(accept: Boolean!): UserCustom @isAuthenticated
     acceptGDPR(accept: Boolean!): UserCustom @isAuthenticated
+    encryptPassword(limit: Int): Boolean @isAuthenticated
   }
 `;
 

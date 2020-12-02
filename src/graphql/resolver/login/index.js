@@ -22,8 +22,7 @@ module.exports = async (object, params) => {
     );
 
     if (userState && userState[0]) {
-      // if (!auth.comparePassword(userState[0].user_pwd, params.password)) {
-      if (userState[0].user_pwd !== params.user_pwd) {
+      if (!auth.comparePassword(userState[0].user_pwd, params.user_pwd)) {
         // Log invalid password query
         await session.run(
           getCommonUserStateLogginQuery("log_par_01: $user_email"),
