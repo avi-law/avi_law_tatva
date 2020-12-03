@@ -35,7 +35,7 @@ module.exports = async (object, params, ctx) => {
         throw new Error(common.getMessage("INVALID_REQUEST"));
       });
     // Update status of GDPR accepted and add log
-    await session.run(updateGDPRAccept, { email }).then(() =>
+    await session.run(updateGDPRAccept, { user_email: email }).then(() =>
       session.run(getCommonUserStateLogginQuery("log_par_01: $user_email"), {
         type: constants.LOG_TYPE_ID.GDPR_ACCEPTED,
         user_email: email,

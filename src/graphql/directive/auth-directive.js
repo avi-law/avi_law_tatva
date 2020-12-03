@@ -71,12 +71,10 @@ const checkValidRequest = (ctx, payload) => {
   ) {
     valid = false;
   }
-
   // Validate encrypt password request
   if (operationName === "encryptPassword" && userEmail !== websiteOwnerEmail) {
     valid = false;
   }
-
   if (!valid) {
     throw new AuthenticationError(
       common.getMessage("INVALID_AUTHORIZATION_TOKEN", userSurfLang)
