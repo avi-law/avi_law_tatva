@@ -57,7 +57,7 @@ const checkValidRequest = (ctx, payload) => {
   const userEmail = payload.user_email;
   let valid = true;
   if (
-    ["acceptGTC", "acceptGDPR"].indexOf(operationName) !== -1 &&
+    ["acceptGTC", "acceptGDPR"].indexOf(operationName) === -1 &&
     !payload.login_status
   ) {
     valid = false;
@@ -67,7 +67,7 @@ const checkValidRequest = (ctx, payload) => {
     (operationName === "acceptGTC" &&
       constants.LOGIN_FAILED_STATUS.GTC_NOT_ACCEPTED !== loginFailedCode) ||
     (operationName === "acceptGDPR" &&
-      constants.LOGIN_FAILED_STATUS.GDPR_NOT_ACCEPTED === loginFailedCode)
+      constants.LOGIN_FAILED_STATUS.GDPR_NOT_ACCEPTED !== loginFailedCode)
   ) {
     valid = false;
   }
