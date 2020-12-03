@@ -29,15 +29,6 @@ module.exports = async (object, params, ctx) => {
       });
       throw new Error(common.getMessage("GTC_NOT_ACCEPTED"), userSurfLang);
     }
-    const userStateInformation = await session
-      .run(getUserStateInformationQUery, { user_email: email })
-      .then((result) => {
-        if (result && result.records) {
-          const singleRecord = result.records[0];
-          return singleRecord.get(0);
-        }
-        throw new Error(common.getMessage("INVALID_REQUEST"));
-      });
     // Update status of gtc accepted and add log
     await session.run(updateGTCAccept, { user_email: email }).then(() =>
       session
@@ -52,6 +43,17 @@ module.exports = async (object, params, ctx) => {
           })
         )
     );
+
+    const userStateInformation = await session
+      .run(getUserStateInformationQUery, { user_email: email })
+      .then((result) => {
+        if (result && result.records) {
+          const singleRecord = result.records[0];
+          return singleRecord.get(0);
+        }
+        throw new Error(common.getMessage("INVALID_REQUEST"));
+      });
+
     if (!userStateInformation.user_gdpr_accepted) {
       loginFailedCode = constants.LOGIN_FAILED_STATUS.GDPR_NOT_ACCEPTED;
       return {
