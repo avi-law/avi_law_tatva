@@ -81,7 +81,7 @@ MERGE (c)<-[:LOG_FOR_CUSTOMER]-(:Log{log_timestamp: apoc.date.currentTimestamp()
 
 exports.logInvalidEmailQuery = `
 MATCH (n:Log_Type { log_type_id: $type } )
-MERGE(:Log { log_timestamp: apoc.date.currentTimestamp(), log_par_01: $user_email, log_par_02: $password })-[:HAS_LOG_TYPE]-> (n);`;
+MERGE(:Log { log_timestamp: apoc.date.currentTimestamp(), log_par_01: $user_email, log_par_02: $user_pwd })-[:HAS_LOG_TYPE]-> (n);`;
 
 exports.updateGTCAccept = `
 MATCH (cs:Customer_State)<-[HAS_CUSTOMER_STATE]-(c:Customer)<-[r:USER_TO_CUSTOMER]-(:User)-[HAS_USER_STATE]->(:User_State {user_email:$user_email})
@@ -90,4 +90,4 @@ SET cs.cust_gtc_accepted = apoc.date.currentTimestamp();`;
 
 exports.updateGDPRAccept = `
 MATCH ( us:User_State { user_email: $user_email })
-SET us.us.user_gtc_accepted = apoc.date.currentTimestamp();`;
+SET us.user_gdpr_accepted = apoc.date.currentTimestamp();`;
