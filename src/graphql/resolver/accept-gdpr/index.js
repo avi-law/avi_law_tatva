@@ -25,6 +25,13 @@ module.exports = async (object, params, ctx) => {
       });
       throw new Error(common.getMessage("GDPR_NOT_ACCEPTED"), userSurfLang);
     }
+    // Update status of GDPR accepted and add log
+    await session.run(updateGDPRAccept, { user_email: email }).then(() =>
+      session.run(getCommonUserStateLogginQuery("log_par_01: $user_email"), {
+        type: constants.LOG_TYPE_ID.GDPR_ACCEPTED,
+        user_email: email,
+      })
+    );
     const userStateInformation = await session
       .run(getUserStateInformationQUery, { user_email: email })
       .then((result) => {
@@ -34,13 +41,6 @@ module.exports = async (object, params, ctx) => {
         }
         throw new Error(common.getMessage("INVALID_REQUEST"));
       });
-    // Update status of GDPR accepted and add log
-    await session.run(updateGDPRAccept, { user_email: email }).then(() =>
-      session.run(getCommonUserStateLogginQuery("log_par_01: $user_email"), {
-        type: constants.LOG_TYPE_ID.GDPR_ACCEPTED,
-        user_email: email,
-      })
-    );
     // Log success login query
     await session.run(getCommonUserStateLogginQuery(), {
       type: constants.LOG_TYPE_ID.LOGIN_SUCCESS,
