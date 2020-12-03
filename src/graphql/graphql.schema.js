@@ -1,24 +1,25 @@
-const { gql } = require('apollo-server-express');
+const { gql } = require("apollo-server-express");
 
 const typeDefs = gql`
-
   directive @isAuthenticated on OBJECT | FIELD_DEFINITION
 
-  type User {
+  type User @isAuthenticated {
     user_id: ID!
-    has_user_state: [User_State] @relation(name: "HAS_USER_STATE", direction: "OUT")
-    user_to_customer: [Customer] @relation(name: "USER_TO_CUSTOMER", direction: "OUT")
+    has_user_state: [User_State]
+      @relation(name: "HAS_USER_STATE", direction: "OUT")
+    user_to_customer: [Customer]
+      @relation(name: "USER_TO_CUSTOMER", direction: "OUT")
     log_for_user: [Log] @relation(name: "LOG_FOR_USER", direction: "IN")
   }
 
-  type User_State {
+  type User_State @isAuthenticated {
     user_id: Int
     user_first_name: String
     user_middle_name: String
     user_last_name: String
     user_email: String
     user_pwd: String
-    user_gdpr_accepted: Int
+    user_gdpr_accepted: Float
     user_title_post: String
     user_sex: String
     user_pref_NL_AT: Boolean
@@ -32,22 +33,30 @@ const typeDefs = gql`
     user: User @relation(name: "HAS_USER_STATE", direction: "IN")
     sys_admin: SysAdmin @relation(name: "HAS_USER_STATE", direction: "IN")
     author: Author @relation(name: "HAS_USER_STATE", direction: "IN")
-    user_has_pref_surf_lang: Language @relation(name: "USER_HAS_PREF_SURF_LANG", direction: "OUT")
-    user_has_pref_1st_lang: Language @relation(name: "USER_HAS_PREF_1ST_LANG", direction: "OUT")
-    user_has_pref_2nd_lang: Language @relation(name: "USER_HAS_PREF_2ND_LANG", direction: "OUT")
-    user_has_pref_country: Country @relation(name: "USER_HAS_PREF_COUNTRY", direction: "OUT")
+    user_has_pref_surf_lang: Language
+      @relation(name: "USER_HAS_PREF_SURF_LANG", direction: "OUT")
+    user_has_pref_1st_lang: Language
+      @relation(name: "USER_HAS_PREF_1ST_LANG", direction: "OUT")
+    user_has_pref_2nd_lang: Language
+      @relation(name: "USER_HAS_PREF_2ND_LANG", direction: "OUT")
+    user_has_pref_country: Country
+      @relation(name: "USER_HAS_PREF_COUNTRY", direction: "OUT")
   }
 
-  type Customer {
+  type Customer @isAuthenticated {
     cust_id: ID!
     cust_status: Int
     cust_rmk: String
     user: User
     inv_for_cust: Invoice @relation(name: "INV_FOR_CUST", direction: "IN")
-    has_cust_state: [Customer_State] @relation(name: "HAS_CUST_STATE", direction: "IN")
-    user_to_customer_admin: SysAdmin @relation(name: "USER_TO_CUSTOMER", direction: "IN")
-    user_to_customer_author: Author @relation(name: "USER_TO_CUSTOMER", direction: "IN")
-    user_to_customer_user: User @relation(name: "USER_TO_CUSTOMER", direction: "IN")
+    has_cust_state: [Customer_State]
+      @relation(name: "HAS_CUST_STATE", direction: "IN")
+    user_to_customer_admin: SysAdmin
+      @relation(name: "USER_TO_CUSTOMER", direction: "IN")
+    user_to_customer_author: Author
+      @relation(name: "USER_TO_CUSTOMER", direction: "IN")
+    user_to_customer_user: User
+      @relation(name: "USER_TO_CUSTOMER", direction: "IN")
   }
 
   type Log_Type {
@@ -63,18 +72,21 @@ const typeDefs = gql`
     country_id: Int
     avail_for_nl_ord: Int
     country_name_en: String
-    is_sub_country_of: Country_Sub @relation(name: "IS_SUB_COUNTRY_OF", direction: "IN")
+    is_sub_country_of: Country_Sub
+      @relation(name: "IS_SUB_COUNTRY_OF", direction: "IN")
     inv_sent_from: Invoice @relation(name: "INV_SENT_FROM", direction: "IN")
   }
 
-  type SysAdmin {
+  type SysAdmin @isAuthenticated {
     user_id: Int
-    user_to_customer_admin: Customer @relation(name: "USER_TO_CUSTOMER", direction: "OUT")
+    user_to_customer_admin: Customer
+      @relation(name: "USER_TO_CUSTOMER", direction: "OUT")
   }
 
-  type Author {
+  type Author @isAuthenticated {
     user_id: Int
-    cust_has_contact_author_user: Customer_State @relation(name: "CUST_HAS_CONTACT_USER", direction: "IN")
+    cust_has_contact_author_user: Customer_State
+      @relation(name: "CUST_HAS_CONTACT_USER", direction: "IN")
   }
 
   type Language {
@@ -94,7 +106,8 @@ const typeDefs = gql`
     country_sub_name_en: String
     country_id: Int
     country_sub_id: Int
-    is_sub_country_of: Country @relation(name: "IS_SUB_COUNTRY_OF", direction: "OUT")
+    is_sub_country_of: Country
+      @relation(name: "IS_SUB_COUNTRY_OF", direction: "OUT")
   }
 
   type Currency {
@@ -103,17 +116,18 @@ const typeDefs = gql`
     currency_ord_cust: Int
     iso_4217: String
     currency_id: Int
-    to_be_invoiced_in_currency: Customer_State @relation(name: "TO_BE_INVOICED_IN_CURRENCY", direction: "IN")
+    to_be_invoiced_in_currency: Customer_State
+      @relation(name: "TO_BE_INVOICED_IN_CURRENCY", direction: "IN")
   }
 
-  type Log {
+  type Log @isAuthenticated {
     log_par_02: String
     log_par_01: String
     log_timestamp: Int
     log_for_user: User @relation(name: "LOG_FOR_USER", direction: "OUT")
   }
 
-  type Customer_State {
+  type Customer_State @isAuthenticated {
     cust_contact_user: Int
     cust_single: Boolean
     cust_vat_perc: Float
@@ -139,7 +153,7 @@ const typeDefs = gql`
     cust_name_02: String
     cust_name_01: String
     cust_rate: Float
-    cust_gtc_accepted: Int
+    cust_gtc_accepted: Float
     cust_order_no: String
     cust_alt_inv_city: String
     cust_contact_user_salut: String
@@ -152,15 +166,20 @@ const typeDefs = gql`
     cust_rmk: String
     cust_city: String
     inv_in_lang: Invoice @relation(name: "INV_IN_LANG", direction: "OUT")
-    inv_to_alt_country: Country @relation(name: "INV_TO_ALT_COUNTRY", direction: "OUT")
-    is_located_in_country: Country @relation(name: "IS_LOCATED_IN_COUNTRY", direction: "OUT")
+    inv_to_alt_country: Country
+      @relation(name: "INV_TO_ALT_COUNTRY", direction: "OUT")
+    is_located_in_country: Country
+      @relation(name: "IS_LOCATED_IN_COUNTRY", direction: "OUT")
     has_cust_state: Customer @relation(name: "HAS_CUST_STATE", direction: "OUT")
-    to_be_invoiced_in_currency: Currency @relation(name: "TO_BE_INVOICED_IN_CURRENCY", direction: "OUT")
-    cust_has_contact_admin_user: SysAdmin @relation(name: "CUST_HAS_CONTACT_USER", direction: "IN")
-    cust_has_contact_author_user: Author @relation(name: "CUST_HAS_CONTACT_USER", direction: "OUT")
+    to_be_invoiced_in_currency: Currency
+      @relation(name: "TO_BE_INVOICED_IN_CURRENCY", direction: "OUT")
+    cust_has_contact_admin_user: SysAdmin
+      @relation(name: "CUST_HAS_CONTACT_USER", direction: "IN")
+    cust_has_contact_author_user: Author
+      @relation(name: "CUST_HAS_CONTACT_USER", direction: "OUT")
   }
 
-  type Invoice {
+  type Invoice @isAuthenticated {
     inv_vat_perc: Float
     inv_country: String
     inv_street_no: String
@@ -198,23 +217,23 @@ const typeDefs = gql`
     cust_gtc_accepted: String
     cust_id: ID
     cust_acc_until: String
-    user_to: String
+    user_to: Float
   }
 
   type userAddresses {
-    user_address_en: String,
+    user_address_en: String
     user_address_de: String
   }
 
-  type UserCustomLogin {
-    user_id: ID,
+  type UserCustom {
+    user_id: ID
     user_email: String
     user_surf_lang: String
     user_2nd_lang: String
     user_1st_lang: String
     user_pwd: String
     user_pref_country: String
-    user_gdpr_accepted: String
+    user_gdpr_accepted: Float
     cust_states: [loginCustomerStatesCustom]
     user_addresses: [userAddresses]
     user_NL_state: [String]
@@ -222,8 +241,8 @@ const typeDefs = gql`
     user_login_count: Int
   }
 
-  type UserCustom {
-    user: UserCustomLogin
+  type UserCustomLogin {
+    user: UserCustom
     token: String
     lang: String
     loginStatus: Boolean
@@ -232,9 +251,13 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    login(user_email: String!, user_pwd: String!): UserCustom
-    acceptGTC(accept: Boolean!): UserCustom @isAuthenticated
-    acceptGDPR(accept: Boolean!): UserCustom @isAuthenticated
+    login(user_email: String!, user_pwd: String!): UserCustomLogin
+    acceptGTC(accept: Boolean!): UserCustomLogin @isAuthenticated
+    acceptGDPR(accept: Boolean!): UserCustomLogin @isAuthenticated
+    encryptPassword(limit: Int): Boolean @isAuthenticated
+  }
+  type Query {
+    user: User_State @isAuthenticated
   }
 `;
 

@@ -1,4 +1,4 @@
-const constants  = require('./constants');
+const constants = require("./constants");
 /**
  * get message
  *
@@ -6,11 +6,14 @@ const constants  = require('./constants');
  * @param data
  * @returns {*}
  */
-const getMessage = (messageKey, lang = 'en') => {
-  lang = lang.toUpperCase();
+const getMessage = (messageKey, lang = "en") => {
+  const currentLang = lang.toUpperCase();
   let message = constants.MESSAGE.EN[messageKey];
-  if(constants.MESSAGE[lang] && constants.MESSAGE[lang][messageKey]) {
-    message = constants.MESSAGE[lang][messageKey];
+  if (
+    constants.MESSAGE[currentLang] &&
+    constants.MESSAGE[currentLang][messageKey]
+  ) {
+    message = constants.MESSAGE[currentLang][messageKey];
   }
   if (message) {
     return message;
@@ -18,6 +21,27 @@ const getMessage = (messageKey, lang = 'en') => {
   return messageKey;
 };
 
+/**
+ * Async Foreach
+ *
+ * @param array
+ * @param callback
+ * @memberof Helper
+ */
+const asyncForEach = async (array, callback, thisArg) => {
+  const promiseArray = [];
+  for (let i = 0; i < array.length; i += 1) {
+    if (i in array) {
+      const p = Promise.resolve(array[i]).then((currentValue) =>
+        callback.call(thisArg || this, currentValue, i, array)
+      );
+      promiseArray.push(p);
+    }
+  }
+  await Promise.all(promiseArray);
+};
+
 module.exports = {
-  getMessage
+  getMessage,
+  asyncForEach,
 };

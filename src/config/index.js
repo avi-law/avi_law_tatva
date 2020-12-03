@@ -1,7 +1,7 @@
-const dotenv  = require("dotenv");
-const application = require('./application');
-const driver = require('./db');
-const server = require('./apollo');
+const dotenv = require("dotenv");
+const application = require("./application");
+const driver = require("./db");
+const server = require("./apollo");
 
 const envFound = dotenv.config();
 
@@ -13,5 +13,5 @@ if (!envFound) {
 module.exports = {
   ...application,
   driver,
-  server
-}
+  server,
+};
