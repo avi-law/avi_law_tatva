@@ -1,7 +1,8 @@
 /* eslint-disable consistent-return */
 const _ = require("lodash");
 const driver = require("../../../config/db");
-const { constants, auth, common } = require("../../../utils");
+const { defaultLanguage } = require("../../../config/application");
+const { constants, auth, common, APIError } = require("../../../utils");
 const {
   getUserStateInformationQUery,
   loginQuery,
@@ -31,7 +32,10 @@ module.exports = async (object, params) => {
             ...params,
           }
         );
-        throw new Error(common.getMessage("INCORRECT_LOGIN_DATA"));
+        throw new APIError({
+          lang: defaultLanguage,
+          message: "INCORRECT_LOGIN_DATA",
+        });
       }
       const userStateInformation = await session
         .run(getUserStateInformationQUery, params)
@@ -40,7 +44,10 @@ module.exports = async (object, params) => {
             const singleRecord = userStateresult.records[0];
             return singleRecord.get(0);
           }
-          throw new Error(common.getMessage("INCORRECT_LOGIN_DATA"));
+          throw new APIError({
+            lang: defaultLanguage,
+            message: "INCORRECT_LOGIN_DATA",
+          });
         });
       const userSurfLang = userStateInformation.user_surf_lang;
       const customerStates = userStateInformation.cust_states;
@@ -57,9 +64,10 @@ module.exports = async (object, params) => {
             type: constants.LOG_TYPE_ID.USER_ACCOUNT_EXPIRED,
             ...params,
           });
-          throw new Error(
-            common.getMessage("USER_ACCOUNT_EXPIRED", userSurfLang)
-          );
+          throw new APIError({
+            lang: userSurfLang,
+            message: "USER_ACCOUNT_EXPIRED",
+          });
         }
 
         const validUserToCustomer = _.filter(userToCustomerValidTo, (o) => {
@@ -72,9 +80,11 @@ module.exports = async (object, params) => {
             type: constants.LOG_TYPE_ID.CUSTOMER_LINKED_ACCOUNT_EXPIRED,
             ...params,
           });
-          throw new Error(
-            common.getMessage("CUSTOMER_LINKED_ACCOUNT_EXPIRED", userSurfLang)
-          );
+
+          throw new APIError({
+            lang: userSurfLang,
+            message: "CUSTOMER_LINKED_ACCOUNT_EXPIRED",
+          });
         }
 
         const validGTCAcceptedCustomer = _.filter(
@@ -92,7 +102,8 @@ module.exports = async (object, params) => {
             return {
               loginStatus,
               loginFailedCode,
-              loginMessage: common.getMessage(loginFailedCode, userSurfLang),
+              loginMessage: common.getMessage(loginFailedCode, userSurfLang)
+                .message,
               user: null,
               lang: userSurfLang,
               token: auth.generateToken({
@@ -116,7 +127,10 @@ module.exports = async (object, params) => {
             type: constants.LOG_TYPE_ID.CUSTOMER_GTC_NOT_ACCEPTED,
             ...params,
           });
-          throw new Error(common.getMessage("GTC_NOT_ACCEPTED", userSurfLang));
+          throw new APIError({
+            lang: userSurfLang,
+            message: "GTC_NOT_ACCEPTED",
+          });
         }
       }
       if (!userStateInformation.user_gdpr_accepted) {
@@ -124,7 +138,8 @@ module.exports = async (object, params) => {
         return {
           loginStatus,
           loginFailedCode,
-          loginMessage: common.getMessage(loginFailedCode, userSurfLang),
+          loginMessage: common.getMessage(loginFailedCode, userSurfLang)
+            .message,
           user: null,
           lang: userSurfLang,
           token: auth.generateToken({
@@ -147,7 +162,7 @@ module.exports = async (object, params) => {
       return {
         loginStatus,
         loginFailedCode,
-        loginMessage: common.getMessage("LOGIN_SUCCESS", userSurfLang),
+        loginMessage: common.getMessage("LOGIN_SUCCESS", userSurfLang).message,
         lang: userSurfLang,
         user: userStateInformation,
         token: auth.generateToken({
@@ -165,7 +180,10 @@ module.exports = async (object, params) => {
       type: constants.LOG_TYPE_ID.LOGIN_WITH_WRONG_CREDENTIALS,
       ...params,
     });
-    throw new Error(common.getMessage("INCORRECT_LOGIN_DATA"));
+    throw new APIError({
+      lang: defaultLanguage,
+      message: "INCORRECT_LOGIN_DATA",
+    });
   } catch (error) {
     session.close();
     throw error;

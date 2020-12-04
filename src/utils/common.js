@@ -16,9 +16,9 @@ const getMessage = (messageKey, lang = "en") => {
     message = constants.MESSAGE[currentLang][messageKey];
   }
   if (message) {
-    return message;
+    return { message, statusCode: messageKey };
   }
-  return messageKey;
+  return { message: messageKey };
 };
 
 /**

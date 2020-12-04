@@ -1,5 +1,6 @@
 const driver = require("../../../config/db");
-const { constants, auth, common } = require("../../../utils");
+const { defaultLanguage } = require("../../../config/application");
+const { constants, auth, common, APIError } = require("../../../utils");
 
 const {
   getUserStateInformationQUery,
@@ -23,7 +24,10 @@ module.exports = async (object, params, ctx) => {
         type: constants.LOG_TYPE_ID.GDPR_NOT_ACCEPTED,
         user_email: email,
       });
-      throw new Error(common.getMessage("GDPR_NOT_ACCEPTED"), userSurfLang);
+      throw new APIError({
+        lang: defaultLanguage,
+        message: "GDPR_NOT_ACCEPTED",
+      });
     }
     // Update status of GDPR accepted and add log
     await session.run(updateGDPRAccept, { user_email: email }).then(() =>
@@ -39,7 +43,10 @@ module.exports = async (object, params, ctx) => {
           const singleRecord = result.records[0];
           return singleRecord.get(0);
         }
-        throw new Error(common.getMessage("INVALID_REQUEST"));
+        throw new APIError({
+          lang: defaultLanguage,
+          message: "INVALID_REQUEST",
+        });
       });
     // Log success login query
     await session.run(getCommonUserStateLogginQuery(), {
@@ -52,7 +59,7 @@ module.exports = async (object, params, ctx) => {
     return {
       loginStatus,
       loginFailedCode,
-      loginMessage: common.getMessage("LOGIN_SUCCESS", userSurfLang),
+      loginMessage: common.getMessage("LOGIN_SUCCESS", userSurfLang).message,
       lang: userSurfLang,
       user: userStateInformation,
       token: auth.generateToken({

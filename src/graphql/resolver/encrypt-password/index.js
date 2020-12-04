@@ -1,7 +1,8 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 const driver = require("../../../config/db");
-const { auth, common } = require("../../../utils");
+const { defaultLanguage } = require("../../../config/application");
+const { auth, common, APIError } = require("../../../utils");
 
 const getUsersQuery = `MATCH (us:User_State) WHERE us.user_pwd_old IS NOT NULL RETURN { user_email: us.user_email, user_pwd:us.user_pwd, user_pwd_old:us.user_pwd_old } As users`;
 // const getUsersQuery = `MATCH (us:User_State) WHERE us.user_email IN ["test@test.de", "janezic@avi-law.com"] RETURN { user_email: us.user_email, user_pwd:us.user_pwd, user_pwd_old:us.user_pwd_old } As users`;
@@ -84,7 +85,10 @@ module.exports = async (object, params) => {
       }
       return false;
     }
-    throw new Error(common.getMessage("INVALID_REQUEST"));
+    throw new APIError({
+      lang: defaultLanguage,
+      message: "INVALID_REQUEST",
+    });
   } catch (error) {
     session.close();
     throw error;

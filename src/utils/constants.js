@@ -34,7 +34,7 @@ module.exports = {
         "Der für Ihren Kunden-Account zuständige Administrator muss vor der Benützung der Website unsere „Allgemeinen Nutzungsbedingungen“ annehmen. Sollten Sie dazu Fragen haben, kontaktieren Sie uns bitte per eMail unter office@avilaw.com.",
       INVALID_REQUEST: "Entschuldigung, Ihre Anfrage ist ungültig",
       INVALID_AUTHORIZATION_TOKEN: "Ungültiges Authentifizierungstoken",
-      INVALID_LOGIN_DATA:
+      INCORRECT_LOGIN_DATA:
         "Die von Ihnen eingegebenen Anmeldedaten sind inkorrekt!",
     },
   },
