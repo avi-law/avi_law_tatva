@@ -72,7 +72,7 @@ const typeDefs = gql`
     country_id: Int
     avail_for_nl_ord: Int
     country_name_en: String
-    is_sub_country_of: Country_Sub
+    is_sub_country_of: [Country_Sub]
       @relation(name: "IS_SUB_COUNTRY_OF", direction: "IN")
     inv_sent_from: Invoice @relation(name: "INV_SENT_FROM", direction: "IN")
   }

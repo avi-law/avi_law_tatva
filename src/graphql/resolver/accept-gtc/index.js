@@ -1,5 +1,6 @@
 const driver = require("../../../config/db");
-const { constants, auth, common } = require("../../../utils");
+const { defaultLanguage } = require("../../../config/application");
+const { constants, auth, common, APIError } = require("../../../utils");
 const {
   getUserStateInformationQUery,
   getCommonUserStateLogginQuery,
@@ -27,7 +28,10 @@ module.exports = async (object, params, ctx) => {
         type: constants.LOG_TYPE_ID.ADMIN_CUSTOMER_GTC_NOT_ACCEPTED,
         user_email: email,
       });
-      throw new Error(common.getMessage("GTC_NOT_ACCEPTED"), userSurfLang);
+      throw new APIError({
+        lang: defaultLanguage,
+        message: "GTC_NOT_ACCEPTED",
+      });
     }
     // Update status of gtc accepted and add log
     await session.run(updateGTCAccept, { user_email: email }).then(() =>
@@ -51,7 +55,10 @@ module.exports = async (object, params, ctx) => {
           const singleRecord = result.records[0];
           return singleRecord.get(0);
         }
-        throw new Error(common.getMessage("INVALID_REQUEST"));
+        throw new APIError({
+          lang: defaultLanguage,
+          message: "INVALID_REQUEST",
+        });
       });
 
     if (!userStateInformation.user_gdpr_accepted) {
@@ -59,7 +66,7 @@ module.exports = async (object, params, ctx) => {
       return {
         loginStatus,
         loginFailedCode,
-        loginMessage: common.getMessage(loginFailedCode, userSurfLang),
+        loginMessage: common.getMessage(loginFailedCode, userSurfLang).message,
         user: null,
         lang: userSurfLang,
         token: auth.generateToken({
@@ -82,7 +89,7 @@ module.exports = async (object, params, ctx) => {
     return {
       loginStatus,
       loginFailedCode,
-      loginMessage: common.getMessage("LOGIN_SUCCESS", userSurfLang),
+      loginMessage: common.getMessage("LOGIN_SUCCESS", userSurfLang).message,
       lang: userSurfLang,
       user: userStateInformation,
       token: auth.generateToken({

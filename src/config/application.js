@@ -7,6 +7,8 @@ module.exports = {
   port: process.env.PORT || 4000,
   environment: process.env.NODE_ENV || "development",
 
+  defaultLanguage: process.env.DEFAULT_LANGUAGE || "en",
+
   // JWT token for authentication
   jwtSecret: process.env.JWT_SECRET || "secret",
   jwtExpiresIn: process.env.JWT_EXPIRED_IN || "1d",
