@@ -31,7 +31,7 @@ module.exports = async (object, params) => {
             ...params,
           }
         );
-        throw new Error(common.getMessage("INVALID_LOGIN_PASSWORD"));
+        throw new Error(common.getMessage("INCORRECT_LOGIN_DATA"));
       }
       const userStateInformation = await session
         .run(getUserStateInformationQUery, params)
@@ -40,7 +40,7 @@ module.exports = async (object, params) => {
             const singleRecord = userStateresult.records[0];
             return singleRecord.get(0);
           }
-          throw new Error(common.getMessage("INVALID_LOGIN_EMAIL"));
+          throw new Error(common.getMessage("INCORRECT_LOGIN_DATA"));
         });
       const userSurfLang = userStateInformation.user_surf_lang;
       const customerStates = userStateInformation.cust_states;
@@ -165,7 +165,7 @@ module.exports = async (object, params) => {
       type: constants.LOG_TYPE_ID.LOGIN_WITH_WRONG_CREDENTIALS,
       ...params,
     });
-    throw new Error(common.getMessage("INVALID_LOGIN_EMAIL"));
+    throw new Error(common.getMessage("INCORRECT_LOGIN_DATA"));
   } catch (error) {
     session.close();
     throw error;
