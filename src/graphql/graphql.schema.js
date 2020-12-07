@@ -255,6 +255,7 @@ const typeDefs = gql`
     acceptGTC(accept: Boolean!): UserCustomLogin @isAuthenticated
     acceptGDPR(accept: Boolean!): UserCustomLogin @isAuthenticated
     encryptPassword(limit: Int): Boolean @isAuthenticated
+    forgotPassword(email: String!): Boolean
   }
   type Query {
     user: User_State @isAuthenticated

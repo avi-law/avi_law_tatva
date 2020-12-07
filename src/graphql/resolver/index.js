@@ -1,5 +1,6 @@
 // NON AUTH Resolver
 const login = require("./login");
+const forgotPassword = require("./forgot-password");
 
 // AUTH Resolver
 const acceptGTC = require("./accept-gtc");
@@ -15,6 +16,7 @@ const resolvers = {
     acceptGTC,
     acceptGDPR,
     encryptPassword,
+    forgotPassword,
   },
   Query: {
     user,
