@@ -95,7 +95,7 @@ module.exports = async (object, params) => {
         );
         if (validGTCAcceptedCustomer.length === 0) {
           const userToCustomerAdmin = _.filter(validUserToCustomer, (o) => {
-            if (o.user_is_cust_admin) return o;
+            if (o.user_is_cust_admin || o.single_user) return o;
           });
           if (userToCustomerAdmin.length > 0) {
             loginFailedCode = constants.LOGIN_FAILED_STATUS.GTC_NOT_ACCEPTED;
