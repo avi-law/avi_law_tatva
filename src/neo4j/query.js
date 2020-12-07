@@ -91,3 +91,22 @@ SET cs.cust_gtc_accepted = apoc.date.currentTimestamp();`;
 exports.updateGDPRAccept = `
 MATCH ( us:User_State { user_email: $user_email })
 SET us.user_gdpr_accepted = apoc.date.currentTimestamp();`;
+
+exports.getUserByEmail = `
+MATCH (us:User_State)<-[r1:HAS_USER_STATE]-()
+WHERE us.user_email = $user_email
+RETURN us as userState`;
+
+exports.setPasswordToken = `
+MATCH ( us:User_State { user_email: $user_email })
+SET us.reset_pwd_token = $token, us.reset_pwd_token_expiry_date = $resetTokenExpiryDate
+RETURN us as userState;`;
+
+exports.getUserByEmail = `MATCH (us:User_State { user_email : $user_email } ) RETURN us as userState`;
+
+exports.getUserByToken = `MATCH (us:User_State { reset_pwd_token :  $token}) RETURN us as userState`;
+
+exports.resetUserPassword = `
+MATCH ( us:User_State { user_email: $user_email })
+SET us.user_pwd = $password, us.reset_pwd_token = NULL, us.reset_pwd_token_expiry_date = NULL
+RETURN us as userState;`;

@@ -24,4 +24,7 @@ module.exports = {
     pass: process.env.SMTP_PASSWORD,
     from: process.env.SMTP_FROM,
   },
+
+  // Frontend configuration
+  frontendURL: process.env.FRONTEND_URL,
 };

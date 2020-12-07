@@ -43,7 +43,7 @@ const schema = makeAugmentedSchema({
   schemaDirectives: {
     isAuthenticated: IsAuthenticatedDirective,
   },
-  logger: { log: (e) => console.log(e) },
+  logger: { log: (e) => console.error(e.message) },
   allowUndefinedInResolve: true,
   config: {
     query: {

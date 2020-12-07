@@ -255,10 +255,12 @@ const typeDefs = gql`
     acceptGTC(accept: Boolean!): UserCustomLogin @isAuthenticated
     acceptGDPR(accept: Boolean!): UserCustomLogin @isAuthenticated
     encryptPassword(limit: Int): Boolean @isAuthenticated
-    forgotPassword(email: String!): Boolean
+    forgotPassword(user_email: String!): Boolean
+    setNewPassword(user_pwd: String, token: String!): Boolean
   }
   type Query {
     user: User_State @isAuthenticated
+    verifyForgotPasswordLink(token: String!): Boolean
   }
 `;
 
