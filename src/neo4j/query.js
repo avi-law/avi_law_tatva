@@ -108,6 +108,6 @@ exports.getUserByToken = `MATCH (us:User_State { reset_pwd_token :  $token}) RET
 
 exports.resetUserPassword = `
 MATCH ( us:User_State { user_email: $user_email })
-SET us.user_pwd = $password,
-REMOVE us.reset_pwd_token = NULL, us.reset_pwd_token_expiry_date = NULL
+SET us.user_pwd = $password
+REMOVE us.reset_pwd_token, us.reset_pwd_token_expiry_date
 RETURN us as userState;`;
