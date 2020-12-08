@@ -4,6 +4,8 @@ const forgotPassword = require("./forgot-password/send-forgot-password-link");
 const verifyForgotPasswordLink = require("./forgot-password/verify-forgot-password-link");
 const setNewPassword = require("./forgot-password/set-new-password");
 
+const getNewsLetters = require("./new-letters/get-news-letters");
+
 // AUTH Resolver
 const acceptGTC = require("./accept-gtc");
 const acceptGDPR = require("./accept-gdpr");
@@ -24,6 +26,7 @@ const resolvers = {
   Query: {
     user,
     verifyForgotPasswordLink,
+    getNewsLetters,
   },
 };
 

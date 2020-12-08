@@ -252,6 +252,13 @@ const typeDefs = gql`
     loginFailedCode: String
   }
 
+  type NewsletterCustom {
+    nl_article_no: String!
+    nl_article_date: String!
+    nl_article_title: String!
+    nl_article_lang: String!
+  }
+
   type Mutation {
     login(user_email: String!, user_pwd: String!): UserCustomLogin
     acceptGTC(accept: Boolean!): UserCustomLogin @isAuthenticated
@@ -263,6 +270,7 @@ const typeDefs = gql`
   type Query {
     user: User_State @isAuthenticated
     verifyForgotPasswordLink(token: String!): Boolean
+    getNewsLetters(lang: [String!]): [NewsletterCustom!]
   }
 `;
 

@@ -111,3 +111,35 @@ MATCH ( us:User_State { user_email: $user_email })
 SET us.user_pwd = $password
 REMOVE us.reset_pwd_token, us.reset_pwd_token_expiry_date
 RETURN us as userState;`;
+
+exports.getNewsletterByLang = `
+MATCH (nl:NL_Article)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
+WHERE nl.nl_article_active = true AND cou.iso_3166_1_alpha_2 IN $LANG_ARRAY
+RETURN {
+nl_article_no: nl.nl_article_no,
+nl_article_date: toString(nl.nl_article_date),
+nl_article_title : CASE
+  WHEN nl.nl_article_title_en_short is null
+    THEN nl.nl_article_title_de_short
+  ELSE nl.nl_article_title_en_short
+  END,
+nl_article_lang: cou.iso_3166_1_alpha_2
+} As newLetters
+ORDER BY nl.nl_article_order DESC
+LIMIT 10;`;
+
+exports.getDefaultNewsletter = `
+MATCH (nl:NL_Article)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
+WHERE nl.nl_article_active = true
+RETURN {
+  nl_article_no: nl.nl_article_no,
+  nl_article_date: toString(nl.nl_article_date),
+  nl_article_title : CASE
+    WHEN nl.nl_article_title_en_short is null
+      THEN nl.nl_article_title_de_short
+    ELSE nl.nl_article_title_en_short
+    END,
+  nl_article_lang: cou.iso_3166_1_alpha_2
+  } As newLetters
+ORDER BY nl.nl_article_order DESC
+LIMIT 10;`;
