@@ -218,6 +218,8 @@ const typeDefs = gql`
     cust_id: ID
     cust_acc_until: String
     user_to: Float
+    single_user: Boolean
+    cust_spec_cont: Int
   }
 
   type userAddresses {
