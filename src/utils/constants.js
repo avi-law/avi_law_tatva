@@ -18,6 +18,8 @@ module.exports = {
       NO_AUTHORIZATION_TOKEN: "No authentication token",
       AUTHORIZATION_TOKEN_EXPIRED: "Authentication token expired",
       INCORRECT_LOGIN_DATA: "Your login data is incorrect!",
+      INVALID_FORGOT_PASSWORD: "Your password could not be sent!",
+      INVALID_FORGOT_PASSWORD_LINK: "Invalid reset password link.",
     },
     DE: {
       INVALID_LOGIN_EMAIL: "Die eingegebene eMail-Adresse ist nicht korrekt!",
@@ -36,6 +38,9 @@ module.exports = {
       INVALID_AUTHORIZATION_TOKEN: "Ungültiges Authentifizierungstoken",
       INCORRECT_LOGIN_DATA:
         "Die von Ihnen eingegebenen Anmeldedaten sind inkorrekt!",
+      INVALID_FORGOT_PASSWORD: "Ihr Passwort konnte nicht versendet werden!",
+      INVALID_FORGOT_PASSWORD_LINK:
+        "Ihr Passwort konnte nicht versendet werden!",
     },
   },
   LOG_TYPE_ID: {
@@ -56,5 +61,9 @@ module.exports = {
   LOGIN_FAILED_STATUS: {
     GTC_NOT_ACCEPTED: "GTC_NOT_ACCEPTED",
     GDPR_NOT_ACCEPTED: "GDPR_NOT_ACCEPTED",
+  },
+  RESET_PASSWORD_TOKEN_EXPIRY_HOUR: 1,
+  EMAIL: {
+    RESET_PASSWORD_SUBJECT: "Avi-law - Password reset link",
   },
 };

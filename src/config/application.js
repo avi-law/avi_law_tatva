@@ -14,4 +14,17 @@ module.exports = {
   jwtExpiresIn: process.env.JWT_EXPIRED_IN || "1d",
 
   websiteOwnerEmail: process.env.WEBSITE_OWNER_EMAIL || "janezic@avi-law.com",
+
+  /** SMTP */
+  mailSmtp: {
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    secure: process.env.SMTP_SECURE,
+    user: process.env.SMTP_USERNAME,
+    pass: process.env.SMTP_PASSWORD,
+    from: process.env.SMTP_FROM,
+  },
+
+  // Frontend configuration
+  frontendURL: process.env.FRONTEND_URL,
 };
