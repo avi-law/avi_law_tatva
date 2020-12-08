@@ -7,8 +7,12 @@ const {
 } = require("apollo-server-express");
 const { DirectiveLocation, GraphQLDirective } = require("graphql");
 const jwt = require("jsonwebtoken");
-const { jwtSecret, websiteOwnerEmail } = require("../../config/application");
-const { common, constants } = require("../../utils");
+const {
+  jwtSecret,
+  websiteOwnerEmail,
+  defaultLanguage,
+} = require("../../config/application");
+const { common, constants, APIError } = require("../../utils");
 
 const verifyAndDecodeToken = ({ context }) => {
   const { req } = context;
@@ -18,13 +22,17 @@ const verifyAndDecodeToken = ({ context }) => {
     (!req.headers.authorization && !req.headers.Authorization) ||
     (!req && !req.cookies && !req.cookies.token)
   ) {
-    throw new AuthenticationError(common.getMessage("NO_AUTHORIZATION_TOKEN"));
+    throw new APIError({
+      lang: defaultLanguage,
+      message: "NO_AUTHORIZATION_TOKEN",
+    });
   }
   try {
     if (!req.headers.authorization.startsWith("Bearer ")) {
-      throw new AuthenticationError(
-        common.getMessage("INVALID_AUTHORIZATION_TOKEN")
-      );
+      throw new APIError({
+        lang: defaultLanguage,
+        message: "INVALID_AUTHORIZATION_TOKEN",
+      });
     }
     const token = req.headers.authorization.split(" ")[1];
     if (token) {
@@ -32,19 +40,22 @@ const verifyAndDecodeToken = ({ context }) => {
         algorithms: ["HS256"],
       });
     }
-    throw new AuthenticationError(
-      common.getMessage("INVALID_AUTHORIZATION_TOKEN")
-    );
+    throw new APIError({
+      lang: defaultLanguage,
+      message: "INVALID_AUTHORIZATION_TOKEN",
+    });
   } catch (err) {
     if (err.name === "TokenExpiredError") {
-      throw new AuthenticationError(
-        common.getMessage("AUTHORIZATION_TOKEN_EXPIRED")
-      );
+      throw new APIError({
+        lang: defaultLanguage,
+        message: "AUTHORIZATION_TOKEN_EXPIRED",
+      });
     } else {
       // You are not authorized for this resource
-      throw new AuthenticationError(
-        common.getMessage("INVALID_AUTHORIZATION_TOKEN")
-      );
+      throw new APIError({
+        lang: defaultLanguage,
+        message: "INVALID_AUTHORIZATION_TOKEN",
+      });
     }
   }
 };
@@ -76,9 +87,10 @@ const checkValidRequest = (ctx, payload) => {
     valid = false;
   }
   if (!valid) {
-    throw new AuthenticationError(
-      common.getMessage("INVALID_AUTHORIZATION_TOKEN", userSurfLang)
-    );
+    throw new APIError({
+      lang: userSurfLang,
+      message: "INVALID_AUTHORIZATION_TOKEN",
+    });
   }
   return valid;
 };

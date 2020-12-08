@@ -85,7 +85,7 @@ MERGE(:Log { log_timestamp: apoc.date.currentTimestamp(), log_par_01: $user_emai
 
 exports.updateGTCAccept = `
 MATCH (cs:Customer_State)<-[HAS_CUSTOMER_STATE]-(c:Customer)<-[r:USER_TO_CUSTOMER]-(:User)-[HAS_USER_STATE]->(:User_State {user_email:$user_email})
-WHERE r.user_is_cust_admin = true
+WHERE r.user_is_cust_admin = true OR cs.cust_single = true
 SET cs.cust_gtc_accepted = apoc.date.currentTimestamp();`;
 
 exports.updateGDPRAccept = `
@@ -108,5 +108,6 @@ exports.getUserByToken = `MATCH (us:User_State { reset_pwd_token :  $token}) RET
 
 exports.resetUserPassword = `
 MATCH ( us:User_State { user_email: $user_email })
-SET us.user_pwd = $password, us.reset_pwd_token = NULL, us.reset_pwd_token_expiry_date = NULL
+SET us.user_pwd = $password,
+REMOVE us.reset_pwd_token = NULL, us.reset_pwd_token_expiry_date = NULL
 RETURN us as userState;`;
