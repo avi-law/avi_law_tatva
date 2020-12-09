@@ -229,6 +229,9 @@ const typeDefs = gql`
 
   type UserCustom {
     user_id: ID
+    user_first_name: String
+    user_middle_name: String
+    user_last_name: String
     user_email: String
     user_surf_lang: String
     user_2nd_lang: String

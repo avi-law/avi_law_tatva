@@ -37,6 +37,9 @@ WHERE r7.to IS NULL
 RETURN {
   user_id: us.user_id,
   user_email: us.user_email,
+  user_first_name: us.user_first_name,
+  user_middle_name: us.user_middle_name,
+  user_last_name: us.user_last_name,
   user_pwd: us.user_pwd,
   user_gdpr_accepted: us.user_gdpr_accepted,
   user_surf_lang: l1.iso_639_1,
