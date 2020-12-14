@@ -5,7 +5,7 @@ const { mailSmtp } = require("../config/application");
 const emailTransport = {
   host: mailSmtp.host,
   port: mailSmtp.port,
-  secure: mailSmtp.secure,
+  secure: mailSmtp.secure === "true",
   auth: {
     user: mailSmtp.user,
     pass: mailSmtp.pass,
