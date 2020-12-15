@@ -14,7 +14,7 @@ const sendResetPasswordEmail = (user, token) => {
       email: user.user_email,
       token,
       frontendURL,
-      resetPasswordURL: `reset-password`,
+      resetPasswordURL: `users/reset-password`,
     },
   };
   return sendMail(mailOption, "reset-password").catch((error) => {
