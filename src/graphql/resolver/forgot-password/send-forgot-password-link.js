@@ -38,7 +38,9 @@ module.exports = async (object, params) => {
     user = singleRecord.get(0).properties;
     const randomString =
       Math.random().toString(36) + Math.random().toString(36);
-    const token = Buffer.from(randomString).toString("base64");
+    let token = Buffer.from(randomString).toString("base64");
+    token = token.replace("==", "");
+    token = token.replace("=", "");
     const currentDate = new Date();
     currentDate.setHours(
       currentDate.getHours() + constants.RESET_PASSWORD_TOKEN_EXPIRY_HOUR
