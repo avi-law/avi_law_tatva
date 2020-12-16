@@ -22,6 +22,7 @@ const excludeMutation = [
   "Country",
   "Log_Type",
   "NewsletterCustom",
+  "NL_Article",
 ];
 const excludeQuery = [
   "User",
@@ -37,6 +38,7 @@ const excludeQuery = [
   "userAddresses",
   "UserCustom",
   "NewsletterCustom",
+  "NL_Article",
 ];
 
 const schema = makeAugmentedSchema({

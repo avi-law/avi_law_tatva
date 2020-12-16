@@ -227,6 +227,22 @@ const typeDefs = gql`
     user_address_de: String
   }
 
+  type NL_Article {
+    nl_article_active: Boolean
+    nl_article_author: String
+    nl_article_date: String
+    nl_article_id: Int
+    nl_article_last_updated: Int
+    nl_article_no: String
+    nl_article_order: String
+    nl_article_text_de: String
+    nl_article_text_en: String
+    nl_article_title_de_long: String
+    nl_article_title_de_short: String
+    nl_article_title_en_long: String
+    nl_article_title_en_short: String
+  }
+
   type UserCustom {
     user_id: ID
     user_first_name: String
@@ -256,10 +272,12 @@ const typeDefs = gql`
   }
 
   type NewsletterCustom {
+    nl_article_id: Int!
     nl_article_no: String!
     nl_article_date: String!
     nl_article_title: String!
     nl_article_lang: String!
+    nl_article_author: String
   }
 
   type Mutation {

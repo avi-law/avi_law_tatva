@@ -119,7 +119,9 @@ exports.getNewsletterByLang = `
 MATCH (nl:NL_Article)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
 WHERE nl.nl_article_active = true AND cou.iso_3166_1_alpha_2 IN $LANG_ARRAY
 RETURN {
+nl_article_id: nl.nl_article_id,
 nl_article_no: nl.nl_article_no,
+nl_article_author: nl.nl_article_author,
 nl_article_date: toString(nl.nl_article_date),
 nl_article_title : CASE
   WHEN nl.nl_article_title_en_short is null
@@ -135,7 +137,9 @@ exports.getDefaultNewsletter = `
 MATCH (nl:NL_Article)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
 WHERE nl.nl_article_active = true
 RETURN {
+  nl_article_id: nl.nl_article_id,
   nl_article_no: nl.nl_article_no,
+  nl_article_author: nl.nl_article_author,
   nl_article_date: toString(nl.nl_article_date),
   nl_article_title : CASE
     WHEN nl.nl_article_title_en_short is null
