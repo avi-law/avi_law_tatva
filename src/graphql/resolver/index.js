@@ -5,6 +5,7 @@ const verifyForgotPasswordLink = require("./forgot-password/verify-forgot-passwo
 const setNewPassword = require("./forgot-password/set-new-password");
 
 const getNewsLetters = require("./new-letters/get-news-letters");
+const getNewsLetter = require("./new-letters/get-news-letter");
 
 // AUTH Resolver
 const acceptGTC = require("./accept-gtc");
@@ -27,6 +28,7 @@ const resolvers = {
     user,
     verifyForgotPasswordLink,
     getNewsLetters,
+    getNewsLetter,
   },
 };
 

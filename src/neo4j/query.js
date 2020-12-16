@@ -105,8 +105,6 @@ MATCH ( us:User_State { user_email: $user_email })
 SET us.reset_pwd_token = $token, us.reset_pwd_token_expiry_date = $resetTokenExpiryDate
 RETURN us as userState;`;
 
-exports.getUserByEmail = `MATCH (us:User_State { user_email : $user_email } ) RETURN us as userState`;
-
 exports.getUserByToken = `MATCH (us:User_State { reset_pwd_token :  $token}) RETURN us as userState`;
 
 exports.resetUserPassword = `
@@ -150,3 +148,8 @@ RETURN {
   } As newLetters
 ORDER BY nl.nl_article_order DESC
 LIMIT 10;`;
+
+exports.getNewsletter = `
+MATCH (nl:NL_Article )
+WHERE nl.nl_article_id = $nl_article_id
+RETURN nl`;

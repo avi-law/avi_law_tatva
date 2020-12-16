@@ -230,7 +230,7 @@ const typeDefs = gql`
   type NL_Article {
     nl_article_active: Boolean
     nl_article_author: String
-    nl_article_date: String
+    nl_article_date: _Neo4jDate
     nl_article_id: Int
     nl_article_last_updated: Int
     nl_article_no: String
@@ -292,6 +292,7 @@ const typeDefs = gql`
     user: User_State @isAuthenticated
     verifyForgotPasswordLink(token: String!): Boolean
     getNewsLetters(lang: [String!]): [NewsletterCustom!]
+    getNewsLetter(id: Int!): NL_Article @isAuthenticated
   }
 `;
 
