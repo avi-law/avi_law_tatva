@@ -1,5 +1,6 @@
+// -(u:User {user_email: user_email: $user_email}})
 exports.getUserStateInformationQUery = `
-MATCH (us:User_State {user_email: $user_email })<-[r1:HAS_USER_STATE]-(u:User)
+MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 WHERE r1.to IS NULL
   Call { With u MATCH (u:User)-[r2:USER_TO_CUSTOMER]->(c:Customer)-[r3:HAS_CUST_STATE]->(cs:Customer_State)
     WHERE r3.to IS NULL
@@ -35,8 +36,8 @@ WHERE r6.to IS NULL
 MATCH (us)-[r7:USER_HAS_PREF_COUNTRY]->(cou:Country)
 WHERE r7.to IS NULL
 RETURN {
-  user_id: us.user_id,
-  user_email: us.user_email,
+  user_id: u.user_id,
+  user_email: u.user_email,
   user_first_name: us.user_first_name,
   user_middle_name: us.user_middle_name,
   user_last_name: us.user_last_name,
@@ -54,8 +55,8 @@ RETURN {
 } AS User;`;
 
 exports.loginQuery = `
-MATCH (us:User_State)<-[r1:HAS_USER_STATE]-()
-WHERE us.user_email = $user_email AND r1.to IS NULL
+MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
+WHERE r1.to IS NULL
 RETURN us as userState`;
 
 exports.getUserDetails = `
@@ -68,18 +69,18 @@ LIMIT 1`;
 exports.getCommonUserStateLogginQuery = (otherParams = null) => {
   const params = otherParams ? `, ${otherParams}` : "";
   return `MATCH (a: Log_Type { log_type_id: $type })
-  MATCH (b:User)-[HAS_USER_STATE]->(:User_State { user_email: $user_email } )
+  MATCH (b:User { user_email: $user_email } )-[HAS_USER_STATE]->(:User_State)
   MERGE (b)<-[:LOG_FOR_USER]-(:Log { log_timestamp: apoc.date.currentTimestamp() ${params} })-[:HAS_LOG_TYPE]->(a);`;
 };
 
 exports.manageLoginCountQuery = `
-MATCH (us:User_State {user_email: $user_email})
+MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 SET us.user_login_count = us.user_login_count + 1
 SET us.user_last_login = apoc.date.currentTimestamp();`;
 
 exports.logICustomerGTCQuery = `
 MATCH (a: Log_Type { log_type_id: $type })
-MATCH (c:Customer)<-[USER_TO_CUSTOMER]-(:User)-[HAS_USER_STATE]->(:User_State {user_email: $user_email})
+MATCH (c:Customer)<-[USER_TO_CUSTOMER]-(:User {user_email: $user_email})-[HAS_USER_STATE]->(:User_State)
 MERGE (c)<-[:LOG_FOR_CUSTOMER]-(:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a);`;
 
 exports.logInvalidEmailQuery = `
@@ -92,23 +93,22 @@ WHERE r.user_is_cust_admin = true OR cs.cust_single = true
 SET cs.cust_gtc_accepted = apoc.date.currentTimestamp();`;
 
 exports.updateGDPRAccept = `
-MATCH ( us:User_State { user_email: $user_email })
+MATCH ( us:User_State )<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 SET us.user_gdpr_accepted = apoc.date.currentTimestamp();`;
 
 exports.getUserByEmail = `
-MATCH (us:User_State)<-[r1:HAS_USER_STATE]-()
-WHERE us.user_email = $user_email
+MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User { user_email: $user_email })
 RETURN us as userState`;
 
 exports.setPasswordToken = `
-MATCH ( us:User_State { user_email: $user_email })
+MATCH ( us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 SET us.reset_pwd_token = $token, us.reset_pwd_token_expiry_date = $resetTokenExpiryDate
 RETURN us as userState;`;
 
 exports.getUserByToken = `MATCH (us:User_State { reset_pwd_token :  $token}) RETURN us as userState`;
 
 exports.resetUserPassword = `
-MATCH ( us:User_State { user_email: $user_email })
+MATCH ( us:User_State )<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 SET us.user_pwd = $user_pwd
 REMOVE us.reset_pwd_token, us.reset_pwd_token_expiry_date
 RETURN us as userState;`;
