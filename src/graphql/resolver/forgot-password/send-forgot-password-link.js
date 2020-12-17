@@ -7,10 +7,14 @@ const { getUserByEmail, setPasswordToken } = require("../../../neo4j/query");
 
 // Send resent password email
 const sendResetPasswordEmail = (user, token) => {
+  const currentLang = user.user_surf_lang.toUpperCase();
   const mailOption = {
     to: user.user_email,
-    subject: constants.EMAIL.RESET_PASSWORD_SUBJECT,
+    subject: constants.EMAIL[currentLang].FORGOT_PASSWORD.SUBJECT,
     data: {
+      HEAD000: constants.EMAIL[currentLang].FORGOT_PASSWORD.HEAD000,
+      CONT010: constants.EMAIL[currentLang].FORGOT_PASSWORD.CONT010,
+      BUTT010: constants.EMAIL[currentLang].FORGOT_PASSWORD.BUTT010,
       email: user.user_email,
       token,
       frontendURL,
@@ -34,6 +38,9 @@ module.exports = async (object, params) => {
         message: "INVALID_FORGOT_PASSWORD",
       });
     }
+    const userSurfLang = result.records.map((record) =>
+      record.get("user_surf_lang")
+    );
     const singleRecord = result.records[0];
     user = singleRecord.get(0).properties;
     const randomString =
@@ -54,7 +61,14 @@ module.exports = async (object, params) => {
       })
       .then((setResult) => {
         if (setResult && setResult.records.length > 0) {
-          sendResetPasswordEmail({ ...user, user_email: email }, token);
+          sendResetPasswordEmail(
+            {
+              ...user,
+              user_email: email,
+              user_surf_lang: userSurfLang[0] || defaultLanguage,
+            },
+            token
+          );
           return true;
         }
         throw new APIError({

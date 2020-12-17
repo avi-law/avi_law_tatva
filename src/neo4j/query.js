@@ -100,7 +100,9 @@ SET us.user_gdpr_accepted = apoc.date.currentTimestamp();`;
 
 exports.getUserByEmail = `
 MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User { user_email: $user_email })
-RETURN us as userState`;
+MATCH (us)-[r2:USER_HAS_PREF_SURF_LANG]->(l1:Language)
+WHERE r2.to IS NULL
+RETURN us as userState, l1.iso_639_1 as user_surf_lang`;
 
 exports.setPasswordToken = `
 MATCH ( us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })

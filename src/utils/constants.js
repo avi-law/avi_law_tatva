@@ -19,7 +19,8 @@ module.exports = {
       AUTHORIZATION_TOKEN_EXPIRED: "Authentication token expired",
       INCORRECT_LOGIN_DATA: "Your login data is incorrect!",
       INVALID_FORGOT_PASSWORD: "Your password could not be sent!",
-      INVALID_FORGOT_PASSWORD_LINK: "Invalid reset password link.",
+      INVALID_FORGOT_PASSWORD_LINK:
+        "The link to change your password is invalid - please request a password change again!.",
     },
     DE: {
       INVALID_LOGIN_EMAIL: "Die eingegebene eMail-Adresse ist nicht korrekt!",
@@ -38,9 +39,10 @@ module.exports = {
       INVALID_AUTHORIZATION_TOKEN: "Ungültiges Authentifizierungstoken",
       INCORRECT_LOGIN_DATA:
         "Die von Ihnen eingegebenen Anmeldedaten sind inkorrekt!",
-      INVALID_FORGOT_PASSWORD: "Ihr Passwort konnte nicht versendet werden!",
+      INVALID_FORGOT_PASSWORD:
+        "Der Versand eines eMails an Sie war nicht möglich!",
       INVALID_FORGOT_PASSWORD_LINK:
-        "Ihr Passwort konnte nicht versendet werden!",
+        "Ungültiger Liink zum Ändern des Passwortes - bitte fordern Sie einen neuen Link zum Ändern Ihres Passwortes an.",
     },
   },
   LOG_TYPE_ID: {
@@ -62,8 +64,25 @@ module.exports = {
     GTC_NOT_ACCEPTED: "GTC_NOT_ACCEPTED",
     GDPR_NOT_ACCEPTED: "GDPR_NOT_ACCEPTED",
   },
-  RESET_PASSWORD_TOKEN_EXPIRY_HOUR: 1,
+  RESET_PASSWORD_TOKEN_EXPIRY_HOUR: 24,
   EMAIL: {
-    RESET_PASSWORD_SUBJECT: "Avi-law - Password reset link",
+    EN: {
+      FORGOT_PASSWORD: {
+        SUBJECT: "Avi-law - Password reset link",
+        HEAD000: "Trouble signing in?",
+        CONT010:
+          "Resetting your password is easy. Just press the button below and follow the instructions. We'll have you up and running in no time.",
+        BUTT010: "Change Password",
+      },
+    },
+    DE: {
+      FORGOT_PASSWORD: {
+        SUBJECT: "Avi-law - Password reset link",
+        HEAD000: "Trouble signing in?",
+        CONT010:
+          "Resetting your password is easy. Just press the button below and follow the instructions. We'll have you up and running in no time.",
+        BUTT010: "Change Password",
+      },
+    },
   },
 };
