@@ -131,7 +131,12 @@ RETURN {
   nl_article_title_de_long: nl.nl_article_title_de_long,
   nl_article_title_de_short: nl.nl_article_title_de_short,
   nl_article_title_en_long: nl.nl_article_title_en_long,
-  nl_article_title_en_short: nl.nl_article_title_en_short,
+  nl_article_title_en_short:
+  CASE
+		WHEN nl.nl_article_title_en_short is null
+			THEN nl.nl_article_title_de_short
+      ELSE nl.nl_article_title_en_short
+    END,
   Country: {
       iso_3166_1_alpha_2: cou.iso_3166_1_alpha_2
     }
@@ -154,8 +159,12 @@ RETURN {
   nl_article_text_en: nl.nl_article_text_en,
   nl_article_title_de_long: nl.nl_article_title_de_long,
   nl_article_title_de_short: nl.nl_article_title_de_short,
-  nl_article_title_en_long: nl.nl_article_title_en_long,
-  nl_article_title_en_short: nl.nl_article_title_en_short,
+  nl_article_title_en_short:
+  CASE
+		WHEN nl.nl_article_title_en_short is null
+			THEN nl.nl_article_title_de_short
+      ELSE nl.nl_article_title_en_short
+    END,
   Country: {
       iso_3166_1_alpha_2: cou.iso_3166_1_alpha_2
     }
