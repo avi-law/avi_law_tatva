@@ -36,7 +36,7 @@ WHERE r6.to IS NULL
 MATCH (us)-[r7:USER_HAS_PREF_COUNTRY]->(cou:Country)
 WHERE r7.to IS NULL
 RETURN {
-  user_id: u.user_id,
+  user_id: us.user_id,
   user_email: u.user_email,
   user_first_name: us.user_first_name,
   user_middle_name: us.user_middle_name,
@@ -51,7 +51,9 @@ RETURN {
   user_NL_state: user_NL_state,
   user_addresses: user_addresses,
   user_last_login: us.user_last_login,
-  user_login_count: us.user_login_count
+  user_login_count: us.user_login_count,
+  user_is_author: u.user_is_author,
+  user_is_sys_admin: u.user_is_sys_admin
 } AS User;`;
 
 exports.loginQuery = `
@@ -139,7 +141,8 @@ RETURN {
   nl_article_no: nl.nl_article_no,
   nl_article_author: nl.nl_article_author,
   nl_article_date: toString(nl.nl_article_date),
-  nl_article_title : CASE
+  nl_article_title :
+  CASE
     WHEN nl.nl_article_title_en_short is null
       THEN nl.nl_article_title_de_short
     ELSE nl.nl_article_title_en_short

@@ -260,6 +260,8 @@ const typeDefs = gql`
     user_NL_state: [String]
     user_last_login: String
     user_login_count: Int
+    user_is_author: Boolean
+    user_is_sys_admin: Boolean
   }
 
   type UserCustomLogin {
