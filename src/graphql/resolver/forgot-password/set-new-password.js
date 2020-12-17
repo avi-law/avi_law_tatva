@@ -17,6 +17,7 @@ module.exports = async (object, params) => {
         message: "INVALID_FORGOT_PASSWORD_LINK",
       });
     }
+    const userEmail = result.records.map((record) => record.get("userEmail"));
     const currentDate = Date.now();
     const singleRecord = result.records[0];
     user = singleRecord.get(0).properties;
@@ -29,7 +30,7 @@ module.exports = async (object, params) => {
     const encryptedPassword = await auth.hashPassword(userPassword);
     return session
       .run(resetUserPassword, {
-        user_email: user.user_email,
+        user_email: userEmail[0],
         user_pwd: encryptedPassword,
       })
       .then((setPasswordResult) => {

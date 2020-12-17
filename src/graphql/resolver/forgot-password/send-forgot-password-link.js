@@ -54,7 +54,7 @@ module.exports = async (object, params) => {
       })
       .then((setResult) => {
         if (setResult && setResult.records.length > 0) {
-          sendResetPasswordEmail(user, token);
+          sendResetPasswordEmail({ ...user, user_email: email }, token);
           return true;
         }
         throw new APIError({

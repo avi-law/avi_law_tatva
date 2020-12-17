@@ -107,7 +107,7 @@ MATCH ( us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 SET us.reset_pwd_token = $token, us.reset_pwd_token_expiry_date = $resetTokenExpiryDate
 RETURN us as userState;`;
 
-exports.getUserByToken = `MATCH (us:User_State { reset_pwd_token :  $token}) RETURN us as userState`;
+exports.getUserByToken = `MATCH (us:User_State { reset_pwd_token :  $token})<-[r1:HAS_USER_STATE]-(u:User) RETURN us as userState, u.user_email as userEmail`;
 
 exports.resetUserPassword = `
 MATCH ( us:User_State )<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
