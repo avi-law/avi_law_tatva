@@ -119,16 +119,22 @@ exports.getNewsletterByLang = `
 MATCH (nl:NL_Article)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
 WHERE nl.nl_article_active = true AND cou.iso_3166_1_alpha_2 IN $LANG_ARRAY
 RETURN {
-nl_article_id: nl.nl_article_id,
-nl_article_no: nl.nl_article_no,
-nl_article_author: nl.nl_article_author,
-nl_article_date: toString(nl.nl_article_date),
-nl_article_title : CASE
-  WHEN nl.nl_article_title_en_short is null
-    THEN nl.nl_article_title_de_short
-  ELSE nl.nl_article_title_en_short
-  END,
-nl_article_lang: cou.iso_3166_1_alpha_2
+  nl_article_id: nl.nl_article_id,
+  nl_article_no: nl.nl_article_no,
+  nl_article_date: toString(nl.nl_article_date),
+  nl_article_active: nl.nl_article_active,
+  nl_article_author: nl.nl_article_author,
+  nl_article_last_updated: nl.nl_article_last_updated,
+  nl_article_order: nl.nl_article_order,
+  nl_article_text_de: nl.nl_article_text_de,
+  nl_article_text_en: nl.nl_article_text_en,
+  nl_article_title_de_long: nl.nl_article_title_de_long,
+  nl_article_title_de_short: nl.nl_article_title_de_short,
+  nl_article_title_en_long: nl.nl_article_title_en_long,
+  nl_article_title_en_short: nl.nl_article_title_en_short,
+  Country: {
+      iso_3166_1_alpha_2: cou.iso_3166_1_alpha_2
+    }
 } As newLetters
 ORDER BY nl.nl_article_order DESC
 LIMIT 10;`;
@@ -139,16 +145,21 @@ WHERE nl.nl_article_active = true
 RETURN {
   nl_article_id: nl.nl_article_id,
   nl_article_no: nl.nl_article_no,
-  nl_article_author: nl.nl_article_author,
   nl_article_date: toString(nl.nl_article_date),
-  nl_article_title :
-  CASE
-    WHEN nl.nl_article_title_en_short is null
-      THEN nl.nl_article_title_de_short
-    ELSE nl.nl_article_title_en_short
-    END,
-  nl_article_lang: cou.iso_3166_1_alpha_2
-  } As newLetters
+  nl_article_active: nl.nl_article_active,
+  nl_article_author: nl.nl_article_author,
+  nl_article_last_updated: nl.nl_article_last_updated,
+  nl_article_order: nl.nl_article_order,
+  nl_article_text_de: nl.nl_article_text_de,
+  nl_article_text_en: nl.nl_article_text_en,
+  nl_article_title_de_long: nl.nl_article_title_de_long,
+  nl_article_title_de_short: nl.nl_article_title_de_short,
+  nl_article_title_en_long: nl.nl_article_title_en_long,
+  nl_article_title_en_short: nl.nl_article_title_en_short,
+  Country: {
+      iso_3166_1_alpha_2: cou.iso_3166_1_alpha_2
+    }
+} As newLetters
 ORDER BY nl.nl_article_order DESC
 LIMIT 10;`;
 

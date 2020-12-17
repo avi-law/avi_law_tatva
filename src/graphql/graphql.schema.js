@@ -4,7 +4,9 @@ const typeDefs = gql`
   directive @isAuthenticated on OBJECT | FIELD_DEFINITION
 
   type User @isAuthenticated {
-    user_id: ID!
+    user_email: String!
+    user_is_author: Boolean
+    user_is_sys_admin: Boolean
     has_user_state: [User_State]
       @relation(name: "HAS_USER_STATE", direction: "OUT")
     user_to_customer: [Customer]
@@ -17,7 +19,6 @@ const typeDefs = gql`
     user_first_name: String
     user_middle_name: String
     user_last_name: String
-    user_email: String
     user_pwd: String
     user_gdpr_accepted: Float
     user_title_post: String
@@ -31,8 +32,6 @@ const typeDefs = gql`
     user_pref_country: Int
     user_rmk: String
     user: User @relation(name: "HAS_USER_STATE", direction: "IN")
-    sys_admin: SysAdmin @relation(name: "HAS_USER_STATE", direction: "IN")
-    author: Author @relation(name: "HAS_USER_STATE", direction: "IN")
     user_has_pref_surf_lang: Language
       @relation(name: "USER_HAS_PREF_SURF_LANG", direction: "OUT")
     user_has_pref_1st_lang: Language
@@ -51,10 +50,6 @@ const typeDefs = gql`
     inv_for_cust: Invoice @relation(name: "INV_FOR_CUST", direction: "IN")
     has_cust_state: [Customer_State]
       @relation(name: "HAS_CUST_STATE", direction: "IN")
-    user_to_customer_admin: SysAdmin
-      @relation(name: "USER_TO_CUSTOMER", direction: "IN")
-    user_to_customer_author: Author
-      @relation(name: "USER_TO_CUSTOMER", direction: "IN")
     user_to_customer_user: User
       @relation(name: "USER_TO_CUSTOMER", direction: "IN")
   }
@@ -75,18 +70,6 @@ const typeDefs = gql`
     is_sub_country_of: [Country_Sub]
       @relation(name: "IS_SUB_COUNTRY_OF", direction: "IN")
     inv_sent_from: Invoice @relation(name: "INV_SENT_FROM", direction: "IN")
-  }
-
-  type SysAdmin @isAuthenticated {
-    user_id: Int
-    user_to_customer_admin: Customer
-      @relation(name: "USER_TO_CUSTOMER", direction: "OUT")
-  }
-
-  type Author @isAuthenticated {
-    user_id: Int
-    cust_has_contact_author_user: Customer_State
-      @relation(name: "CUST_HAS_CONTACT_USER", direction: "IN")
   }
 
   type Language {
@@ -173,10 +156,6 @@ const typeDefs = gql`
     has_cust_state: Customer @relation(name: "HAS_CUST_STATE", direction: "OUT")
     to_be_invoiced_in_currency: Currency
       @relation(name: "TO_BE_INVOICED_IN_CURRENCY", direction: "OUT")
-    cust_has_contact_admin_user: SysAdmin
-      @relation(name: "CUST_HAS_CONTACT_USER", direction: "IN")
-    cust_has_contact_author_user: Author
-      @relation(name: "CUST_HAS_CONTACT_USER", direction: "OUT")
   }
 
   type Invoice @isAuthenticated {
@@ -230,9 +209,9 @@ const typeDefs = gql`
   type NL_Article {
     nl_article_active: Boolean
     nl_article_author: String
-    nl_article_date: _Neo4jDate
+    nl_article_date: String
     nl_article_id: Int
-    nl_article_last_updated: Int
+    nl_article_last_updated: Float
     nl_article_no: String
     nl_article_order: String
     nl_article_text_de: String
@@ -241,6 +220,7 @@ const typeDefs = gql`
     nl_article_title_de_short: String
     nl_article_title_en_long: String
     nl_article_title_en_short: String
+    Country: Country @relation(name: "NL_REFERS_TO_COUNTRY", direction: "OUT")
   }
 
   type UserCustom {
@@ -273,14 +253,6 @@ const typeDefs = gql`
     loginFailedCode: String
   }
 
-  type NewsletterCustom {
-    nl_article_id: Int!
-    nl_article_no: String!
-    nl_article_date: String!
-    nl_article_title: String!
-    nl_article_lang: String!
-    nl_article_author: String
-  }
 
   type Mutation {
     login(user_email: String!, user_pwd: String!): UserCustomLogin
@@ -293,7 +265,7 @@ const typeDefs = gql`
   type Query {
     user: User_State @isAuthenticated
     verifyForgotPasswordLink(token: String!): Boolean
-    getNewsLetters(lang: [String!]): [NewsletterCustom!]
+    getNewsLetters(lang: [String!]): [NL_Article!]
     getNewsLetter(id: Int!): NL_Article @isAuthenticated
   }
 `;
