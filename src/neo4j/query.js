@@ -90,12 +90,13 @@ MATCH (n:Log_Type { log_type_id: $type } )
 MERGE(:Log { log_timestamp: apoc.date.currentTimestamp(), log_par_01: $user_email, log_par_02: $user_pwd })-[:HAS_LOG_TYPE]-> (n);`;
 
 exports.updateGTCAccept = `
-MATCH (cs:Customer_State)<-[HAS_CUSTOMER_STATE]-(c:Customer)<-[r:USER_TO_CUSTOMER]-(:User)-[HAS_USER_STATE]->(:User_State {user_email:$user_email})
-WHERE r.user_is_cust_admin = true OR cs.cust_single = true
+MATCH (cs:Customer_State)<-[HAS_CUSTOMER_STATE]-(c:Customer)<-[r:USER_TO_CUSTOMER]-(:User { user_email:$user_email })-[r1:HAS_USER_STATE]->(:User_State)
+WHERE r.user_is_cust_admin = true OR cs.cust_single = true AND r1.to IS NULL
 SET cs.cust_gtc_accepted = apoc.date.currentTimestamp();`;
 
 exports.updateGDPRAccept = `
 MATCH ( us:User_State )<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
+WHERE r1.to IS NULL
 SET us.user_gdpr_accepted = apoc.date.currentTimestamp();`;
 
 exports.getUserByEmail = `
