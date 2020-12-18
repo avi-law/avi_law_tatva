@@ -2,7 +2,11 @@
 const driver = require("../../../config/db");
 const { APIError, auth } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const { getUserByToken, resetUserPassword } = require("../../../neo4j/query");
+const {
+  getUserByToken,
+  resetUserPassword,
+  cloneForgotPasswordUserState,
+} = require("../../../neo4j/query");
 
 module.exports = async (object, params) => {
   const { token } = params;
@@ -29,18 +33,27 @@ module.exports = async (object, params) => {
     }
     const encryptedPassword = await auth.hashPassword(userPassword);
     return session
-      .run(resetUserPassword, {
+      .run(cloneForgotPasswordUserState, {
         user_email: userEmail[0],
-        user_pwd: encryptedPassword,
       })
-      .then((setPasswordResult) => {
-        if (setPasswordResult && setPasswordResult.records.length > 0) {
-          return true;
-        }
-        throw new APIError({
-          lang: defaultLanguage,
-          message: "INVALID_FORGOT_PASSWORD_LINK",
-        });
+      .then(() => {
+        session
+          .run(resetUserPassword, {
+            user_email: userEmail[0],
+            user_pwd: encryptedPassword,
+          })
+          .then((setPasswordResult) => {
+            if (setPasswordResult && setPasswordResult.records.length > 0) {
+              return true;
+            }
+            throw new APIError({
+              lang: defaultLanguage,
+              message: "INVALID_FORGOT_PASSWORD_LINK",
+            });
+          });
+      })
+      .catch((err) => {
+        throw err;
       });
   } catch (error) {
     session.close();

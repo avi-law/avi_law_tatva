@@ -21,6 +21,7 @@ module.exports = {
       INVALID_FORGOT_PASSWORD: "Your password could not be sent!",
       INVALID_FORGOT_PASSWORD_LINK:
         "The link to change your password is invalid - please request a password change again!.",
+      INTERNAL_SERVER_ERROR: "Internal server error",
     },
     DE: {
       INVALID_LOGIN_EMAIL: "Die eingegebene eMail-Adresse ist nicht korrekt!",
@@ -43,6 +44,7 @@ module.exports = {
         "Der Versand eines eMails an Sie war nicht möglich!",
       INVALID_FORGOT_PASSWORD_LINK:
         "Ungültiger Liink zum Ändern des Passwortes - bitte fordern Sie einen neuen Link zum Ändern Ihres Passwortes an.",
+      INTERNAL_SERVER_ERROR: "Internal server error",
     },
   },
   LOG_TYPE_ID: {
@@ -69,19 +71,19 @@ module.exports = {
     EN: {
       FORGOT_PASSWORD: {
         SUBJECT: "Avi-law - Password reset link",
-        HEAD000: "Trouble signing in?",
+        HEAD000: "Troubles logging in?",
         CONT010:
-          "Resetting your password is easy. Just press the button below and follow the instructions. We'll have you up and running in no time.",
-        BUTT010: "Change Password",
+          "For resetting your password, click the button below and follow the instructions.",
+        BUTT010: "CHANGE PASSWORD",
       },
     },
     DE: {
       FORGOT_PASSWORD: {
-        SUBJECT: "Avi-law - Password reset link",
-        HEAD000: "Trouble signing in?",
+        SUBJECT: "Avi-law - Link zum Zurücksetzen Ihres Passwortes",
+        HEAD000: "Probleme beim Login?",
         CONT010:
-          "Resetting your password is easy. Just press the button below and follow the instructions. We'll have you up and running in no time.",
-        BUTT010: "Change Password",
+          "Zum Zurücksetzen Ihres Passwortes klicken Sie hier und folgen Sie den Anweisungen.",
+        BUTT010: "PASSWORT ÄNDERN",
       },
     },
   },

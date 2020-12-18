@@ -101,7 +101,7 @@ SET us.user_gdpr_accepted = apoc.date.currentTimestamp();`;
 exports.getUserByEmail = `
 MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User { user_email: $user_email })
 MATCH (us)-[r2:USER_HAS_PREF_SURF_LANG]->(l1:Language)
-WHERE r2.to IS NULL
+WHERE r1.to IS NULL
 RETURN us as userState, l1.iso_639_1 as user_surf_lang`;
 
 exports.setPasswordToken = `
@@ -109,13 +109,30 @@ MATCH ( us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 SET us.reset_pwd_token = $token, us.reset_pwd_token_expiry_date = $resetTokenExpiryDate
 RETURN us as userState;`;
 
-exports.getUserByToken = `MATCH (us:User_State { reset_pwd_token :  $token})<-[r1:HAS_USER_STATE]-(u:User) RETURN us as userState, u.user_email as userEmail`;
+exports.getUserByToken = `
+MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User)
+WHERE us.reset_pwd_token = $token AND r1.to IS NULL
+RETURN us as userState, u.user_email as userEmail`;
 
 exports.resetUserPassword = `
-MATCH ( us:User_State )<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
+MATCH ( us:User_State )<-[r1:HAS_USER_STATE]-(u:User)
+WHERE u.user_email = $user_email AND r1.to IS NULL
 SET us.user_pwd = $user_pwd
 REMOVE us.reset_pwd_token, us.reset_pwd_token_expiry_date
 RETURN us as userState;`;
+
+exports.cloneForgotPasswordUserState = `
+MATCH (us1:User_State)<-[r1:HAS_USER_STATE]-(u1:User)
+WHERE u1.user_email = $user_email AND r1.to IS NULL
+CALL apoc.refactor.cloneNodesWithRelationships([us1])
+YIELD input, output as us_new
+SET r1.to = apoc.date.currentTimestamp()
+WITH us_new, us1
+MATCH (us2:User_State)<-[r2:HAS_USER_STATE]-(u2:User)
+WHERE id(us2) = id(us_new)
+SET r2.from = apoc.date.currentTimestamp()
+MERGE (us2)-[:HAS_USER_STATE_PRED {from: apoc.date.currentTimestamp()}]->(us1)
+`;
 
 exports.getNewsletterByLang = `
 MATCH (nl:NL_Article)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
