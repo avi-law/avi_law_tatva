@@ -82,6 +82,7 @@ const typeDefs = gql`
     lang_endonym: String
     lang_en: String
     iso_639_3: String
+    lang_avail_for_inv: Boolean
   }
 
   type Country_Sub {
@@ -100,6 +101,7 @@ const typeDefs = gql`
     currency_ord_cust: Int
     iso_4217: String
     currency_id: Int
+    curr_avail_for_inv: Boolean
     to_be_invoiced_in_currency: Customer_State
       @relation(name: "TO_BE_INVOICED_IN_CURRENCY", direction: "IN")
   }
@@ -272,6 +274,64 @@ const typeDefs = gql`
     cust_alt_inv_country_en: String
   }
 
+  input Customer_StateInput {
+    cust_contact_user: Int
+    cust_single: Boolean
+    cust_vat_perc: Float
+    cust_alt_inv_dept: String
+    cust_no_invoice: Boolean
+    cust_alt_inv_cost_center: String
+    cust_street_no: String
+    cust_alt_inv_order_no: String
+    cust_cost_center: String
+    cust_alt_inv_name_01: String
+    cust_acc_until: String
+    cust_share_klein: Float
+    cust_alt_inv_name_02: String
+    cust_alt_inv_name_03: String
+    cust_alt_inv_street_no: String
+    cust_dept: String
+    cust_alt_inv_contact_user: String
+    cust_status: Int
+    cust_alt_inv_email: String
+    cust_disc_perc: Float
+    cust_paid_until: String
+    cust_name_03: String
+    cust_name_02: String
+    cust_name_01: String
+    cust_rate: Float
+    cust_gtc_accepted: Float
+    cust_order_no: String
+    cust_alt_inv_city: String
+    cust_contact_user_salut: String
+    cust_zip: Int
+    cust_alt_inv_zip: String
+    cust_country: Int
+    cust_alt_inv_salut: String
+    cust_id: Int
+    cust_vat_id: String
+    cust_rmk: String
+    cust_city: String
+  }
+
+  input CustomerInput {
+    cust_status: Int
+    cust_rmk: String
+  }
+
+  input CustomerCustomInput {
+    customer: CustomerInput
+    customer_state: Customer_StateInput
+    iso_3166_1_alpha_2: String
+    cust_country_de: String
+    cust_country_en: String
+    cust_inv_currency: String
+    cust_inv_lang_de: String
+    cust_inv_lang_en: String
+    cust_alt_inv_country_de: String
+    cust_alt_inv_country_en: String
+  }
+
   type Mutation {
     login(user_email: String!, user_pwd: String!): UserCustomLogin
     acceptGTC(accept: Boolean!): UserCustomLogin @isAuthenticated
@@ -279,6 +339,7 @@ const typeDefs = gql`
     encryptPassword(limit: Int): Boolean @isAdmin
     forgotPassword(user_email: String!): Boolean
     setNewPassword(user_pwd: String, token: String!): Boolean
+    updateCustomer(customer_id: Int!, data: CustomerCustomInput!): Boolean
   }
   type Query {
     user: User_State @isAuthenticated

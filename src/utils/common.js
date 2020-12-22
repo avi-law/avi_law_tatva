@@ -41,19 +41,19 @@ const asyncForEach = async (array, callback, thisArg) => {
   await Promise.all(promiseArray);
 };
 
-const getCypherQueryOpt = (key) => {
+const getCypherQueryOpt = (key, value, alias) => {
+  let whereCondition = "";
   const field = key.slice(0, key.lastIndexOf("_"));
   const last = key.split("_").pop().toUpperCase();
-  let opt = "=";
   switch (last) {
     case "CONTAINS":
-      opt = "CONTAINS";
+      whereCondition = `toLower(${alias}.${field}) CONTAINS toLower('${value}')`;
       break;
     default:
-      opt = "=";
+      whereCondition = "";
       break;
   }
-  return { field, opt };
+  return { whereCondition, field };
 };
 
 module.exports = {

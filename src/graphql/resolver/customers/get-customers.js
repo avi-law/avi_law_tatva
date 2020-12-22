@@ -18,53 +18,58 @@ module.exports = async (object, params) => {
   let queryOrderBy = "";
   const { orderByCountry, orderBy, filterCountry, filterByCustomer } = params;
   let condition = "WHERE c.cust_id IS NOT NULL ";
-  if (orderByCountry && orderByCountry.length > 0) {
-    orderByCountry.forEach((orderCountry) => {
-      const field = orderCountry.slice(0, orderCountry.lastIndexOf("_"));
-      const last = orderCountry.split("_").pop().toUpperCase();
-      if (queryOrderBy === "") {
-        queryOrderBy = `cou.${field} ${last}`;
-      } else {
-        queryOrderBy = `${queryOrderBy}, cou.${field} ${last}`;
-      }
-    });
-  }
-  if (orderBy && orderBy.length > 0) {
-    orderBy.forEach((orderCustomer) => {
-      const field = orderCustomer.slice(0, orderCustomer.lastIndexOf("_"));
-      const last = orderCustomer.split("_").pop().toUpperCase();
-      if (queryOrderBy === "") {
-        queryOrderBy = `c.${field} ${last}`;
-      } else {
-        queryOrderBy = `${queryOrderBy}, c.${field} ${last}`;
-      }
-    });
-  }
-  if (filterCountry && filterCountry.length > 0) {
-    filterCountry.forEach((filterByCountry) => {
-      Object.keys(filterByCountry).forEach((key) => {
-        if (/^\d+$/.test(filterByCountry[key])) {
-          condition = `${condition} AND cou.${key} = ${filterByCountry[key]}`;
+  try {
+    if (orderByCountry && orderByCountry.length > 0) {
+      orderByCountry.forEach((orderCountry) => {
+        const field = orderCountry.slice(0, orderCountry.lastIndexOf("_"));
+        const last = orderCountry.split("_").pop().toUpperCase();
+        if (queryOrderBy === "") {
+          queryOrderBy = `cou.${field} ${last}`;
         } else {
-          condition = `${condition} AND cou.${key} = '${filterByCountry[key]}'`;
+          queryOrderBy = `${queryOrderBy}, cou.${field} ${last}`;
         }
       });
-    });
-  }
-  if (filterByCustomer) {
-    Object.keys(filterByCustomer).forEach((key) => {
-      const { field, opt } = common.getCypherQueryOpt(key);
-      if (/^\d+$/.test(filterByCustomer[key])) {
-        condition = `${condition} AND c.${field} = ${filterByCustomer[key]}`;
-      } else {
-        condition = `${condition} AND c.${field} ${opt} '${filterByCustomer[key]}'`;
-      }
-    });
-  }
-  if (queryOrderBy === "") {
-    queryOrderBy = defaultOrderBy;
-  }
-  try {
+    }
+    if (orderBy && orderBy.length > 0) {
+      orderBy.forEach((orderCustomer) => {
+        const field = orderCustomer.slice(0, orderCustomer.lastIndexOf("_"));
+        const last = orderCustomer.split("_").pop().toUpperCase();
+        if (queryOrderBy === "") {
+          queryOrderBy = `c.${field} ${last}`;
+        } else {
+          queryOrderBy = `${queryOrderBy}, c.${field} ${last}`;
+        }
+      });
+    }
+    if (filterCountry && filterCountry.length > 0) {
+      filterCountry.forEach((filterByCountry) => {
+        Object.keys(filterByCountry).forEach((key) => {
+          if (/^\d+$/.test(filterByCountry[key])) {
+            condition = `${condition} AND cou.${key} = ${filterByCountry[key]}`;
+          } else {
+            condition = `${condition} AND cou.${key} = '${filterByCountry[key]}'`;
+          }
+        });
+      });
+    }
+    if (filterByCustomer) {
+      Object.keys(filterByCustomer).forEach((key) => {
+        const { whereCondition, field } = common.getCypherQueryOpt(
+          key,
+          filterByCustomer[key],
+          "c"
+        );
+        if (/^\d+$/.test(filterByCustomer[key])) {
+          condition = `${condition} AND c.${field} = ${filterByCustomer[key]}`;
+        } else {
+          condition = `${condition} AND ${whereCondition}`;
+        }
+      });
+    }
+    if (queryOrderBy === "") {
+      queryOrderBy = defaultOrderBy;
+    }
+
     const countResult = await session.run(getCustomersCountQuery(condition));
     if (countResult && countResult.records.length > 0) {
       const singleRecord = countResult.records[0];
