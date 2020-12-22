@@ -172,6 +172,7 @@ module.exports = async (object, params) => {
           user_email: userStateInformation.user_email,
           user_surf_lang: userSurfLang,
           user_pref_country: userStateInformation.user_pref_country,
+          user_is_sys_admin: userStateInformation.user_is_sys_admin,
         }),
       };
     }

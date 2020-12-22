@@ -5,6 +5,7 @@ const typeDefs = require("../graphql/graphql.schema");
 const resolvers = require("../graphql/resolver");
 const formatError = require("../graphql/formatError");
 const IsAuthenticatedDirective = require("../graphql/directive/auth-directive");
+const IsAdminDirective = require("../graphql/directive/admin-directive");
 
 const excludeMutation = [
   "User",
@@ -13,7 +14,7 @@ const excludeMutation = [
   "Customer",
   "Currency",
   "Log",
-  "Customer_State",
+  // "Customer_State",
   "Invoice",
   "loginCustomerStatesCustom",
   "userAddresses",
@@ -43,6 +44,7 @@ const schema = makeAugmentedSchema({
   resolvers,
   schemaDirectives: {
     isAuthenticated: IsAuthenticatedDirective,
+    isAdmin: IsAdminDirective,
   },
   logger: { log: (e) => console.error(e.message) },
   allowUndefinedInResolve: true,

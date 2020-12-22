@@ -4,12 +4,8 @@
 const { SchemaDirectiveVisitor } = require("apollo-server-express");
 const { DirectiveLocation, GraphQLDirective } = require("graphql");
 const jwt = require("jsonwebtoken");
-const {
-  jwtSecret,
-  websiteOwnerEmail,
-  defaultLanguage,
-} = require("../../config/application");
-const { constants, APIError } = require("../../utils");
+const { jwtSecret, defaultLanguage } = require("../../config/application");
+const { APIError } = require("../../utils");
 
 const verifyAndDecodeToken = ({ context }) => {
   const { req } = context;
@@ -58,28 +54,13 @@ const verifyAndDecodeToken = ({ context }) => {
 };
 
 const checkValidRequest = (ctx, payload) => {
-  const { req } = ctx;
-  const loginFailedCode = payload.login_failed_code;
-  const { operationName } = req.body;
   const userSurfLang = payload.user_surf_lang;
-  const userEmail = payload.user_email;
+  const systemAdmin = payload.user_is_sys_admin;
   let valid = true;
-  if (
-    ["acceptGTC", "acceptGDPR"].indexOf(operationName) === -1 &&
-    !payload.login_status
-  ) {
+  // Validate encrypt password request
+  if (!systemAdmin) {
     valid = false;
   }
-  // Validate GTC and GDPR accept endpoint with temp token
-  if (
-    (operationName === "acceptGTC" &&
-      constants.LOGIN_FAILED_STATUS.GTC_NOT_ACCEPTED !== loginFailedCode) ||
-    (operationName === "acceptGDPR" &&
-      constants.LOGIN_FAILED_STATUS.GDPR_NOT_ACCEPTED !== loginFailedCode)
-  ) {
-    valid = false;
-  }
-
   if (!valid) {
     throw new APIError({
       lang: userSurfLang,

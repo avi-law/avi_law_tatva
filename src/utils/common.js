@@ -41,7 +41,23 @@ const asyncForEach = async (array, callback, thisArg) => {
   await Promise.all(promiseArray);
 };
 
+const getCypherQueryOpt = (key) => {
+  const field = key.slice(0, key.lastIndexOf("_"));
+  const last = key.split("_").pop().toUpperCase();
+  let opt = "=";
+  switch (last) {
+    case "CONTAINS":
+      opt = "CONTAINS";
+      break;
+    default:
+      opt = "=";
+      break;
+  }
+  return { field, opt };
+};
+
 module.exports = {
   getMessage,
   asyncForEach,
+  getCypherQueryOpt,
 };

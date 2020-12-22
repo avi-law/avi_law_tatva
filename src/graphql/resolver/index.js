@@ -12,6 +12,9 @@ const acceptGTC = require("./accept-gtc");
 const acceptGDPR = require("./accept-gdpr");
 const user = require("./user/get-user");
 
+// System Admin Resolver
+const getCustomers = require("./customers/get-customers");
+
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
 
@@ -29,6 +32,7 @@ const resolvers = {
     verifyForgotPasswordLink,
     getNewsLetters,
     getNewsLetter,
+    getCustomers,
   },
 };
 

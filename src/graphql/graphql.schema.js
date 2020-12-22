@@ -2,6 +2,7 @@ const { gql } = require("apollo-server-express");
 
 const typeDefs = gql`
   directive @isAuthenticated on OBJECT | FIELD_DEFINITION
+  directive @isAdmin on OBJECT | FIELD_DEFINITION
 
   type User @isAuthenticated {
     user_email: String!
@@ -253,12 +254,16 @@ const typeDefs = gql`
     loginFailedCode: String
   }
 
+  type CustomersCustom {
+    customers: [Customer_State]
+    total: Int
+  }
 
   type Mutation {
     login(user_email: String!, user_pwd: String!): UserCustomLogin
     acceptGTC(accept: Boolean!): UserCustomLogin @isAuthenticated
     acceptGDPR(accept: Boolean!): UserCustomLogin @isAuthenticated
-    encryptPassword(limit: Int): Boolean @isAuthenticated
+    encryptPassword(limit: Int): Boolean @isAdmin
     forgotPassword(user_email: String!): Boolean
     setNewPassword(user_pwd: String, token: String!): Boolean
   }
@@ -267,6 +272,14 @@ const typeDefs = gql`
     verifyForgotPasswordLink(token: String!): Boolean
     getNewsLetters(lang: [String!]): [NL_Article!]
     getNewsLetter(id: Int!): NL_Article @isAuthenticated
+    getCustomers(
+      first: Int
+      offset: Int
+      orderByCountry: [_CountryOrdering]
+      filterCountry: [_CountryFilter]
+      orderBy: [_Customer_StateOrdering]
+      filterByCustomer: _Customer_StateFilter
+    ): CustomersCustom @isAdmin
   }
 `;
 
