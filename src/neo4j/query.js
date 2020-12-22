@@ -133,7 +133,7 @@ MATCH (us_new)<-[r2:HAS_USER_STATE]-(u2:User)
 OPTIONAL MATCH (:User_State)<-[r3:HAS_USER_STATE_PRED]-(us_new)
 DELETE r3
 SET r2.from = apoc.date.currentTimestamp()
-`;
+MERGE (us_new)-[:HAS_USER_STATE_PRED {from: apoc.date.currentTimestamp()}]->(us1)`;
 
 exports.getNewsletterByLang = `
 MATCH (nl:NL_Article)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
