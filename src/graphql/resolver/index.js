@@ -11,6 +11,7 @@ const getNewsLetter = require("./new-letters/get-news-letter");
 const acceptGTC = require("./accept-gtc");
 const acceptGDPR = require("./accept-gdpr");
 const user = require("./user/get-user");
+const getCustomer = require("./customers/get-customer");
 
 // System Admin Resolver
 const getCustomers = require("./customers/get-customers");
@@ -33,6 +34,7 @@ const resolvers = {
     getNewsLetters,
     getNewsLetter,
     getCustomers,
+    getCustomer,
   },
 };
 

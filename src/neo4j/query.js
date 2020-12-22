@@ -226,3 +226,43 @@ exports.getCustomersQuery = (
   ORDER BY ${orderBy}
   SKIP toInteger(${skip})
   LIMIT toInteger(${limit})`;
+
+exports.getCustomer = `
+MATCH (c:Customer)-[:HAS_CUST_STATE]->(cs:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
+WHERE c.cust_id = $customerId
+OPTIONAL MATCH (cs)-[:INV_TO_ALT_COUNTRY]->(cou2:Country)
+OPTIONAL MATCH (cs)-[:TO_BE_INVOICED_IN_CURRENCY]->(curr:Currency)
+OPTIONAL MATCH (cs)-[:INV_IN_LANG]->(lang:Language)
+RETURN {
+  customer: {
+    cust_id: c.cust_id
+  },
+  customer_state: {
+    cust_contact_user: cs.cust_contact_user,
+    cust_name_01: cs.cust_name_01,
+    cust_gtc_accepted: cs.cust_gtc_accepted,
+    cust_rate: cs.cust_rate,
+    cust_single: cs.cust_single,
+    cust_vat_perc: cs.cust_vat_perc,
+    cust_no_invoice: cs.cust_no_invoice,
+    cust_contact_user_salut: cs.cust_contact_user_salut,
+    cust_zip: cs.cust_zip,
+    cust_street_no: cs.cust_street_no,
+    cust_share_klein: cs.cust_share_klein,
+    cust_acc_until: toString(cs.cust_acc_until),
+    cust_status: cs.cust_status,
+    cust_disc_perc: cs.cust_disc_perc,
+    cust_paid_until: toString(cs.cust_paid_until),
+    cust_id: cs.cust_id,
+    cust_rmk: cs.cust_rmk,
+    cust_city: cs.cust_city
+  },
+  iso_3166_1_alpha_2: cou.iso_3166_1_alpha_2,
+  cust_country_de: cou.country_name_de,
+  cust_country_en: cou.country_name_en,
+  cust_inv_currency: curr.iso_4217,
+  cust_inv_lang_de: lang.lang_de,
+  cust_inv_lang_en: lang.lang_en,
+  cust_alt_inv_country_de: cou2.country_sub_name_de,
+  cust_alt_inv_country_en: cou2.country_sub_name_en
+} AS customerDetails`;

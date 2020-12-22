@@ -122,7 +122,7 @@ const typeDefs = gql`
     cust_alt_inv_order_no: String
     cust_cost_center: String
     cust_alt_inv_name_01: String
-    cust_acc_until: _Neo4jDate
+    cust_acc_until: String
     cust_share_klein: Float
     cust_alt_inv_name_02: String
     cust_alt_inv_name_03: String
@@ -132,7 +132,7 @@ const typeDefs = gql`
     cust_status: Int
     cust_alt_inv_email: String
     cust_disc_perc: Float
-    cust_paid_until: _Neo4jDate
+    cust_paid_until: String
     cust_name_03: String
     cust_name_02: String
     cust_name_01: String
@@ -259,6 +259,19 @@ const typeDefs = gql`
     total: Int
   }
 
+  type CustomerCustom {
+    customer: Customer
+    customer_state: Customer_State
+    iso_3166_1_alpha_2: String
+    cust_country_de: String
+    cust_country_en: String
+    cust_inv_currency: String
+    cust_inv_lang_de: String
+    cust_inv_lang_en: String
+    cust_alt_inv_country_de: String
+    cust_alt_inv_country_en: String
+  }
+
   type Mutation {
     login(user_email: String!, user_pwd: String!): UserCustomLogin
     acceptGTC(accept: Boolean!): UserCustomLogin @isAuthenticated
@@ -280,6 +293,7 @@ const typeDefs = gql`
       orderBy: [_Customer_StateOrdering]
       filterByCustomer: _Customer_StateFilter
     ): CustomersCustom @isAdmin
+    getCustomer(customer_id: Int!): CustomerCustom @isAuthenticated
   }
 `;
 
