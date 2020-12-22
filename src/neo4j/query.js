@@ -129,10 +129,10 @@ CALL apoc.refactor.cloneNodesWithRelationships([us1])
 YIELD input, output as us_new
 SET r1.to = apoc.date.currentTimestamp()
 WITH us_new, us1
-MATCH (us2:User_State)<-[r2:HAS_USER_STATE]-(u2:User)
-WHERE id(us2) = id(us_new)
+MATCH (us_new)<-[r2:HAS_USER_STATE]-(u2:User)
+OPTIONAL MATCH (:User_State)<-[r3:HAS_USER_STATE_PRED]-(us_new)
+DELETE r3
 SET r2.from = apoc.date.currentTimestamp()
-MERGE (us2)-[:HAS_USER_STATE_PRED {from: apoc.date.currentTimestamp()}]->(us1)
 `;
 
 exports.getNewsletterByLang = `
@@ -196,3 +196,33 @@ exports.getNewsletter = `
 MATCH (nl:NL_Article )
 WHERE nl.nl_article_id = $nl_article_id
 RETURN nl`;
+
+exports.getCustomersCountQuery = (condition = "") => `
+MATCH (c:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
+${condition}
+RETURN count(*) as count`;
+exports.getCustomersQuery = (
+  condition = "",
+  limit = 10,
+  skip = 0,
+  orderBy = "cou.iso_3166_1_alpha_2 ASC"
+) => `
+  MATCH (c:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
+  ${condition}
+  RETURN {
+    cust_name_01: c.cust_name_01,
+    cust_id: c.cust_id,
+    cust_status: c.cust_status,
+    is_located_in_country: {
+      country_name_de: cou.country_name_de,
+      iso_3166_1_alpha_2: cou.iso_3166_1_alpha_2,
+      avail_for_nl: cou.avail_for_nl,
+      iso_3166_1_alpha_3: cou.iso_3166_1_alpha_3,
+      country_id: cou.country_id,
+      avail_for_nl_ord: cou.avail_for_nl_ord,
+      country_name_en: cou.country_name_en
+    }
+  } AS customers
+  ORDER BY ${orderBy}
+  SKIP toInteger(${skip})
+  LIMIT toInteger(${limit})`;
