@@ -275,7 +275,7 @@ const typeDefs = gql`
   }
 
   input Customer_StateInput {
-    cust_contact_user: Int
+    cust_contact_user: Int!
     cust_single: Boolean
     cust_vat_perc: Float
     cust_alt_inv_dept: String
@@ -320,16 +320,12 @@ const typeDefs = gql`
   }
 
   input CustomerCustomInput {
-    customer: CustomerInput
-    customer_state: Customer_StateInput
-    iso_3166_1_alpha_2: String
-    cust_country_de: String
-    cust_country_en: String
-    cust_inv_currency: String
-    cust_inv_lang_de: String
-    cust_inv_lang_en: String
-    cust_alt_inv_country_de: String
-    cust_alt_inv_country_en: String
+    customer_state: Customer_StateInput!
+    cust_inv_currency_id: Int!
+    cust_contact_user: Int!
+    country_id: Int!
+    cust_inv_lang_id: Int!
+    cust_alt_inv_country_id: Int!
   }
 
   type Mutation {

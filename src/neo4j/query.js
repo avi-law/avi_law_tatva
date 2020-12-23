@@ -279,9 +279,13 @@ RETURN {
   iso_3166_1_alpha_2: cou.iso_3166_1_alpha_2,
   cust_country_de: cou.country_name_de,
   cust_country_en: cou.country_name_en,
+  country_id: cou.country_id,
   cust_inv_currency: curr.iso_4217,
+  cust_inv_currency_id: curr.currency_id,
   cust_inv_lang_de: lang.lang_de,
   cust_inv_lang_en: lang.lang_en,
+  cust_inv_lang_id: lang.lang_id,
   cust_alt_inv_country_de: cou2.country_sub_name_de,
-  cust_alt_inv_country_en: cou2.country_sub_name_en
+  cust_alt_inv_country_en: cou2.country_sub_name_en,
+  cust_alt_inv_country_id: cou2.country_id,
 } AS customerDetails`;
