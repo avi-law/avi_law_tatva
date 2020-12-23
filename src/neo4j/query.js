@@ -289,3 +289,18 @@ RETURN {
   cust_alt_inv_country_en: cou2.country_sub_name_en,
   cust_alt_inv_country_id: cou2.country_id } AS customerDetails`;
 
+exports.createNewCustomerSate = `
+MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
+WHERE c.cust_id = $cust_id AND r1.to IS NULL
+MATCH (curr:Currency) WHERE currency_id = $cust_inv_currency_id
+MATCH (u:User) WHERE user_email = $customer_state.cust_contact_user
+MATCH (cou1:Country) WHERE country_id = $country_id
+OPTIONAL MATCH (cou2:Country) WHERE country_id = $cust_alt_inv_country_id
+OPTIONAL MATCH (lang:Language) WHERE lang_id = $cust_inv_lang_id
+CREATE (ncs:Customer_State $customer_state)<-[r2:HAS_CUST_STATE {from:apoc.date.currentTimestamp()}]-(c)
+CREATE (ncs)-[:TO_BE_INVOICED_IN_CURRENCY {from:apoc.date.currentTimestamp()}]->(curr)
+CREATE (ncs)-[:CUST_HAS_CONTACT_USER {from:apoc.date.currentTimestamp()}]->(u)
+CREATE (ncs)-[:IS_LOCATED_IN_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou1)
+CREATE (ncs)-[:INV_TO_ALT_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou2)
+CREATE (ncs)-[:INV_IN_LANG {from:apoc.date.currentTimestamp()}]->(lang)
+SET r2.to = apoc.date.currentTimestamp()`;

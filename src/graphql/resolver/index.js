@@ -15,6 +15,7 @@ const getCustomer = require("./customers/get-customer");
 
 // System Admin Resolver
 const getCustomers = require("./customers/get-customers");
+const createCustomer = require("./customers/create-customer");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -27,6 +28,7 @@ const resolvers = {
     encryptPassword,
     forgotPassword,
     setNewPassword,
+    createCustomer,
   },
   Query: {
     user,

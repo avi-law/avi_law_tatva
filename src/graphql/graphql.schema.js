@@ -114,7 +114,7 @@ const typeDefs = gql`
   }
 
   type Customer_State @isAuthenticated {
-    cust_contact_user: Int
+    cust_contact_user: String
     cust_single: Boolean
     cust_vat_perc: Float
     cust_alt_inv_dept: String
@@ -273,14 +273,14 @@ const typeDefs = gql`
     cust_alt_inv_country_de: String
     cust_alt_inv_country_en: String
     cust_inv_currency_id: Int
-    cust_contact_user: Int
+    cust_contact_user: String
     country_id: Int
     cust_inv_lang_id: Int
     cust_alt_inv_country_id: Int
   }
 
   input Customer_StateInput {
-    cust_contact_user: Int!
+    cust_contact_user: String
     cust_single: Boolean
     cust_vat_perc: Float
     cust_alt_inv_dept: String
@@ -325,9 +325,18 @@ const typeDefs = gql`
   }
 
   input CustomerCustomInput {
-    customer_state: Customer_StateInput!
+    customer: CustomerInput
+    customer_state: Customer_StateInput
+    iso_3166_1_alpha_2: String
+    cust_country_de: String
+    cust_country_en: String
+    cust_inv_currency: String
+    cust_inv_lang_de: String
+    cust_inv_lang_en: String
+    cust_alt_inv_country_de: String
+    cust_alt_inv_country_en: String
     cust_inv_currency_id: Int!
-    cust_contact_user: Int!
+    cust_contact_user: String!
     country_id: Int!
     cust_inv_lang_id: Int!
     cust_alt_inv_country_id: Int!
@@ -340,7 +349,7 @@ const typeDefs = gql`
     encryptPassword(limit: Int): Boolean @isAdmin
     forgotPassword(user_email: String!): Boolean
     setNewPassword(user_pwd: String, token: String!): Boolean
-    updateCustomer(customer_id: Int!, data: CustomerCustomInput!): Boolean
+    createCustomer(customer_id: Int!, data: CustomerCustomInput!): Boolean
   }
   type Query {
     user: User_State @isAuthenticated
