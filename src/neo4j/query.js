@@ -287,5 +287,5 @@ RETURN {
   cust_inv_lang_id: lang.lang_id,
   cust_alt_inv_country_de: cou2.country_sub_name_de,
   cust_alt_inv_country_en: cou2.country_sub_name_en,
-  cust_alt_inv_country_id: cou2.country_id,
-} AS customerDetails`;
+  cust_alt_inv_country_id: cou2.country_id } AS customerDetails`;
+
