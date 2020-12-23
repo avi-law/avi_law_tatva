@@ -25,7 +25,7 @@ const excludeMutation = [
   "NL_Article",
 ];
 const excludeQuery = [
-  "User",
+  // "User",
   "UserCustomLogin",
   // "User_State",
   "Customer",

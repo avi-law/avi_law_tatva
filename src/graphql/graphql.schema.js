@@ -4,8 +4,8 @@ const typeDefs = gql`
   directive @isAuthenticated on OBJECT | FIELD_DEFINITION
   directive @isAdmin on OBJECT | FIELD_DEFINITION
 
-  type User @isAuthenticated {
-    user_email: String!
+  type User {
+    user_email: String
     user_is_author: Boolean
     user_is_sys_admin: Boolean
     has_user_state: [User_State]
@@ -272,6 +272,11 @@ const typeDefs = gql`
     cust_inv_lang_en: String
     cust_alt_inv_country_de: String
     cust_alt_inv_country_en: String
+    cust_inv_currency_id: Int
+    cust_contact_user: Int
+    country_id: Int
+    cust_inv_lang_id: Int
+    cust_alt_inv_country_id: Int
   }
 
   input Customer_StateInput {
@@ -339,6 +344,15 @@ const typeDefs = gql`
   }
   type Query {
     user: User_State @isAuthenticated
+    User(
+      user_email: String
+      user_is_author: Boolean
+      user_is_sys_admin: Boolean
+      first: Int
+      offset: Int
+      orderBy: [_UserOrdering]
+      filter: _UserFilter
+    ): [User] @isAdmin
     verifyForgotPasswordLink(token: String!): Boolean
     getNewsLetters(lang: [String!]): [NL_Article!]
     getNewsLetter(id: Int!): NL_Article @isAuthenticated
