@@ -143,7 +143,7 @@ const typeDefs = gql`
     cust_order_no: String
     cust_alt_inv_city: String
     cust_contact_user_salut: String
-    cust_zip: Int
+    cust_zip: String
     cust_alt_inv_zip: String
     cust_country: Int
     cust_alt_inv_salut: String
@@ -273,7 +273,6 @@ const typeDefs = gql`
     cust_alt_inv_country_de: String
     cust_alt_inv_country_en: String
     cust_inv_currency_id: Int
-    cust_contact_user: String
     country_id: Int
     cust_inv_lang_id: Int
     cust_alt_inv_country_id: Int
@@ -309,7 +308,7 @@ const typeDefs = gql`
     cust_order_no: String
     cust_alt_inv_city: String
     cust_contact_user_salut: String
-    cust_zip: Int
+    cust_zip: String
     cust_alt_inv_zip: String
     cust_country: Int
     cust_alt_inv_salut: String
@@ -321,6 +320,7 @@ const typeDefs = gql`
 
   input CustomerInput {
     cust_status: Int
+    cust_id: Int
     cust_rmk: String
   }
 
@@ -336,10 +336,9 @@ const typeDefs = gql`
     cust_alt_inv_country_de: String
     cust_alt_inv_country_en: String
     cust_inv_currency_id: Int!
-    cust_contact_user: String!
     country_id: Int!
     cust_inv_lang_id: Int!
-    cust_alt_inv_country_id: Int!
+    cust_alt_inv_country_id: Int
   }
 
   type Mutation {
@@ -350,6 +349,7 @@ const typeDefs = gql`
     forgotPassword(user_email: String!): Boolean
     setNewPassword(user_pwd: String, token: String!): Boolean
     createCustomer(customer_id: Int!, data: CustomerCustomInput!): Boolean
+      @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
