@@ -5,6 +5,7 @@ const { common } = require("../utils");
 module.exports = (err) => {
   const { code } = err.extensions;
   const lang = err.extensions.exception.lang || "en";
+  console.log(err);
   // Don't give the specific errors to the client.
   if (dbErrorCode.indexOf(code) !== -1) {
     return {

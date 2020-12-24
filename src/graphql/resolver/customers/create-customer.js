@@ -19,13 +19,13 @@ module.exports = async (object, params, ctx) => {
       });
     }
     if (customerState && customerState.cust_disc_perc > 0) {
-      customerState.cust_disc_perc = Math.floor(
+      customerState.cust_disc_perc = (
         customerState.cust_disc_perc / 100
-      );
+      ).toFixed(2);
     }
     if (customerState && customerState.cust_vat_perc > 0) {
-      customerState.cust_vat_perc = Math.floor(
-        customerState.cust_vat_perc / 100
+      customerState.cust_vat_perc = (customerState.cust_vat_perc / 100).toFixed(
+        2
       );
     }
 
