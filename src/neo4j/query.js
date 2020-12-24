@@ -198,7 +198,8 @@ WHERE nl.nl_article_id = $nl_article_id
 RETURN nl`;
 
 exports.getCustomersCountQuery = (condition = "") => `
-MATCH (c:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
+MATCH (cs:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
+MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs)
 ${condition}
 RETURN count(*) as count`;
 exports.getCustomersQuery = (
@@ -207,12 +208,13 @@ exports.getCustomersQuery = (
   skip = 0,
   orderBy = "cou.iso_3166_1_alpha_2 ASC"
 ) => `
-  MATCH (c:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
+  MATCH (cs:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
+  MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs)
   ${condition}
   RETURN {
-    cust_name_01: c.cust_name_01,
-    cust_id: c.cust_id,
-    cust_status: c.cust_status,
+    cust_name_01: cs.cust_name_01,
+    cust_id: cs.cust_id,
+    cust_status: cs.cust_status,
     is_located_in_country: {
       country_name_de: cou.country_name_de,
       iso_3166_1_alpha_2: cou.iso_3166_1_alpha_2,
@@ -228,8 +230,8 @@ exports.getCustomersQuery = (
   LIMIT toInteger(${limit})`;
 
 exports.getCustomer = `
-MATCH (c:Customer)-[:HAS_CUST_STATE]->(cs:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
-WHERE c.cust_id = $customerId
+MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
+WHERE c.cust_id = $customerId and r1.to IS NULL
 OPTIONAL MATCH (cs)-[:INV_TO_ALT_COUNTRY]->(cou2:Country)
 OPTIONAL MATCH (cs)-[:TO_BE_INVOICED_IN_CURRENCY]->(curr:Currency)
 OPTIONAL MATCH (cs)-[:INV_IN_LANG]->(lang:Language)

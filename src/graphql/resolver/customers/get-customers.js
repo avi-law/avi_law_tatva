@@ -16,7 +16,7 @@ module.exports = async (object, params) => {
   const defaultOrderBy = "cou.iso_3166_1_alpha_2 ASC, c.cust_name_01 ASC";
   let queryOrderBy = "";
   const { orderByCountry, orderBy, filterCountry, filterByCustomer } = params;
-  let condition = "WHERE c.cust_id IS NOT NULL ";
+  let condition = "WHERE cs.cust_id IS NOT NULL AND r1.to IS NULL ";
   try {
     if (orderByCountry && orderByCountry.length > 0) {
       orderByCountry.forEach((orderCountry) => {
@@ -34,9 +34,9 @@ module.exports = async (object, params) => {
         const field = orderCustomer.slice(0, orderCustomer.lastIndexOf("_"));
         const last = orderCustomer.split("_").pop().toUpperCase();
         if (queryOrderBy === "") {
-          queryOrderBy = `c.${field} ${last}`;
+          queryOrderBy = `cs.${field} ${last}`;
         } else {
-          queryOrderBy = `${queryOrderBy}, c.${field} ${last}`;
+          queryOrderBy = `${queryOrderBy}, cs.${field} ${last}`;
         }
       });
     }
@@ -56,10 +56,10 @@ module.exports = async (object, params) => {
         const { whereCondition, field } = common.getCypherQueryOpt(
           key,
           filterByCustomer[key],
-          "c"
+          "cs"
         );
         if (/^\d+$/.test(filterByCustomer[key])) {
-          condition = `${condition} AND c.${field} = ${filterByCustomer[key]}`;
+          condition = `${condition} AND cs.${field} = ${filterByCustomer[key]}`;
         } else {
           condition = `${condition} AND ${whereCondition}`;
         }

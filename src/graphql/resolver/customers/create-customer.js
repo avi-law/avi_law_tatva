@@ -28,7 +28,6 @@ module.exports = async (object, params, ctx) => {
         2
       );
     }
-
     const queryParams = {
       cust_id: params.customer_id,
       cust_inv_currency_id: params.data.cust_inv_currency_id,
