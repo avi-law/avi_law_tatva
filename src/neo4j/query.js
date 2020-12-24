@@ -299,6 +299,7 @@ OPTIONAL MATCH (lang:Language) WHERE lang.lang_id = $cust_inv_lang_id
 OPTIONAL MATCH (cou2:Country) WHERE cou2.country_id = $cust_alt_inv_country_id
 SET r1.to = apoc.date.currentTimestamp()
 CREATE (ncs:Customer_State $customer_state)<-[:HAS_CUST_STATE {from:apoc.date.currentTimestamp()}]-(c)
+MERGE (ncs)-[:HAS_CUST_STATE_PRED {from: apoc.date.currentTimestamp()}]->(cs)
 MERGE (ncs)-[:TO_BE_INVOICED_IN_CURRENCY {from:apoc.date.currentTimestamp()}]->(curr)
 MERGE (ncs)-[:CUST_HAS_CONTACT_USER {from:apoc.date.currentTimestamp()}]->(u)
 MERGE (ncs)-[:IS_LOCATED_IN_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou1)

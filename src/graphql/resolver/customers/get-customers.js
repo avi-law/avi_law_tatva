@@ -9,7 +9,6 @@ const {
 
 module.exports = async (object, params) => {
   params = JSON.parse(JSON.stringify(params));
-  console.log(params);
   const session = driver.session();
   const offset = params.offset || 0;
   const limit = params.first || 10;
