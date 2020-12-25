@@ -162,7 +162,7 @@ const typeDefs = gql`
       @relation(name: "TO_BE_INVOICED_IN_CURRENCY", direction: "OUT")
   }
 
-  type Invoice @isAuthenticated {
+  type Invoice {
     inv_vat_perc: Float
     inv_country: String
     inv_street_no: String
@@ -193,6 +193,7 @@ const typeDefs = gql`
     inv_cost_center: String
     inv_name_01: String
     inv_sent_from: Country @relation(name: "INV_SENT_FROM", direction: "OUT")
+    customer: Customer @relation(name: "INV_FOR_CUST", direction: "OUT")
   }
 
   type loginCustomerStatesCustom {
@@ -259,6 +260,10 @@ const typeDefs = gql`
 
   type CustomersCustom {
     customers: [Customer_State]
+    total: Int
+  }
+  type InvoiceCustom {
+    invoices: [Invoice]
     total: Int
   }
 
@@ -364,6 +369,8 @@ const typeDefs = gql`
       orderBy: [_UserOrdering]
       filter: _UserFilter
     ): [User] @isAdmin
+    getInvoices(customer_id: Int!, first: Int, offset: Int): InvoiceCustom
+      @isAdmin
     verifyForgotPasswordLink(token: String!): Boolean
     getNewsLetters(lang: [String!]): [NL_Article!]
     getNewsLetter(id: Int!): NL_Article @isAuthenticated

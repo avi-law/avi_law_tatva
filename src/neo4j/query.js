@@ -309,3 +309,15 @@ MERGE (ncs)-[:IS_LOCATED_IN_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou1)
 FOREACH (_ IN CASE WHEN lang IS NOT NULL THEN [1] END | MERGE (ncs)-[:INV_IN_LANG {from:apoc.date.currentTimestamp()}]->(lang))
 FOREACH (_ IN CASE WHEN cou2 IS NOT NULL THEN [1] END | MERGE (ncs)-[:INV_TO_ALT_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou2))
 RETURN ncs`;
+
+exports.getInvoices = `
+MATCH (c:Customer)<-[:INV_FOR_CUST]-(inv:Invoice)
+WHERE c.cust_id = $customerId
+RETURN inv as invoices
+SKIP toInteger($offset)
+LIMIT toInteger($limit)`;
+
+exports.getInvoicesCount = `
+MATCH (c:Customer)<-[:INV_FOR_CUST]-(inv:Invoice)
+WHERE c.cust_id = $customerId
+RETURN count(inv) as count`;
