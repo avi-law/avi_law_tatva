@@ -276,7 +276,8 @@ RETURN {
     cust_id: cs.cust_id,
     cust_vat_id: cs.cust_vat_id,
     cust_rmk: cs.cust_rmk,
-    cust_city: cs.cust_city
+    cust_city: cs.cust_city,
+    cust_alt_inv_vat_id: cs.cust_alt_inv_vat_id
   },
   iso_3166_1_alpha_2: cou.iso_3166_1_alpha_2,
   cust_country_de: cou.country_name_de,

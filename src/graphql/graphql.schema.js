@@ -129,6 +129,7 @@ const typeDefs = gql`
     cust_alt_inv_name_02: String
     cust_alt_inv_name_03: String
     cust_alt_inv_street_no: String
+    cust_alt_inv_vat_id: String
     cust_dept: String
     cust_alt_inv_contact_user: String
     cust_status: Int
@@ -293,6 +294,7 @@ const typeDefs = gql`
     cust_share_klein: Float
     cust_alt_inv_name_02: String
     cust_alt_inv_name_03: String
+    cust_alt_inv_vat_id: String
     cust_alt_inv_street_no: String
     cust_dept: String
     cust_alt_inv_contact_user: String
