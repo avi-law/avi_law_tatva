@@ -13,10 +13,10 @@ module.exports = async (object, params) => {
   const offset = params.offset || 0;
   const limit = params.first || 10;
   let total = 0;
-  const defaultOrderBy = "cou.iso_3166_1_alpha_2 ASC, c.cust_name_01 ASC";
+  const defaultOrderBy = "cou.iso_3166_1_alpha_2 ASC, cs.cust_name_01 ASC";
   let queryOrderBy = "";
   const { orderByCountry, orderBy, filterCountry, filterByCustomer } = params;
-  let condition = "WHERE cs.cust_id IS NOT NULL AND r1.to IS NULL ";
+  let condition = "WHERE r1.to IS NULL ";
   try {
     if (orderByCountry && orderByCountry.length > 0) {
       orderByCountry.forEach((orderCountry) => {
