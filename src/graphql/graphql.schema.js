@@ -375,6 +375,9 @@ const typeDefs = gql`
     ): [User] @isAdmin
     getInvoices(customer_id: Int!, first: Int, offset: Int): InvoiceCustom
       @isAdmin
+    getInvoice(customer_id: Int, invoice_id: String!): Invoice
+      @isAdmin
+      @isAuthenticated
     verifyForgotPasswordLink(token: String!): Boolean
     getNewsLetters(lang: [String!]): [NL_Article!]
     getNewsLetter(id: Int!): NL_Article @isAuthenticated

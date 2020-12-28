@@ -17,6 +17,7 @@ const getCustomer = require("./customers/get-customer");
 const getCustomers = require("./customers/get-customers");
 const createCustomer = require("./customers/create-customer");
 const getInvoices = require("./invoices/get-invoices");
+const getInvoice = require("./invoices/get-invoice");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -39,6 +40,7 @@ const resolvers = {
     getCustomers,
     getCustomer,
     getInvoices,
+    getInvoice,
   },
 };
 

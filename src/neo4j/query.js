@@ -326,3 +326,9 @@ exports.getInvoicesCount = `
 MATCH (c:Customer)<-[:INV_FOR_CUST]-(inv:Invoice)
 WHERE c.cust_id = $customerId
 RETURN count(inv) as count`;
+
+exports.getInvoice = `
+MATCH (c:Customer)<-[:INV_FOR_CUST]-(inv:Invoice)
+WHERE inv.inv_id_strg = $invoiceId AND c.cust_id = $customerId
+RETURN inv as invoice`;
+
