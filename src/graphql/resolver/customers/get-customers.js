@@ -86,6 +86,7 @@ module.exports = async (object, params) => {
         total,
       };
     }
+    session.close();
     return [];
   } catch (error) {
     session.close();

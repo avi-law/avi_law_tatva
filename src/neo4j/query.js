@@ -233,6 +233,7 @@ exports.getCustomer = `
 MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
 WHERE c.cust_id = $customerId and r1.to IS NULL
 OPTIONAL MATCH (cs)-[:INV_TO_ALT_COUNTRY]->(cou2:Country)
+OPTIONAL MATCH (c)-[:TO_BE_INVOICED_FROM_COUNTRY]->(cou3:Country)
 OPTIONAL MATCH (cs)-[:TO_BE_INVOICED_IN_CURRENCY]->(curr:Currency)
 OPTIONAL MATCH (cs)-[:INV_IN_LANG]->(lang:Language)
 RETURN {
@@ -279,7 +280,6 @@ RETURN {
     cust_city: cs.cust_city,
     cust_alt_inv_vat_id: cs.cust_alt_inv_vat_id
   },
-  iso_3166_1_alpha_2: cou.iso_3166_1_alpha_2,
   cust_country_de: cou.country_name_de,
   cust_country_en: cou.country_name_en,
   country_id: cou.country_id,
@@ -288,8 +288,11 @@ RETURN {
   cust_inv_lang_de: lang.lang_de,
   cust_inv_lang_en: lang.lang_en,
   cust_inv_lang_id: lang.lang_id,
-  cust_alt_inv_country_de: cou2.country_sub_name_de,
-  cust_alt_inv_country_en: cou2.country_sub_name_en,
+  cust_alt_inv_country_de: cou2.country_name_de,
+  cust_alt_inv_country_en: cou2.country_name_en,
+  cust_to_be_invoiced_from_country_de : cou3.country_name_de,
+  cust_to_be_invoiced_from_country_en: cou3.country_name_en,
+  cust_to_be_invoiced_from_country_id: cou3.country_id,
   cust_alt_inv_country_id: cou2.country_id } AS customerDetails`;
 
 exports.createNewCustomerSate = `
@@ -300,6 +303,7 @@ MATCH (u:User) WHERE u.user_email = $cust_contact_user
 MATCH (cou1:Country) WHERE cou1.country_id = $country_id
 OPTIONAL MATCH (lang:Language) WHERE lang.lang_id = $cust_inv_lang_id
 OPTIONAL MATCH (cou2:Country) WHERE cou2.country_id = $cust_alt_inv_country_id
+OPTIONAL MATCH (cou3:Country) WHERE cou3.country_id = $cust_to_be_invoiced_from_country_id
 SET r1.to = apoc.date.currentTimestamp()
 CREATE (ncs:Customer_State $customer_state)<-[:HAS_CUST_STATE {from:apoc.date.currentTimestamp()}]-(c)
 MERGE (ncs)-[:HAS_CUST_STATE_PRED {from: apoc.date.currentTimestamp()}]->(cs)
@@ -308,6 +312,7 @@ MERGE (ncs)-[:CUST_HAS_CONTACT_USER {from:apoc.date.currentTimestamp()}]->(u)
 MERGE (ncs)-[:IS_LOCATED_IN_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou1)
 FOREACH (_ IN CASE WHEN lang IS NOT NULL THEN [1] END | MERGE (ncs)-[:INV_IN_LANG {from:apoc.date.currentTimestamp()}]->(lang))
 FOREACH (_ IN CASE WHEN cou2 IS NOT NULL THEN [1] END | MERGE (ncs)-[:INV_TO_ALT_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou2))
+FOREACH (_ IN CASE WHEN cou3 IS NOT NULL THEN [1] END | MERGE (c)-[:TO_BE_INVOICED_FROM_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou3))
 RETURN ncs`;
 
 exports.getInvoices = `

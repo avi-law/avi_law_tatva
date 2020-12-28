@@ -23,6 +23,7 @@ module.exports = async (object, params) => {
       offset,
       limit,
     });
+    session.close();
     if (result && result.records.length > 0) {
       const invoices = result.records.map(
         (record) => record.get("invoices").properties

@@ -35,6 +35,8 @@ module.exports = async (object, params, ctx) => {
       cust_contact_user: customerState.cust_contact_user,
       cust_alt_inv_country_id: params.data.cust_alt_inv_country_id,
       cust_inv_lang_id: params.data.cust_inv_lang_id,
+      cust_to_be_invoiced_from_country_id:
+        params.data.cust_to_be_invoiced_from_country_id,
       customer_state: customerState,
     };
     const result = await session.run(createNewCustomerSate, queryParams);

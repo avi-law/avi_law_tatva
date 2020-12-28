@@ -270,7 +270,9 @@ const typeDefs = gql`
   type CustomerCustom {
     customer: Customer
     customer_state: Customer_State
-    iso_3166_1_alpha_2: String
+    cust_to_be_invoiced_from_country_en: String
+    cust_to_be_invoiced_from_country_de: String
+    cust_to_be_invoiced_from_country_id: Int
     cust_country_de: String
     cust_country_en: String
     cust_inv_currency: String
@@ -334,7 +336,9 @@ const typeDefs = gql`
   input CustomerCustomInput {
     customer: CustomerInput
     customer_state: Customer_StateInput
-    iso_3166_1_alpha_2: String
+    cust_to_be_invoiced_from_country_de: String
+    cust_to_be_invoiced_from_country_en: String
+    cust_to_be_invoiced_from_country_id: Int
     cust_country_de: String
     cust_country_en: String
     cust_inv_currency: String
