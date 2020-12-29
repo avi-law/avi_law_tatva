@@ -361,6 +361,7 @@ const typeDefs = gql`
     setNewPassword(user_pwd: String, token: String!): Boolean
     createCustomer(customer_id: Int!, data: CustomerCustomInput!): Boolean
       @isAdmin
+    invoicePaid(invoice_id: String!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated

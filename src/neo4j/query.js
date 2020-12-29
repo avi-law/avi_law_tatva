@@ -334,3 +334,16 @@ MATCH (c:Customer)<-[:INV_FOR_CUST]-(inv:Invoice)
 WHERE inv.inv_id_strg = $invoiceId AND c.cust_id = $customerId
 RETURN inv as invoice`;
 
+exports.paidInvoice = `
+MATCH (inv:Invoice { inv_id_strg: $invoiceId })
+//SET inv.inv_paid = $currentDate
+WITH inv
+MATCH (inv)-[r1:INV_FOR_CUST]->(c)-[r2:HAS_CUST_STATE]->(cs)
+WHERE r2.to IS NULL
+//SET cs.cust_paid_until = inv.inv_date_end
+//SET cs.cust_acc_until = inv.inv_date_end
+RETURN inv, c, cs`;
+
+exports.getCustomerInvoiceFromCountryRelationship = `
+MATCH (n:Customer {cust_id: $customerId })-[r:TO_BE_INVOICED_FROM_COUNTRY]-(cou:Country)
+RETURN cou.country_id as countryId`;
