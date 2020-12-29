@@ -1,9 +1,13 @@
+/* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { APIError } = require("../../../utils");
+const { APIError, common } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const { createNewCustomerSate } = require("../../../neo4j/query");
+const {
+  createNewCustomerSate,
+  getCustomerInvoiceFromCountryRelationship,
+} = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
@@ -11,6 +15,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const customerState = params.data.customer_state || null;
+  let customerInvoicedFromCountry;
   try {
     if (!customerState) {
       throw new APIError({
@@ -18,6 +23,21 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
+    const resultCountry = await session.run(
+      getCustomerInvoiceFromCountryRelationship,
+      {
+        customerId: params.customer_id,
+      }
+    );
+    if (resultCountry && resultCountry.records.length > 0) {
+      if (resultCountry && resultCountry.records.length > 0) {
+        const country = resultCountry.records.map((record) =>
+          record.get("countryId")
+        );
+        customerInvoicedFromCountry = country[0];
+      }
+    }
+
     if (customerState && customerState.cust_disc_perc > 0) {
       customerState.cust_disc_perc = (
         customerState.cust_disc_perc / 100
@@ -37,8 +57,11 @@ module.exports = async (object, params, ctx) => {
       cust_inv_lang_id: params.data.cust_inv_lang_id,
       cust_to_be_invoiced_from_country_id:
         params.data.cust_to_be_invoiced_from_country_id,
-      customer_state: customerState,
+      cust_to_be_invoiced_from_country_id_old: customerInvoicedFromCountry,
+      customer_state: common.cleanObject(customerState),
     };
+    // console.log(queryParams);
+    // return true;
     const result = await session.run(createNewCustomerSate, queryParams);
     if (result && result.records.length > 0) {
       return true;

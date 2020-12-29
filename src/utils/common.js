@@ -68,9 +68,20 @@ const formatDate = (date = new Date()) => {
   return [day, month, year].join("-");
 };
 
+const cleanObject = (obj) => {
+  const object = obj;
+  Object.keys(object).forEach((key) => {
+    if (obj[key] === null || object[key] === undefined || object[key] === "") {
+      delete object[key];
+    }
+  });
+  return object;
+};
+
 module.exports = {
   getMessage,
   asyncForEach,
   getCypherQueryOpt,
   formatDate,
+  cleanObject,
 };

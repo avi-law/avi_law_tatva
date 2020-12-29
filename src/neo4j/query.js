@@ -304,6 +304,7 @@ MATCH (cou1:Country) WHERE cou1.country_id = $country_id
 OPTIONAL MATCH (lang:Language) WHERE lang.lang_id = $cust_inv_lang_id
 OPTIONAL MATCH (cou2:Country) WHERE cou2.country_id = $cust_alt_inv_country_id
 OPTIONAL MATCH (cou3:Country) WHERE cou3.country_id = $cust_to_be_invoiced_from_country_id
+OPTIONAL MATCH (c:Customer)-[r3:TO_BE_INVOICED_FROM_COUNTRY]->(cou4:Country {country_id: $cust_to_be_invoiced_from_country_id_old })
 SET r1.to = apoc.date.currentTimestamp()
 CREATE (ncs:Customer_State $customer_state)<-[:HAS_CUST_STATE {from:apoc.date.currentTimestamp()}]-(c)
 MERGE (ncs)-[:HAS_CUST_STATE_PRED {from: apoc.date.currentTimestamp()}]->(cs)
@@ -312,6 +313,7 @@ MERGE (ncs)-[:CUST_HAS_CONTACT_USER {from:apoc.date.currentTimestamp()}]->(u)
 MERGE (ncs)-[:IS_LOCATED_IN_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou1)
 FOREACH (_ IN CASE WHEN lang IS NOT NULL THEN [1] END | MERGE (ncs)-[:INV_IN_LANG {from:apoc.date.currentTimestamp()}]->(lang))
 FOREACH (_ IN CASE WHEN cou2 IS NOT NULL THEN [1] END | MERGE (ncs)-[:INV_TO_ALT_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou2))
+FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | DELETE r3 )
 FOREACH (_ IN CASE WHEN cou3 IS NOT NULL THEN [1] END | MERGE (c)-[:TO_BE_INVOICED_FROM_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou3))
 RETURN ncs`;
 
