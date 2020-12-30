@@ -192,6 +192,7 @@ const typeDefs = gql`
     inv_city: String
     inv_cost_center: String
     inv_name_01: String
+    inv_cust_ref: String
     inv_sent_from: Country @relation(name: "INV_SENT_FROM", direction: "OUT")
     customer: Customer @relation(name: "INV_FOR_CUST", direction: "OUT")
   }
