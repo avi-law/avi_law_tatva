@@ -353,6 +353,16 @@ const typeDefs = gql`
     cust_alt_inv_country_id: Int
   }
 
+  # type PreparedNewInvoiceDetails {
+  #   customer: Customer
+  #   customer_state: Customer_State
+  #   currency: Currency
+  #   language: Language
+  #   invoice_from_country: Country
+  #   invoice_to_alt_country: Country
+  #   location_in_country: Country
+  # }
+
   type Mutation {
     login(user_email: String!, user_pwd: String!): UserCustomLogin
     acceptGTC(accept: Boolean!): UserCustomLogin @isAuthenticated
@@ -392,6 +402,7 @@ const typeDefs = gql`
       filterByCustomer: _Customer_StateFilter
     ): CustomersCustom @isAdmin
     getCustomer(customer_id: Int!): CustomerCustom @isAuthenticated
+    getPreparedNewInvoiceDetails(customer_id: Int!): Invoice @isAuthenticated
   }
 `;
 

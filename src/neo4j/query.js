@@ -347,3 +347,13 @@ RETURN inv, c, cs`;
 exports.getCustomerInvoiceFromCountryRelationship = `
 MATCH (n:Customer {cust_id: $customerId })-[r:TO_BE_INVOICED_FROM_COUNTRY]-(cou:Country)
 RETURN cou.country_id as countryId`;
+
+exports.getPreparedNewInvoiceDetails = `
+MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
+WHERE c.cust_id = $customerId and r1.to IS NULL
+MATCH (lang:Language)<-[INV_IN_LANG]-(cs)-[:TO_BE_INVOICED_IN_CURRENCY]-(curr:Currency)
+MATCH (c)-[TO_BE_INVOICED_FROM_COUNTRY]->(cou1:Country)
+MATCH (cs)-[IS_LOCATED_IN_COUNTRY]->(cou2:Country)
+OPTIONAL MATCH (cs)-[INV_TO_ALT_COUNTRY]->(cou3:Country)
+RETURN c, cs, curr, lang, cou1, cou2, cou3
+`;
