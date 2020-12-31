@@ -109,20 +109,16 @@
     <!-- HERO -->
     <tr>
       <td bgcolor="#029fdb" align="center" style="padding: 0px 10px 0px 10px;">
-        <table border="0" cellpadding="0" cellspacing="0" width="480">
+        <table border="0" cellpadding="0" cellspacing="0" width="600">
           <tr>
             <td bgcolor="#ffffff" align="center" valign="top"
               style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
               <a href="<%- frontendURL -%>" target="_blank">
-                <img alt="Logo" src="https://avi-law.com/img/Logo_AVI-LAW.png" width="200" height="200"
+                <img alt="Logo" src="<%- logo -%>" width="200" height="200"
                   style="display: block;  font-family: 'Lato', Helvetica, Arial, sans-serif; color: #ffffff; font-size: 18px;"
                   border="0">
               </a>
-              <h1 style="font-size: 32px; font-weight: 400; margin-top: 30px;">
-               <% if( typeof(HEAD000) !=="undefined") { %>
-                  <%= HEAD000 %>
-               <% } %>
-              </h1>
+              <h1 style="font-size: 32px; font-weight: 400; margin-top: 30px;"></h1>
             </td>
           </tr>
         </table>
@@ -131,39 +127,32 @@
     <!-- COPY BLOCK -->
     <tr>
       <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
-        <table border="0" cellpadding="0" cellspacing="0" width="480">
+        <table border="0" cellpadding="0" cellspacing="0" width="600">
           <!-- COPY -->
           <tr>
             <td bgcolor="#ffffff" align="left"
               style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
               <p style="margin: 0;">
               <% if( typeof(CONT010) !=="undefined") { %>
-                  <%= CONT010 %>
+                <%= CONT010 %>
+             <% } %></p>
+              <p>
+                <% if( typeof(CONT020) !=="undefined") { %>
+                  <%= CONT020 %>
                <% } %>
               </p>
-            </td>
-          </tr>
-          <!-- BULLETPROOF BUTTON -->
-          <tr>
-            <td bgcolor="#ffffff" align="left">
-              <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td bgcolor="#ffffff" align="center" style="padding: 20px 30px 60px 30px;">
-                    <table border="0" cellspacing="0" cellpadding="0">
-                      <tr>
-                        <td align="center" style="border-radius: 3px;" bgcolor="#029fdb"><a
-                            href="<%- frontendURL -%><%- resetPasswordURL -%>/<%- token -%>" target="_blank"
-                            style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #029fdb; display: inline-block;">
-                            <% if( typeof(BUTT010) !=="undefined") { %>
-                              <%= BUTT010 %>
-                           <% } %>
-                          </a>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
+              <br/>
+              <br/>
+              <p>
+                <% if( typeof(CONT030) !=="undefined") { %>
+                  <%= CONT030 %>
+               <% } %>
+              </p>
+              <p>
+                <% if( typeof(CONT040) !=="undefined") { %>
+                  <%= CONT040 %>
+               <% } %>
+              </p>
             </td>
           </tr>
         </table>

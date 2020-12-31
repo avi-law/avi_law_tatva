@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const { defaultLanguage } = require("../../../config/application");
@@ -8,8 +9,28 @@ const {
 } = require("../../../neo4j/query");
 const { APIError } = require("../../../utils");
 
+const preparedCustomerID = (customerId) => {
+  const customerIdLength = customerId.toString().length;
+  let newCustomerId;
+  switch (customerIdLength) {
+    case 1:
+      newCustomerId = `000${customerId}`;
+      break;
+    case 2:
+      newCustomerId = `00${customerId}`;
+      break;
+    case 3:
+      newCustomerId = `0${customerId}`;
+      break;
+    default:
+      newCustomerId = customerId;
+  }
+  return newCustomerId;
+};
+
 const getUniqueInvoiceId = async (customerId, year, country) => {
-  let session
+  let session;
+  let total;
   try {
     session = driver.session();
     const countResult = await session.run(
@@ -26,7 +47,8 @@ const getUniqueInvoiceId = async (customerId, year, country) => {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
-    return total+= 1;
+    total += 1;
+    return total;
   } catch (error) {
     console.log(error);
     if (session) {
@@ -129,25 +151,6 @@ const preparedAmountFieldData = (cs, curr) => {
   return object;
 };
 
-const preparedCustomerID = (customerId) => {
-  const length = customerId.toString().length;
-  let newCustomerId;
-  switch (length) {
-    case 1:
-      newCustomerId = `000${customerId}`;
-      break;
-    case 2:
-      newCustomerId = `00${customerId}`;
-      break;
-    case 3:
-      newCustomerId = `0${customerId}`;
-      break;
-    default:
-      newCustomerId = customerId;
-  }
-  return newCustomerId;
-};
-
 const preparedNewInvoiceDetails = async (invoiceDetails) => {
   const { c, cs, curr, lang, cou1, cou2, cou3 } = invoiceDetails;
   const language = lang.iso_639_1 || null;
@@ -166,22 +169,22 @@ const preparedNewInvoiceDetails = async (invoiceDetails) => {
   let invoice = {};
   invoice.inv_id_strg = `${cou1.iso_3166_1_alpha_2}_${year}_${customerID}_${unique}`;
   invoice.inv_date = { day, month, year };
-  let documentName;
   if (cs && cs.cust_alt_inv_name_01) {
-    documentName = `INV_${language}_${country}_ALT_REC`;
+    invoice.documentName = `INV_${language}_${country}_ALT_REC`;
     invoice = {
       ...invoice,
       ...preparedCustomerAltInvoiceData(cs, cou3, language),
       ...preparedAmountFieldData(cs, curr),
     };
   } else {
-    documentName = `INV_${language}_${country}_CUST`;
+    invoice.documentName = `INV_${language}_${country}_CUST`;
     invoice = {
       ...invoice,
       ...preparedCustomerInvoiceData(cs, cou2, language),
       ...preparedAmountFieldData(cs, curr),
     };
   }
+  invoice.customerInvoiceDetails = invoiceDetails;
   return invoice;
 };
 

@@ -14,6 +14,7 @@ module.exports = {
   jwtExpiresIn: process.env.JWT_EXPIRED_IN || "1d",
 
   websiteOwnerEmail: process.env.WEBSITE_OWNER_EMAIL || "janezic@avi-law.com",
+  carbonCopyEmail: process.env.CARBON_COPY_EMAIL || "janezic@avi-law.com",
 
   /** SMTP */
   mailSmtp: {
@@ -27,4 +28,5 @@ module.exports = {
 
   // Frontend configuration
   frontendURL: process.env.FRONTEND_URL,
+  logoURL: process.env.LOGO_URL,
 };

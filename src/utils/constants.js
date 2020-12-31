@@ -76,6 +76,24 @@ module.exports = {
           "For resetting your password, click the button below and follow the instructions.",
         BUTT010: "CHANGE PASSWORD",
       },
+      INVOICE: {
+        INV_en_DE: {
+          SUBJECT: "Invoice avi-law.com for the year {{year}}",
+          CONT010: "Dear Ladies and Gentlemen,",
+          CONT020:
+            "Please find attached the invoice for our web-portal www.avi-law.com. we kindly ask you to pay this invoice within the next few days.",
+          CONT030: "With best regards,",
+          CONT040: "Joachim J. Janezic & Werner Klein",
+        },
+        INV_en_AT: {
+          SUBJECT: "Invoice avi-law.com for the year {{year}}",
+          CONT010: "Dear Ladies and Gentlemen,",
+          CONT020:
+            "Please find attached the invoice for our web-portal www.avi-law.com. we kindly ask you to pay this invoice within the next few days.",
+          CONT030: "With best regards,",
+          CONT040: "Joachim J. Janezic",
+        },
+      },
     },
     DE: {
       FORGOT_PASSWORD: {
@@ -84,6 +102,24 @@ module.exports = {
         CONT010:
           "Zum Zurücksetzen Ihres Passwortes klicken Sie hier und folgen Sie den Anweisungen.",
         BUTT010: "PASSWORT ÄNDERN",
+      },
+      INVOICE: {
+        INV_de_DE: {
+          SUBJECT: "Rechnung avi-law.com für das Jahr {{year}}",
+          CONT010: "Sehr geehrte Damen und Herren,",
+          CONT020:
+            "Anbei erhalten Sie die Rechnung für die Benützung unserer Web-Plattform www.avi-law.com für das Jahr 2021 mit der Bitte um baldige Begleichung.",
+          CONT030: "Mit freundlichen Grüßen,",
+          CONT040: "Joachim J. Janezic & Werner Klein",
+        },
+        INV_de_AT: {
+          SUBJECT: "Rechnung avi-law.com für das Jahr {{year}}",
+          CONT010: "Sehr geehrte Damen und Herren,",
+          CONT020:
+            "Anbei erhalten Sie die Rechnung für die Benützung unserer Web-Plattform www.avi-law.com für das Jahr 2021 mit der Bitte um baldige Begleichung.",
+          CONT030: "Mit freundlichen Grüßen,",
+          CONT040: "Joachim J. Janezic",
+        },
       },
     },
   },

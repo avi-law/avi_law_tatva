@@ -1,6 +1,7 @@
 const ejs = require("ejs");
 const nodemailer = require("nodemailer");
 const { mailSmtp } = require("../config/application");
+const { frontendURL, logoURL } = require("../config/application");
 
 const emailTransport = {
   host: mailSmtp.host,
@@ -16,7 +17,11 @@ const transporter = nodemailer.createTransport(emailTransport);
 
 const getTemplate = (mail, templateName) =>
   ejs
-    .renderFile(`${__dirname}/../emailTemplates/${templateName}.ejs`, mail.data)
+    .renderFile(`${__dirname}/../emailTemplates/${templateName}.ejs`, {
+      logo: logoURL,
+      frontendURL,
+      ...mail.data,
+    })
     .catch((error) => {
       console.error("Email template error: ", error);
       return false;
@@ -32,7 +37,11 @@ const sendMail = (mail, templateName) => {
           to: mail.to,
           subject: mail.subject,
           html: htmlOutput,
+          attachments: mail && mail.attachments ? mail.attachments : [],
         };
+        if (mail && mail.cc) {
+          mailOptions.cc = mail.cc;
+        }
         return transporter
           .sendMail(mailOptions)
           .then((body) => {
