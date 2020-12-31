@@ -357,3 +357,11 @@ MATCH (cs)-[IS_LOCATED_IN_COUNTRY]->(cou2:Country)
 OPTIONAL MATCH (cs)-[INV_TO_ALT_COUNTRY]->(cou3:Country)
 RETURN c, cs, curr, lang, cou1, cou2, cou3
 `;
+
+exports.getInvoiceCountByYearCountryAndCustomerId =`
+MATCH (c:Customer)<-[:INV_FOR_CUST]-(inv:Invoice)
+WHERE toLower(inv.inv_id_strg) CONTAINS toLower("$year")
+  AND toLower(inv.inv_id_strg) STARTS WITH toLower("$country")
+  AND toLower(inv.inv_id_strg) CONTAINS toLower("$customerIdString")
+  AND c.cust_id = $customerId
+RETURN Count(inv) as count`;

@@ -171,6 +171,7 @@ const typeDefs = gql`
     inv_cust_salut: String
     inv_vat: Float
     inv_rate_per_month_net: Float
+    inv_rate_per_month: Float
     inv_vat_id: String
     inv_id_strg: String
     inv_amount_net: Float
