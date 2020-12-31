@@ -374,6 +374,7 @@ const typeDefs = gql`
     createCustomer(customer_id: Int!, data: CustomerCustomInput!): Boolean
       @isAdmin
     invoicePaid(invoice_id: String!): Boolean @isAdmin
+    createInvoice(customer_id: Int!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
