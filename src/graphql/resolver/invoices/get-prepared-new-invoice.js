@@ -69,6 +69,7 @@ const preparedCustomerAltInvoiceData = (cs, cou3, language) => {
     inv_zip: cs.cust_alt_inv_zip || null,
     inv_city: cs.cust_alt_inv_city || null,
     inv_country: cou3[`country_name_${language}`] || null,
+    inv_country_in: cou3.country_id || null,
     inv_dept: cs.cust_alt_inv_dept || null,
     inv_order_no: cs.cust_alt_inv_order_no || null,
     inv_cost_center: cs.cust_alt_inv_cost_center || null,
@@ -119,8 +120,8 @@ const preparedAmountFieldData = (cs, curr) => {
       }
       object.inv_date_start = {
         year: newYear,
-        month: newMonth,
-        day: newDay,
+        month: newMonth > 9 ? newMonth : `0${newMonth}`,
+        day: newDay > 9 ? newDay : `0${newDay}`,
       };
       object.inv_date_end = {
         year: newYear,
@@ -168,8 +169,13 @@ const preparedNewInvoiceDetails = async (invoiceDetails) => {
   const customerID = preparedCustomerID(c.cust_id);
   let invoice = {};
   invoice.inv_id_strg = `${cou1.iso_3166_1_alpha_2}_${year}_${customerID}_${unique}`;
-  invoice.inv_date = { day, month, year };
-  if (cs && cs.cust_alt_inv_name_01) {
+  invoice.inv_date = {
+    day: day > 9 ? day : `0${day}`,
+    month: month > 9 ? month : `0${month}`,
+    year,
+  };
+  // console.log("cs.inv_goes_to_alt_rec", cs.inv_goes_to_alt_rec);
+  if (cs && cs.inv_goes_to_alt_rec) {
     invoice.documentName = `INV_${language}_${country}_ALT_REC`;
     invoice = {
       ...invoice,
@@ -184,7 +190,6 @@ const preparedNewInvoiceDetails = async (invoiceDetails) => {
       ...preparedAmountFieldData(cs, curr),
     };
   }
-  invoice.customerInvoiceDetails = invoiceDetails;
   return invoice;
 };
 

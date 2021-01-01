@@ -9,79 +9,112 @@
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body style="font-family: 'Open Sans', sans-serif;font-weight: 400;margin: 0;padding: 5vh 0;">
-  <div class="wrapper" style="max-width: 1140px;padding: 0 50px;margin: 0 auto 47vh;">
+  <div class="wrapper" style="max-width: 1140px;padding: 0 50px;margin: 0 auto 20vh;">
       <header style="width: 100%;margin-bottom: 7vh;">
-          <div><img src="https://sandbox.avi-law.com/assets/logos/banner-logo.jpg" alt="Avi-Law" style="max-width: 100%;"></div>
+          <div>
+            <% if( typeof(BANNER) !=="undefined") { %>
+              <img src="<%- frontendURL -%><%- BANNER -%>" alt="Avi-Law" style="max-width: 100%;">
+           <% } %>
+          </div>
       </header>
       <main class="main-wrapper">
           <section>
               <div class="top-address-block" style="margin-bottom: 9.3vh;">
-                  <span class="name-field name-1" style="color: #029fdb;display: block;margin-bottom: 1vh;font-size: 16px;line-height: 1.2;">Lorem Ipsum</span>
-                  <span class="name-field name-1" style="color: #029fdb;display: block;margin-bottom: 1vh;font-size: 16px;line-height: 1.2;">Lorem Ipsum</span>
-                  <span class="name-field name-1" style="color: #029fdb;display: block;margin-bottom: 1vh;font-size: 16px;line-height: 1.2;">Lorem Ipsum</span>
-                  <span class="department-field" style="color: #029fdb;display: block;margin-bottom: 1vh;font-size: 16px;line-height: 1.2;">consectetur</span>
-                  <span class="street-field" style="color: #029fdb;display: block;margin-bottom: 1vh;font-size: 16px;line-height: 1.2;">adipisicing elit</span>
+                <% if( typeof(inv_name_01) !=="undefined") { %><span class="name-field name-1" style="display: block;margin-bottom: 1vh;font-size: 16px;line-height: 1.2;"><%= inv_name_01 %></span><% } %>
+                <% if( typeof(inv_name_02) !=="undefined") { %>  <span class="name-field name-1" style="display: block;margin-bottom: 1vh;font-size: 16px;line-height: 1.2;"><%= inv_name_02 %></span><% } %>
+                <% if( typeof(inv_name_03) !=="undefined") { %>  <span class="name-field name-1" style="display: block;margin-bottom: 1vh;font-size: 16px;line-height: 1.2;"><%= inv_name_03 %></span><% } %>
+                <% if( typeof(inv_dept) !=="undefined") { %><span class="department-field" style="display: block;margin-bottom: 1vh;font-size: 16px;line-height: 1.2;"><%= inv_dept %></span><% } %>
+                <% if( typeof(inv_street_no) !=="undefined") { %><span class="street-field" style="display: block;margin-bottom: 1vh;font-size: 16px;line-height: 1.2;"><%= inv_street_no %></span><% } %>
+                <% if( typeof(inv_zip) !=="undefined" ||  typeof(inv_city) !=="undefined") { %><span class="street-field" style="display: block;margin-bottom: 1vh;font-size: 16px;line-height: 1.2;"><% if( typeof(inv_zip) !=="undefined") { %> <%= inv_zip %> <% } %> <% if( typeof(inv_city) !=="undefined") { %> <%= inv_city %> <% } %></span><% } %>
+                <% if( typeof(inv_country) !=="undefined") { %><span class="street-field" style="display: block;margin-bottom: 1vh;font-size: 16px;line-height: 1.2;"><%= inv_country %></span><% } %>
               </div>
+
               <div class="date-wrapper" style="margin-bottom: 7.4vh;">
-                  <p style="font-size: 16px;line-height: 1.2;text-align: right;color: #000;margin: 0;">Isma ning, the <span class="date" style="color: #029fdb;">18/12/2019</span></p>
+                  <p style="font-size: 16px;line-height: 1.2;text-align: right;color: #000;margin: 0;"><% if( typeof(CONT020) !=="undefined") { %> <%= CONT020 %> <% } %> <% if( typeof(inv_date) !=="undefined") { %> <%= inv_date.day %>-<%= inv_date.month %>-<%= inv_date.year %> <% } %></p>
               </div>
               <div style="margin-bottom: 7.4vh;">
-                  <p style="font-size: 16px;line-height: 1.2;color: #000;margin: 0 0 1vh;">Invoice for your access to avi-law.com (former known as luftverkehr.com) for the year <span class="year" style="color: #029fdb;">2019</span></p>
-                  <p style="font-size: 16px;line-height: 1.2;color: #ff0000;margin: 0 0 1vh;">Invoice for <span class="reference">Lorem Ipsum luftverkehr</span></p>
-                  <p style="font-size: 14px;line-height: 1.2;color: #000;margin: 0 0 1vh;">Term of invoice: from <span class="start-date" style="color: #029fdb;">01/01/2019 </span> to <span class="end-date" style="color: #029fdb;">01/01/2020</span></p>
-                  <p style="font-size: 14px;line-height: 1.2;color: #000;margin: 0 0 1vh;">Invoice-ID: <span class="invoice-id" style="color: #029fdb;">Bestellnummer</span></p>
+                  <p style="font-size: 16px;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT030) !=="undefined") { %> <%= CONT030 %> <% } %> year <% if( typeof(inv_date_start) !=="undefined") { %> <%= inv_date_start.year %><% } %></p>
+                  <% if( typeof(inv_cust_ref) !=="undefined" && isAlter ) { %> <p style="font-size: 16px;line-height: 1.2;color: #ff0000;margin: 0 0 1vh;"><% if( typeof(CONT040) !=="undefined") { %> <%= CONT040 %> <% } %> <span class="reference"><%= inv_cust_ref %></span></p><% } %>
+                  <% if( typeof(inv_date_start) !=="undefined" && typeof(inv_date_end) !=="undefined") { %><p style="font-size: 14px;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT050) !=="undefined") { %> <%= CONT050 %> <% } %> <% if( typeof(CONT280) !=="undefined") { %> <%= CONT280 %> <% } %> <%= inv_date_start.day %>-<%= inv_date_start.month %>-<%= inv_date_start.year %>  <% if( typeof(CONT270) !=="undefined") { %> <%= CONT270 %> <% } %>  <%= inv_date_end.day %>-<%= inv_date_end.month %>-<%= inv_date_end.year %></p><% } %>
+                  <% if( typeof(inv_id_strg) !=="undefined") { %><p style="font-size: 14px;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT060) !=="undefined") { %> <%= CONT060 %> <% } %> <%= inv_id_strg %> </p><% } %>
+                  <p style="font-size: 14px;line-height: 1.2;color: #000;margin: 0 0 1vh;">
+                    <% if( typeof(CONT070) !=="undefined") { %> <%= CONT070 %> <% } %>
+                      <% if( typeof(inv_vat_id) !=="undefined" && inv_vat_id) { %>
+                        <%= inv_vat_id %>,
+                      <%} else { %> -- <% } %>
+                      <% if( typeof(CONT080) !=="undefined") { %> <%= CONT080 %> <% } %>
+                      <% if( typeof(inv_cost_center) !=="undefined" && inv_cost_center) { %>
+                        <%= inv_cost_center %>,
+                      <%} else { %> -- <% } %>
+                      <% if( typeof(CONT290) !=="undefined") { %> <%= CONT290 %> <% } %>
+                      <% if( typeof(inv_order_no) !=="undefined" && inv_order_no) { %>
+                        <%= inv_order_no %>,
+                      <%} else { %> -- <% } %>
+                  </p>
+              </div>
+              <% if( typeof(inv_cust_salut) !=="undefined") { %>
+                <div style="margin-bottom: 7.4vh;">
+                  <p style="font-size: 16px;line-height: 1.2;color: #000;margin: 0;"><%= inv_cust_salut %></p>
+              </div>
+              <% } %>
+              <div style="margin-bottom: 7.4vh;">
+                  <p style="font-size: 16px;line-height: 1.2;color: #000;margin: 0;"><% if( typeof(CONT090) !=="undefined") { %> <%= CONT090 %> <% } %> <% if( typeof(inv_date_start) !=="undefined") { %> <%= inv_date_start.year %> <% } %> <% if( typeof(CONT100) !=="undefined") { %> <%= CONT100 %> <% } %> </p>
               </div>
               <div style="margin-bottom: 7.4vh;">
-                  <p style="font-size: 16px;line-height: 1.2;color: #000;margin: 0;">We hereby send you the invoice for our services for the year <span class="year" style="color: #029fdb;">2019</span> according the terms of your subscription: </p>
-              </div>
-              <div style="margin-bottom: 7.4vh;">
-                  <p style="font-size: 16px;line-height: 1.2;color: #000;margin: 0;">No of months: <span class="no-of-month" style="color: #029fdb;">5 </span> x monthly rate: <span class="currency" style="color: #029fdb;"> currency</span> <span class="rate-per-month" style="color: #029fdb;">rate per month</span></p>
+                  <p style="font-size: 16px;line-height: 1.2;color: #000;margin: 0;"><% if( typeof(CONT110) !=="undefined") { %> <%= CONT110 %> <% } %> <% if( typeof(inv_no_of_months) !=="undefined") { %> <%= inv_no_of_months %> <% } %> <% if( typeof(CONT120) !=="undefined") { %> <%= CONT120 %> <% } %> <% if( typeof(inv_currency) !=="undefined") { %> <%= inv_currency %> <% } %> <% if( typeof(inv_rate_per_month) !=="undefined") { %> <%= inv_rate_per_month %> <% } %></p>
               </div>
               <div style="margin-bottom: 12vh;">
                   <ul style="list-style: none;padding: 0;margin: 0;">
                       <li style="font-size: 14px;color: #000;line-height: 1.2;margin-bottom: 2.6vh;">
-                          <div class="left-block" style="float: left;">Amount per year net (w/o VAT)</div>
-                          <div class="right-block" style="float: right"><span class="currency" style="color: #029fdb;">currency </span><span class="amount-net" style="color: #029fdb;">amount net</span></div>
+                          <div class="left-block" style="float: left;"><% if( typeof(CONT130) !=="undefined") { %> <%= CONT130 %> <% } %></div>
+                          <div class="right-block" style="float: right"><% if( typeof(inv_currency) !=="undefined") { %> <%= inv_currency %> <% } %> <% if( typeof(inv_amount_net) !=="undefined") { %> <%= inv_amount_net %> <% } %></div>
+                          <div style="clear: both"></div>
+                      </li>
+                      <% if( typeof(inv_disc_net) !=="undefined" && inv_disc_net > 0) { %>
+                      <li style="font-size: 14px;color: #000;line-height: 1.2;margin-bottom: 2.6vh;">
+                          <div class="left-block" style="float: left;"><% if( typeof(CONT140) !=="undefined") { %> <%= CONT140 %> <% } %> <%= inv_disc_perc %> <% if( typeof(CONT150) !=="undefined") { %> <%= CONT150 %> <% } %></div>
+                          <div class="right-block" style="float: right"><%= inv_currency %> <%= inv_amount_net - inv_disc_net %></span></div>
+                          <div style="clear: both"></div>
+                      </li>
+                      <% } %>
+                      <li style="font-size: 14px;color: #000;line-height: 1.2;margin-bottom: 2.6vh;">
+                          <div class="left-block" style="float: left;"><% if( typeof(CONT160) !=="undefined") { %> <%= CONT160 %> <% } %></div>
+                          <div class="right-block" style="float: right"><% if( typeof(inv_amount_net) !=="undefined") { %> <%= inv_currency %> <%= inv_amount_net %> <% } %></div>
                           <div style="clear: both"></div>
                       </li>
                       <li style="font-size: 14px;color: #000;line-height: 1.2;margin-bottom: 2.6vh;">
-                          <div class="left-block" style="float: left;">less <span class="disc_perc" style="color: #029fdb;">disc_perc </span>% of discount</div>
-                          <div class="right-block" style="float: right"><span class="currency" style="color: #029fdb;">currency </span><span class="disc-net" style="color: #029fdb;">disc net</span></div>
-                          <div style="clear: both"></div>
-                      </li>
-                      <li style="font-size: 14px;color: #000;line-height: 1.2;margin-bottom: 2.6vh;">
-                          <div class="left-block" style="float: left;">invoice amount net (w/o VAT USt.)</div>
-                          <div class="right-block" style="float: right"><span class="currency" style="color: #029fdb;">currency </span><span class="amount-net" style="color: #029fdb;">amount net</span> - <span class="disc-net" style="color: #029fdb;">disc net</span></div>
-                          <div style="clear: both"></div>
-                      </li>
-                      <li style="font-size: 14px;color: #000;line-height: 1.2;margin-bottom: 2.6vh;">
-                          <div class="left-block" style="float: left;">plus <span class="vat_perc" style="color: #029fdb;">vat_perc </span>% VAT</div>
-                          <div class="right-block" style="float: right"><span class="currency" style="color: #029fdb;">currency </span><span class="vat" style="color: #029fdb;">vat</span></div>
+                          <div class="left-block" style="float: left;"><% if( typeof(CONT170) !=="undefined") { %> <%= CONT170 %> <% } %> <%= inv_vat_perc %> <% if( typeof(CONT180) !=="undefined") { %> <%= CONT180 %> <% } %></div>
+                          <div class="right-block" style="float: right"><% if( typeof(inv_vat) !=="undefined") { %> <%= inv_currency %> <%= inv_vat %> <% } %></div>
                           <div style="clear: both"></div>
                       </li>
                       <li style="margin-top: 7vh;">
-                          <div class="left-block"style="float: left;font-weight: 600;font-size: 18px;line-height: 1.2;">Total invoice amount</div>
-                          <div class="right-block" style="float: right"><span class="total-amount" style="color: #029fdb;font-weight: 600;font-size: 18px;line-height: 1.2;">total </span></div>
+                          <div class="left-block"style="float: left;font-weight: 600;font-size: 18px;line-height: 1.2;"><% if( typeof(CONT190) !=="undefined") { %> <%= CONT190 %> <% } %></div>
+                          <div class="right-block" style="float: right"><span class="total-amount" style="font-weight: 600;font-size: 18px;line-height: 1.2;"><% if( typeof(inv_amount_total) !=="undefined") { %> <%= inv_amount_total %> <% } %></span></div>
                           <div style="clear: both"></div>
                       </li>
                   </ul>
               </div>
-              <div style="font-size: 16px;line-height: 1.5;color: #000;margin-bottom: 12vh;">
-                  We kindly ask you to pay the total amount of this invoice to our bank account at Postbank München, IBAN: DE08 1001 0010 0194 1321 34, BIC: PBNKDEFF.
+              <% if( typeof(CONT200) !=="undefined") { %>
+                <div style="font-size: 16px;line-height: 1.5;color: #000;margin-bottom: 5vh;">
+                  <%= CONT200 %>
+                </div>
+              <% } %>
+              <div style="font-size: 16px;line-height: 1.5;color: #000;margin-bottom: 5vh;">
+                <% if( typeof(CONT210) !=="undefined") { %> <%= CONT210 %> <% } %>
               </div>
               <div>
-                  <p style="font-size: 16px;line-height: 1.5;color: #000;margin: 0 0 9.3vh;">With best regards,</p>
-                  <p style="font-size: 16px;line-height: 1.5;color: #000;margin: 0;">Werner Klein</p>
+                  <p style="font-size: 16px;line-height: 1.5;color: #000;margin: 0 0 9.3vh;"><% if( typeof(CONT220) !=="undefined") { %> <%= CONT220 %> <% } %></p>
+                  <p style="font-size: 16px;line-height: 1.5;color: #000;margin: 0;"><% if( typeof(CONT230) !=="undefined") { %> <%= CONT230 %> <% } %></p>
               </div>
           </section>
       </main>
   </div>
   <footer style="max-width: 1140px;margin: 0 auto;padding: 0 50px;">
       <address style="font-size: 14px;line-height: 1.321;color: #707070;font-style: normal;">
-          Verlag Luftverkehr, Inhaber Werner Klein <br>
-          Auenstraße 71, 85737 Ismaning, Deutschland <br>
-          UID DE274785644
+        <% if( typeof(CONT240) !=="undefined") { %> <%= CONT240 %> <% } %><br>
+        <% if( typeof(CONT250) !=="undefined") { %> <%= CONT250 %> <% } %><br>
+        <% if( typeof(CONT260) !=="undefined") { %> <a href="<%= CONT260 %>" style="font-size: 14px;line-height: 1.2;color: #029fdb;text-decoration: none;"><%= CONT260 %></a><% } %><br>
+        <% if( typeof(CONT300) !=="undefined") { %> <%= CONT300 %> <% } %><br>
       </address>
-      <a href="www.luftverkehr.de" style="font-size: 14px;line-height: 1.2;color: #029fdb;text-decoration: none;">www.luftverkehr.de</a>
   </footer>
 </body>

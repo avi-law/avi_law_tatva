@@ -15,6 +15,8 @@ module.exports = {
 
   websiteOwnerEmail: process.env.WEBSITE_OWNER_EMAIL || "janezic@avi-law.com",
   carbonCopyEmail: process.env.CARBON_COPY_EMAIL || "janezic@avi-law.com",
+  blindcarbonCopyEmail:
+    process.env.BLIND_CARBON_COPY_EMAIL || "klein@luftverkehr.de",
 
   /** SMTP */
   mailSmtp: {
@@ -28,5 +30,5 @@ module.exports = {
 
   // Frontend configuration
   frontendURL: process.env.FRONTEND_URL,
-  logoURL: process.env.LOGO_URL,
+  logo: process.env.LOGO,
 };

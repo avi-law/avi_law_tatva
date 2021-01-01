@@ -1,7 +1,7 @@
 const ejs = require("ejs");
 const nodemailer = require("nodemailer");
 const { mailSmtp } = require("../config/application");
-const { frontendURL, logoURL } = require("../config/application");
+const { frontendURL, logo } = require("../config/application");
 
 const emailTransport = {
   host: mailSmtp.host,
@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport(emailTransport);
 const getTemplate = (mail, templateName) =>
   ejs
     .renderFile(`${__dirname}/../emailTemplates/${templateName}.ejs`, {
-      logo: logoURL,
+      logo,
       frontendURL,
       ...mail.data,
     })
@@ -41,6 +41,9 @@ const sendMail = (mail, templateName) => {
         };
         if (mail && mail.cc) {
           mailOptions.cc = mail.cc;
+        }
+        if (mail && mail.bcc) {
+          mailOptions.bcc = mail.bcc;
         }
         return transporter
           .sendMail(mailOptions)
