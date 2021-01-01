@@ -112,3 +112,4 @@ temp/
 .editorconfig
 
 package-lock.json
+deploy.sh

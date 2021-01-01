@@ -31,7 +31,7 @@ const excludeQuery = [
   "Customer",
   "Log",
   // "Customer_State",
-  "Invoice",
+  // "Invoice",
   "loginCustomerStatesCustom",
   "userAddresses",
   "UserCustom",

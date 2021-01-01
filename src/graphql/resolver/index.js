@@ -21,6 +21,7 @@ const getInvoice = require("./invoices/get-invoice");
 const invoicePaid = require("./invoices/invoice-paid");
 const createInvoice = require("./invoices/create-invoice");
 const getPreparedNewInvoiceDetails = require("./invoices/get-prepared-new-invoice");
+const getInvoiceCustomers = require("./invoices/get-invoice-customers");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -47,6 +48,7 @@ const resolvers = {
     getInvoices,
     getInvoice,
     getPreparedNewInvoiceDetails,
+    getInvoiceCustomers,
   },
 };
 

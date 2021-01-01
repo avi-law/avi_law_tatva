@@ -365,3 +365,21 @@ WHERE toLower(inv.inv_id_strg) CONTAINS toLower("$year")
   AND toLower(inv.inv_id_strg) CONTAINS toLower("$customerIdString")
   AND c.cust_id = $customerId
 RETURN Count(inv) as count`;
+
+exports.getInvoiceCustomers = (
+  condition = "",
+  limit = 10,
+  skip = 0,
+  orderBy = "inv.inv_date DESC"
+) => `
+  MATCH (inv:Invoice)-[:INV_FOR_CUST]->(c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
+  ${condition}
+  RETURN inv as invoice, c as customer
+  ORDER BY ${orderBy}
+  SKIP toInteger(${skip})
+  LIMIT toInteger(${limit})`;
+
+exports.getInvoiceCustomersCount = (condition = "WHERE r1.to IS NULL") => `
+MATCH (inv:Invoice)-[:INV_FOR_CUST]->(c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
+${condition}
+RETURN count(*) as count`;

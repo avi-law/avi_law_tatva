@@ -1,7 +1,7 @@
-const htmlPdf = require('html-pdf');
+const htmlPdf = require("html-pdf");
 
-const htmlToPdfBuffer = (html, options) => {
-  return new Promise((resolve, reject) => {
+const htmlToPdfBuffer = (html, options) =>
+  new Promise((resolve, reject) => {
     htmlPdf.create(html, options).toBuffer((err, buffer) => {
       if (err) {
         reject(err);
@@ -10,8 +10,20 @@ const htmlToPdfBuffer = (html, options) => {
       }
     });
   });
-};
+
+const htmlToPdfFile = (html, options, filePath) =>
+  new Promise((resolve, reject) => {
+    htmlPdf.create(html, options).toFile(filePath, (err, buffer) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      } else {
+        resolve(buffer);
+      }
+    });
+  });
 
 module.exports = {
-  htmlToPdfBuffer
+  htmlToPdfBuffer,
+  htmlToPdfFile,
 };
