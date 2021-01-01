@@ -278,7 +278,8 @@ RETURN {
     cust_vat_id: cs.cust_vat_id,
     cust_rmk: cs.cust_rmk,
     cust_city: cs.cust_city,
-    cust_alt_inv_vat_id: cs.cust_alt_inv_vat_id
+    cust_alt_inv_vat_id: cs.cust_alt_inv_vat_id,
+    inv_goes_to_alt_rec: cs.inv_goes_to_alt_rec
   },
   cust_country_de: cou.country_name_de,
   cust_country_en: cou.country_name_en,

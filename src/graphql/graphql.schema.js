@@ -152,6 +152,7 @@ const typeDefs = gql`
     cust_vat_id: String
     cust_rmk: String
     cust_city: String
+    inv_goes_to_alt_rec: Boolean
     inv_in_lang: Invoice @relation(name: "INV_IN_LANG", direction: OUT)
     inv_to_alt_country: Country
       @relation(name: "INV_TO_ALT_COUNTRY", direction: OUT)
@@ -327,6 +328,7 @@ const typeDefs = gql`
     cust_vat_id: String
     cust_rmk: String
     cust_city: String
+    inv_goes_to_alt_rec: Boolean
   }
 
   input CustomerInput {
