@@ -353,24 +353,11 @@ const typeDefs = gql`
     cust_inv_lang_id: Int!
     cust_alt_inv_country_id: Int
   }
-  type InvoiceCustomer {
-    invoice: Invoice
-    customer: Customer
-  }
+
   type InvoiceCustomersCustom {
-    invoiceCustomer: [InvoiceCustomer]
+    invoiceCustomer: [Invoice]
     total: Int
   }
-
-  # type PreparedNewInvoiceDetails {
-  #   customer: Customer
-  #   customer_state: Customer_State
-  #   currency: Currency
-  #   language: Language
-  #   invoice_from_country: Country
-  #   invoice_to_alt_country: Country
-  #   location_in_country: Country
-  # }
 
   type Mutation {
     login(user_email: String!, user_pwd: String!): UserCustomLogin

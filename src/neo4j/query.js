@@ -374,7 +374,7 @@ exports.getInvoiceCustomers = (
 ) => `
   MATCH (inv:Invoice)-[:INV_FOR_CUST]->(c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
   ${condition}
-  RETURN inv as invoice, c as customer
+  RETURN inv as invoice, c as customer, cs as customerState
   ORDER BY ${orderBy}
   SKIP toInteger(${skip})
   LIMIT toInteger(${limit})`;

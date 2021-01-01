@@ -30,11 +30,13 @@ module.exports = async (object, params) => {
     session.close();
     if (result && result.records.length > 0) {
       const invoiceCustomer = result.records.map((record) => {
-        const invoiceObject = {
-          invoice: record.get("invoice").properties,
-          customer: record.get("customer").properties,
-        };
-        return invoiceObject;
+        const invoice = record.get("invoice").properties;
+        invoice.customer = record.get("customer").properties;
+        invoice.customer.has_cust_state = [
+          record.get("customerState").properties,
+        ];
+        console.log(invoice);
+        return invoice;
       });
       return {
         invoiceCustomer,
