@@ -58,14 +58,22 @@ const getCypherQueryOpt = (key, value, alias) => {
 
 const formatDate = (date = new Date()) => {
   const d = new Date(date);
-  let month = d.getMonth() + 1;
-  let day = d.getDate();
+  const month = `0${date.getMonth() + 1}`.slice(-2);
+  const day = `0${date.getDate()}`.slice(-2);
   const year = d.getFullYear();
-
-  if (month.length < 2) month = `0${month}`;
-  if (day.length < 2) day = `0${day}`;
-
   return [day, month, year].join("-");
+};
+
+const getDateObject = (date = new Date()) => {
+  const month = `0${date.getMonth() + 1}`.slice(-2);
+  const day = `0${date.getDate()}`.slice(-2);
+  const year = date.getFullYear();
+  return {
+    day,
+    month,
+    year,
+    formatted: [day, month, year].join("."),
+  };
 };
 
 const cleanObject = (obj) => {
@@ -78,10 +86,20 @@ const cleanObject = (obj) => {
   return object;
 };
 
+const toFixedNumber = (toFixTo = 2, base = 10) => (num) => {
+  const pow = base ** toFixTo;
+  return +(Math.round(num * pow) / pow);
+};
+const amountNumberFormat = (value) =>
+  value.toFixed(2).replace(".", ",").replace(" ", "");
+
 module.exports = {
   getMessage,
   asyncForEach,
   getCypherQueryOpt,
   formatDate,
   cleanObject,
+  getDateObject,
+  toFixedNumber,
+  amountNumberFormat,
 };

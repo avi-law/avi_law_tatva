@@ -31,4 +31,5 @@ module.exports = {
   // Frontend configuration
   frontendURL: process.env.FRONTEND_URL,
   logo: process.env.LOGO,
+  bothLogo: process.env.BOTH_LOGO,
 };

@@ -7,40 +7,16 @@ const {
   getPreparedNewInvoiceDetails,
   getInvoiceCountByYearCountryAndCustomerId,
 } = require("../../../neo4j/query");
-const { APIError } = require("../../../utils");
+const { APIError, common } = require("../../../utils");
 
-const preparedCustomerID = (customerId) => {
-  const customerIdLength = customerId.toString().length;
-  let newCustomerId;
-  switch (customerIdLength) {
-    case 1:
-      newCustomerId = `000${customerId}`;
-      break;
-    case 2:
-      newCustomerId = `00${customerId}`;
-      break;
-    case 3:
-      newCustomerId = `0${customerId}`;
-      break;
-    default:
-      newCustomerId = customerId;
-  }
-  return newCustomerId;
-};
-
-const getUniqueInvoiceId = async (customerId, year, country) => {
+const getUniqueInvoiceId = async (params) => {
   let session;
   let total;
   try {
     session = driver.session();
     const countResult = await session.run(
       getInvoiceCountByYearCountryAndCustomerId,
-      {
-        customerId,
-        year,
-        country,
-        customerIdString: preparedCustomerID(customerId),
-      }
+      params
     );
     session.close();
     if (countResult && countResult.records.length > 0) {
@@ -74,7 +50,14 @@ const preparedCustomerAltInvoiceData = (cs, cou3, language) => {
     inv_order_no: cs.cust_alt_inv_order_no || null,
     inv_cost_center: cs.cust_alt_inv_cost_center || null,
     inv_vat_id: cs.cust_alt_inv_vat_id || null,
+    inv_cust_ref: `${cs.cust_name_01}`,
   };
+  if (cs.cust_name_02) {
+    object.inv_cust_ref = `${object.inv_cust_ref}, ${cs.cust_name_02}`;
+  }
+  if (cs.cust_name_03) {
+    object.inv_cust_ref = `${object.inv_cust_ref}, ${cs.cust_name_03}`;
+  }
   return object;
 };
 
@@ -93,6 +76,7 @@ const preparedCustomerInvoiceData = (cs, cou2, language) => {
     inv_order_no: cs.cust_order_no || null,
     inv_cost_center: cs.cust_cost_center || null,
     inv_vat_id: cs.cust_vat_id || null,
+    inv_cust_ref: null,
   };
   return object;
 };
@@ -101,50 +85,39 @@ const preparedAmountFieldData = (cs, curr) => {
   const object = {};
   if (cs) {
     if (cs.cust_paid_until) {
-      let newMonth;
-      let newDay;
-      let newYear;
+      let date;
       if (typeof cs.cust_paid_until === "object") {
         const { day, month, year } = cs.cust_paid_until;
-        const date = new Date(`${year}-${month}-${day}`);
+        date = new Date(`${year}-${month}-${day}`);
         date.setDate(date.getDate() + 1);
-        newMonth = date.getMonth() + 1;
-        newDay = date.getDate();
-        newYear = date.getFullYear();
       } else {
-        const date = new Date(cs.cust_paid_until);
+        date = new Date(cs.cust_paid_until);
         date.setDate(date.getDate() + 1);
-        newMonth = date.getMonth() + 1;
-        newDay = date.getDate();
-        newYear = date.getFullYear();
       }
-      object.inv_date_start = {
-        year: newYear,
-        month: newMonth > 9 ? newMonth : `0${newMonth}`,
-        day: newDay > 9 ? newDay : `0${newDay}`,
-      };
+      object.inv_date_start = common.getDateObject(date);
       object.inv_date_end = {
-        year: newYear,
+        year: object.inv_date_start.year,
         month: 12,
         day: 31,
+        formatted: [31, 12, object.inv_date_start.year].join("-"),
       };
-      object.inv_no_of_months = 12 - newMonth + 1;
+      object.inv_no_of_months = 12 - object.inv_date_start.month + 1;
     }
     object.inv_rate_per_month = !isNaN(cs.cust_rate) ? +cs.cust_rate : 0.0;
     object.inv_disc_perc = !isNaN(cs.cust_disc_perc) ? +cs.cust_disc_perc : 0.0;
     object.inv_vat_perc = !isNaN(cs.cust_vat_perc) ? +cs.cust_vat_perc : 0.0;
-    object.inv_amount_net = Number(
+    object.inv_amount_net = common.toFixedNumber(2)(
       object.inv_no_of_months * object.inv_rate_per_month
-    ).toFixed(2);
-    object.inv_disc_net = Number(
+    );
+    object.inv_disc_net = common.toFixedNumber(2)(
       object.inv_amount_net * object.inv_disc_perc
-    ).toFixed(2);
-    object.inv_vat = Number(
+    );
+    object.inv_vat = common.toFixedNumber(2)(
       (object.inv_amount_net - object.inv_disc_net) * object.inv_vat_perc
-    ).toFixed(2);
-    object.inv_amount_total = Number(
+    );
+    object.inv_amount_total = common.toFixedNumber(2)(
       (object.inv_amount_net - object.inv_disc_net) * (object.inv_vat_perc += 1)
-    ).toFixed(2);
+    );
   }
   if (curr) {
     object.inv_currency = curr.iso_4217 ? curr.iso_4217 : "EUR";
@@ -157,23 +130,25 @@ const preparedNewInvoiceDetails = async (invoiceDetails) => {
   const language = lang.iso_639_1 || null;
   const country = cou1.iso_3166_1_alpha_2 || null;
   const d = new Date();
-  const month = d.getMonth() + 1;
-  const day = d.getDate();
   const year = d.getFullYear();
-  let unique = await getUniqueInvoiceId(
-    c.cust_id,
+  let customerID = `000${c.cust_id}`.slice(-4);
+  if (c.cust_id.length > 4) {
+    customerID = c.cust_id;
+  }
+  let unique = await getUniqueInvoiceId({
+    customerId: c.cust_id,
     year,
-    cou1.iso_3166_1_alpha_2
-  );
+    country: cou1.iso_3166_1_alpha_2,
+    customerIdString: customerID,
+  });
   unique = unique.toString().length === 1 ? `0${unique}` : unique;
-  const customerID = preparedCustomerID(c.cust_id);
   let invoice = {};
   invoice.inv_id_strg = `${cou1.iso_3166_1_alpha_2}_${year}_${customerID}_${unique}`;
-  invoice.inv_date = {
-    day: day > 9 ? day : `0${day}`,
-    month: month > 9 ? month : `0${month}`,
-    year,
-  };
+  invoice.inv_date = common.getDateObject(d);
+  invoice.invoiceGoesToAltRec = cs.inv_goes_to_alt_rec;
+  invoice.invoiceSentFrom = country;
+  invoice.invoiceLanguage = language;
+  invoice.invoiceContent = `INV_${language}_${country}`;
   // console.log("cs.inv_goes_to_alt_rec", cs.inv_goes_to_alt_rec);
   if (cs && cs.inv_goes_to_alt_rec) {
     invoice.documentName = `INV_${language}_${country}_ALT_REC`;

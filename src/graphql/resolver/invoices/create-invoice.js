@@ -6,64 +6,25 @@ const {
   defaultLanguage,
   carbonCopyEmail,
   blindcarbonCopyEmail,
+  logo,
+  bothLogo,
 } = require("../../../config/application");
 const driver = require("../../../config/db");
-const { APIError, constants } = require("../../../utils");
+const { APIError, constants, common } = require("../../../utils");
 const { htmlToPdfBuffer, htmlToPdfFile } = require("../../../libs/html-to-pdf");
 const sendMail = require("../../../libs/email");
 const getPreparedNewInvoiceDetails = require("./get-prepared-new-invoice");
-const { getCustomer } = require("../../../neo4j/query");
 
-const documentNameAndLang = {
-  INV_de_AT_CUST: {
-    lang: "de",
-    email: "INV_de_AT",
-    sentFrom: "AT",
-    isAlter: false,
-  },
-  INV_de_AT_ALT_REC: {
-    lang: "de",
-    email: "INV_de_AT",
-    sentFrom: "AT",
-    isAlter: true,
-  },
-  INV_de_DE_CUST: {
-    lang: "de",
-    email: "INV_de_DE",
-    sentFrom: "DE",
-    isAlter: false,
-  },
-  INV_de_DE_ALT_REC: {
-    lang: "de",
-    email: "INV_de_DE",
-    sentFrom: "DE",
-    isAlter: true,
-  },
-  INV_en_AT_CUST: {
-    lang: "en",
-    email: "INV_en_AT",
-    sentFrom: "AT",
-    isAlter: false,
-  },
-  INV_en_AT_ALT_REC: {
-    lang: "en",
-    email: "INV_en_AT",
-    sentFrom: "AT",
-    isAlter: true,
-  },
-  INV_en_DE_CUST: {
-    lang: "en",
-    email: "INV_en_DE",
-    sentFrom: "DE",
-    isAlter: false,
-  },
-  INV_en_DE_ALT_REC: {
-    lang: "en",
-    email: "INV_en_DE",
-    sentFrom: "DE",
-    isAlter: true,
-  },
-};
+const availableInvoice = [
+  "INV_de_AT_CUST",
+  "INV_de_AT_ALT_REC",
+  "INV_de_DE_CUST",
+  "INV_de_DE_ALT_REC",
+  "INV_en_AT_CUST",
+  "INV_en_AT_ALT_REC",
+  "INV_en_DE_CUST",
+  "INV_en_DE_ALT_REC",
+];
 
 const getInvoicePdf = (filename, invoiceData) =>
   new Promise((resolve, reject) => {
@@ -94,45 +55,38 @@ module.exports = async (object, params, ctx) => {
     }
     session = driver.session();
     const result = await getPreparedNewInvoiceDetails(object, params, ctx);
-    let customerDetails = await session.run(getCustomer, { customerId });
-    if (customerDetails && customerDetails.records) {
-      const singleRecord = customerDetails.records[0];
-      customerDetails = singleRecord.get(0);
-    }
     if (result) {
-      const options = {
-        format: "A4",
-      };
-      const { documentName } = result;
-      console.log(result);
+      const {
+        documentName,
+        invoiceGoesToAltRec,
+        invoiceSentFrom,
+        invoiceLanguage,
+        invoiceContent,
+      } = result;
       const invoiceEmailRecipient = result.inv_email;
-      // console.log("customerInvoiceDetails", customerInvoiceDetails);
-      // console.log("customerDetails", customerDetails);
-      // return true;
-      if (!documentNameAndLang[documentName]) {
-        console.log(`${documentName} type of invoice document not found`);
+      if (availableInvoice.indexOf(documentName) === -1) {
+        console.error(`${documentName} type of invoice document not found`);
         throw new APIError({
           lang: userSurfLang,
           message: "INTERNAL_SERVER_ERROR",
         });
       }
-      const { sentFrom, isAlter, lang, email } = documentNameAndLang[
-        documentName
-      ];
+
       const invoiceIdString = result.inv_id_strg;
-      const pdfContent = constants.PDF[email];
+      const pdfContent = constants.PDF[invoiceContent];
       const filename = `invoice`;
       const pdfHtml = await getInvoicePdf(`${filename}.ejs`, {
         frontendURL,
-        isAlter,
+        invoiceGoesToAltRec,
+        amountNumberFormat: common.amountNumberFormat,
         ...result,
         ...pdfContent,
       });
-      const fileBuffer = await htmlToPdfBuffer(pdfHtml, options);
-      // const storeFile = await htmlToPdfFile(pdfHtml, options, "./test.pdf");
-      const mailContent = constants.EMAIL[lang.toUpperCase()].INVOICE[email];
+      const fileBuffer = await htmlToPdfBuffer(pdfHtml);
+      // const storeFile = await htmlToPdfFile(pdfHtml, {}, "./test.pdf");
+      const mailContent =
+        constants.EMAIL[invoiceLanguage.toUpperCase()].INVOICE[invoiceContent];
       const mailOption = {
-        // to: "praful.mali@tatvasoft.com",
         to: invoiceEmailRecipient,
         cc: carbonCopyEmail,
         subject: mailContent.SUBJECT.replace(
@@ -150,12 +104,12 @@ module.exports = async (object, params, ctx) => {
         data: {
           ...mailContent,
           logo:
-            sentFrom === "DE"
-              ? "assets/logos/banner-logo.jpg"
-              : "assets/logos/logo-avi-law.jpg",
+            invoiceSentFrom === "DE"
+              ? `assets/logos/${bothLogo}`
+              : `assets/logos/${logo}`,
         },
       };
-      if (sentFrom === "DE") {
+      if (invoiceSentFrom === "DE") {
         mailOption.bcc = `${carbonCopyEmail},${blindcarbonCopyEmail}`;
       }
       // await sendMail(mailOption, filename).catch((error) => {
