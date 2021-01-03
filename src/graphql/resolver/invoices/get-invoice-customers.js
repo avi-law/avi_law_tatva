@@ -63,7 +63,7 @@ module.exports = async (object, params) => {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
-    console.log(getInvoiceCustomers(condition, limit, offset, queryOrderBy));
+    // console.log(getInvoiceCustomers(condition, limit, offset, queryOrderBy));
     const result = await session.run(
       getInvoiceCustomers(condition, limit, offset, queryOrderBy)
     );

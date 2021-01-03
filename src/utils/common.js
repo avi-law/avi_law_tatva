@@ -57,9 +57,18 @@ const getCypherQueryOpt = (key, value, alias) => {
 };
 
 const formatDate = (date = new Date()) => {
-  const d = new Date(date);
-  const month = `0${date.getMonth() + 1}`.slice(-2);
-  const day = `0${date.getDate()}`.slice(-2);
+  let d;
+  if (typeof date === "object") {
+    const { day, month, year } = date;
+    d = new Date(`${year}/${month}/${day}`);
+  } else {
+    d = new Date();
+    if (date) {
+      d = new Date(date);
+    }
+  }
+  const month = `0${d.getMonth() + 1}`.slice(-2);
+  const day = `0${d.getDate()}`.slice(-2);
   const year = d.getFullYear();
   return [day, month, year].join("-");
 };

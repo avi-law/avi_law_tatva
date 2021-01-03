@@ -14,6 +14,7 @@ const { APIError, constants, common } = require("../../../utils");
 const { htmlToPdfBuffer, htmlToPdfFile } = require("../../../libs/html-to-pdf");
 const sendMail = require("../../../libs/email");
 const getPreparedNewInvoiceDetails = require("./get-prepared-new-invoice");
+const { createInvoice } = require("../../../neo4j/query");
 
 const availableInvoice = [
   "INV_de_AT_CUST",
@@ -119,7 +120,42 @@ module.exports = async (object, params, ctx) => {
       //     message: "INTERNAL_SERVER_ERROR",
       //   });
       // });
-      return true;
+      const tx = session.beginTransaction();
+      return tx
+        .run(createInvoice, {
+          customerId,
+          country_id: result.inv_country_id,
+          invoice: {
+            ...result,
+            inv_date: common.formatDate(result.inv_date),
+            inv_date_start: common.formatDate(result.inv_date_start),
+            inv_date_end: common.formatDate(result.inv_date_end),
+            inv_country_id: null,
+            invoiceGoesToAltRec: null,
+            invoiceSentFrom: null,
+            invoiceLanguage: null,
+            invoiceContent: null,
+            documentName: null,
+          },
+        })
+        .then((res) => {
+          console.log(JSON.stringify(res));
+          if (res && res.records.length > 0) {
+            return true;
+          }
+          throw new APIError({
+            lang: userSurfLang,
+            message: "INTERNAL_SERVER_ERROR",
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+          session.close();
+          throw new APIError({
+            lang: userSurfLang,
+            message: "INTERNAL_SERVER_ERROR",
+          });
+        });
     }
     throw new APIError({
       lang: userSurfLang,
