@@ -130,6 +130,7 @@ module.exports = async (object, params, ctx) => {
             message: "INTERNAL_SERVER_ERROR",
           });
         });
+      return true;
       const tx = session.beginTransaction();
       return tx
         .run(createInvoice, {
