@@ -104,9 +104,14 @@ const preparedAmountFieldData = (cs, curr) => {
       };
       object.inv_no_of_months = 12 - object.inv_date_start.month + 1;
     }
-    object.inv_rate_per_month = !isNaN(cs.cust_rate) ? +cs.cust_rate : 0.0;
-    object.inv_disc_perc = !isNaN(cs.cust_disc_perc) ? +cs.cust_disc_perc : 0.0;
-    object.inv_vat_perc = !isNaN(cs.cust_vat_perc) ? +cs.cust_vat_perc : 0.0;
+    object.inv_rate_per_month =
+      typeof cs.cust_rate === "number" ? +cs.cust_rate : 0.0;
+    object.inv_disc_perc =
+      typeof cs.cust_disc_perc === "number" ? +cs.cust_disc_perc : 0.0;
+    object.inv_vat_perc =
+      typeof cs.cust_vat_perc === "number"
+        ? +common.toFixedNumber(2)(cs.cust_vat_perc)
+        : 0.0;
     object.inv_amount_net = common.toFixedNumber(2)(
       object.inv_no_of_months * object.inv_rate_per_month
     );
@@ -117,7 +122,7 @@ const preparedAmountFieldData = (cs, curr) => {
       (object.inv_amount_net - object.inv_disc_net) * object.inv_vat_perc
     );
     object.inv_amount_total = common.toFixedNumber(2)(
-      (object.inv_amount_net - object.inv_disc_net) * (object.inv_vat_perc += 1)
+      (object.inv_amount_net - object.inv_disc_net) * (object.inv_vat_perc + 1)
     );
   }
   if (curr) {

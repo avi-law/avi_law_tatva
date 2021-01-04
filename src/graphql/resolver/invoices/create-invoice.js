@@ -1,3 +1,4 @@
+/* eslint-disable no-self-assign */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const ejs = require("ejs");
@@ -87,7 +88,8 @@ module.exports = async (object, params, ctx) => {
       const mailContent =
         constants.EMAIL[invoiceLanguage.toUpperCase()].INVOICE[invoiceContent];
       const mailOption = {
-        to: invoiceEmailRecipient,
+        to: "praful.mali@tatvasoft.com",
+        // to: invoiceEmailRecipient,
         cc: carbonCopyEmail,
         subject: mailContent.SUBJECT.replace(
           "{{year}}",
@@ -103,6 +105,7 @@ module.exports = async (object, params, ctx) => {
         ],
         data: {
           ...mailContent,
+          invoiceSentFrom,
           logo:
             invoiceSentFrom === "DE"
               ? `assets/logos/${bothLogo}`

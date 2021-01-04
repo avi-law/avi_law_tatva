@@ -181,15 +181,13 @@ module.exports = {
       CONT170: "zzgl.",
       CONT180: "% USt.",
       CONT190: "Gesamtrechnungsbetrag",
-      CONT200:
-        "Der Rechnungsbetrag ist gem. § 6 Abs. 1 Z 27 UStG von der Umsatzsteuer befreit.",
+      CONT200: "",
       CONT210:
-        "Wir ersuchen Sie höflichst um Einzahlung des Rechnungsbetrages auf unser Konto bei der Steiermärkischen Bank und Sparkassen AG, IBAN: AT32 2081 5021 0042, 0682, BIC: STSPAT2G.",
-      CONT220: "Mit freundlichen Grüßen",
-      CONT230: "Joachim J. Janezic",
-      CONT240:
-        "Institut für Österreichisches und Internationales Luftfahrtrecht",
-      CONT250: "Grieskai 76, 8020 Graz, Österreich",
+        "Wir ersuchen Sie höflichst um Einzahlung des Rechnungsbetrages auf unser Konto bei der Postbank München, IBAN: DE08 1001 0010 0194 1321 34, BIC: PBNKDEFF.",
+      CONT220: "Mit freundlichen Grüßen,",
+      CONT230: "Werner Klein",
+      CONT240: "Verlag Luftverkehr, Inhaber Werner Klein",
+      CONT250: "Auenstraße 71, 85737 Ismaning, Deutschland",
       CONT260: "https://www.avi-law.com/",
       CONT270: "bis",
       CONT280: "",
