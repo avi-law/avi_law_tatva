@@ -65,7 +65,8 @@ module.exports = async (object, params, ctx) => {
         invoiceLanguage,
         invoiceContent,
       } = result;
-      const invoiceEmailRecipient = result.inv_email;
+      // const invoiceEmailRecipient = result.inv_email;
+      const invoiceEmailRecipient = "praful.mali@tatvasoft.com";
       if (availableInvoice.indexOf(documentName) === -1) {
         console.error(`${documentName} type of invoice document not found`);
         throw new APIError({
@@ -88,8 +89,7 @@ module.exports = async (object, params, ctx) => {
       const mailContent =
         constants.EMAIL[invoiceLanguage.toUpperCase()].INVOICE[invoiceContent];
       const mailOption = {
-        to: "praful.mali@tatvasoft.com",
-        // to: invoiceEmailRecipient,
+        to: invoiceEmailRecipient,
         cc: carbonCopyEmail,
         subject: mailContent.SUBJECT.replace(
           "{{year}}",
@@ -130,7 +130,6 @@ module.exports = async (object, params, ctx) => {
             message: "INTERNAL_SERVER_ERROR",
           });
         });
-      return true;
       const tx = session.beginTransaction();
       return tx
         .run(createInvoice, {

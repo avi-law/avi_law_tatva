@@ -22,6 +22,7 @@ module.exports = {
       INVALID_FORGOT_PASSWORD_LINK:
         "The link to change your password is invalid - please request a password change again!.",
       INTERNAL_SERVER_ERROR: "Internal server error",
+      FILE_NOT_FOUND: "File no found",
     },
     DE: {
       INVALID_LOGIN_EMAIL: "Die eingegebene eMail-Adresse ist nicht korrekt!",
@@ -45,6 +46,7 @@ module.exports = {
       INVALID_FORGOT_PASSWORD_LINK:
         "Ungültiger Liink zum Ändern des Passwortes - bitte fordern Sie einen neuen Link zum Ändern Ihres Passwortes an.",
       INTERNAL_SERVER_ERROR: "Internal server error",
+      FILE_NOT_FOUND: "File no found",
     },
   },
   LOG_TYPE_ID: {

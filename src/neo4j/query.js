@@ -389,6 +389,6 @@ exports.createInvoice = `
 MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
 WHERE c.cust_id = $customerId and r1.to IS NULL
 MATCH (cou1:Country) WHERE cou1.country_id = $country_id
-CREATE (inv:Invoice $invoice)-[:INV_FOR_CUST]->(c)
-MERGE (inv)-[:INV_SENT_FROM]->(cou1)
-RETURN inv`;
+// CREATE (inv:Invoice $invoice)-[:INV_FOR_CUST]->(c)
+// MERGE (inv)-[:INV_SENT_FROM]->(cou1)
+RETURN cou1`;

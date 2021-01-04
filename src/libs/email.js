@@ -40,10 +40,10 @@ const sendMail = (mail, templateName) => {
           attachments: mail && mail.attachments ? mail.attachments : [],
         };
         if (mail && mail.cc) {
-          mailOptions.cc = mail.cc;
+          // mailOptions.cc = mail.cc;
         }
         if (mail && mail.bcc) {
-          mailOptions.bcc = mail.bcc;
+          // mailOptions.bcc = mail.bcc;
         }
         return transporter
           .sendMail(mailOptions)
