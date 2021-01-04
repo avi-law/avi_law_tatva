@@ -84,7 +84,6 @@ module.exports = async (object, params, ctx) => {
         ...pdfContent,
       });
       const fileBuffer = await htmlToPdfBuffer(pdfHtml);
-      // const storeFile = await htmlToPdfFile(pdfHtml, {}, "./test.pdf");
       const mailContent =
         constants.EMAIL[invoiceLanguage.toUpperCase()].INVOICE[invoiceContent];
       const mailOption = {
@@ -111,15 +110,23 @@ module.exports = async (object, params, ctx) => {
         },
       };
       if (invoiceSentFrom === "DE") {
-        mailOption.bcc = `${carbonCopyEmail},${blindcarbonCopyEmail}`;
+        mailOption.bcc = `${blindcarbonCopyEmail}`;
       }
-      // await sendMail(mailOption, filename).catch((error) => {
-      //   console.error("Send Mail :", error);
-      //   throw new APIError({
-      //     lang: userSurfLang,
-      //     message: "INTERNAL_SERVER_ERROR",
-      //   });
-      // });
+      await sendMail(mailOption, filename)
+        .then(() => {
+          htmlToPdfFile(
+            pdfHtml,
+            {},
+            `${__dirname}/../../../uploads/invoices/${invoiceIdString}.pdf`
+          );
+        })
+        .catch((error) => {
+          console.error("Send Mail :", error);
+          throw new APIError({
+            lang: userSurfLang,
+            message: "INTERNAL_SERVER_ERROR",
+          });
+        });
       const tx = session.beginTransaction();
       return tx
         .run(createInvoice, {
@@ -127,9 +134,9 @@ module.exports = async (object, params, ctx) => {
           country_id: result.inv_country_id,
           invoice: {
             ...result,
-            inv_date: common.formatDate(result.inv_date),
-            inv_date_start: common.formatDate(result.inv_date_start),
-            inv_date_end: common.formatDate(result.inv_date_end),
+            inv_date: common.convertToTemporalDate(result.inv_date),
+            inv_date_start: common.convertToTemporalDate(result.inv_date_start),
+            inv_date_end: common.convertToTemporalDate(result.inv_date_end),
             inv_country_id: null,
             invoiceGoesToAltRec: null,
             invoiceSentFrom: null,
@@ -141,6 +148,7 @@ module.exports = async (object, params, ctx) => {
         .then((res) => {
           console.log(JSON.stringify(res));
           if (res && res.records.length > 0) {
+            tx.commit();
             return true;
           }
           throw new APIError({

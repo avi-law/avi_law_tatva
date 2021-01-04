@@ -1,3 +1,4 @@
+const neo4j = require("neo4j-driver");
 const constants = require("./constants");
 /**
  * get message
@@ -56,7 +57,7 @@ const getCypherQueryOpt = (key, value, alias) => {
   return { whereCondition, field };
 };
 
-const formatDate = (date = new Date()) => {
+const formatDate = (date) => {
   let d;
   if (typeof date === "object") {
     const { day, month, year } = date;
@@ -95,6 +96,23 @@ const cleanObject = (obj) => {
   return object;
 };
 
+const convertToTemporalDate = (date) => {
+  let d;
+  if (typeof date === "object") {
+    const { day, month, year } = date;
+    d = new Date(`${year}/${month}/${day}`);
+  } else {
+    d = new Date();
+    if (date) {
+      d = new Date(date);
+    }
+  }
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  const year = d.getFullYear();
+  return new neo4j.types.Date(year, month, day);
+};
+
 const toFixedNumber = (toFixTo = 2, base = 10) => (num) => {
   const pow = base ** toFixTo;
   return +(Math.round(num * pow) / pow);
@@ -111,4 +129,5 @@ module.exports = {
   getDateObject,
   toFixedNumber,
   amountNumberFormat,
+  convertToTemporalDate,
 };

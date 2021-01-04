@@ -14,7 +14,7 @@ module.exports = async (object, params, ctx) => {
   try {
     const queryParams = {
       invoiceId,
-      currentDate: common.formatDate(),
+      currentDate: common.convertToTemporalDate(),
     };
     const result = await session.run(paidInvoice, queryParams);
     if (result && result.records.length > 0) {

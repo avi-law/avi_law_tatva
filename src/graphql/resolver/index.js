@@ -12,6 +12,7 @@ const acceptGTC = require("./accept-gtc");
 const acceptGDPR = require("./accept-gdpr");
 const user = require("./user/get-user");
 const getCustomer = require("./customers/get-customer");
+const downloadInvoice = require("./download-file/download-invoice");
 
 // System Admin Resolver
 const getCustomers = require("./customers/get-customers");
@@ -49,6 +50,7 @@ const resolvers = {
     getInvoice,
     getPreparedNewInvoiceDetails,
     getInvoiceCustomers,
+    downloadInvoice,
   },
 };
 

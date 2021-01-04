@@ -410,6 +410,7 @@ const typeDefs = gql`
     ): InvoiceCustomersCustom @isAdmin
     getCustomer(customer_id: Int!): CustomerCustom @isAuthenticated
     getPreparedNewInvoiceDetails(customer_id: Int!): Invoice @isAuthenticated
+    downloadInvoice(invoice_id: String!): String @isAuthenticated @isAdmin
   }
 `;
 
