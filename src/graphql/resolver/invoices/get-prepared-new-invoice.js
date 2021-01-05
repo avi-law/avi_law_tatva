@@ -105,11 +105,13 @@ const preparedAmountFieldData = (cs, curr) => {
       object.inv_no_of_months = 12 - object.inv_date_start.month + 1;
     }
     object.inv_rate_per_month =
-      typeof cs.cust_rate === "number" ? +cs.cust_rate : 0.0;
+      typeof parseFloat(cs.cust_rate) === "number" ? +cs.cust_rate : 0.0;
     object.inv_disc_perc =
-      typeof cs.cust_disc_perc === "number" ? +cs.cust_disc_perc : 0.0;
+      typeof parseFloat(cs.cust_disc_perc) === "number"
+        ? +cs.cust_disc_perc
+        : 0.0;
     object.inv_vat_perc =
-      typeof cs.cust_vat_perc === "number"
+      typeof parseFloat(cs.cust_vat_perc) === "number"
         ? +common.toFixedNumber(2)(cs.cust_vat_perc)
         : 0.0;
     object.inv_amount_net = common.toFixedNumber(2)(
