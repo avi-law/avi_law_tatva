@@ -66,7 +66,7 @@ module.exports = async (object, params, ctx) => {
         invoiceContent,
       } = result;
       // const invoiceEmailRecipient = result.inv_email;
-      const invoiceEmailRecipient = "praful.mali@tatvasoft.com";
+      const invoiceEmailRecipient = "dummy-user-de@avi-law.com";
       if (availableInvoice.indexOf(documentName) === -1) {
         console.error(`${documentName} type of invoice document not found`);
         throw new APIError({
@@ -117,11 +117,12 @@ module.exports = async (object, params, ctx) => {
       }
       await sendMail(mailOption, filename)
         .then(() => {
-          htmlToPdfFile(
-            pdfHtml,
-            {},
-            `${__dirname}/../../../uploads/invoices/${invoiceIdString}.pdf`
-          );
+          return true;
+        //   htmlToPdfFile(
+        //     pdfHtml,
+        //     {},
+        //     `${__dirname}/../../../uploads/invoices/${invoiceIdString}.pdf`
+        //   );
         })
         .catch((error) => {
           console.error("Send Mail :", error);

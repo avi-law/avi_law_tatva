@@ -199,7 +199,7 @@ module.exports = {
     INV_en_AT: {
       BANNER: `assets/logos/logo-avi-law.jpg`,
       CONT010: "per email:",
-      CONT020: "Graz, the:",
+      CONT020: "Graz, the",
       CONT030:
         "Invoice for your access to avi-law.com including newsletter-service for the year",
       CONT040: "Invoice for",
