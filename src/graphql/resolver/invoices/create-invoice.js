@@ -92,11 +92,11 @@ module.exports = async (object, params, ctx) => {
       if (pdfContent.CONT250 && pdfContent.CONT250 !== "") {
         footer = `${footer} <br> ${pdfContent.CONT250} `;
       }
-      if (pdfContent.CONT260 && pdfContent.CONT260 !== "") {
-        footer = `${footer} <br> <a href="${pdfContent.CONT260}" style="font-size: 10px;line-height: 1.2;color: #029fdb;text-decoration: none;">${pdfContent.CONT260}`;
-      }
       if (pdfContent.CONT300 && pdfContent.CONT300 !== "") {
         footer = `${footer} <br> ${pdfContent.CONT300} `;
+      }
+      if (pdfContent.CONT260 && pdfContent.CONT260 !== "") {
+        footer = `${footer} <br> <a href="${pdfContent.CONT260}" style="font-size: 10px;line-height: 1.2;color: #029fdb;text-decoration: none;">${pdfContent.CONT260}`;
       }
       const options = {
         footer: {
