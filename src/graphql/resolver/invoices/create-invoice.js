@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const ejs = require("ejs");
+const fs = require("fs");
 const {
   frontendURL,
   defaultLanguage,
@@ -74,7 +75,21 @@ module.exports = async (object, params, ctx) => {
           message: "INTERNAL_SERVER_ERROR",
         });
       }
-
+      const yearOfInvoice = result.inv_date_start.year;
+      const invoiceDiretory = `${__dirname}/../../../uploads/invoices/${yearOfInvoice}`;
+      fs.access(invoiceDiretory, (err) => {
+        if (err && err.code === "ENOENT") {
+          fs.mkdir(invoiceDiretory, (error) => {
+            if (error) {
+              console.error("Invoice directory not created :", error);
+              throw new APIError({
+                lang: userSurfLang,
+                message: "INTERNAL_SERVER_ERROR",
+              });
+            }
+          });
+        }
+      });
       const invoiceIdString = result.inv_id_strg;
       const pdfContent = constants.PDF[invoiceContent];
       const filename = `invoice`;
@@ -96,7 +111,7 @@ module.exports = async (object, params, ctx) => {
         footer = `${footer} <br> ${pdfContent.CONT300} `;
       }
       if (pdfContent.CONT260 && pdfContent.CONT260 !== "") {
-        footer = `${footer} <br> <a href="${pdfContent.CONT260}" style="font-size: 10px;line-height: 1.2;color: #029fdb;text-decoration: none;">${pdfContent.CONT260}`;
+        footer = `${footer} <br> <a href="${pdfContent.CONT260}" style="font-size: 8px;line-height: 1.2;color: #029fdb;text-decoration: none;">${pdfContent.CONT260}`;
       }
       const options = {
         footer: {
@@ -111,16 +126,13 @@ module.exports = async (object, params, ctx) => {
           },
         },
       };
-      const fileBuffer = await htmlToPdfBuffer(pdfHtml);
+      const fileBuffer = await htmlToPdfBuffer(pdfHtml, options);
       const mailContent =
         constants.EMAIL[invoiceLanguage.toUpperCase()].INVOICE[invoiceContent];
       const mailOption = {
         to: invoiceEmailRecipient,
         cc: carbonCopyEmail,
-        subject: mailContent.SUBJECT.replace(
-          "{{year}}",
-          result.inv_date_start.year
-        ),
+        subject: mailContent.SUBJECT.replace("{{year}}", yearOfInvoice),
         attachments: [
           {
             filename: `${invoiceIdString}.pdf`,
@@ -145,7 +157,8 @@ module.exports = async (object, params, ctx) => {
         .then(() => {
           htmlToPdfFile(
             pdfHtml,
-            `${__dirname}/../../../uploads/invoices/${invoiceIdString}.pdf`
+            options,
+            `${__dirname}/../../../uploads/invoices/${yearOfInvoice}/${invoiceIdString}.pdf`
           );
         })
         .catch((error) => {
