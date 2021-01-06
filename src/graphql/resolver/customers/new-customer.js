@@ -32,14 +32,12 @@ module.exports = async (object, params, ctx) => {
       cust_inv_currency_id: params.data.cust_inv_currency_id,
       country_id: params.data.country_id,
       cust_contact_user: customerState.cust_contact_user,
-      cust_alt_inv_country_id: params.data.cust_alt_inv_country_id,
+      cust_alt_inv_country_id: params.data.cust_alt_inv_country_id || null,
       cust_inv_lang_id: params.data.cust_inv_lang_id,
       cust_to_be_invoiced_from_country_id:
-        params.data.cust_to_be_invoiced_from_country_id,
+        params.data.cust_to_be_invoiced_from_country_id || null,
       customer_state: common.cleanObject(customerState),
     };
-    console.log(queryParams);
-    return true;
     const result = await session.run(createNewCustomer, queryParams);
     if (result && result.records.length > 0) {
       return true;
