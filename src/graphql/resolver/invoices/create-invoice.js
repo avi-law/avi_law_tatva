@@ -117,12 +117,11 @@ module.exports = async (object, params, ctx) => {
       }
       await sendMail(mailOption, filename)
         .then(() => {
-          return true;
-        //   htmlToPdfFile(
-        //     pdfHtml,
-        //     {},
-        //     `${__dirname}/../../../uploads/invoices/${invoiceIdString}.pdf`
-        //   );
+          htmlToPdfFile(
+            pdfHtml,
+            {},
+            `${__dirname}/../../../uploads/invoices/${invoiceIdString}.pdf`
+          );
         })
         .catch((error) => {
           console.error("Send Mail :", error);
@@ -150,7 +149,6 @@ module.exports = async (object, params, ctx) => {
           },
         })
         .then((res) => {
-          console.log(JSON.stringify(res));
           if (res && res.records.length > 0) {
             tx.commit();
             return true;

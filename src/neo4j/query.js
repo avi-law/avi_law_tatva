@@ -337,12 +337,12 @@ RETURN inv as invoice`;
 
 exports.paidInvoice = `
 MATCH (inv:Invoice { inv_id_strg: $invoiceId })
-// SET inv.inv_paid = $currentDate
+SET inv.inv_paid = $currentDate
 WITH inv
 MATCH (inv)-[r1:INV_FOR_CUST]->(c)-[r2:HAS_CUST_STATE]->(cs)
 WHERE r2.to IS NULL
-// SET cs.cust_paid_until = inv.inv_date_end
-// SET cs.cust_acc_until = inv.inv_date_end
+SET cs.cust_paid_until = inv.inv_date_end
+SET cs.cust_acc_until = inv.inv_date_end
 RETURN inv, c, cs`;
 
 exports.getCustomerInvoiceFromCountryRelationship = `
@@ -389,6 +389,6 @@ exports.createInvoice = `
 MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
 WHERE c.cust_id = $customerId and r1.to IS NULL
 MATCH (cou1:Country) WHERE cou1.country_id = $country_id
-// CREATE (inv:Invoice $invoice)-[:INV_FOR_CUST]->(c)
-// MERGE (inv)-[:INV_SENT_FROM]->(cou1)
+CREATE (inv:Invoice $invoice)-[:INV_FOR_CUST]->(c)
+MERGE (inv)-[:INV_SENT_FROM]->(cou1)
 RETURN cou1`;
