@@ -85,7 +85,33 @@ module.exports = async (object, params, ctx) => {
         ...result,
         ...pdfContent,
       });
-      const fileBuffer = await htmlToPdfBuffer(pdfHtml);
+      let footer = "";
+      if (pdfContent.CONT240 && pdfContent.CONT240 !== "") {
+        footer = pdfContent.CONT240;
+      }
+      if (pdfContent.CONT250 && pdfContent.CONT250 !== "") {
+        footer = `${footer} <br> ${pdfContent.CONT250} `;
+      }
+      if (pdfContent.CONT260 && pdfContent.CONT260 !== "") {
+        footer = `${footer} <br> <a href="${pdfContent.CONT260}" style="font-size: 10px;line-height: 1.2;color: #029fdb;text-decoration: none;">${pdfContent.CONT260}`;
+      }
+      if (pdfContent.CONT300 && pdfContent.CONT300 !== "") {
+        footer = `${footer} <br> ${pdfContent.CONT300} `;
+      }
+      const options = {
+        footer: {
+          height: "20mm",
+          contents: {
+            default: `
+            <footer style="max-width: 1140px;margin: 0 auto;padding: 0 50px;">
+              <address style="font-size: 10px;line-height: 1.321;color: #707070;font-style: normal;">
+                ${footer}
+              </address>
+            </footer>`,
+          },
+        },
+      };
+      const fileBuffer = await htmlToPdfBuffer(pdfHtml, options);
       const mailContent =
         constants.EMAIL[invoiceLanguage.toUpperCase()].INVOICE[invoiceContent];
       const mailOption = {
@@ -119,7 +145,7 @@ module.exports = async (object, params, ctx) => {
         .then(() => {
           htmlToPdfFile(
             pdfHtml,
-            {},
+            options,
             `${__dirname}/../../../uploads/invoices/${invoiceIdString}.pdf`
           );
         })

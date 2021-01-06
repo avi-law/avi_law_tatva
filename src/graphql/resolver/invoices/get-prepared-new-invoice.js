@@ -3,10 +3,7 @@
 /* eslint-disable consistent-return */
 const { defaultLanguage } = require("../../../config/application");
 const driver = require("../../../config/db");
-const {
-  getPreparedNewInvoiceDetails,
-  getInvoiceCountByYearCountryAndCustomerId,
-} = require("../../../neo4j/query");
+const { getPreparedNewInvoiceDetails } = require("../../../neo4j/query");
 const { APIError, common } = require("../../../utils");
 
 const getUniqueInvoiceId = async (params) => {
@@ -14,11 +11,13 @@ const getUniqueInvoiceId = async (params) => {
   let total;
   try {
     session = driver.session();
-    const countResult = await session.run(
-      getInvoiceCountByYearCountryAndCustomerId,
-      params
-    );
-    session.close();
+    const query = `MATCH (c:Customer)<-[:INV_FOR_CUST]-(inv:Invoice)
+    WHERE toLower(inv.inv_id_strg) CONTAINS toLower("${params.year}")
+      AND toLower(inv.inv_id_strg) STARTS WITH toLower("${params.country}")
+      AND toLower(inv.inv_id_strg) CONTAINS toLower("${params.customerIdString}")
+      AND c.cust_id = ${params.customerId}
+    RETURN Count(inv) as count`;
+    const countResult = await session.run(query, params);
     if (countResult && countResult.records.length > 0) {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
@@ -150,6 +149,7 @@ const preparedNewInvoiceDetails = async (invoiceDetails) => {
     customerIdString: customerID,
   });
   unique = unique.toString().length === 1 ? `0${unique}` : unique;
+  console.log("unique", unique);
   let invoice = {};
   invoice.inv_id_strg = `${cou1.iso_3166_1_alpha_2}_${year}_${customerID}_${unique}`;
   invoice.inv_date = common.getDateObject(d);
