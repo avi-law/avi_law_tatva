@@ -111,7 +111,7 @@ module.exports = async (object, params, ctx) => {
           },
         },
       };
-      const fileBuffer = await htmlToPdfBuffer(pdfHtml, options);
+      const fileBuffer = await htmlToPdfBuffer(pdfHtml);
       const mailContent =
         constants.EMAIL[invoiceLanguage.toUpperCase()].INVOICE[invoiceContent];
       const mailOption = {
@@ -145,7 +145,6 @@ module.exports = async (object, params, ctx) => {
         .then(() => {
           htmlToPdfFile(
             pdfHtml,
-            options,
             `${__dirname}/../../../uploads/invoices/${invoiceIdString}.pdf`
           );
         })
