@@ -392,3 +392,19 @@ MATCH (cou1:Country) WHERE cou1.country_id = $country_id
 CREATE (inv:Invoice $invoice)-[:INV_FOR_CUST]->(c)
 MERGE (inv)-[:INV_SENT_FROM]->(cou1)
 RETURN cou1`;
+
+exports.createNewCustomer = `
+MATCH (c:Customer) WITH MAX(c.cust_id) AS max_cust_id
+MATCH (cou1:Country {country_id: $cust_to_be_invoiced_from_country_id})
+CREATE (cou1)<-[:TO_BE_INVOICED_FROM_COUNTRY]-(c2:Customer {cust_id: max_cust_id + 1})-[:HAS_CUST_STATE {from: apoc.date.currentTimestamp()}]->(cs:Customer_State $customer_state)
+WITH cs, c2
+SET cs.cust_id = max_cust_id + 1
+MATCH (curr:Currency {currency_id: $cust_inv_currency_id})
+MATCH (cou2:Country {country_id: $cust_alt_inv_country_id})
+MATCH (cou3:Country {country_id: $cust_to_be_invoiced_from_country_id})
+MATCH (u:User {user_email: $cust_contact_user})
+MATCH (lang:Language {lang_id: $cust_inv_lang_id})
+MERGE (curr)<-[:TO_BE_INVOICED_IN_CURRENCY]-(cs)-[:IS_LOCATED_IN_COUNTRY]->(cou1)
+MERGE (lang)<-[:INV_IN_LANG]-(cs)-[:CUST_HAS_CONTACT_USER]->(u)
+MERGE (c2)<-[:USER_TO_CUSTOMER]-(u)
+MERGE (cou2)<-[:INV_TO_ALT_COUNTRY]-(cs)`;

@@ -370,6 +370,7 @@ const typeDefs = gql`
     setNewPassword(user_pwd: String, token: String!): Boolean
     createCustomer(customer_id: Int!, data: CustomerCustomInput!): Boolean
       @isAdmin
+    newCustomer(data: CustomerCustomInput!): Boolean @isAdmin @isAuthenticated
     invoicePaid(invoice_id: String!): Boolean @isAdmin
     createInvoice(customer_id: Int!): Boolean @isAdmin
   }

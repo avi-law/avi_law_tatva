@@ -10,7 +10,8 @@ module.exports = async (object, params, ctx) => {
   const systemAdmin = ctx.user.user_is_sys_admin;
   const userSurfLang = ctx.user.user_surf_lang || defaultLanguage;
   const invoiceIdString = params.invoice_id;
-  const filePath = `${__dirname}/../../../uploads/invoices/${invoiceIdString}.pdf`;
+  const yearOfInvoice = invoiceIdString.split("_")[1];
+  const filePath = `${__dirname}/../../../uploads/invoices/${yearOfInvoice}/${invoiceIdString}.pdf`;
   try {
     if (!invoiceIdString) {
       throw new APIError({

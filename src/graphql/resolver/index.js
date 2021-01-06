@@ -17,6 +17,7 @@ const downloadInvoice = require("./download-file/download-invoice");
 // System Admin Resolver
 const getCustomers = require("./customers/get-customers");
 const createCustomer = require("./customers/create-customer");
+const newCustomer = require("./customers/new-customer");
 const getInvoices = require("./invoices/get-invoices");
 const getInvoice = require("./invoices/get-invoice");
 const invoicePaid = require("./invoices/invoice-paid");
@@ -38,6 +39,7 @@ const resolvers = {
     createCustomer,
     invoicePaid,
     createInvoice,
+    newCustomer,
   },
   Query: {
     user,
