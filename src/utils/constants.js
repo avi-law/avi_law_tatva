@@ -165,8 +165,9 @@ module.exports = {
     INV_de_DE: {
       BANNER: `assets/logos/banner-logo.jpg`,
       CONT010: "per eMail:",
-      CONT020: "Graz, am",
-      CONT030: "Rechnung Zugang avi-law.com inklusive Newsletter für das Jahr",
+      CONT020: "Ismaning, am",
+      CONT030:
+        "Rechnung Zugang avi-law.com (vormals luftverkehr.de) für das Jahr",
       CONT040: "Rechnung für",
       CONT050: "Leistungszeitraum:",
       CONT060: "Rechnungsnummer:",
@@ -194,7 +195,7 @@ module.exports = {
       CONT270: "bis",
       CONT280: "",
       CONT290: "Ihre Bestellnummer:",
-      CONT300: "",
+      CONT300: "UID DE274785644",
     },
     INV_en_AT: {
       BANNER: `assets/logos/logo-avi-law.jpg`,
@@ -219,7 +220,7 @@ module.exports = {
       CONT180: "% VAT",
       CONT190: "Total invoice amount",
       CONT200:
-        "This amount is free of VAT according to § 6 (1) No 27 of the Austria Act on VAT.",
+        "This amount is free of VAT according to § 6 (1) No 27 of the Austrian Act on VAT.",
       CONT210:
         "We  kindly  ask  you  to  pay  the  total  amount  of  this  invoice  to  our  bank  account  at  Steiermärkische  Bank  und Sparkassen AG, IBAN: AT32 2081 5021 0042, 0682, BIC: STSPAT2G.",
       CONT220: "With best regards,",

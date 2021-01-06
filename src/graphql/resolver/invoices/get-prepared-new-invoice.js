@@ -99,7 +99,7 @@ const preparedAmountFieldData = (cs, curr) => {
         year: object.inv_date_start.year,
         month: 12,
         day: 31,
-        formatted: [31, 12, object.inv_date_start.year].join("-"),
+        formatted: [31, 12, object.inv_date_start.year].join("."),
       };
       object.inv_no_of_months = 12 - object.inv_date_start.month + 1;
     }
