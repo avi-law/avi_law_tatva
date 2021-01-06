@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body style="font-family: 'Open Sans', sans-serif;font-size: 12px; font-weight: 400;margin: 0;padding: 5vh 0;">
+<body style="font-family: 'Open Sans', sans-serif;font-size: 10px; font-weight: 400;margin: 0;padding: 5vh 0;">
   <div class="wrapper" style="max-width: 1140px;padding: 0 50px;margin: 0 auto;">
       <header style="width: 100%;margin-bottom: 7vh;">
           <div>
@@ -19,28 +19,28 @@
       <main class="main-wrapper">
           <section>
               <div class="top-address-block" style="margin-bottom: 9.3vh;">
-                <% if( typeof(inv_name_01) !=="undefined") { %><span class="name-field name-1" style="display: block;margin-bottom: 1vh;font-size: 12px;line-height: 1.2;"><%= inv_name_01 %></span><% } %>
-                <% if( typeof(inv_name_02) !=="undefined") { %>  <span class="name-field name-1" style="display: block;margin-bottom: 1vh;font-size: 12px;line-height: 1.2;"><%= inv_name_02 %></span><% } %>
-                <% if( typeof(inv_name_03) !=="undefined") { %>  <span class="name-field name-1" style="display: block;margin-bottom: 1vh;font-size: 12px;line-height: 1.2;"><%= inv_name_03 %></span><% } %>
-                <% if( typeof(inv_dept) !=="undefined") { %><span class="department-field" style="display: block;margin-bottom: 1vh;font-size: 12px;line-height: 1.2;"><%= inv_dept %></span><% } %>
-                <% if( typeof(inv_street_no) !=="undefined") { %><span class="street-field" style="display: block;margin-bottom: 1vh;font-size: 12px;line-height: 1.2;"><%= inv_street_no %></span><% } %>
-                <% if( typeof(inv_zip) !=="undefined" ||  typeof(inv_city) !=="undefined") { %><span class="street-field" style="display: block;margin-bottom: 1vh;font-size: 12px;line-height: 1.2;"><% if( typeof(inv_zip) !=="undefined") { %> <%= inv_zip %> <% } %> <% if( typeof(inv_city) !=="undefined") { %> <%= inv_city %> <% } %></span><% } %>
-                <% if( typeof(inv_country) !=="undefined") { %><span class="street-field" style="display: block;margin-bottom: 1vh;font-size: 12px;line-height: 1.2;"><%= inv_country %></span><% } %>
+                <% if( typeof(inv_name_01) !=="undefined") { %><span class="name-field name-1" style="display: block;margin-bottom: 1vh;font-size: 10px;line-height: 1.2;"><%= inv_name_01 %></span><% } %>
+                <% if( typeof(inv_name_02) !=="undefined") { %>  <span class="name-field name-1" style="display: block;margin-bottom: 1vh;font-size: 10px;line-height: 1.2;"><%= inv_name_02 %></span><% } %>
+                <% if( typeof(inv_name_03) !=="undefined") { %>  <span class="name-field name-1" style="display: block;margin-bottom: 1vh;font-size: 10px;line-height: 1.2;"><%= inv_name_03 %></span><% } %>
+                <% if( typeof(inv_dept) !=="undefined") { %><span class="department-field" style="display: block;margin-bottom: 1vh;font-size: 10px;line-height: 1.2;"><%= inv_dept %></span><% } %>
+                <% if( typeof(inv_street_no) !=="undefined") { %><span class="street-field" style="display: block;margin-bottom: 1vh;font-size: 10px;line-height: 1.2;"><%= inv_street_no %></span><% } %>
+                <% if( typeof(inv_zip) !=="undefined" ||  typeof(inv_city) !=="undefined") { %><span class="street-field" style="display: block;margin-bottom: 1vh;font-size: 10px;line-height: 1.2;"><% if( typeof(inv_zip) !=="undefined") { %> <%= inv_zip %> <% } %> <% if( typeof(inv_city) !=="undefined") { %> <%= inv_city %> <% } %></span><% } %>
+                <% if( typeof(inv_country) !=="undefined") { %><span class="street-field" style="display: block;margin-bottom: 1vh;font-size: 10px;line-height: 1.2;"><%= inv_country %></span><% } %>
               </div>
               <% if( typeof(inv_email) !=="undefined" ) { %>
                 <div style="margin-bottom: 4vh;">
-                  <span style="font-size: 12px;line-height: 1.2;font-weight: 600;"><% if( typeof(CONT010) !=="undefined") { %> <%= CONT010 %> <% } %> </span><span class="send-via" style="font-size: 12px;line-height: 1.2;"> <% if( typeof(inv_email) !=="undefined") { %> <%= inv_email %> <% } %></span>
+                  <span style="font-size: 10px;line-height: 1.2;font-weight: 600;"><% if( typeof(CONT010) !=="undefined") { %> <%= CONT010 %> <% } %> </span><span class="send-via" style="font-size: 10px;line-height: 1.2;"> <% if( typeof(inv_email) !=="undefined") { %> <%= inv_email %> <% } %></span>
                 </div>
               <% } %>
               <div class="date-wrapper" style="margin-bottom: 7vh;">
-                  <p style="font-size: 12px;line-height: 1.2;text-align: right;color: #000;margin: 0;"><% if( typeof(CONT020) !=="undefined") { %> <%= CONT020 %> <% } %> <% if( typeof(inv_date) !=="undefined") { %> <%= inv_date.formatted %> <% } %></p>
+                  <p style="font-size: 10px;line-height: 1.2;text-align: right;color: #000;margin: 0;"><% if( typeof(CONT020) !=="undefined") { %> <%= CONT020 %> <% } %> <% if( typeof(inv_date) !=="undefined") { %> <%= inv_date.formatted %> <% } %></p>
               </div>
               <div style="margin-bottom: 7.4vh;">
-                  <p style="font-size: 12px;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT030) !=="undefined") { %> <%= CONT030 %> <% } %> year <% if( typeof(inv_date_start) !=="undefined") { %> <%= inv_date_start.year %><% } %></p>
-                  <% if( typeof(inv_cust_ref) !=="undefined" && invoiceGoesToAltRec ) { %> <p style="font-size: 12px;line-height: 1.2;color: #ff0000;margin: 0 0 1vh;"><% if( typeof(CONT040) !=="undefined") { %> <%= CONT040 %> <% } %> <span class="reference"><%= inv_cust_ref %></span></p><% } %>
-                  <% if( typeof(inv_date_start) !=="undefined" && typeof(inv_date_end) !=="undefined") { %><p style="font-size: 10px;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT050) !=="undefined") { %> <%= CONT050 %> <% } %> <% if( typeof(CONT280) !=="undefined") { %> <%= CONT280 %> <% } %> <%= inv_date_start.formatted %> <% if( typeof(CONT270) !=="undefined") { %> <%= CONT270 %> <% } %>  <%= inv_date_end.formatted %></p><% } %>
-                  <% if( typeof(inv_id_strg) !=="undefined") { %><p style="font-size: 10px;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT060) !=="undefined") { %> <%= CONT060 %> <% } %> <%= inv_id_strg %> </p><% } %>
-                  <p style="font-size: 10px;line-height: 1.2;color: #000;margin: 0 0 1vh;">
+                  <p style="font-size: 10px;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT030) !=="undefined") { %> <%= CONT030 %> <% } %> year <% if( typeof(inv_date_start) !=="undefined") { %> <%= inv_date_start.year %><% } %></p>
+                  <% if( typeof(inv_cust_ref) !=="undefined" && invoiceGoesToAltRec ) { %> <p style="font-size: 10px;line-height: 1.2;color: #ff0000;margin: 0 0 1vh;"><% if( typeof(CONT040) !=="undefined") { %> <%= CONT040 %> <% } %> <span class="reference"><%= inv_cust_ref %></span></p><% } %>
+                  <% if( typeof(inv_date_start) !=="undefined" && typeof(inv_date_end) !=="undefined") { %><p style="font-size: 8px;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT050) !=="undefined") { %> <%= CONT050 %> <% } %> <% if( typeof(CONT280) !=="undefined") { %> <%= CONT280 %> <% } %> <%= inv_date_start.formatted %> <% if( typeof(CONT270) !=="undefined") { %> <%= CONT270 %> <% } %>  <%= inv_date_end.formatted %></p><% } %>
+                  <% if( typeof(inv_id_strg) !=="undefined") { %><p style="font-size: 8px;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT060) !=="undefined") { %> <%= CONT060 %> <% } %> <%= inv_id_strg %> </p><% } %>
+                  <p style="font-size: 8px;line-height: 1.2;color: #000;margin: 0 0 1vh;">
                     <% if( typeof(CONT070) !=="undefined") { %> <%= CONT070 %> <% } %>
                       <% if( typeof(inv_vat_id) !=="undefined" && inv_vat_id) { %>
                         <%= inv_vat_id %>,
@@ -57,57 +57,57 @@
               </div>
               <% if( typeof(inv_cust_salut) !=="undefined") { %>
                 <div style="margin-bottom: 7.4vh;">
-                  <p style="font-size: 12px;line-height: 1.2;color: #000;margin: 0;"><%= inv_cust_salut %></p>
+                  <p style="font-size: 10px;line-height: 1.2;color: #000;margin: 0;"><%= inv_cust_salut %></p>
               </div>
               <% } %>
               <div style="margin-bottom: 7.4vh;">
-                  <p style="font-size: 12px;line-height: 1.2;color: #000;margin: 0;"><% if( typeof(CONT090) !=="undefined") { %> <%= CONT090 %> <% } %> <% if( typeof(inv_date_start) !=="undefined") { %> <%= inv_date_start.year %> <% } %> <% if( typeof(CONT100) !=="undefined") { %> <%= CONT100 %> <% } %> </p>
+                  <p style="font-size: 10px;line-height: 1.2;color: #000;margin: 0;"><% if( typeof(CONT090) !=="undefined") { %> <%= CONT090 %> <% } %> <% if( typeof(inv_date_start) !=="undefined") { %> <%= inv_date_start.year %> <% } %> <% if( typeof(CONT100) !=="undefined") { %> <%= CONT100 %> <% } %> </p>
               </div>
               <div style="margin-bottom: 7.4vh;">
-                  <p style="font-size: 12px;line-height: 1.2;color: #000;margin: 0;"><% if( typeof(CONT110) !=="undefined") { %> <%= CONT110 %> <% } %> <% if( typeof(inv_no_of_months) !=="undefined") { %> <%= inv_no_of_months %> <% } %> <% if( typeof(CONT120) !=="undefined") { %> <%= CONT120 %> <% } %> <% if( typeof(inv_currency) !=="undefined") { %> <%= inv_currency %> <% } %> <% if( typeof(inv_rate_per_month) !=="undefined") { %> <%= amountNumberFormat(inv_rate_per_month) %> <% } %></p>
+                  <p style="font-size: 10px;line-height: 1.2;color: #000;margin: 0;"><% if( typeof(CONT110) !=="undefined") { %> <%= CONT110 %> <% } %> <% if( typeof(inv_no_of_months) !=="undefined") { %> <%= inv_no_of_months %> <% } %> <% if( typeof(CONT120) !=="undefined") { %> <%= CONT120 %> <% } %> <% if( typeof(inv_currency) !=="undefined") { %> <%= inv_currency %> <% } %> <% if( typeof(inv_rate_per_month) !=="undefined") { %> <%= amountNumberFormat(inv_rate_per_month) %> <% } %></p>
               </div>
               <div style="margin-bottom: 12vh;">
                   <ul style="list-style: none;padding: 0;margin: 0;">
-                      <li style="font-size: 10px;color: #000;line-height: 1.2;margin-bottom: 2.6vh;">
+                      <li style="font-size: 8px;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
                           <div class="left-block" style="float: left;"><% if( typeof(CONT130) !=="undefined") { %> <%= CONT130 %> <% } %></div>
                           <div class="right-block" style="float: right"><% if( typeof(inv_currency) !=="undefined") { %> <%= inv_currency %> <% } %> <% if( typeof(inv_amount_net) !=="undefined") { %> <%= amountNumberFormat(inv_amount_net) %> <% } %></div>
                           <div style="clear: both"></div>
                       </li>
                       <% if( typeof(inv_disc_net) !=="undefined" && inv_disc_net > 0) { %>
-                      <li style="font-size: 10px;color: #000;line-height: 1.2;margin-bottom: 2.6vh;">
+                      <li style="font-size: 8px;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
                           <div class="left-block" style="float: left;"><% if( typeof(CONT140) !=="undefined") { %> <%= CONT140 %> <% } %> <%= inv_disc_perc %> <% if( typeof(CONT150) !=="undefined") { %> <%= CONT150 %> <% } %></div>
                           <div class="right-block" style="float: right"><%= inv_currency %> <%= amountNumberFormat(inv_disc_net) %></span></div>
                           <div style="clear: both"></div>
                       </li>
                       <% } %>
-                      <li style="font-size: 10px;color: #000;line-height: 1.2;margin-bottom: 2.6vh;">
+                      <li style="font-size: 8px;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
                           <div class="left-block" style="float: left;"><% if( typeof(CONT160) !=="undefined") { %> <%= CONT160 %> <% } %></div>
                           <div class="right-block" style="float: right"><% if( typeof(inv_amount_net) !=="undefined") { %> <%= inv_currency %> <%= amountNumberFormat(inv_amount_net - inv_disc_net) %> <% } %></div>
                           <div style="clear: both"></div>
                       </li>
-                      <li style="font-size: 10px;color: #000;line-height: 1.2;margin-bottom: 2.6vh;">
+                      <li style="font-size: 8px;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
                           <div class="left-block" style="float: left;"><% if( typeof(CONT170) !=="undefined") { %> <%= CONT170 %> <% } %> <%= inv_vat_perc %> <% if( typeof(CONT180) !=="undefined") { %> <%= CONT180 %> <% } %></div>
                           <div class="right-block" style="float: right"><% if( typeof(inv_vat) !=="undefined") { %> <%= inv_currency %> <%= amountNumberFormat(inv_vat) %> <% } %></div>
                           <div style="clear: both"></div>
                       </li>
                       <li style="margin-top: 7vh;">
-                          <div class="left-block"style="float: left;font-weight: 600;font-size: 14px;line-height: 1.2;"><% if( typeof(CONT190) !=="undefined") { %> <%= CONT190 %> <% } %></div>
-                          <div class="right-block" style="float: right"><span class="total-amount" style="font-weight: 600;font-size: 14px;line-height: 1.2;"><% if( typeof(inv_amount_total) !=="undefined") { %> <%= amountNumberFormat(inv_amount_total) %> <% } %></span></div>
+                          <div class="left-block"style="float: left;font-weight: 600;font-size: 12px;line-height: 1.2;"><% if( typeof(CONT190) !=="undefined") { %> <%= CONT190 %> <% } %></div>
+                          <div class="right-block" style="float: right"><span class="total-amount" style="font-weight: 600;font-size: 12px;line-height: 1.2;"><% if( typeof(inv_amount_total) !=="undefined") { %> <%= amountNumberFormat(inv_amount_total) %> <% } %></span></div>
                           <div style="clear: both"></div>
                       </li>
                   </ul>
               </div>
               <% if( typeof(CONT200) !=="undefined") { %>
-                <div style="font-size: 12px;line-height: 1.5;color: #000;margin-bottom: 5vh;">
+                <div style="font-size: 10px;line-height: 1.5;color: #000;margin-bottom: 5vh;">
                   <%= CONT200 %>
                 </div>
               <% } %>
-              <div style="font-size: 12px;line-height: 1.5;color: #000;margin-bottom: 5vh;">
+              <div style="font-size: 10px;line-height: 1.5;color: #000;margin-bottom: 5vh;">
                 <% if( typeof(CONT210) !=="undefined") { %> <%= CONT210 %> <% } %>
               </div>
               <div>
-                  <p style="font-size: 12px;line-height: 1.5;color: #000;margin: 0 0 9.3vh;"><% if( typeof(CONT220) !=="undefined") { %> <%= CONT220 %> <% } %></p>
-                  <p style="font-size: 12px;line-height: 1.5;color: #000;margin: 0;"><% if( typeof(CONT230) !=="undefined") { %> <%= CONT230 %> <% } %></p>
+                  <p style="font-size: 10px;line-height: 1.5;color: #000;margin: 0 0 9.3vh;"><% if( typeof(CONT220) !=="undefined") { %> <%= CONT220 %> <% } %></p>
+                  <p style="font-size: 10px;line-height: 1.5;color: #000;margin: 0;"><% if( typeof(CONT230) !=="undefined") { %> <%= CONT230 %> <% } %></p>
               </div>
           </section>
       </main>
