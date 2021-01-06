@@ -104,7 +104,7 @@ module.exports = async (object, params, ctx) => {
           contents: {
             default: `
             <footer style="max-width: 1140px;margin: 0 auto;padding: 0 50px;">
-              <address style="font-size: 10px;line-height: 1.321;color: #707070;font-style: normal;">
+              <address style="font-size: 8px;margin: 0;padding: 0;line-height: 1.321;color: #707070;font-style: normal;">
                 ${footer}
               </address>
             </footer>`,
