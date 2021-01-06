@@ -100,7 +100,7 @@ module.exports = async (object, params, ctx) => {
       }
       const options = {
         footer: {
-          height: "20mm",
+          height: "25mm",
           contents: {
             default: `
             <footer style="max-width: 1140px;margin: 0 auto;padding: 0 50px;">
