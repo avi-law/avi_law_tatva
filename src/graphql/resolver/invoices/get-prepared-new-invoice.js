@@ -173,6 +173,9 @@ const preparedNewInvoiceDetails = async (invoiceDetails) => {
       ...preparedAmountFieldData(cs, curr),
     };
   }
+  if (invoice.inv_date_start && invoice.inv_date_start.year) {
+    invoice.inv_id_strg = `${cou1.iso_3166_1_alpha_2}_${invoice.inv_date_start.year}_${customerID}_${unique}`;
+  }
   return invoice;
 };
 
