@@ -149,7 +149,6 @@ const preparedNewInvoiceDetails = async (invoiceDetails) => {
     customerIdString: customerID,
   });
   unique = unique.toString().length === 1 ? `0${unique}` : unique;
-  console.log("unique", unique);
   let invoice = {};
   invoice.inv_id_strg = `${cou1.iso_3166_1_alpha_2}_${year}_${customerID}_${unique}`;
   invoice.inv_date = common.getDateObject(d);
