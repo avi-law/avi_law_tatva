@@ -38,9 +38,9 @@
               <div style="margin-bottom: 7.4vh;">
                   <p style="font-size: 8.5px;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT030) !=="undefined") { %> <%= CONT030 %> <% } %> year <% if( typeof(inv_date_start) !=="undefined") { %> <%= inv_date_start.year %><% } %></p>
                   <% if( typeof(inv_cust_ref) !=="undefined" && invoiceGoesToAltRec ) { %> <p style="font-size: 8.5px;line-height: 1.2;color: #ff0000;margin: 0 0 1vh;"><% if( typeof(CONT040) !=="undefined") { %> <%= CONT040 %> <% } %> <span class="reference"><%= inv_cust_ref %></span></p><% } %>
-                  <% if( typeof(inv_date_start) !=="undefined" && typeof(inv_date_end) !=="undefined") { %><p style="font-size: 6.5px;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT050) !=="undefined") { %> <%= CONT050 %> <% } %> <% if( typeof(CONT280) !=="undefined") { %> <%= CONT280 %> <% } %> <%= inv_date_start.formatted %> <% if( typeof(CONT270) !=="undefined") { %> <%= CONT270 %> <% } %>  <%= inv_date_end.formatted %></p><% } %>
-                  <% if( typeof(inv_id_strg) !=="undefined") { %><p style="font-size: 6.5px;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT060) !=="undefined") { %> <%= CONT060 %> <% } %> <%= inv_id_strg %> </p><% } %>
-                  <p style="font-size: 6.5px;line-height: 1.2;color: #000;margin: 0 0 1vh;">
+                  <% if( typeof(inv_date_start) !=="undefined" && typeof(inv_date_end) !=="undefined") { %><p style="font-size: 6.5px; font-weight: 600;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT050) !=="undefined") { %> <%= CONT050 %> <% } %> <% if( typeof(CONT280) !=="undefined") { %> <%= CONT280 %> <% } %> <%= inv_date_start.formatted %> <% if( typeof(CONT270) !=="undefined") { %> <%= CONT270 %> <% } %>  <%= inv_date_end.formatted %></p><% } %>
+                  <% if( typeof(inv_id_strg) !=="undefined") { %><p style="font-size: 6.5px; font-weight: 600;line-height: 1.2;color: #000;margin: 0 0 1vh;"><% if( typeof(CONT060) !=="undefined") { %> <%= CONT060 %> <% } %> <%= inv_id_strg %> </p><% } %>
+                  <p style="font-size: 6.5px; font-weight: 600;line-height: 1.2;color: #000;margin: 0 0 1vh;">
                     <% if( typeof(CONT070) !=="undefined") { %> <%= CONT070 %> <% } %>
                       <% if( typeof(inv_vat_id) !=="undefined" && inv_vat_id) { %>
                         <%= inv_vat_id %>,
@@ -68,24 +68,24 @@
               </div>
               <div style="margin-bottom: 10vh;">
                   <ul style="list-style: none;padding: 0;margin: 0;">
-                      <li style="font-size: 6.5px;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
+                      <li style="font-size: 6.5px; font-weight: 600;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
                           <div class="left-block" style="float: left;"><% if( typeof(CONT130) !=="undefined") { %> <%= CONT130 %> <% } %></div>
                           <div class="right-block" style="float: right"><% if( typeof(inv_currency) !=="undefined") { %> <%= inv_currency %> <% } %> <% if( typeof(inv_amount_net) !=="undefined") { %> <%= amountNumberFormat(inv_amount_net) %> <% } %></div>
                           <div style="clear: both"></div>
                       </li>
                       <% if( typeof(inv_disc_net) !=="undefined" && inv_disc_net > 0) { %>
-                      <li style="font-size: 6.5px;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
+                      <li style="font-size: 6.5px; font-weight: 600;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
                           <div class="left-block" style="float: left;"><% if( typeof(CONT140) !=="undefined") { %> <%= CONT140 %> <% } %> <%= inv_disc_perc %> <% if( typeof(CONT150) !=="undefined") { %> <%= CONT150 %> <% } %></div>
                           <div class="right-block" style="float: right"><%= inv_currency %> <%= amountNumberFormat(inv_disc_net) %></span></div>
                           <div style="clear: both"></div>
                       </li>
                       <% } %>
-                      <li style="font-size: 6.5px;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
+                      <li style="font-size: 6.5px; font-weight: 600;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
                           <div class="left-block" style="float: left;"><% if( typeof(CONT160) !=="undefined") { %> <%= CONT160 %> <% } %></div>
                           <div class="right-block" style="float: right"><% if( typeof(inv_amount_net) !=="undefined") { %> <%= inv_currency %> <%= amountNumberFormat(inv_amount_net - inv_disc_net) %> <% } %></div>
                           <div style="clear: both"></div>
                       </li>
-                      <li style="font-size: 6.5px;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
+                      <li style="font-size: 6.5px; font-weight: 600;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
                           <div class="left-block" style="float: left;"><% if( typeof(CONT170) !=="undefined") { %> <%= CONT170 %> <% } %> <%= inv_vat_perc %> <% if( typeof(CONT180) !=="undefined") { %> <%= CONT180 %> <% } %></div>
                           <div class="right-block" style="float: right"><% if( typeof(inv_vat) !=="undefined") { %> <%= inv_currency %> <%= amountNumberFormat(inv_vat) %> <% } %></div>
                           <div style="clear: both"></div>
