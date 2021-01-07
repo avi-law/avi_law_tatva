@@ -111,15 +111,15 @@ module.exports = async (object, params, ctx) => {
         footer = `${footer} <br> ${pdfContent.CONT300} `;
       }
       if (pdfContent.CONT260 && pdfContent.CONT260 !== "") {
-        footer = `${footer} <br> <a href="${pdfContent.CONT260}" style="font-size: 8px;line-height: 1.2;color: #029fdb;text-decoration: none;">${pdfContent.CONT260}`;
+        footer = `${footer} <br> <a href="${pdfContent.CONT260}" style="font-size: 6.5px;line-height: 1.2;color: #029fdb;text-decoration: none;">${pdfContent.CONT260}`;
       }
       const options = {
         footer: {
           height: "25mm",
           contents: {
             default: `
-            <footer style="max-width: 1140px;margin: 0 auto;padding: 0 50px;">
-              <address style="font-size: 8px;margin: 0;padding: 0;line-height: 1.321;color: #707070;font-style: normal;">
+            <footer style="max-width: 1140px;margin: 0 auto;padding: 0 63px;font-family: 'Open Sans', sans-serif;font-weight: 400;">
+              <address style="font-size: 6.5px;margin: 0;padding: 0;line-height: 1.321;color: #707070;font-style: normal;">
                 ${footer}
               </address>
             </footer>`,
