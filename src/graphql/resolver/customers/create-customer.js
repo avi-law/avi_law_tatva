@@ -15,7 +15,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const customerState = params.data.customer_state || null;
-  let customerInvoicedFromCountry;
+  let customerInvoicedFromCountry = null;
   try {
     if (!customerState) {
       throw new APIError({
