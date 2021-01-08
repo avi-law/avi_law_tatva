@@ -44,15 +44,15 @@
                     <% if( typeof(CONT070) !=="undefined") { %> <%= CONT070 %> <% } %>
                       <% if( typeof(inv_vat_id) !=="undefined" && inv_vat_id) { %>
                         <%= inv_vat_id %>,
-                      <%} else { %> -- <% } %>
+                      <%} else { %> --- <% } %>
                       <% if( typeof(CONT080) !=="undefined") { %> <%= CONT080 %> <% } %>
                       <% if( typeof(inv_cost_center) !=="undefined" && inv_cost_center) { %>
                         <%= inv_cost_center %>,
-                      <%} else { %> -- <% } %>
+                      <%} else { %> --- <% } %>
                       <% if( typeof(CONT290) !=="undefined") { %> <%= CONT290 %> <% } %>
                       <% if( typeof(inv_order_no) !=="undefined" && inv_order_no) { %>
                         <%= inv_order_no %>,
-                      <%} else { %> -- <% } %>
+                      <%} else { %> --- <% } %>
                   </p>
               </div>
               <% if( typeof(inv_cust_salut) !=="undefined") { %>
@@ -75,7 +75,7 @@
                       </li>
                       <% if( typeof(inv_disc_net) !=="undefined" && inv_disc_net > 0) { %>
                         <li style="font-size: 6.5px; font-weight: 600;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
-                            <div class="left-block" style="float: left;"><% if( typeof(CONT140) !=="undefined") { %> <%= CONT140 %> <% } %> <%= inv_disc_perc %> <% if( typeof(CONT150) !=="undefined") { %> <%= CONT150 %> <% } %></div>
+                            <div class="left-block" style="float: left;"><% if( typeof(CONT140) !=="undefined") { %> <%= CONT140 %> <% } %> <%= amountNumberFormat(inv_disc_perc * 100) %> <% if( typeof(CONT150) !=="undefined") { %> <%= CONT150 %> <% } %></div>
                             <div class="right-block" style="float: right"><%= inv_currency %> <%= amountNumberFormat(inv_disc_net) %></span></div>
                             <div style="clear: both"></div>
                         </li>
@@ -86,7 +86,7 @@
                         </li>
                       <% } %>
                       <li style="font-size: 6.5px; font-weight: 600;color: #000;line-height: 1.2;margin-bottom: 0.8vh;">
-                          <div class="left-block" style="float: left;"><% if( typeof(CONT170) !=="undefined") { %> <%= CONT170 %> <% } %> <%= inv_vat_perc %> <% if( typeof(CONT180) !=="undefined") { %> <%= CONT180 %> <% } %></div>
+                          <div class="left-block" style="float: left;"><% if( typeof(CONT170) !=="undefined") { %> <%= CONT170 %> <% } %> <%= amountNumberFormat(inv_vat_perc * 100) %> <% if( typeof(CONT180) !=="undefined") { %> <%= CONT180 %> <% } %></div>
                           <div class="right-block" style="float: right"><% if( typeof(inv_vat) !=="undefined") { %> <%= inv_currency %> <%= amountNumberFormat(inv_vat) %> <% } %></div>
                           <div style="clear: both"></div>
                       </li>
