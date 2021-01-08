@@ -385,8 +385,12 @@ const typeDefs = gql`
       orderBy: [_UserOrdering]
       filter: _UserFilter
     ): [User] @isAdmin
-    getInvoices(customer_id: Int!, first: Int, offset: Int): InvoiceCustom
-      @isAdmin
+    getInvoices(
+      customer_id: Int!
+      first: Int
+      offset: Int
+      orderByInvoice: [_InvoiceOrdering]
+    ): InvoiceCustom @isAdmin
     getInvoice(customer_id: Int, invoice_id: String!): Invoice
       @isAdmin
       @isAuthenticated

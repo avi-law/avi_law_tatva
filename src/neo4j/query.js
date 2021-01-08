@@ -322,6 +322,7 @@ exports.getInvoices = `
 MATCH (c:Customer)<-[:INV_FOR_CUST]-(inv:Invoice)
 WHERE c.cust_id = $customerId
 RETURN inv as invoices
+ORDER BY $queryOrderBy
 SKIP toInteger($offset)
 LIMIT toInteger($limit)`;
 

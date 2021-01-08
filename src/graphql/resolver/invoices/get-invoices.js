@@ -9,8 +9,26 @@ module.exports = async (object, params) => {
   const offset = params.offset || 0;
   const limit = params.first || 10;
   const customerId = params.customer_id;
+  const defaultOrderBy = "inv.inv_date DESC";
+  let queryOrderBy = "";
   let total = 0;
+  const { orderByInvoice } = params;
   try {
+    if (orderByInvoice && orderByInvoice.length > 0) {
+      orderByInvoice.forEach((orderInvoice) => {
+        const field = orderInvoice.slice(0, orderInvoice.lastIndexOf("_"));
+        const last = orderInvoice.split("_").pop().toUpperCase();
+        if (queryOrderBy === "") {
+          queryOrderBy = `inv.${field} ${last}`;
+        } else {
+          queryOrderBy = `${queryOrderBy}, inv.${field} ${last}`;
+        }
+      });
+    }
+    if (queryOrderBy === "") {
+      queryOrderBy = defaultOrderBy;
+    }
+    console.log(queryOrderBy);
     const countResult = await session.run(getInvoicesCount, {
       customerId,
     });
@@ -22,6 +40,7 @@ module.exports = async (object, params) => {
       customerId,
       offset,
       limit,
+      queryOrderBy,
     });
     session.close();
     if (result && result.records.length > 0) {
