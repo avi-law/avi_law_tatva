@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const neo4j = require("neo4j-driver");
 const constants = require("./constants");
 /**
@@ -48,6 +49,7 @@ const getCypherQueryOpt = (key, value, alias) => {
   const last = key.split("_").pop().toUpperCase();
   switch (last) {
     case "CONTAINS":
+      value = value.replace(/[^\w\s]/gi, "");
       whereCondition = `toLower(${alias}.${field}) CONTAINS toLower('${value}')`;
       break;
     default:
