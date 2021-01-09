@@ -201,11 +201,11 @@ module.exports = async (object, params, ctx) => {
         const invoiceObject = {
           c: record.get("c").properties,
           cs: record.get("cs").properties,
-          curr: record.get("curr").properties,
-          lang: record.get("lang").properties,
-          cou1: record.get("cou1").properties,
-          cou2: record.get("cou2").properties,
-          cou3: record.get("cou3").properties,
+          curr: record.get("curr") ? record.get("curr").properties : null,
+          lang: record.get("lang") ? record.get("lang").properties : null,
+          cou1: record.get("cou1") ? record.get("cou1").properties : null,
+          cou2: record.get("cou2") ? record.get("cou2").properties : null,
+          cou3: record.get("cou3") ? record.get("cou3").properties : null,
         };
         return invoiceObject;
       });
