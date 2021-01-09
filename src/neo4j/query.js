@@ -76,6 +76,23 @@ exports.getConnectUserList = `
 MATCH (u:User { user_email: $user_email})-[:USER_TO_CUSTOMER]->(c:Customer)<-[:USER_TO_CUSTOMER]-(u2:User)
 Return u2`;
 
+exports.getUsersByCustomerCountQuery = (condition = "") => `
+MATCH (u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer)
+${condition}
+RETURN count(u) as count`;
+
+exports.getUsersByCustomerQuery = (
+  condition = "",
+  limit = 10,
+  skip = 0,
+  orderBy = "c.user_email ASC"
+) => `
+  MATCH (u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer)
+  ${condition}
+  RETURN u, c, r1
+  ORDER BY ${orderBy}
+  SKIP toInteger(${skip})
+  LIMIT toInteger(${limit})`;
 // Get common logging query function
 exports.getCommonUserStateLogginQuery = (otherParams = null) => {
   const params = otherParams ? `, ${otherParams}` : "";

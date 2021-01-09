@@ -7,13 +7,16 @@ const { defaultLanguage } = require("../../../config/application");
 const {
   createNewCustomerSate,
   getCustomerInvoiceFromCountryRelationship,
+  getCustomer,
 } = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
+  const systemAdmin = user.user_is_sys_admin || null;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
+  const customerId = params.customer_id;
   const customerState = params.data.customer_state || null;
   let customerInvoicedFromCountry = null;
   try {
@@ -26,7 +29,7 @@ module.exports = async (object, params, ctx) => {
     const resultCountry = await session.run(
       getCustomerInvoiceFromCountryRelationship,
       {
-        customerId: params.customer_id,
+        customerId,
       }
     );
     if (resultCountry && resultCountry.records.length > 0) {
@@ -37,21 +40,43 @@ module.exports = async (object, params, ctx) => {
         customerInvoicedFromCountry = country[0];
       }
     }
+    if (systemAdmin) {
+      if (customerState && customerState.cust_disc_perc > 0) {
+        customerState.cust_disc_perc = (
+          customerState.cust_disc_perc / 100
+        ).toFixed(2);
+      } else {
+        customerState.cust_disc_perc = 0.0;
+      }
+      if (customerState && customerState.cust_vat_perc > 0) {
+        customerState.cust_vat_perc = (
+          customerState.cust_vat_perc / 100
+        ).toFixed(2);
+      } else {
+        customerState.cust_vat_perc = 0.0;
+      }
+    } else {
+      const oldCustomerStateResult = await session.run(getCustomer, {
+        customerId,
+      });
+      if (oldCustomerStateResult && oldCustomerStateResult.records) {
+        const singleRecord = oldCustomerStateResult.records[0];
+        const customerStatedetails = singleRecord.get(0);
+        customerState.cust_status = customerStatedetails.cust_status;
+        customerState.cust_paid_until = customerStatedetails.cust_paid_until;
+        customerState.cust_acc_until = customerStatedetails.cust_acc_until;
+        customerState.cust_id = customerStatedetails.cust_id;
+        customerState.cust_gtc_accepted =
+          customerStatedetails.cust_gtc_accepted;
+      } else {
+        console.error("Customer details not found");
+        throw new APIError({
+          lang: userSurfLang,
+          message: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    }
 
-    if (customerState && customerState.cust_disc_perc > 0) {
-      customerState.cust_disc_perc = (
-        customerState.cust_disc_perc / 100
-      ).toFixed(2);
-    } else {
-      customerState.cust_disc_perc = 0.0;
-    }
-    if (customerState && customerState.cust_vat_perc > 0) {
-      customerState.cust_vat_perc = (customerState.cust_vat_perc / 100).toFixed(
-        2
-      );
-    } else {
-      customerState.cust_vat_perc = 0.0;
-    }
     const queryParams = {
       cust_id: params.customer_id,
       cust_inv_currency_id: params.data.cust_inv_currency_id,

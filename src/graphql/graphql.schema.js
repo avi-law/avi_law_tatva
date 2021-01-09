@@ -364,6 +364,16 @@ const typeDefs = gql`
     total: Int
   }
 
+  type UserCustomer {
+    customer: Customer
+    user: User
+  }
+
+  type UsersByCustomer {
+    users: [UserCustomer]
+    total: Int
+  }
+
   type Mutation {
     login(user_email: String!, user_pwd: String!): UserCustomLogin
     acceptGTC(accept: Boolean!): UserCustomLogin @isAuthenticated
@@ -381,6 +391,13 @@ const typeDefs = gql`
     user: User_State @isAuthenticated
     getUserCustomerList: [UserCustomersList] @isAuthenticated
     getConnectUserList: [User] @isAuthenticated
+    getUsersByCustomer(
+      customerId: Int!
+      first: Int
+      offset: Int
+      orderBy: [_UserOrdering]
+      filter: _UserFilter
+    ): UsersByCustomer @isAuthenticated
     User(
       user_email: String
       user_is_author: Boolean
