@@ -269,7 +269,10 @@ const typeDefs = gql`
     invoices: [Invoice]
     total: Int
   }
-
+  type UserCustomersList {
+    cust_name_01: String!
+    cust_id: Int!
+  }
   type CustomerCustom {
     customer: Customer
     customer_state: Customer_State
@@ -376,6 +379,8 @@ const typeDefs = gql`
   }
   type Query {
     user: User_State @isAuthenticated
+    getUserCustomerList: [UserCustomersList] @isAuthenticated
+    getConnectUserList: [User] @isAuthenticated
     User(
       user_email: String
       user_is_author: Boolean

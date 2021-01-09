@@ -92,7 +92,7 @@
                       </li>
                       <li style="margin-top: 7vh;">
                           <div class="left-block"style="float: left;font-weight: 600;font-size: 8.5px;line-height: 1.2;"><% if( typeof(CONT190) !=="undefined") { %> <%= CONT190 %> <% } %></div>
-                          <div class="right-block" style="float: right"><span class="total-amount" style="font-weight: 600;font-size: 8.5px;line-height: 1.2;"><% if( typeof(inv_amount_total) !=="undefined") { %> <%= amountNumberFormat(inv_amount_total) %> <% } %></span></div>
+                          <div class="right-block" style="float: right"><span class="total-amount" style="font-weight: 600;font-size: 8.5px;line-height: 1.2;"><% if( typeof(inv_amount_total) !=="undefined") { %> <%= inv_currency %> <%= amountNumberFormat(inv_amount_total) %> <% } %></span></div>
                           <div style="clear: both"></div>
                       </li>
                   </ul>

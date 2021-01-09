@@ -74,7 +74,6 @@ module.exports = async (object, params) => {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
-    // console.log(getCustomersQuery(condition, limit, offset, queryOrderBy));
     const result = await session.run(
       getCustomersQuery(condition, limit, offset, queryOrderBy)
     );

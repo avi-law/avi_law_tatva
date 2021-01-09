@@ -59,6 +59,13 @@ const getCypherQueryOpt = (key, value, alias) => {
   return { whereCondition, field };
 };
 
+const getPropertiesFromRecord = (record, key) => {
+  if (record.get(key)) {
+    return record.get(key).properties;
+  }
+  return null;
+};
+
 const formatDate = (date) => {
   let d;
   if (typeof date === "object") {
@@ -132,4 +139,5 @@ module.exports = {
   toFixedNumber,
   amountNumberFormat,
   convertToTemporalDate,
+  getPropertiesFromRecord,
 };

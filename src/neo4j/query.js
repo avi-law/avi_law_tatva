@@ -67,6 +67,15 @@ WHERE us.user_id = $user_id
 RETURN us
 LIMIT 1`;
 
+exports.getUserCustomerList = `
+MATCH (u:User)-[:USER_TO_CUSTOMER]->(c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
+WHERE u.user_email = $user_email AND r1.to IS NULL
+RETURN cs`;
+
+exports.getConnectUserList = `
+MATCH (u:User { user_email: $user_email})-[:USER_TO_CUSTOMER]->(c:Customer)<-[:USER_TO_CUSTOMER]-(u2:User)
+Return u2`;
+
 // Get common logging query function
 exports.getCommonUserStateLogginQuery = (otherParams = null) => {
   const params = otherParams ? `, ${otherParams}` : "";
