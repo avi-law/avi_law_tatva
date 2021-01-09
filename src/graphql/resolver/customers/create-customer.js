@@ -43,7 +43,7 @@ module.exports = async (object, params, ctx) => {
         customerState.cust_disc_perc / 100
       ).toFixed(2);
     } else {
-      customerState.cust_vat_perc = 0.0;
+      customerState.cust_disc_perc = 0.0;
     }
     if (customerState && customerState.cust_vat_perc > 0) {
       customerState.cust_vat_perc = (customerState.cust_vat_perc / 100).toFixed(
