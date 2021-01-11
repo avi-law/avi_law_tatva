@@ -23,7 +23,7 @@ module.exports = async (object, params) => {
   let total = 0;
   const defaultOrderBy = "c.user_email ASC";
   let queryOrderBy = "";
-  const { filter, orderBy } = params;
+  const { filter, orderBy, filterByUserState } = params;
   let condition = `WHERE c.cust_id = ${customerId} AND r2.to IS NULL`;
   try {
     if (orderBy && orderBy.length > 0) {
@@ -62,10 +62,23 @@ module.exports = async (object, params) => {
         }
       });
     }
+    if (filterByUserState) {
+      Object.keys(filterByUserState).forEach((key) => {
+        const { whereCondition, field } = common.getCypherQueryOpt(
+          key,
+          filterByUserState[key],
+          "us"
+        );
+        if (/^\d+$/.test(filterByUserState[key])) {
+          condition = `${condition} AND us.${field} = ${filterByUserState[key]}`;
+        } else {
+          condition = `${condition} AND ${whereCondition}`;
+        }
+      });
+    }
     if (queryOrderBy === "") {
       queryOrderBy = defaultOrderBy;
     }
-
     const countResult = await session.run(
       getUsersByCustomerCountQuery(condition)
     );

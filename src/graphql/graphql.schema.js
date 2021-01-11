@@ -414,6 +414,7 @@ const typeDefs = gql`
       offset: Int
       orderBy: [_UserOrdering]
       filter: _UserFilter
+      filterByUserState: _User_StateFilter
     ): UsersByCustomer @isAuthenticated
     User(
       user_email: String
