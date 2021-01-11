@@ -152,7 +152,7 @@ module.exports = async (object, params, ctx) => {
       if (invoiceSentFrom === "DE") {
         mailOption.bcc = [carbonCopyEmail, blindcarbonCopyEmail];
       } else {
-        mailOption.cc = carbonCopyEmail;
+        mailOption.bcc = carbonCopyEmail;
       }
       await sendMail(mailOption, filename)
         .then(() => {
