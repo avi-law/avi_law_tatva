@@ -66,8 +66,8 @@ module.exports = async (object, params, ctx) => {
         invoiceLanguage,
         invoiceContent,
       } = result;
-      // const invoiceEmailRecipient = result.inv_email;
-      const invoiceEmailRecipient = "dummy-user-de@avi-law.com";
+      const invoiceEmailRecipient = result.inv_email;
+      // const invoiceEmailRecipient = "dummy-user-de@avi-law.com";
       if (availableInvoice.indexOf(documentName) === -1) {
         console.error(`${documentName} type of invoice document not found`);
         throw new APIError({
