@@ -77,7 +77,7 @@ MATCH (u:User { user_email: $user_email})-[:USER_TO_CUSTOMER]->(c:Customer)<-[:U
 Return u2`;
 
 exports.getUsersByCustomerCountQuery = (condition = "") => `
-MATCH (u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer)
+MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer)
 ${condition}
 RETURN count(u) as count`;
 
@@ -87,9 +87,9 @@ exports.getUsersByCustomerQuery = (
   skip = 0,
   orderBy = "c.user_email ASC"
 ) => `
-  MATCH (u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer)
+MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer)
   ${condition}
-  RETURN u, c, r1
+  RETURN u, c, us
   ORDER BY ${orderBy}
   SKIP toInteger(${skip})
   LIMIT toInteger(${limit})`;

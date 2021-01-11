@@ -24,7 +24,7 @@ module.exports = async (object, params) => {
   const defaultOrderBy = "c.user_email ASC";
   let queryOrderBy = "";
   const { filter, orderBy } = params;
-  let condition = `WHERE c.cust_id = ${customerId} `;
+  let condition = `WHERE c.cust_id = ${customerId} AND r2.to IS NULL`;
   try {
     if (orderBy && orderBy.length > 0) {
       orderBy.forEach((orderCustomer) => {
@@ -80,6 +80,7 @@ module.exports = async (object, params) => {
       const users = result.records.map((record) => {
         const user = {
           user: common.getPropertiesFromRecord(record, "u"),
+          user_state: common.getPropertiesFromRecord(record, "us"),
           customer: common.getPropertiesFromRecord(record, "c"),
         };
         return user;

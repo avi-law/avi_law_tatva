@@ -64,9 +64,11 @@ const typeDefs = gql`
     country_name_de: String
     iso_3166_1_alpha_2: String
     avail_for_nl: Boolean
+    avail_for_inv: Boolean
     iso_3166_1_alpha_3: String
     country_id: Int
     avail_for_nl_ord: Int
+    avail_for_inv_ord: Int
     country_name_en: String
     is_sub_country_of: [Country_Sub]
       @relation(name: "IS_SUB_COUNTRY_OF", direction: IN)
@@ -367,6 +369,7 @@ const typeDefs = gql`
   type UserCustomer {
     customer: Customer
     user: User
+    user_state: User_State
   }
 
   type UsersByCustomer {
