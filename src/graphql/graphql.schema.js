@@ -208,7 +208,7 @@ const typeDefs = gql`
     cust_acc_until: String
     user_to: Float
     single_user: Boolean
-    cust_spec_cont: Int
+    cust_spec_cont: Boolean
   }
 
   type userAddresses {
@@ -414,6 +414,7 @@ const typeDefs = gql`
       offset: Int
       orderBy: [_UserOrdering]
       filter: _UserFilter
+      orderByUserState: [_User_StateOrdering]
       filterByUserState: _User_StateFilter
     ): UsersByCustomer @isAuthenticated
     User(

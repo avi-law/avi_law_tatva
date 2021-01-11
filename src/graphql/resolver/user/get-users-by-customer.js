@@ -2,10 +2,7 @@
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
 const { common } = require("../../../utils");
-const {
-  getUsersByCustomerCountQuery,
-  getUsersByCustomerQuery,
-} = require("../../../neo4j/query");
+const { getUsersCountQuery, getUsersQuery } = require("../../../neo4j/query");
 
 /**
  *
@@ -23,7 +20,7 @@ module.exports = async (object, params) => {
   let total = 0;
   const defaultOrderBy = "c.user_email ASC";
   let queryOrderBy = "";
-  const { filter, orderBy, filterByUserState } = params;
+  const { filter, orderBy, filterByUserState, orderByUserState } = params;
   let condition = `WHERE c.cust_id = ${customerId} AND r2.to IS NULL`;
   try {
     if (orderBy && orderBy.length > 0) {
@@ -31,21 +28,21 @@ module.exports = async (object, params) => {
         const field = orderCustomer.slice(0, orderCustomer.lastIndexOf("_"));
         const last = orderCustomer.split("_").pop().toUpperCase();
         if (queryOrderBy === "") {
-          queryOrderBy = `c.${field} ${last}`;
+          queryOrderBy = `u.${field} ${last}`;
         } else {
-          queryOrderBy = `${queryOrderBy}, cs.${field} ${last}`;
+          queryOrderBy = `${queryOrderBy}, u.${field} ${last}`;
         }
       });
     }
-    if (filter && filter.length > 0) {
-      filter.forEach((filterByUser) => {
-        Object.keys(filterByUser).forEach((key) => {
-          if (/^\d+$/.test(filterByUser[key])) {
-            condition = `${condition} AND c.${key} = ${filterByUser[key]}`;
-          } else {
-            condition = `${condition} AND c.${key} = '${filterByUser[key]}'`;
-          }
-        });
+    if (orderByUserState && orderByUserState.length > 0) {
+      orderByUserState.forEach((orderUserState) => {
+        const field = orderUserState.slice(0, orderUserState.lastIndexOf("_"));
+        const last = orderUserState.split("_").pop().toUpperCase();
+        if (queryOrderBy === "") {
+          queryOrderBy = `us.${field} ${last}`;
+        } else {
+          queryOrderBy = `${queryOrderBy}, us.${field} ${last}`;
+        }
       });
     }
     if (filter) {
@@ -79,15 +76,13 @@ module.exports = async (object, params) => {
     if (queryOrderBy === "") {
       queryOrderBy = defaultOrderBy;
     }
-    const countResult = await session.run(
-      getUsersByCustomerCountQuery(condition)
-    );
+    const countResult = await session.run(getUsersCountQuery(condition));
     if (countResult && countResult.records.length > 0) {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
     const result = await session.run(
-      getUsersByCustomerQuery(condition, limit, offset, queryOrderBy)
+      getUsersQuery(condition, limit, offset, queryOrderBy)
     );
     if (result && result.records.length > 0) {
       const users = result.records.map((record) => {
