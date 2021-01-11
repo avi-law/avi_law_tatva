@@ -49,7 +49,7 @@ const getCypherQueryOpt = (key, value, alias) => {
   const last = key.split("_").pop().toUpperCase();
   switch (last) {
     case "CONTAINS":
-      value = value.replace(/[^\w\s]/gi, "");
+      value = value.replace(/[&/\\#,+()$~%.'":*?^<>{}]/g, "");
       whereCondition = `toLower(${alias}.${field}) CONTAINS toLower('${value}')`;
       break;
     default:
