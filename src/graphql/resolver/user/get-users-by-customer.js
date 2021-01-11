@@ -31,7 +31,7 @@ module.exports = async (object, params) => {
         const field = orderCustomer.slice(0, orderCustomer.lastIndexOf("_"));
         const last = orderCustomer.split("_").pop().toUpperCase();
         if (queryOrderBy === "") {
-          queryOrderBy = `cs.${field} ${last}`;
+          queryOrderBy = `c.${field} ${last}`;
         } else {
           queryOrderBy = `${queryOrderBy}, cs.${field} ${last}`;
         }
