@@ -150,7 +150,7 @@ module.exports = async (object, params, ctx) => {
         },
       };
       if (invoiceSentFrom === "DE") {
-        mailOption.bcc = `${carbonCopyEmail}, ${blindcarbonCopyEmail}`;
+        mailOption.bcc = [carbonCopyEmail, blindcarbonCopyEmail];
       } else {
         mailOption.cc = carbonCopyEmail;
       }
