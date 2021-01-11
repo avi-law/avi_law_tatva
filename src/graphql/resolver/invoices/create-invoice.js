@@ -131,7 +131,6 @@ module.exports = async (object, params, ctx) => {
         constants.EMAIL[invoiceLanguage.toUpperCase()].INVOICE[invoiceContent];
       const mailOption = {
         to: invoiceEmailRecipient,
-        cc: carbonCopyEmail,
         subject: mailContent.SUBJECT.replace("{{year}}", yearOfInvoice),
         attachments: [
           {
@@ -151,7 +150,9 @@ module.exports = async (object, params, ctx) => {
         },
       };
       if (invoiceSentFrom === "DE") {
-        mailOption.bcc = `${blindcarbonCopyEmail}`;
+        mailOption.bcc = `${carbonCopyEmail}, ${blindcarbonCopyEmail}`;
+      } else {
+        mailOption.cc = carbonCopyEmail;
       }
       await sendMail(mailOption, filename)
         .then(() => {
