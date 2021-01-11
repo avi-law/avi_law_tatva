@@ -365,11 +365,19 @@ const typeDefs = gql`
     invoiceCustomer: [Invoice]
     total: Int
   }
-
+  type UserToCustomer {
+    from: Float
+    to: Float
+    cust_spec_cont: Boolean
+    user_funct_at_cust: String
+    user_is_cust_admin: Boolean
+    user_spec_cont: Boolean
+  }
   type UserCustomer {
     customer: Customer
     user: User
     user_state: User_State
+    user_to_customer: UserToCustomer
   }
 
   type UsersByCustomer {
@@ -389,6 +397,12 @@ const typeDefs = gql`
     newCustomer(data: CustomerCustomInput!): Boolean @isAdmin @isAuthenticated
     invoicePaid(invoice_id: String!): Boolean @isAdmin
     createInvoice(customer_id: Int!): Boolean @isAdmin
+    setUserProperties(
+      user_email: String!
+      entitled: Boolean
+      admin: Boolean
+      specCount: Boolean
+    ): Boolean @isAuthenticated @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated

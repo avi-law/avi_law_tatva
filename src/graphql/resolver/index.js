@@ -13,6 +13,7 @@ const acceptGDPR = require("./accept-gdpr");
 const user = require("./user/get-user");
 const getCustomer = require("./customers/get-customer");
 const downloadInvoice = require("./download-file/download-invoice");
+const setUserProperties = require("./user/set-user-properties");
 
 // System Admin Resolver
 const getCustomers = require("./customers/get-customers");
@@ -43,6 +44,7 @@ const resolvers = {
     invoicePaid,
     createInvoice,
     newCustomer,
+    setUserProperties,
   },
   Query: {
     user,

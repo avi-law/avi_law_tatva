@@ -82,6 +82,7 @@ module.exports = async (object, params) => {
           user: common.getPropertiesFromRecord(record, "u"),
           user_state: common.getPropertiesFromRecord(record, "us"),
           customer: common.getPropertiesFromRecord(record, "c"),
+          user_to_customer: common.getPropertiesFromRecord(record, "r1"),
         };
         return user;
       });

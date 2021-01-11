@@ -151,6 +151,7 @@ const preparedNewInvoiceDetails = async (invoiceDetails) => {
   unique = unique.toString().length === 1 ? `0${unique}` : unique;
   let invoice = {};
   invoice.inv_id_strg = `${cou1.iso_3166_1_alpha_2}_${year}_${customerID}_${unique}`;
+  console.log("invoice.inv_id_strg", invoice.inv_id_strg);
   invoice.inv_date = common.getDateObject(d);
   invoice.invoiceGoesToAltRec = cs.inv_goes_to_alt_rec;
   invoice.invoiceSentFrom = country;
