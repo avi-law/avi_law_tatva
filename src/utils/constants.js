@@ -150,7 +150,7 @@ module.exports = {
       CONT200:
         "Der Rechnungsbetrag ist gem. § 6 Abs. 1 Z 27 UStG von der Umsatzsteuer befreit.",
       CONT210:
-        "Wir ersuchen Sie höflichst um Einzahlung des Rechnungsbetrages auf unser Konto bei der Steiermärkischen Bank und Sparkassen AG, IBAN: AT32 2081 5021 0042, 0682, BIC: STSPAT2G.",
+        "Wir ersuchen Sie höflichst um Einzahlung des Rechnungsbetrages auf unser Konto bei der Steiermärkischen Bank und Sparkassen AG, IBAN: AT32 2081 5021 0042, BIC: STSPAT2G.",
       CONT220: "Mit freundlichen Grüßen,",
       CONT230: "Joachim J. Janezic",
       CONT240:
@@ -222,7 +222,7 @@ module.exports = {
       CONT200:
         "This amount is free of VAT according to § 6 (1) No 27 of the Austrian Act on VAT.",
       CONT210:
-        "We  kindly  ask  you  to  pay  the  total  amount  of  this  invoice  to  our  bank  account  at  Steiermärkische  Bank  und Sparkassen AG, IBAN: AT32 2081 5021 0042, 0682, BIC: STSPAT2G.",
+        "We  kindly  ask  you  to  pay  the  total  amount  of  this  invoice  to  our  bank  account  at  Steiermärkische  Bank  und Sparkassen AG, IBAN: AT32 2081 5021 0042, BIC: STSPAT2G.",
       CONT220: "With best regards,",
       CONT230: "Joachim J. Janezic",
       CONT240:
