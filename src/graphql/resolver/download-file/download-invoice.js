@@ -25,14 +25,8 @@ module.exports = async (object, params, ctx) => {
         message: "FILE_NOT_FOUND",
       });
     }
-    if (systemAdmin) {
-      const contents = await fs.readFileSync(filePath, { encoding: "base64" });
-      return contents;
-    }
-    throw new APIError({
-      lang: userSurfLang,
-      message: "INTERNAL_SERVER_ERROR",
-    });
+    const contents = await fs.readFileSync(filePath, { encoding: "base64" });
+    return contents;
   } catch (error) {
     session.close();
     throw error;
