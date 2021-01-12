@@ -175,11 +175,12 @@ const preparedNewInvoiceDetails = async (invoiceDetails) => {
   }
   if (invoice.inv_date_start && invoice.inv_date_start.year) {
     unique = await getUniqueInvoiceId({
-      customerID,
+      customerId: c.cust_id,
       year: invoice.inv_date_start.year,
       country: cou1.iso_3166_1_alpha_2,
       customerIdString: customerID,
     });
+    unique = unique.toString().length === 1 ? `0${unique}` : unique;
     invoice.inv_id_strg = `${cou1.iso_3166_1_alpha_2}_${invoice.inv_date_start.year}_${customerID}_${unique}`;
   }
   return invoice;
