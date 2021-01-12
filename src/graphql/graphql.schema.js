@@ -7,6 +7,7 @@ const typeDefs = gql`
   type User {
     user_email: String
     user_is_author: Boolean
+    user_status: String
     user_is_sys_admin: Boolean
     has_user_state: [User_State]
       @relation(name: "HAS_USER_STATE", direction: OUT)
