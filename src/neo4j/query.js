@@ -75,6 +75,27 @@ OPTIONAL MATCH (us)-[:USER_HAS_PREF_2ND_LANG]->(lang3:Language)
 OPTIONAL MATCH (us)-[:USER_HAS_PREF_COUNTRY]->(cou1:Country)
 RETURN u, us, lang1, lang2, lang3, cou1, cou3`;
 
+exports.createUser = `
+MATCH (u:User)-[r1:HAS_USER_STATE]->(us:User_State)
+WHERE u.user_email = $user_email AND r1.to IS NULL
+OPTIONAL MATCH (lang1:Language {iso_639_1: $user_pref_surf_lang_iso_639_1})
+OPTIONAL MATCH (lang2:Language {iso_639_1: $user_pref_1st_lang_iso_639_1})
+OPTIONAL MATCH (lang3:Language {iso_639_1: $user_pref_2nd_lang_iso_639_1})
+OPTIONAL MATCH (cou1:Country {iso_3166_1_alpha_2: $user_pref_country_iso_3166_1_alpha_2})
+OPTIONAL MATCH (cou3:County) WHERE cou3.iso_3166_1_alpha_2 IN $user_want_nl_from_country_iso_3166_1_alpha_2
+SET r1.to = apoc.date.currentTimestamp()
+CREATE (nus:User_State $user_state)<-[:HAS_USER_STATE { from: apoc.date.currentTimestamp()}]-(u)
+MERGE (nus)-[:HAS_USER_STATE_PRED {from: apoc.date.currentTimestamp()}]->(us);
+// FOREACH (_ IN CASE WHEN $email IS NOT NULL THEN [1] END | SET u.user_email = $email)
+FOREACH (_ IN CASE WHEN lang1 IS NOT NULL THEN [1] END | MERGE (nus)-[:USER_HAS_PREF_SURF_LANG]->(lang1))
+FOREACH (_ IN CASE WHEN lang2 IS NOT NULL THEN [1] END | MERGE (nus)-[:USER_HAS_PREF_1ST_LANG]->(lang2))
+FOREACH (_ IN CASE WHEN lang3 IS NOT NULL THEN [1] END | MERGE (nus)-[:USER_HAS_PREF_2ND_LANG]->(lang3))
+FOREACH (_ IN CASE WHEN cou1 IS NOT NULL THEN [1] END | MERGE (nus)-[:USER_HAS_PREF_COUNTRY]->(cou1))
+FOREACH (_ IN CASE WHEN cou3 IS NOT NULL THEN [1] END | MERGE (nus)-[:USER_WANTS_NL_FROM_COUNTRY]->(cou3))
+FOREACH (_ IN CASE WHEN $user_acronym IS NOT NULL THEN [1] END | SET nus.user_acronym = $user_acronym)
+FOREACH (_ IN CASE WHEN $user_is_sys_admin IS NOT NULL THEN [1] END | SET u.user_is_sys_admin = TRUE)
+FOREACH (_ IN CASE WHEN $user_is_author IS NOT NULL THEN [1] END | SET u.user_is_author = TRUE)`;
+
 exports.getUserCustomerList = `
 MATCH (u:User)-[:USER_TO_CUSTOMER]->(c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
 WHERE u.user_email = $user_email AND r1.to IS NULL

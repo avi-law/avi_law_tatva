@@ -362,6 +362,58 @@ const typeDefs = gql`
     cust_alt_inv_country_id: Int
   }
 
+  input UserInput {
+    user_email: String
+    user_is_author: Boolean
+    user_status: String
+    user_is_sys_admin: Boolean
+  }
+
+  input User_StateInput {
+    user_id: Int
+    user_first_name: String
+    user_middle_name: String
+    user_last_name: String
+    user_pwd: String
+    user_gdpr_accepted: Float
+    user_title_post: String
+    user_sex: String
+    user_title_pre: String
+    user_acronym: String
+    user_pref_country: Int
+    user_rmk: String
+    user_last_login: String
+    user_login_count: Int
+  }
+  enum NL_Country {
+    AT
+    DE
+    CH
+  }
+  enum LanguageForUser {
+    de
+    en
+  }
+
+  enum Pref_Country {
+    AT
+    DE
+    CH
+  }
+
+  input UserCustomInput {
+    user: UserInput
+    user_state: User_StateInput
+    user_pref_surf_lang_iso_639_1: LanguageForUser
+    user_pref_1st_lang_iso_639_1: LanguageForUser
+    user_pref_2nd_lang_iso_639_1: LanguageForUser
+    user_pref_country_iso_3166_1_alpha_2: Pref_Country
+    user_want_nl_from_country_iso_3166_1_alpha_3: [NL_Country]
+    user_acronym: String
+    user_is_sys_admin: Boolean
+    user_is_author: Boolean
+  }
+
   type InvoiceCustomersCustom {
     invoiceCustomer: [Invoice]
     total: Int
@@ -433,6 +485,8 @@ const typeDefs = gql`
       admin: Boolean
       specCount: Boolean
     ): Boolean @isAuthenticated
+    createUser(user_email: String!, data: UserCustomInput!): Boolean
+      @isAuthenticated
   }
   type Query {
     user: User_State @isAuthenticated

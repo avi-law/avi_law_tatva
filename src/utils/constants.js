@@ -23,6 +23,7 @@ module.exports = {
         "The link to change your password is invalid - please request a password change again!.",
       INTERNAL_SERVER_ERROR: "Internal server error",
       FILE_NOT_FOUND: "File no found",
+      EMAIL_ALREADY_EXISTS: "The email already exists",
     },
     DE: {
       INVALID_LOGIN_EMAIL: "Die eingegebene eMail-Adresse ist nicht korrekt!",
@@ -47,6 +48,7 @@ module.exports = {
         "Ungültiger Liink zum Ändern des Passwortes - bitte fordern Sie einen neuen Link zum Ändern Ihres Passwortes an.",
       INTERNAL_SERVER_ERROR: "Internal server error",
       FILE_NOT_FOUND: "File no found",
+      EMAIL_ALREADY_EXISTS: "The email already exists",
     },
   },
   LOG_TYPE_ID: {

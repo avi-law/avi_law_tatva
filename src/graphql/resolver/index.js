@@ -23,6 +23,7 @@ const getUser = require("./user/get-user");
 const getUserCustomerList = require("./customers/get-user-customer-list");
 const getConnectUserList = require("./user/get-connected-users");
 const createCustomer = require("./customers/create-customer");
+const createUser = require("./user/create-user");
 const newCustomer = require("./customers/new-customer");
 const getInvoices = require("./invoices/get-invoices");
 const getInvoice = require("./invoices/get-invoice");
@@ -47,6 +48,7 @@ const resolvers = {
     createInvoice,
     newCustomer,
     setUserProperties,
+    createUser,
   },
   Query: {
     user,
