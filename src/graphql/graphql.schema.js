@@ -408,7 +408,7 @@ const typeDefs = gql`
     user_pref_1st_lang_iso_639_1: LanguageForUser
     user_pref_2nd_lang_iso_639_1: LanguageForUser
     user_pref_country_iso_3166_1_alpha_2: Pref_Country
-    user_want_nl_from_country_iso_3166_1_alpha_3: [NL_Country]
+    user_want_nl_from_country_iso_3166_1_alpha_2: [NL_Country]
     user_acronym: String
     user_is_sys_admin: Boolean
     user_is_author: Boolean

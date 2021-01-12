@@ -4,7 +4,7 @@
 const driver = require("../../../config/db");
 const { APIError, common } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const { createUser, getUserByEmail } = require("../../../neo4j/query");
+const { createUser, getUser, getUserByEmail } = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
@@ -34,6 +34,26 @@ module.exports = async (object, params, ctx) => {
         });
       }
       isChangeEmail = true;
+    }
+    const oldUserStateResult = await session.run(getUser, {
+      user_email: userEmail,
+    });
+    if (oldUserStateResult && oldUserStateResult.records) {
+      const userData = oldUserStateResult.records.map((record) => {
+        const userResult = {
+          user: common.getPropertiesFromRecord(record, "u"),
+          user_state: common.getPropertiesFromRecord(record, "us"),
+        };
+        return userResult;
+      });
+      const userStatedetails = userData[0];
+      // userState.user_gdpr_accepted = userStatedetails.user_gdpr_accepted;
+    } else {
+      console.error("Customer details not found");
+      throw new APIError({
+        lang: userSurfLang,
+        message: "INTERNAL_SERVER_ERROR",
+      });
     }
     const queryParams = {
       user: userDetails,
