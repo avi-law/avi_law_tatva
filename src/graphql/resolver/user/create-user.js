@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { APIError, common } = require("../../../utils");
+const { APIError, common, auth } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const { createUser, getUser, getUserByEmail } = require("../../../neo4j/query");
 
@@ -13,7 +13,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const userEmail = params.user_email;
-  const userState = params.data.user_state || null;
+  let userState = params.data.user_state || null;
   const userDetails = params.data.user || null;
   let isChangeEmail = false;
   try {
@@ -46,8 +46,24 @@ module.exports = async (object, params, ctx) => {
         };
         return userResult;
       });
+      if (userState.user_pwd) {
+        userState.user_pwd = await auth.hashPassword(userState.user_pwd);
+        userState.user_pwd_old = userState.user_pwd;
+      }
+      if (!userState.user_gdpr_accepted) {
+        userState.user_gdpr_accepted = null;
+      }
+      if (!userState.user_login_count) {
+        userState.user_login_count = null;
+      }
+      if (!userState.user_last_login) {
+        userState.user_last_login = null;
+      }
       const userStatedetails = userData[0];
-      // userState.user_gdpr_accepted = userStatedetails.user_gdpr_accepted;
+      userState = {
+        ...userStatedetails.user_state,
+        ...userState,
+      };
     } else {
       console.error("Customer details not found");
       throw new APIError({
