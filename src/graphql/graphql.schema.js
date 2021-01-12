@@ -388,7 +388,7 @@ const typeDefs = gql`
     lang2: Language
     lang3: Language
     cou1: Country
-    cou3: Country
+    cou3: [Country]
   }
 
   type UsersByCustomer {
