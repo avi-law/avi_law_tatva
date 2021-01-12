@@ -18,6 +18,7 @@ const setUserProperties = require("./user/set-user-properties");
 // System Admin Resolver
 const getCustomers = require("./customers/get-customers");
 const getUsersByCustomer = require("./user/get-users-by-customer");
+const getUsers = require("./user/get-users");
 const getUserCustomerList = require("./customers/get-user-customer-list");
 const getConnectUserList = require("./user/get-connected-users");
 const createCustomer = require("./customers/create-customer");
@@ -61,6 +62,7 @@ const resolvers = {
     getUserCustomerList,
     getConnectUserList,
     getUsersByCustomer,
+    getUsers,
   },
 };
 

@@ -393,8 +393,8 @@ const typeDefs = gql`
     forgotPassword(user_email: String!): Boolean
     setNewPassword(user_pwd: String, token: String!): Boolean
     createCustomer(customer_id: Int!, data: CustomerCustomInput!): Boolean
-      @isAdmin
-    newCustomer(data: CustomerCustomInput!): Boolean @isAdmin @isAuthenticated
+      @isAuthenticated
+    newCustomer(data: CustomerCustomInput!): Boolean @isAuthenticated
     invoicePaid(invoice_id: String!): Boolean @isAdmin
     createInvoice(customer_id: Int!): Boolean @isAdmin
     setUserProperties(
@@ -402,7 +402,7 @@ const typeDefs = gql`
       entitled: Boolean
       admin: Boolean
       specCount: Boolean
-    ): Boolean @isAuthenticated @isAdmin
+    ): Boolean @isAuthenticated
   }
   type Query {
     user: User_State @isAuthenticated
@@ -410,6 +410,14 @@ const typeDefs = gql`
     getConnectUserList: [User] @isAuthenticated
     getUsersByCustomer(
       customerId: Int!
+      first: Int
+      offset: Int
+      orderBy: [_UserOrdering]
+      filter: _UserFilter
+      orderByUserState: [_User_StateOrdering]
+      filterByUserState: _User_StateFilter
+    ): UsersByCustomer @isAuthenticated
+    getUsers(
       first: Int
       offset: Int
       orderBy: [_UserOrdering]
@@ -431,10 +439,8 @@ const typeDefs = gql`
       first: Int
       offset: Int
       orderByInvoice: [_InvoiceOrdering]
-    ): InvoiceCustom @isAdmin
-    getInvoice(customer_id: Int, invoice_id: String!): Invoice
-      @isAdmin
-      @isAuthenticated
+    ): InvoiceCustom @isAuthenticated
+    getInvoice(customer_id: Int, invoice_id: String!): Invoice @isAuthenticated
     verifyForgotPasswordLink(token: String!): Boolean
     getNewsLetters(lang: [String!]): [NL_Article!]
     getNewsLetter(id: Int!): NL_Article @isAuthenticated
@@ -456,7 +462,7 @@ const typeDefs = gql`
     ): InvoiceCustomersCustom @isAdmin
     getCustomer(customer_id: Int!): CustomerCustom @isAuthenticated
     getPreparedNewInvoiceDetails(customer_id: Int!): Invoice @isAuthenticated
-    downloadInvoice(invoice_id: String!): String @isAuthenticated @isAdmin
+    downloadInvoice(invoice_id: String!): String @isAuthenticated
   }
 `;
 
