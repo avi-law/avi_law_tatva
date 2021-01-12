@@ -415,7 +415,7 @@ const typeDefs = gql`
       orderBy: [_UserOrdering]
       filter: _UserFilter
       orderByUserState: [_User_StateOrdering]
-      filterByUserState: _User_StateFilter
+      filterByString: String
     ): UsersByCustomer @isAuthenticated
     getUsers(
       first: Int
