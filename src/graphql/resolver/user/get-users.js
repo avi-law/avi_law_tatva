@@ -19,7 +19,7 @@ module.exports = async (object, params) => {
   let total = 0;
   const defaultOrderBy = "c.user_email ASC";
   let queryOrderBy = "";
-  const { filter, orderBy, filterByUserState, orderByUserState } = params;
+  const { filter, orderBy, filterByString, filterByUserState, orderByUserState } = params;
   let condition = `WHERE r2.to IS NULL`;
   try {
     if (orderBy && orderBy.length > 0) {
@@ -72,6 +72,11 @@ module.exports = async (object, params) => {
         }
       });
     }
+    if (filterByString) {
+      const value = filterByString.replace(/[&/\\#,+()$~%.'":*?^<>{}]/g, "");
+      condition = `${condition} AND ( us.user_first_name CONTAINS "${value}" OR us.user_last_name CONTAINS "${value}" OR u.user_email CONTAINS "${value}")`;
+    }
+    console.log(condition);
     if (queryOrderBy === "") {
       queryOrderBy = defaultOrderBy;
     }

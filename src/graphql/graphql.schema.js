@@ -375,7 +375,7 @@ const typeDefs = gql`
     user_middle_name: String
     user_last_name: String
     user_pwd: String
-    user_gdpr_accepted: Float
+    user_gdpr_accepted: String
     user_title_post: String
     user_sex: String
     user_title_pre: String
@@ -508,6 +508,7 @@ const typeDefs = gql`
       filter: _UserFilter
       orderByUserState: [_User_StateOrdering]
       filterByUserState: _User_StateFilter
+      filterByString: String
     ): UsersByCustomer @isAuthenticated
     getUser(user_email: String!): CustomUser @isAuthenticated
     User(
