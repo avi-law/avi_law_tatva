@@ -381,6 +381,16 @@ const typeDefs = gql`
     user_to_customer: UserToCustomer
   }
 
+  type CustomUser {
+    user: User
+    user_state: User_State
+    lang1: Language
+    lang2: Language
+    lang3: Language
+    cou1: Country
+    cou3: Country
+  }
+
   type UsersByCustomer {
     users: [UserCustomer]
     total: Int
@@ -426,6 +436,7 @@ const typeDefs = gql`
       orderByUserState: [_User_StateOrdering]
       filterByUserState: _User_StateFilter
     ): UsersByCustomer @isAuthenticated
+    getUser(user_email: String!): CustomUser @isAuthenticated
     User(
       user_email: String
       user_is_author: Boolean

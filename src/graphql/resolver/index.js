@@ -19,6 +19,7 @@ const setUserProperties = require("./user/set-user-properties");
 const getCustomers = require("./customers/get-customers");
 const getUsersByCustomer = require("./user/get-users-by-customer");
 const getUsers = require("./user/get-users");
+const getUser = require("./user/get-user");
 const getUserCustomerList = require("./customers/get-user-customer-list");
 const getConnectUserList = require("./user/get-connected-users");
 const createCustomer = require("./customers/create-customer");
@@ -63,6 +64,7 @@ const resolvers = {
     getConnectUserList,
     getUsersByCustomer,
     getUsers,
+    getUser,
   },
 };
 
