@@ -62,12 +62,12 @@ module.exports = async (object, params, ctx) => {
       if (oldCustomerStateResult && oldCustomerStateResult.records) {
         const singleRecord = oldCustomerStateResult.records[0];
         const customerStatedetails = singleRecord.get(0);
-        customerState.cust_status = customerStatedetails.cust_status;
-        customerState.cust_paid_until = customerStatedetails.cust_paid_until;
-        customerState.cust_acc_until = customerStatedetails.cust_acc_until;
-        customerState.cust_id = customerStatedetails.cust_id;
-        customerState.cust_gtc_accepted =
-          customerStatedetails.cust_gtc_accepted;
+        const oldCustomerState = customerStatedetails.customer_state;
+        customerState.cust_id = oldCustomerState.cust_id;
+        customerState.cust_status = oldCustomerState.cust_status;
+        customerState.cust_paid_until = oldCustomerState.cust_paid_until;
+        customerState.cust_acc_until = oldCustomerState.cust_acc_until;
+        customerState.cust_gtc_accepted = oldCustomerState.cust_gtc_accepted;
       } else {
         console.error("Customer details not found");
         throw new APIError({
@@ -89,8 +89,6 @@ module.exports = async (object, params, ctx) => {
       cust_to_be_invoiced_from_country_id_old: customerInvoicedFromCountry,
       customer_state: common.cleanObject(customerState),
     };
-    // console.log(queryParams);
-    // return true;
     const result = await session.run(createNewCustomerSate, queryParams);
     if (result && result.records.length > 0) {
       return true;
