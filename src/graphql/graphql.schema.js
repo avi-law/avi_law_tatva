@@ -380,10 +380,29 @@ const typeDefs = gql`
     user_state: User_State
     user_to_customer: UserToCustomer
   }
-
+  type UserStateCustom {
+    user_id: Int
+    user_first_name: String
+    user_middle_name: String
+    user_last_name: String
+    user_pwd: String
+    user_gdpr_accepted: Float
+    user_title_post: String
+    user_sex: String
+    user_pref_NL_AT: Boolean
+    user_pref_NL_CH: Boolean
+    user_pref_NL_DE: Boolean
+    user_pref_NL_EU: Boolean
+    user_title_pre: String
+    user_acronym: String
+    user_pref_country: Int
+    user_rmk: String
+    user_last_login: String
+    user_login_count: Int
+  }
   type CustomUser {
     user: User
-    user_state: User_State
+    user_state: UserStateCustom
     lang1: Language
     lang2: Language
     lang3: Language
