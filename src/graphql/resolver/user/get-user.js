@@ -10,8 +10,16 @@ module.exports = async (object, params, ctx) => {
   const email = params.user_email;
   const { user } = ctx;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
+  const userIsSysAdmin = user.user_is_sys_admin || false;
+  const userEmail = user.user_email || null;
   const session = driver.session();
   try {
+    if (!userIsSysAdmin && userEmail !== email) {
+      throw new APIError({
+        lang: userSurfLang,
+        message: "INTERNAL_SERVER_ERROR",
+      });
+    }
     const result = await session.run(getUser, { user_email: email });
     if (result && result.records.length > 0) {
       const userData = result.records.map((record) => {
@@ -30,7 +38,7 @@ module.exports = async (object, params, ctx) => {
     }
     throw new APIError({
       lang: userSurfLang,
-      message: "INVALID_FORGOT_PASSWORD",
+      message: "INTERNAL_SERVER_ERROR",
     });
   } catch (error) {
     session.close();
