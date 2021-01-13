@@ -51,7 +51,7 @@ module.exports = async (object, params, ctx) => {
       userStatedetails = userData[0];
       if (userState.user_pwd) {
         userState.user_pwd = await auth.hashPassword(userState.user_pwd);
-        userState.user_pwd_old = userState.user_pwd;
+        // userState.user_pwd_old = userState.user_pwd;
       }
       if (!userState.user_login_count) {
         userState.user_login_count = 0;
@@ -87,10 +87,10 @@ module.exports = async (object, params, ctx) => {
       email: userEmail,
     };
     queryParams.user_want_nl_from_country_iso_3166_1_alpha_2.push("EU");
+    if (isChangeEmail) {
+      queryParams.email = params.data.user.user_email;
+    }
     if (systemAdmin) {
-      if (isChangeEmail) {
-        queryParams.email = params.data.user.user_email;
-      }
       if (params.data.user_acronym) {
         queryParams.user_state.user_acronym = params.data.user_acronym;
       }
