@@ -76,7 +76,6 @@ module.exports = async (object, params) => {
       const value = filterByString.replace(/[&/\\#,+()$~%.'":*?^<>{}]/g, "");
       condition = `${condition} AND ( us.user_first_name CONTAINS "${value}" OR us.user_last_name CONTAINS "${value}" OR u.user_email CONTAINS "${value}")`;
     }
-    console.log(condition);
     if (queryOrderBy === "") {
       queryOrderBy = defaultOrderBy;
     }

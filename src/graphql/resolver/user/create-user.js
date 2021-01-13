@@ -54,7 +54,7 @@ module.exports = async (object, params, ctx) => {
         userState.user_pwd_old = userState.user_pwd;
       }
       if (!userState.user_login_count) {
-        userState.user_login_count = null;
+        userState.user_login_count = 0;
       }
       if (!userState.user_last_login) {
         userState.user_last_login = null;
