@@ -375,7 +375,7 @@ const typeDefs = gql`
     user_middle_name: String
     user_last_name: String
     user_pwd: String
-    user_gdpr_accepted: String
+    user_gdpr_accepted: Float
     user_title_post: String
     user_sex: String
     user_title_pre: String

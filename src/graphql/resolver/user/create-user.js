@@ -16,7 +16,7 @@ module.exports = async (object, params, ctx) => {
   let userState = params.data.user_state || null;
   const userDetails = params.data.user || null;
   let isChangeEmail = false;
-  let userStatedetails= null;
+  let userStatedetails = null;
   try {
     if (!userState) {
       throw new APIError({
@@ -36,7 +36,7 @@ module.exports = async (object, params, ctx) => {
       }
       isChangeEmail = true;
     }
-    let userAcronym = userState.user_acronym;
+    const userAcronym = userState.user_acronym;
     delete userState.user_acronym;
     const oldUserStateResult = await session.run(getUser, {
       user_email: userEmail,
@@ -49,12 +49,10 @@ module.exports = async (object, params, ctx) => {
         };
         return userResult;
       });
+      userStatedetails = userData[0];
       if (userState.user_pwd) {
         userState.user_pwd = await auth.hashPassword(userState.user_pwd);
         userState.user_pwd_old = userState.user_pwd;
-      }
-      if (!userState.user_gdpr_accepted) {
-        userState.user_gdpr_accepted = null;
       }
       if (!userState.user_login_count) {
         userState.user_login_count = null;
@@ -62,7 +60,6 @@ module.exports = async (object, params, ctx) => {
       if (!userState.user_last_login) {
         userState.user_last_login = null;
       }
-      userStatedetails = userData[0];
       userState = {
         ...userStatedetails.user_state,
         ...userState,
@@ -105,7 +102,6 @@ module.exports = async (object, params, ctx) => {
         queryParams.user_is_author = params.data.user_is_author;
       }
     }
-    console.log(queryParams);
     const result = await session.run(createUser, queryParams);
     if (result && result.records.length > 0) {
       // const userData = result.records.map((record) => {
