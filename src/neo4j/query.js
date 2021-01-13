@@ -125,7 +125,8 @@ WHERE u.user_email = $user_email AND r1.to IS NULL
 RETURN cs`;
 
 exports.getConnectUserList = `
-MATCH (u:User { user_email: $user_email})-[:USER_TO_CUSTOMER]->(c:Customer)<-[:USER_TO_CUSTOMER]-(u2:User)
+MATCH (u:User { user_email: $user_email})-[:USER_TO_CUSTOMER]->(c:Customer)
+MATCH (c)<-[:USER_TO_CUSTOMER]-(u2)
 Return u2`;
 
 exports.getUsersCountQuery = (condition = "") => `
