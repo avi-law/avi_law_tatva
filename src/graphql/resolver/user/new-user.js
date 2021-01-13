@@ -32,6 +32,9 @@ module.exports = async (object, params, ctx) => {
         });
       }
     }
+    const pwd = userState.user_pwd;
+    const encryptedPassword = await auth.hashPassword(pwd);
+    userState.user_pwd = encryptedPassword;
     const queryParams = {
       user_email: userDetails.user_email,
       user: userDetails,
