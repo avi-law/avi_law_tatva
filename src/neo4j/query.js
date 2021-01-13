@@ -75,9 +75,9 @@ OPTIONAL MATCH (us)-[:USER_HAS_PREF_2ND_LANG]->(lang3:Language)
 OPTIONAL MATCH (us)-[:USER_HAS_PREF_COUNTRY]->(cou1:Country)
 RETURN u, us, lang1, lang2, lang3, cou1, cou3`;
 
-exports.createUser1 = `
-MATCH (u:User)-[r1:HAS_USER_STATE]->(us:User_State)
-WHERE u.user_email = $user_email AND r1.to IS NULL
+exports.newUser = `
+CREATE (u:User {user_email: $user_email})-[:HAS_USER_STATE {from: apoc.date.currentTimestamp()}]->(us:User_State $user_state)
+WITH u, us
 OPTIONAL MATCH (lang1:Language {iso_639_1: $user_pref_surf_lang_iso_639_1})
 OPTIONAL MATCH (lang2:Language {iso_639_1: $user_pref_1st_lang_iso_639_1})
 OPTIONAL MATCH (lang3:Language {iso_639_1: $user_pref_2nd_lang_iso_639_1})
@@ -86,7 +86,14 @@ CALL {
   OPTIONAL MATCH (cou3:Country) WHERE cou3.iso_3166_1_alpha_2 IN $user_want_nl_from_country_iso_3166_1_alpha_2
   RETURN collect(cou3) AS cou3
 }
-RETURN us, cou3`;
+FOREACH (_ IN CASE WHEN lang1 IS NOT NULL THEN [1] END | MERGE (us)-[:USER_HAS_PREF_SURF_LANG]->(lang1))
+FOREACH (_ IN CASE WHEN lang2 IS NOT NULL THEN [1] END | MERGE (us)-[:USER_HAS_PREF_1ST_LANG]->(lang2))
+FOREACH (_ IN CASE WHEN lang3 IS NOT NULL THEN [1] END | MERGE (us)-[:USER_HAS_PREF_2ND_LANG]->(lang3))
+FOREACH (_ IN CASE WHEN cou1 IS NOT NULL THEN [1] END | MERGE (us)-[:USER_HAS_PREF_COUNTRY]->(cou1))
+FOREACH (cou IN cou3 | MERGE (us)-[:USER_WANTS_NL_FROM_COUNTRY]->(cou))
+FOREACH (_ IN CASE WHEN $user_is_sys_admin IS NOT NULL THEN [1] END | SET u.user_is_sys_admin = $user_is_sys_admin)
+FOREACH (_ IN CASE WHEN $user_is_author IS NOT NULL THEN [1] END | SET u.user_is_author = $user_is_author)
+RETURN u, us, lang1, lang2, lang3, cou1, cou3`;
 
 exports.createUser = `
 MATCH (u:User)-[r1:HAS_USER_STATE]->(us:User_State)

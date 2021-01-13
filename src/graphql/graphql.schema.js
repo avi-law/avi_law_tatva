@@ -464,7 +464,31 @@ const typeDefs = gql`
     total: Int
   }
 
+  input UserStateCustomInput {
+    user_first_name: String!
+    user_middle_name: String
+    user_last_name: String
+    user_pwd: String
+    user_gdpr_accepted: Float
+    user_title_post: String
+    user_sex: String!
+    user_title_pre: String
+  }
+
+  input registerCustomer {
+    user: UserInput!
+    user_state: UserStateCustomInput!
+    customer: CustomerInput
+    customer_state: Customer_StateInput!
+    cust_to_be_invoiced_from_country_iso_3166_1_alpha_2: String
+    cust_country_iso_3166_1_alpha_2: String
+    cust_inv_lang_iso_639_1: String
+    cust_alt_inv_country_iso_3166_1_alpha_2e: String
+    cust_inv_currency_iso_4217: String
+  }
+
   type Mutation {
+    register(data: registerCustomer!): Boolean
     login(user_email: String!, user_pwd: String!): UserCustomLogin
     acceptGTC(accept: Boolean!): UserCustomLogin @isAuthenticated
     acceptGDPR(accept: Boolean!): UserCustomLogin @isAuthenticated
@@ -484,6 +508,7 @@ const typeDefs = gql`
     ): Boolean @isAuthenticated
     createUser(user_email: String!, data: UserCustomInput!): Boolean
       @isAuthenticated
+    newUser(data: UserCustomInput!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
