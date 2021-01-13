@@ -1,6 +1,7 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
+const _ = require("lodash");
 const driver = require("../../../config/db");
 const { APIError, common, auth } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
@@ -36,8 +37,6 @@ module.exports = async (object, params, ctx) => {
       }
       isChangeEmail = true;
     }
-    const userAcronym = userState.user_acronym;
-    delete userState.user_acronym;
     const oldUserStateResult = await session.run(getUser, {
       user_email: userEmail,
     });
@@ -81,7 +80,7 @@ module.exports = async (object, params, ctx) => {
         params.data.user_pref_country_iso_3166_1_alpha_2,
       user_want_nl_from_country_iso_3166_1_alpha_2:
         params.data.user_want_nl_from_country_iso_3166_1_alpha_2,
-      user_state: common.cleanObject(userState),
+      user_state: common.cleanObject(_.cloneDeep(userState)),
       user_is_author: userStatedetails.user.user_is_author,
       user_acronym: userStatedetails.user_state.user_acronym,
       user_is_sys_admin: userStatedetails.user.user_is_sys_admin,
@@ -93,7 +92,7 @@ module.exports = async (object, params, ctx) => {
         queryParams.email = params.data.user.user_email;
       }
       if (params.data.user_acronym) {
-        queryParams.user_acronym = userAcronym;
+        queryParams.user_state.user_acronym = params.data.user_acronym;
       }
       if (typeof params.data.user_is_sys_admin === "boolean") {
         queryParams.user_is_sys_admin = params.data.user_is_sys_admin;
@@ -104,14 +103,6 @@ module.exports = async (object, params, ctx) => {
     }
     const result = await session.run(createUser, queryParams);
     if (result && result.records.length > 0) {
-      // const userData = result.records.map((record) => {
-      //   const userResult = {
-      //     nus: common.getPropertiesFromRecord(record, "us"),
-      //     cou3: record.get("cou3"),
-      //   };
-      //   return userResult;
-      // });
-      // console.log(userData);
       return true;
     }
     throw new APIError({

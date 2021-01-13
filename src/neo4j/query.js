@@ -108,7 +108,6 @@ FOREACH (_ IN CASE WHEN lang2 IS NOT NULL THEN [1] END | MERGE (nus)-[:USER_HAS_
 FOREACH (_ IN CASE WHEN lang3 IS NOT NULL THEN [1] END | MERGE (nus)-[:USER_HAS_PREF_2ND_LANG]->(lang3))
 FOREACH (_ IN CASE WHEN cou1 IS NOT NULL THEN [1] END | MERGE (nus)-[:USER_HAS_PREF_COUNTRY]->(cou1))
 FOREACH (cou IN cou3 | MERGE (nus)-[:USER_WANTS_NL_FROM_COUNTRY]->(cou))
-FOREACH (_ IN CASE WHEN $user_acronym IS NOT NULL THEN [1] END | SET nus.user_acronym = $user_acronym)
 FOREACH (_ IN CASE WHEN $user_is_sys_admin IS NOT NULL THEN [1] END | SET u.user_is_sys_admin = $user_is_sys_admin)
 FOREACH (_ IN CASE WHEN $user_is_author IS NOT NULL THEN [1] END | SET u.user_is_author = $user_is_sys_admin)
 RETURN nus`;
