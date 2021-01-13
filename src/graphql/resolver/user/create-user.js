@@ -95,10 +95,10 @@ module.exports = async (object, params, ctx) => {
       if (params.data.user_acronym) {
         queryParams.user_acronym = userAcronym;
       }
-      if (params.data.user_is_sys_admin) {
+      if (typeof params.data.user_is_sys_admin === "boolean") {
         queryParams.user_is_sys_admin = params.data.user_is_sys_admin;
       }
-      if (params.data.user_is_sys_admin) {
+      if (typeof params.data.user_is_sys_admin === "boolean") {
         queryParams.user_is_author = params.data.user_is_author;
       }
     }

@@ -364,9 +364,6 @@ const typeDefs = gql`
 
   input UserInput {
     user_email: String
-    user_is_author: Boolean
-    user_status: String
-    user_is_sys_admin: Boolean
   }
 
   input User_StateInput {
