@@ -46,6 +46,8 @@ module.exports = async (object, params, ctx) => {
       user_want_nl_from_country_iso_3166_1_alpha_2:
         params.data.user_want_nl_from_country_iso_3166_1_alpha_2,
       user_state: common.cleanObject(userState),
+      user_is_sys_admin: null,
+      user_is_author: null,
     };
     queryParams.user_want_nl_from_country_iso_3166_1_alpha_2.push("EU");
     if (typeof params.data.user_is_sys_admin === "boolean") {
@@ -54,10 +56,24 @@ module.exports = async (object, params, ctx) => {
     if (typeof params.data.user_is_author === "boolean") {
       queryParams.user_is_author = params.data.user_is_author;
     }
-    console.log(queryParams);
-    return true;
+    // console.log(queryParams);
+    // return true;
     const result = await session.run(newUser, queryParams);
     if (result && result.records.length > 0) {
+      // console.log(JSON.stringify(result.records));
+      const userData = result.records.map((record) => {
+        const userResult = {
+          user: common.getPropertiesFromRecord(record, "u"),
+          user_state: common.getPropertiesFromRecord(record, "us"),
+          lang1: common.getPropertiesFromRecord(record, "lang1"),
+          lang2: common.getPropertiesFromRecord(record, "lang2"),
+          lang3: common.getPropertiesFromRecord(record, "lang3"),
+          cou1: common.getPropertiesFromRecord(record, "cou1"),
+          cou3: record.get("cou3"),
+        };
+        return userResult;
+      });
+      // return userData[0];
       return true;
     }
     throw new APIError({
