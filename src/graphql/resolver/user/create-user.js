@@ -72,6 +72,7 @@ module.exports = async (object, params, ctx) => {
       });
     }
     const queryParams = {
+      user_email: userEmail,
       user: userDetails,
       user_pref_surf_lang_iso_639_1: params.data.user_pref_surf_lang_iso_639_1,
       user_pref_1st_lang_iso_639_1: params.data.user_pref_1st_lang_iso_639_1,
@@ -81,6 +82,10 @@ module.exports = async (object, params, ctx) => {
       user_want_nl_from_country_iso_3166_1_alpha_2:
         params.data.user_want_nl_from_country_iso_3166_1_alpha_2,
       user_state: common.cleanObject(userState),
+      user_is_author: null,
+      user_acronym: null,
+      user_is_sys_admin: null,
+      email: userEmail,
     };
 
     if (systemAdmin) {
@@ -98,9 +103,16 @@ module.exports = async (object, params, ctx) => {
       }
     }
     console.log(queryParams);
-    return true;
     const result = await session.run(createUser, queryParams);
     if (result && result.records.length > 0) {
+      // const userData = result.records.map((record) => {
+      //   const userResult = {
+      //     nus: common.getPropertiesFromRecord(record, "us"),
+      //     cou3: record.get("cou3"),
+      //   };
+      //   return userResult;
+      // });
+      // console.log(userData);
       return true;
     }
     throw new APIError({
