@@ -19,7 +19,13 @@ module.exports = async (object, params) => {
   let total = 0;
   const defaultOrderBy = "c.user_email ASC";
   let queryOrderBy = "";
-  const { filter, orderBy, filterByString, filterByUserState, orderByUserState } = params;
+  const {
+    filter,
+    orderBy,
+    filterByString,
+    filterByUserState,
+    orderByUserState,
+  } = params;
   let condition = `WHERE r2.to IS NULL`;
   try {
     if (orderBy && orderBy.length > 0) {

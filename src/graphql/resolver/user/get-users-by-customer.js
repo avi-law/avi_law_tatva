@@ -66,7 +66,6 @@ module.exports = async (object, params) => {
     if (queryOrderBy === "") {
       queryOrderBy = defaultOrderBy;
     }
-    console.log(condition);
     const countResult = await session.run(getUsersCountQuery(condition));
     if (countResult && countResult.records.length > 0) {
       const singleRecord = countResult.records[0];
