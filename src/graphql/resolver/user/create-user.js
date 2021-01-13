@@ -16,6 +16,7 @@ module.exports = async (object, params, ctx) => {
   let userState = params.data.user_state || null;
   const userDetails = params.data.user || null;
   let isChangeEmail = false;
+  let userStatedetails= null;
   try {
     if (!userState) {
       throw new APIError({
@@ -35,6 +36,8 @@ module.exports = async (object, params, ctx) => {
       }
       isChangeEmail = true;
     }
+    let userAcronym = userState.user_acronym;
+    delete userState.user_acronym;
     const oldUserStateResult = await session.run(getUser, {
       user_email: userEmail,
     });
@@ -59,7 +62,7 @@ module.exports = async (object, params, ctx) => {
       if (!userState.user_last_login) {
         userState.user_last_login = null;
       }
-      const userStatedetails = userData[0];
+      userStatedetails = userData[0];
       userState = {
         ...userStatedetails.user_state,
         ...userState,
@@ -82,18 +85,18 @@ module.exports = async (object, params, ctx) => {
       user_want_nl_from_country_iso_3166_1_alpha_2:
         params.data.user_want_nl_from_country_iso_3166_1_alpha_2,
       user_state: common.cleanObject(userState),
-      user_is_author: null,
-      user_acronym: null,
-      user_is_sys_admin: null,
+      user_is_author: userStatedetails.user.user_is_author,
+      user_acronym: userStatedetails.user_state.user_acronym,
+      user_is_sys_admin: userStatedetails.user.user_is_sys_admin,
       email: userEmail,
     };
-
+    queryParams.user_want_nl_from_country_iso_3166_1_alpha_2.push("EU");
     if (systemAdmin) {
       if (isChangeEmail) {
         queryParams.email = params.data.user.user_email;
       }
       if (params.data.user_acronym) {
-        queryParams.user_acronym = params.data.user_acronym;
+        queryParams.user_acronym = userAcronym;
       }
       if (params.data.user_is_sys_admin) {
         queryParams.user_is_sys_admin = params.data.user_is_sys_admin;
