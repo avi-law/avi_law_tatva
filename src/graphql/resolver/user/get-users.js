@@ -90,7 +90,6 @@ module.exports = async (object, params) => {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
-    console.log(queryOrderBy);
     const result = await session.run(
       getUsersQuery(condition, limit, offset, queryOrderBy)
     );
