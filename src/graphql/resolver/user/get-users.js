@@ -17,7 +17,7 @@ module.exports = async (object, params) => {
   const offset = params.offset || 0;
   const limit = params.first || 10;
   let total = 0;
-  const defaultOrderBy = "c.user_email ASC";
+  const defaultOrderBy = "u.user_email ASC";
   let queryOrderBy = "";
   const {
     filter,
@@ -90,6 +90,7 @@ module.exports = async (object, params) => {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
+    console.log(queryOrderBy);
     const result = await session.run(
       getUsersQuery(condition, limit, offset, queryOrderBy)
     );
@@ -98,8 +99,6 @@ module.exports = async (object, params) => {
         const user = {
           user: common.getPropertiesFromRecord(record, "u"),
           user_state: common.getPropertiesFromRecord(record, "us"),
-          customer: common.getPropertiesFromRecord(record, "c"),
-          user_to_customer: common.getPropertiesFromRecord(record, "r1"),
         };
         return user;
       });

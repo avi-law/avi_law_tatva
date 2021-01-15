@@ -130,7 +130,7 @@ MATCH (c)<-[:USER_TO_CUSTOMER]-(u2)
 Return u2`;
 
 exports.getUsersCountQuery = (condition = "") => `
-MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer)
+MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)
 ${condition}
 RETURN count(u) as count`;
 
@@ -138,14 +138,32 @@ exports.getUsersQuery = (
   condition = "",
   limit = 10,
   skip = 0,
-  orderBy = "c.user_email ASC"
+  orderBy = "u.user_email ASC"
 ) => `
-MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer)
+MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)
   ${condition}
-  RETURN u, c, us, r1
+  RETURN u,us
   ORDER BY ${orderBy}
   SKIP toInteger(${skip})
   LIMIT toInteger(${limit})`;
+
+exports.getCustomerUsersCountQuery = (condition = "") => `
+  MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer)
+  ${condition}
+  RETURN count(u) as count`;
+
+exports.getCustomerUsersQuery = (
+  condition = "",
+  limit = 10,
+  skip = 0,
+  orderBy = "c.user_email ASC"
+) => `
+  MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer)
+    ${condition}
+    RETURN u, c, us, r1
+    ORDER BY ${orderBy}
+    SKIP toInteger(${skip})
+    LIMIT toInteger(${limit})`;
 // Get common logging query function
 exports.getCommonUserStateLogginQuery = (otherParams = null) => {
   const params = otherParams ? `, ${otherParams}` : "";

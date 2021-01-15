@@ -2,7 +2,10 @@
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
 const { common } = require("../../../utils");
-const { getUsersCountQuery, getUsersQuery } = require("../../../neo4j/query");
+const {
+  getCustomerUsersCountQuery,
+  getCustomerUsersQuery,
+} = require("../../../neo4j/query");
 
 /**
  *
@@ -66,13 +69,15 @@ module.exports = async (object, params) => {
     if (queryOrderBy === "") {
       queryOrderBy = defaultOrderBy;
     }
-    const countResult = await session.run(getUsersCountQuery(condition));
+    const countResult = await session.run(
+      getCustomerUsersCountQuery(condition)
+    );
     if (countResult && countResult.records.length > 0) {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
     const result = await session.run(
-      getUsersQuery(condition, limit, offset, queryOrderBy)
+      getCustomerUsersQuery(condition, limit, offset, queryOrderBy)
     );
     if (result && result.records.length > 0) {
       const users = result.records.map((record) => {
