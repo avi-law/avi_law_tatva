@@ -486,6 +486,23 @@ const typeDefs = gql`
     cust_alt_inv_country_iso_3166_1_alpha_2e: String
     cust_inv_currency_iso_4217: String
   }
+  enum GENDER {
+    f
+    m
+  }
+  input InvitationInput {
+    cust_id: Int!
+    new_user_first_name: String!
+    new_user_last_name: String!
+    new_user_sex: GENDER!
+    new_user_email: String!
+  }
+
+  type Invitation {
+    status: Boolean
+    statusCode: String
+    message: String
+  }
 
   type Mutation {
     register(data: registerCustomer!): Boolean
@@ -509,6 +526,7 @@ const typeDefs = gql`
     createUser(user_email: String!, data: UserCustomInput!): Boolean
       @isAuthenticated
     newUser(data: UserCustomInput!): Boolean @isAdmin
+    invite(data: InvitationInput!): Invitation @isAuthenticated
   }
   type Query {
     user: User_State @isAuthenticated

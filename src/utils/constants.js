@@ -23,7 +23,12 @@ module.exports = {
         "The link to change your password is invalid - please request a password change again!.",
       INTERNAL_SERVER_ERROR: "Internal server error",
       FILE_NOT_FOUND: "File no found",
-      EMAIL_ALREADY_EXISTS: "The email already exists",
+      EMAIL_ALREADY_EXISTS:
+        "This user has been entitled to use the website on behalf of your company already!",
+      USER_HAS_ENTITLED_ALREADY:
+        "This user has been entitled to use the website on behalf of your company already!",
+      USER_ADDED_SUCCESSFULLY:
+        "This user has now been added to your company successfully!",
     },
     DE: {
       INVALID_LOGIN_EMAIL: "Die eingegebene eMail-Adresse ist nicht korrekt!",
@@ -48,7 +53,12 @@ module.exports = {
         "Ungültiger Liink zum Ändern des Passwortes - bitte fordern Sie einen neuen Link zum Ändern Ihres Passwortes an.",
       INTERNAL_SERVER_ERROR: "Internal server error",
       FILE_NOT_FOUND: "File no found",
-      EMAIL_ALREADY_EXISTS: "The email already exists",
+      EMAIL_ALREADY_EXISTS:
+        "Dieser User war bereits berechtigt, die Website namens Ihres Unternehmens zu nutzen!",
+      USER_HAS_ENTITLED_ALREADY:
+        "Dieser User war bereits berechtigt, die Website namens Ihres Unternehmens zu nutzen!",
+      USER_ADDED_SUCCESSFULLY:
+        "Der Nutzer wurde Ihrem Kundenkonto hinzugefügt!",
     },
   },
   LOG_TYPE_ID: {
@@ -73,6 +83,10 @@ module.exports = {
   RESET_PASSWORD_TOKEN_EXPIRY_HOUR: 24,
   EMAIL: {
     EN: {
+      SALUTATION: {
+        M: "Mr.",
+        F: "Mrs./Ms.",
+      },
       FORGOT_PASSWORD: {
         SUBJECT: "Avi-law - Password reset link",
         HEAD000: "Troubles logging in?",
@@ -98,8 +112,48 @@ module.exports = {
           CONT040: "Joachim J. Janezic",
         },
       },
+      CREATE_USER: {
+        SUBJECT: "Created your user profile",
+        CONT010:
+          "your profile has been created to use www.avi-law on behalf of this company!",
+        CONT020: "Please follow",
+        CONT030: "this link",
+        CONT040: "to complete your data",
+        FOOTER_TITLE: "Best regards,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
+      INVITED: {
+        SUBJECT: "Invitation to www.avi-law.com",
+        CONT010:
+          "{{admin_user_name}} of {{customer_name}} has invited you to use www.avi-law on behalf of this company!",
+        CONT020: "Please follow",
+        CONT030: "this link",
+        CONT040: "to complete your data.",
+        FOOTER_TITLE: "Best regards,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
+      INVITATION_ACCEPTED: {
+        SUBJECT: "Invitation to www.avi-law.com",
+        CONT010:
+          "We would like to inform you, that {{new_user_name}} has now accepted your invitation to use www.avi-law.com.",
+        FOOTER_TITLE: "Best regards,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
+      ADDED_USER: {
+        SUBJECT: "Your user-account at www.avi-law.com",
+        CONT010:
+          "{{admin_user_name}} has added you to the users who are entitled to use www.avi-law on behalf of {{customer_name}}!",
+        CONT020:
+          "This email is just for your information, no action from your side is required.",
+        FOOTER_TITLE: "Best regards,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
     },
     DE: {
+      SALUTATION: {
+        M: "Her",
+        F: "Frau",
+      },
       FORGOT_PASSWORD: {
         SUBJECT: "Avi-law - Link zum Zurücksetzen Ihres Passwortes",
         HEAD000: "Probleme beim Login?",
@@ -124,6 +178,42 @@ module.exports = {
           CONT030: "Mit freundlichen Grüßen,",
           CONT040: "Joachim J. Janezic",
         },
+      },
+      INVITED: {
+        SUBJECT: "Einladung für www.avi-law.com",
+        CONT010:
+          "{{admin_user_name}} hat Sie namens {{customer_name}} zur Benützung von www.avi-law.com eingeladen.",
+        CONT020: "Bitte folgen Sie",
+        CONT030: "dem Link",
+        CONT040: "um Ihre Benutzerdaten zu vervollständigen.",
+        FOOTER_TITLE: "Mit freundlichen Grüßen,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
+      INVITATION_ACCEPTED: {
+        SUBJECT: "Einladung für www.avi-law.com“",
+        CONT010:
+          "Wir dürfen Sie informieren {{new_user_name}} Ihre Einladung zur Benützung von www.avi-law.com nun angenommen hat.",
+        FOOTER_TITLE: "Mit freundlichen Grüßen,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
+      ADDED_USER: {
+        SUBJECT: "Ihr Benutzer-Account auf www.avi-law.com",
+        CONT010:
+          "{{admin_user_name}} hat Sie zur Benützung von www.avi-law.com für {{customer_name}} berechtigt!",
+        CONT020:
+          "Dieses eMail dient lediglich Ihrer Information. Es sind keine weiteren Aktionen Ihrerseits notwendig.",
+        FOOTER_TITLE: "Mit freundlichen Grüßen,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
+      CREATE_USER: {
+        SUBJECT: "Created your user profile",
+        CONT010:
+          "your profile has been created to use www.avi-law on behalf of this company!",
+        CONT020: "Please follow",
+        CONT030: "this link",
+        CONT040: "to complete your data.",
+        FOOTER_TITLE: "Best regards,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
     },
   },

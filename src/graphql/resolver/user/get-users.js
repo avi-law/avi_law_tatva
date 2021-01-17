@@ -11,7 +11,7 @@ const { getUsersCountQuery, getUsersQuery } = require("../../../neo4j/query");
  * @param {*} params
  * @returns
  */
-module.exports = async (object, params) => {
+module.exports = async (object, params, ctx) => {
   params = JSON.parse(JSON.stringify(params));
   const session = driver.session();
   const offset = params.offset || 0;
@@ -98,6 +98,7 @@ module.exports = async (object, params) => {
         const user = {
           user: common.getPropertiesFromRecord(record, "u"),
           user_state: common.getPropertiesFromRecord(record, "us"),
+          user_to_customer: common.getPropertiesFromRecord(record, "r1"),
         };
         return user;
       });

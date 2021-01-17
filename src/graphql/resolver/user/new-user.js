@@ -2,9 +2,10 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { APIError, common, auth } = require("../../../utils");
-const { defaultLanguage } = require("../../../config/application");
+const { APIError, common, auth, constants } = require("../../../utils");
+const { defaultLanguage, frontendURL } = require("../../../config/application");
 const { newUser, getUserByEmail } = require("../../../neo4j/query");
+const sendMail = require("../../../libs/email");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
@@ -60,20 +61,29 @@ module.exports = async (object, params, ctx) => {
     // return true;
     const result = await session.run(newUser, queryParams);
     if (result && result.records.length > 0) {
-      // console.log(JSON.stringify(result.records));
-      const userData = result.records.map((record) => {
-        const userResult = {
-          user: common.getPropertiesFromRecord(record, "u"),
-          user_state: common.getPropertiesFromRecord(record, "us"),
-          lang1: common.getPropertiesFromRecord(record, "lang1"),
-          lang2: common.getPropertiesFromRecord(record, "lang2"),
-          lang3: common.getPropertiesFromRecord(record, "lang3"),
-          cou1: common.getPropertiesFromRecord(record, "cou1"),
-          cou3: record.get("cou3"),
-        };
-        return userResult;
+      const mailContent =
+        constants.EMAIL[userSurfLang.toUpperCase()].CREATE_USER;
+      const mailOption = {
+        to: userDetails.user_email,
+        subject: mailContent.SUBJECT,
+        data: {
+          salutation: common.getSalutation(
+            userState.user_sex,
+            params.data.user_pref_surf_lang_iso_639_1
+          ),
+          user_first_name: userState.user_first_name,
+          user_last_name: userState.user_last_name,
+          ...mailContent,
+          link: "/",
+        },
+      };
+      await sendMail(mailOption, "user-added").catch((error) => {
+        console.error("Send Mail :", error);
+        throw new APIError({
+          lang: userSurfLang,
+          message: "INTERNAL_SERVER_ERROR",
+        });
       });
-      // return userData[0];
       return true;
     }
     throw new APIError({

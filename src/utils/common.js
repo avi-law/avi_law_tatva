@@ -129,6 +129,9 @@ const toFixedNumber = (toFixTo = 2, base = 10) => (num) => {
 const amountNumberFormat = (value) =>
   value.toFixed(2).replace(".", ",").replace(" ", "");
 
+const getSalutation = (gender, lang) =>
+  constants.EMAIL[lang.toUpperCase()].SALUTATION[gender.toUpperCase()];
+
 module.exports = {
   getMessage,
   asyncForEach,
@@ -140,4 +143,5 @@ module.exports = {
   amountNumberFormat,
   convertToTemporalDate,
   getPropertiesFromRecord,
+  getSalutation,
 };

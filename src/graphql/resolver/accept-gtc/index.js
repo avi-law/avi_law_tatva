@@ -73,8 +73,13 @@ module.exports = async (object, params, ctx) => {
           login_status: loginStatus,
           login_failed_code: loginFailedCode,
           user_id: userStateInformation.user_id,
+          user_sex: userStateInformation.user_sex,
+          user_first_name: userStateInformation.user_first_name,
+          user_last_name: userStateInformation.user_last_name,
           user_email: userStateInformation.user_email,
           user_surf_lang: userSurfLang,
+          user_pref_country: userStateInformation.user_pref_country,
+          user_is_sys_admin: userStateInformation.user_is_sys_admin,
         }),
       };
     }
@@ -98,6 +103,9 @@ module.exports = async (object, params, ctx) => {
         user_id: userStateInformation.user_id,
         user_email: userStateInformation.user_email,
         user_surf_lang: userSurfLang,
+        user_sex: userStateInformation.user_sex,
+        user_first_name: userStateInformation.user_first_name,
+        user_last_name: userStateInformation.user_last_name,
         user_pref_country: userStateInformation.user_pref_country,
         user_is_sys_admin: userStateInformation.user_is_sys_admin,
       }),

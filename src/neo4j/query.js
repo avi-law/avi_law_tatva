@@ -41,6 +41,7 @@ RETURN {
   user_first_name: us.user_first_name,
   user_middle_name: us.user_middle_name,
   user_last_name: us.user_last_name,
+  user_sex: us.user_sex,
   user_pwd: us.user_pwd,
   user_gdpr_accepted: us.user_gdpr_accepted,
   user_surf_lang: l1.iso_639_1,
@@ -141,11 +142,18 @@ exports.getUsersQuery = (
   orderBy = "u.user_email ASC"
 ) => `
 MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)
-  ${condition}
-  RETURN u,us
-  ORDER BY ${orderBy}
-  SKIP toInteger(${skip})
-  LIMIT toInteger(${limit})`;
+${condition}
+OPTIONAL MATCH p = (u)-[r1:USER_TO_CUSTOMER]->(c:Customer)
+WHERE r1.to IS NULL
+RETURN u,us,r1
+ORDER BY ${orderBy}
+SKIP toInteger(${skip})
+LIMIT toInteger(${limit})`;
+
+exports.getCustomerByCustomerId = `
+MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
+WHERE c.cust_id = $customerId and r1.to IS NULL
+RETURN c, cs`;
 
 exports.getCustomerUsersCountQuery = (condition = "") => `
   MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer)
@@ -201,6 +209,12 @@ MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User { user_email: $user_email })
 MATCH (us)-[r2:USER_HAS_PREF_SURF_LANG]->(l1:Language)
 WHERE r1.to IS NULL
 RETURN us as userState, l1.iso_639_1 as user_surf_lang`;
+
+exports.getUserByEmailWithCustomer = `
+MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User { user_email: $user_email })
+WHERE r1.to IS NULL
+OPTIONAL MATCH (u)-[r2:USER_TO_CUSTOMER]->(c:Customer)
+RETURN us , c`;
 
 exports.setPasswordToken = `
 MATCH ( us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
@@ -510,3 +524,32 @@ MERGE (c2)<-[:USER_TO_CUSTOMER]-(u)
 FOREACH (_ IN CASE WHEN cou2 IS NOT NULL THEN [1] END | MERGE (cou2)<-[:INV_TO_ALT_COUNTRY]-(cs) )
 FOREACH (_ IN CASE WHEN cou3 IS NOT NULL THEN [1] END | MERGE (c2)-[:TO_BE_INVOICED_FROM_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou3) )
 RETURN cs`;
+
+exports.invite = `
+MATCH (u1:User {user_email: $user_email})-[r1:HAS_USER_STATE]-(us1:User_State)
+WHERE r1.to IS NULL
+OPTIONAL MATCH (us1)-[:USER_HAS_PREF_COUNTRY]->(cou1:Country)
+CALL {
+ WITH us1
+ OPTIONAL MATCH (us1)-[:USER_WANTS_NL_FROM_COUNTRY]->(cou2:Country)
+ RETURN COLLECT (cou2) AS nl_cous
+}
+OPTIONAL MATCH (us1)-[:USER_HAS_PREF_SURF_LANG]->(lang1:Language)
+OPTIONAL MATCH (us1)-[:USER_HAS_PREF_1ST_LANG]->(lang2:Language)
+OPTIONAL MATCH (us1)-[:USER_HAS_PREF_2ND_LANG]->(lang3:Language)
+MATCH (c:Customer {cust_id: $cust_id})
+MERGE (u2:User {user_email: $new_user_email})
+ON CREATE SET u2.user_status = "invited"
+MERGE (u2)-[r2:USER_TO_CUSTOMER]->(c)
+ON CREATE SET r2.from = apoc.date.currentTimestamp()
+MERGE (us2:User_State {user_first_name: $new_user_first_name, user_last_name: $new_user_last_name, user_sex: $new_user_sex, invitation_token: $token})
+MERGE (u2)-[r3:HAS_USER_STATE]->(us2)
+ON CREATE SET r3.from = apoc.date.currentTimestamp()
+MERGE (us2)-[:USER_HAS_PREF_COUNTRY]->(cou1)
+MERGE (us2)-[:USER_HAS_PREF_SURF_LANG]->(lang1)
+MERGE (us2)-[:USER_HAS_1ST_SURF_LANG]->(lang2)
+MERGE (us2)-[:USER_HAS_2ND_SURF_LANG]->(lang3)
+FOREACH (cou IN nl_cous | MERGE (us2)-[:USER_WANTS_NL_FROM_COUNTRY]->(cou))
+MERGE (u2)-[r4:USER_INVITED_BY]->(u1)
+ON CREATE SET r4.from = apoc.date.currentTimestamp()
+RETURN u2, us2`;

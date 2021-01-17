@@ -21,7 +21,6 @@ module.exports = async (object, params) => {
     const userState = result.records.map(
       (record) => record.get("userState").properties
     );
-
     if (userState && userState[0]) {
       if (!auth.comparePassword(userState[0].user_pwd, params.user_pwd)) {
         // Log invalid password query
@@ -111,6 +110,9 @@ module.exports = async (object, params) => {
                 login_failed_code: loginFailedCode,
                 user_id: userStateInformation.user_id,
                 user_email: userStateInformation.user_email,
+                user_sex: userStateInformation.user_sex,
+                user_first_name: userStateInformation.user_first_name,
+                user_last_name: userStateInformation.user_last_name,
                 user_surf_lang: userSurfLang,
               }),
             };
@@ -147,6 +149,9 @@ module.exports = async (object, params) => {
             login_failed_code: loginFailedCode,
             user_id: userStateInformation.user_id,
             user_email: userStateInformation.user_email,
+            user_sex: userStateInformation.user_sex,
+            user_first_name: userStateInformation.user_first_name,
+            user_last_name: userStateInformation.user_last_name,
             user_surf_lang: userSurfLang,
           }),
         };
@@ -171,6 +176,9 @@ module.exports = async (object, params) => {
           user_id: userStateInformation.user_id,
           user_email: userStateInformation.user_email,
           user_surf_lang: userSurfLang,
+          user_sex: userStateInformation.user_sex,
+          user_first_name: userStateInformation.user_first_name,
+          user_last_name: userStateInformation.user_last_name,
           user_pref_country: userStateInformation.user_pref_country,
           user_is_sys_admin: userStateInformation.user_is_sys_admin,
         }),

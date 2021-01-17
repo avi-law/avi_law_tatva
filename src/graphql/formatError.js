@@ -5,6 +5,7 @@ const { common } = require("../utils");
 module.exports = (err) => {
   const { code } = err.extensions;
   const lang = err.extensions.exception.lang || "en";
+  const type = err.extensions.exception.type || "error";
   console.log(err);
   // Don't give the specific errors to the client.
   if (dbErrorCode.indexOf(code) !== -1) {
@@ -18,7 +19,7 @@ module.exports = (err) => {
     message = "Internal server error";
     statusCode = "INTERNAL_SERVER_ERROR";
   }
-  return { message, statusCode };
+  return { message, statusCode, type };
   // Otherwise return the original error.  The error can also
   // be manipulated in other ways, so long as it's returned.
   // return err;
