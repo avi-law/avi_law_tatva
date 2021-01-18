@@ -162,9 +162,9 @@
                 <% if( typeof( CONT030) !=="undefined") { %> <a href="<%- frontendURL -%><%- link -%>"><%=  CONT030 %></a> <% } %>
                 <% if( typeof( CONT040) !=="undefined") { %> <%=  CONT040 %> <% } %>
               </p>
-              <% if(typeof (CONT050) !== "undefined" && typeof (password) !== "undefined ) {  %>
+              <% if(typeof (CONT050) !== "undefined" ) {  %>
                 <p>
-                  <%=  CONT050 %>: <%= password %>
+                  <%=  CONT050 %>: <% if(typeof (password) !== "undefined" ) {  %> <%= password %> <% } %>
                 </p>
               <% } %>
             </td>

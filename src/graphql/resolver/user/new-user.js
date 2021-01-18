@@ -3,7 +3,7 @@
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
 const { APIError, common, auth, constants } = require("../../../utils");
-const { defaultLanguage, frontendURL } = require("../../../config/application");
+const { defaultLanguage } = require("../../../config/application");
 const { newUser, getUserByEmail } = require("../../../neo4j/query");
 const sendMail = require("../../../libs/email");
 
@@ -73,9 +73,8 @@ module.exports = async (object, params, ctx) => {
           ),
           user_first_name: userState.user_first_name,
           user_last_name: userState.user_last_name,
-          password: "123",
+          password: pwd,
           ...mailContent,
-          link: "/",
         },
       };
       await sendMail(mailOption, "user-added").catch((error) => {
