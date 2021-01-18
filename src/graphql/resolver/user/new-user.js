@@ -73,6 +73,7 @@ module.exports = async (object, params, ctx) => {
           ),
           user_first_name: userState.user_first_name,
           user_last_name: userState.user_last_name,
+          password: "123",
           ...mailContent,
           link: "/",
         },

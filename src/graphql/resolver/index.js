@@ -1,5 +1,6 @@
 // NON AUTH Resolver
 const login = require("./login");
+const register = require("./signup");
 const forgotPassword = require("./forgot-password/send-forgot-password-link");
 const verifyForgotPasswordLink = require("./forgot-password/verify-forgot-password-link");
 const setNewPassword = require("./forgot-password/set-new-password");
@@ -54,6 +55,7 @@ const resolvers = {
     createUser,
     newUser,
     invite,
+    register,
   },
   Query: {
     user,
