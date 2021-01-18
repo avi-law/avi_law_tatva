@@ -29,6 +29,7 @@ module.exports = {
         "This user has been entitled to use the website on behalf of your company already!",
       USER_ADDED_SUCCESSFULLY:
         "This user has now been added to your company successfully!",
+      INCORRECT_OLD_PASSWORD: "You have enter incorrect old password",
     },
     DE: {
       INVALID_LOGIN_EMAIL: "Die eingegebene eMail-Adresse ist nicht korrekt!",
@@ -59,6 +60,7 @@ module.exports = {
         "Dieser User war bereits berechtigt, die Website namens Ihres Unternehmens zu nutzen!",
       USER_ADDED_SUCCESSFULLY:
         "Der Nutzer wurde Ihrem Kundenkonto hinzugefügt!",
+      INCORRECT_OLD_PASSWORD: "You have enter incorrect old password",
     },
   },
   LOG_TYPE_ID: {

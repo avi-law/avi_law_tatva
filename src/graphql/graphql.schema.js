@@ -409,6 +409,7 @@ const typeDefs = gql`
     user_acronym: String
     user_is_sys_admin: Boolean
     user_is_author: Boolean
+    user_pwd_old: String
   }
 
   type InvoiceCustomersCustom {

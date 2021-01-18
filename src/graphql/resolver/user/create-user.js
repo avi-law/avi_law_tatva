@@ -49,7 +49,18 @@ module.exports = async (object, params, ctx) => {
         return userResult;
       });
       userStatedetails = userData[0];
-      if (userState.user_pwd) {
+      if (userState.user_pwd && params.data.user_pwd_old) {
+        if (
+          !auth.comparePassword(
+            userStatedetails.user_state.user_pwd,
+            params.data.user_pwd_old
+          )
+        ) {
+          throw new APIError({
+            lang: defaultLanguage,
+            message: "INCORRECT_OLD_PASSWORD",
+          });
+        }
         userState.user_pwd = await auth.hashPassword(userState.user_pwd);
         // userState.user_pwd_old = userState.user_pwd;
       }
