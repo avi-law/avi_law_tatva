@@ -92,9 +92,9 @@ module.exports = async (object, params, ctx) => {
       user_want_nl_from_country_iso_3166_1_alpha_2:
         params.data.user_want_nl_from_country_iso_3166_1_alpha_2,
       user_state: common.cleanObject(_.cloneDeep(userState)),
-      user_is_author: userStatedetails.user.user_is_author,
+      user_is_author: userStatedetails.user.user_is_author || null,
       user_acronym: userStatedetails.user_state.user_acronym,
-      user_is_sys_admin: userStatedetails.user.user_is_sys_admin,
+      user_is_sys_admin: userStatedetails.user.user_is_sys_admin || null,
       email: userEmail,
     };
     queryParams.user_want_nl_from_country_iso_3166_1_alpha_2.push("EU");
