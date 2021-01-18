@@ -24,7 +24,7 @@ module.exports = {
       INTERNAL_SERVER_ERROR: "Internal server error",
       FILE_NOT_FOUND: "File no found",
       EMAIL_ALREADY_EXISTS:
-        "This user has been entitled to use the website on behalf of your company already!",
+        "A User with this email-address already exists! Please change the user's email-address in order to create this user account",
       USER_HAS_ENTITLED_ALREADY:
         "This user has been entitled to use the website on behalf of your company already!",
       USER_ADDED_SUCCESSFULLY:
@@ -55,7 +55,7 @@ module.exports = {
       INTERNAL_SERVER_ERROR: "Internal server error",
       FILE_NOT_FOUND: "File no found",
       EMAIL_ALREADY_EXISTS:
-        "Dieser User war bereits berechtigt, die Website namens Ihres Unternehmens zu nutzen!",
+        "Es existiert bereits ein Benutzer mit dieser eMail-Adresse. Um das gewünschte Benutzerprofil erstellen zu können, wählen Sie bitte eine andere eMail-Adresse aus.",
       USER_HAS_ENTITLED_ALREADY:
         "Dieser User war bereits berechtigt, die Website namens Ihres Unternehmens zu nutzen!",
       USER_ADDED_SUCCESSFULLY:
