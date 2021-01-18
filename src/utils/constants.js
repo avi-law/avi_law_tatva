@@ -119,8 +119,6 @@ module.exports = {
         CONT010:
           "your profile has been created to use www.avi-law on behalf of this company!",
         CONT020: "Please login to www.avi-law using below password",
-        CONT030: "",
-        CONT040: "",
         CONT050: "Password",
         FOOTER_TITLE: "Best regards,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
@@ -213,8 +211,6 @@ module.exports = {
         CONT010:
           "your profile has been created to use www.avi-law on behalf of this company!",
         CONT020: "Please login to www.avi-law using below password",
-        CONT030: "",
-        CONT040: "",
         CONT050: "Password",
         FOOTER_TITLE: "Best regards,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",

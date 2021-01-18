@@ -75,6 +75,7 @@ module.exports = async (object, params, ctx) => {
           user_last_name: userState.user_last_name,
           password: pwd,
           ...mailContent,
+          link: "/",
         },
       };
       await sendMail(mailOption, "user-added").catch((error) => {
