@@ -62,7 +62,8 @@ module.exports = async (object, params, ctx) => {
     const result = await session.run(newUser, queryParams);
     if (result && result.records.length > 0) {
       const mailContent =
-        constants.EMAIL[userSurfLang.toUpperCase()].CREATE_USER;
+        constants.EMAIL[params.data.user_pref_surf_lang_iso_639_1.toUpperCase()]
+          .CREATE_USER;
       const mailOption = {
         to: userDetails.user_email,
         subject: mailContent.SUBJECT,
