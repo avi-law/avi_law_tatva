@@ -234,6 +234,21 @@ MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User)
 WHERE us.reset_pwd_token = $token AND r1.to IS NULL
 RETURN us as userState, u.user_email as userEmail`;
 
+exports.getUserByInvitationToken = `
+MATCH (u:User)-[r1:HAS_USER_STATE]->(us:User_State)
+WHERE us.invitation_token = $token AND r1.to IS NULL
+CALL {
+WITH us
+MATCH (us:User_State)-[r2:USER_WANTS_NL_FROM_COUNTRY]->(cou2:Country)
+RETURN collect({country_id: cou2.country_id, country_name_de: cou2.country_name_de, country_name_en: cou2.country_name_en, iso_3166_1_alpha_2: cou2.iso_3166_1_alpha_2, iso_3166_1_alpha_3: cou2.iso_3166_1_alpha_3}) AS cou3
+}
+OPTIONAL MATCH (us)-[:USER_HAS_PREF_SURF_LANG]->(lang1:Language)
+OPTIONAL MATCH (us)-[:USER_HAS_PREF_1ST_LANG]->(lang2:Language)
+OPTIONAL MATCH (us)-[:USER_HAS_PREF_2ND_LANG]->(lang3:Language)
+OPTIONAL MATCH (us)-[:USER_HAS_PREF_COUNTRY]->(cou1:Country)
+RETURN u, us, lang1, lang2, lang3, cou1, cou3
+LIMIT 1`;
+
 exports.resetUserPassword = `
 MATCH ( us:User_State )<-[r1:HAS_USER_STATE]-(u:User)
 WHERE u.user_email = $user_email AND r1.to IS NULL

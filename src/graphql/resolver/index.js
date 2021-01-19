@@ -4,6 +4,7 @@ const register = require("./signup");
 const forgotPassword = require("./forgot-password/send-forgot-password-link");
 const verifyForgotPasswordLink = require("./forgot-password/verify-forgot-password-link");
 const setNewPassword = require("./forgot-password/set-new-password");
+const verifyInvitation = require("./invite/verify-invitation");
 
 const getNewsLetters = require("./new-letters/get-news-letters");
 const getNewsLetter = require("./new-letters/get-news-letter");
@@ -75,6 +76,7 @@ const resolvers = {
     getUsers,
     getUser,
     userEmailExists,
+    verifyInvitation,
   },
 };
 

@@ -598,6 +598,7 @@ const typeDefs = gql`
     getPreparedNewInvoiceDetails(customer_id: Int!): Invoice @isAuthenticated
     downloadInvoice(invoice_id: String!): String @isAuthenticated
     userEmailExists(user_email: String!): Boolean @isAuthenticated
+    verifyInvitation(token: String!): CustomUser
   }
 `;
 
