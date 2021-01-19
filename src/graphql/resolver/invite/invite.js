@@ -108,7 +108,7 @@ module.exports = async (object, params, ctx) => {
               "{{customer_name}}",
               `${invitingCustomerDetails.customer_state.cust_name_01}`
             ),
-            link: `invite/${token}`,
+            link: `invitation/${token}`,
           },
         };
         await sendMail(mailOption, "user-added").catch((error) => {

@@ -120,6 +120,31 @@ FOREACH (_ IN CASE WHEN $user_is_sys_admin IS NOT NULL THEN [1] END | SET u.user
 FOREACH (_ IN CASE WHEN $user_is_author IS NOT NULL THEN [1] END | SET u.user_is_author = $user_is_author)
 RETURN nus`;
 
+exports.invitationAcceptedByUser = `
+MATCH (u:User)-[r1:HAS_USER_STATE]->(us:User_State)
+WHERE u.user_email = $user_email AND r1.to IS NULL AND u.user_status = "invited"
+OPTIONAL MATCH (lang1:Language {iso_639_1: $user_pref_surf_lang_iso_639_1})
+OPTIONAL MATCH (lang2:Language {iso_639_1: $user_pref_1st_lang_iso_639_1})
+OPTIONAL MATCH (lang3:Language {iso_639_1: $user_pref_2nd_lang_iso_639_1})
+OPTIONAL MATCH (cou1:Country {iso_3166_1_alpha_2: $user_pref_country_iso_3166_1_alpha_2})
+CALL {
+  OPTIONAL MATCH (cou3:Country) WHERE cou3.iso_3166_1_alpha_2 IN $user_want_nl_from_country_iso_3166_1_alpha_2
+  RETURN collect(cou3) AS cou3
+}
+SET r1.to = apoc.date.currentTimestamp()
+// REMOVE u.user_status
+CREATE (nus:User_State $user_state)<-[:HAS_USER_STATE { from: apoc.date.currentTimestamp()}]-(u)
+MERGE (nus)-[:HAS_USER_STATE_PRED {from: apoc.date.currentTimestamp()}]->(us)
+FOREACH (_ IN CASE WHEN $email IS NOT NULL THEN [1] END | SET u.user_email = $email)
+FOREACH (_ IN CASE WHEN lang1 IS NOT NULL THEN [1] END | MERGE (nus)-[:USER_HAS_PREF_SURF_LANG]->(lang1))
+FOREACH (_ IN CASE WHEN lang2 IS NOT NULL THEN [1] END | MERGE (nus)-[:USER_HAS_PREF_1ST_LANG]->(lang2))
+FOREACH (_ IN CASE WHEN lang3 IS NOT NULL THEN [1] END | MERGE (nus)-[:USER_HAS_PREF_2ND_LANG]->(lang3))
+FOREACH (_ IN CASE WHEN cou1 IS NOT NULL THEN [1] END | MERGE (nus)-[:USER_HAS_PREF_COUNTRY]->(cou1))
+FOREACH (cou IN cou3 | MERGE (nus)-[:USER_WANTS_NL_FROM_COUNTRY]->(cou))
+FOREACH (_ IN CASE WHEN $user_is_sys_admin IS NOT NULL THEN [1] END | SET u.user_is_sys_admin = $user_is_sys_admin)
+FOREACH (_ IN CASE WHEN $user_is_author IS NOT NULL THEN [1] END | SET u.user_is_author = $user_is_author)
+RETURN nus`;
+
 exports.getUserCustomerList = `
 MATCH (u:User)-[:USER_TO_CUSTOMER]->(c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
 WHERE u.user_email = $user_email AND r1.to IS NULL
@@ -236,7 +261,7 @@ RETURN us as userState, u.user_email as userEmail`;
 
 exports.getUserByInvitationToken = `
 MATCH (u:User)-[r1:HAS_USER_STATE]->(us:User_State)
-WHERE us.invitation_token = $token AND r1.to IS NULL
+WHERE us.invitation_token = $token AND r1.to IS NULL AND u.user_status = "invited"
 CALL {
 WITH us
 MATCH (us:User_State)-[r2:USER_WANTS_NL_FROM_COUNTRY]->(cou2:Country)
@@ -246,7 +271,8 @@ OPTIONAL MATCH (us)-[:USER_HAS_PREF_SURF_LANG]->(lang1:Language)
 OPTIONAL MATCH (us)-[:USER_HAS_PREF_1ST_LANG]->(lang2:Language)
 OPTIONAL MATCH (us)-[:USER_HAS_PREF_2ND_LANG]->(lang3:Language)
 OPTIONAL MATCH (us)-[:USER_HAS_PREF_COUNTRY]->(cou1:Country)
-RETURN u, us, lang1, lang2, lang3, cou1, cou3
+OPTIONAL MATCH (u)-[:USER_INVITED_BY]->(ui:User)
+RETURN u, us, lang1, lang2, lang3, cou1, cou3, ui
 LIMIT 1`;
 
 exports.resetUserPassword = `

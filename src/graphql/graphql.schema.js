@@ -458,6 +458,7 @@ const typeDefs = gql`
     lang3: Language
     cou1: Country
     cou3: [Country]
+    ui: User
   }
 
   type UsersByCustomer {
@@ -535,6 +536,7 @@ const typeDefs = gql`
       @isAuthenticated
     newUser(data: UserCustomInput!): Boolean @isAdmin
     invite(data: InvitationInput!): Invitation @isAuthenticated
+    invitedUserCreate(token: String!, data: UserCustomInput!): Boolean
   }
   type Query {
     user: User_State @isAuthenticated
