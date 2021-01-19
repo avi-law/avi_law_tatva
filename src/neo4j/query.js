@@ -132,7 +132,7 @@ CALL {
   RETURN collect(cou3) AS cou3
 }
 SET r1.to = apoc.date.currentTimestamp()
-// REMOVE u.user_status
+REMOVE u.user_status
 CREATE (nus:User_State $user_state)<-[:HAS_USER_STATE { from: apoc.date.currentTimestamp()}]-(u)
 MERGE (nus)-[:HAS_USER_STATE_PRED {from: apoc.date.currentTimestamp()}]->(us)
 FOREACH (_ IN CASE WHEN $email IS NOT NULL THEN [1] END | SET u.user_email = $email)
