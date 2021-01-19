@@ -172,6 +172,7 @@ exports.getCustomerUsersQuery = (
     ORDER BY ${orderBy}
     SKIP toInteger(${skip})
     LIMIT toInteger(${limit})`;
+
 // Get common logging query function
 exports.getCommonUserStateLogginQuery = (otherParams = null) => {
   const params = otherParams ? `, ${otherParams}` : "";
@@ -179,6 +180,13 @@ exports.getCommonUserStateLogginQuery = (otherParams = null) => {
   MATCH (b:User { user_email: $user_email } )-[HAS_USER_STATE]->(:User_State)
   MERGE (b)<-[:LOG_FOR_USER]-(:Log { log_timestamp: apoc.date.currentTimestamp() ${params} })-[:HAS_LOG_TYPE]->(a);`;
 };
+
+exports.logCustomer = `
+MATCH (a: Log_Type {log_type_id:$type})
+MATCH (b:User {user_email: $current_user_email})
+MATCH (c:Customer {cust_id: $cust_id})
+MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a);
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(c);`;
 
 exports.manageLoginCountQuery = `
 MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })

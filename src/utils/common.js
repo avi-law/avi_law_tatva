@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const neo4j = require("neo4j-driver");
+const driver = require("../config/db");
 const constants = require("./constants");
 /**
  * get message
@@ -21,6 +22,21 @@ const getMessage = (messageKey, lang = "en") => {
     return { message, statusCode: messageKey };
   }
   return { message: messageKey };
+};
+
+const loggingData = (query, data) => {
+  const session = driver.session();
+  try {
+    console.log("Query: ", query);
+    console.log("Data: ", data);
+    // session.run(query, data);
+    session.close();
+    return true;
+  } catch (error) {
+    session.close();
+    console.log("Logging Error", error.message);
+    return false;
+  }
 };
 
 /**
@@ -144,4 +160,5 @@ module.exports = {
   convertToTemporalDate,
   getPropertiesFromRecord,
   getSalutation,
+  loggingData,
 };

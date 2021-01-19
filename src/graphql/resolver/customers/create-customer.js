@@ -2,18 +2,20 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { APIError, common } = require("../../../utils");
+const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
   createNewCustomerSate,
   getCustomerInvoiceFromCountryRelationship,
   getCustomer,
+  logCustomer,
 } = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const systemAdmin = user.user_is_sys_admin || null;
+  const userEmail = user.user_email || null;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const customerId = params.customer_id;
@@ -91,6 +93,11 @@ module.exports = async (object, params, ctx) => {
     };
     const result = await session.run(createNewCustomerSate, queryParams);
     if (result && result.records.length > 0) {
+      common.loggingData(logCustomer, {
+        type: constants.LOG_TYPE_ID.UPDATE_CUSTOMER,
+        cust_id: params.customer_id,
+        current_user_email: userEmail,
+      });
       return true;
     }
     throw new APIError({
