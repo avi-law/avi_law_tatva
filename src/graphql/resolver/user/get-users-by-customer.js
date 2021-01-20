@@ -1,10 +1,12 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { common } = require("../../../utils");
+const { common, APIError } = require("../../../utils");
+const { defaultLanguage } = require("../../../config/application");
 const {
   getCustomerUsersCountQuery,
   getCustomerUsersQuery,
+  isExistsUserInCustomer,
 } = require("../../../neo4j/query");
 
 /**
@@ -14,8 +16,12 @@ const {
  * @param {*} params
  * @returns
  */
-module.exports = async (object, params) => {
+module.exports = async (object, params, ctx) => {
   params = JSON.parse(JSON.stringify(params));
+  const { user } = ctx;
+  const userSurfLang = user.user_surf_lang || defaultLanguage;
+  const userIsSysAdmin = user.user_is_sys_admin || false;
+  const userEmail = user.user_email;
   const session = driver.session();
   const offset = params.offset || 0;
   const limit = params.first || 10;
@@ -26,6 +32,34 @@ module.exports = async (object, params) => {
   const { filter, orderBy, filterByString, orderByUserState } = params;
   let condition = `WHERE c.cust_id = ${customerId} AND r2.to IS NULL`;
   try {
+    /** Check is valid customer profile fetch */
+    if (!userIsSysAdmin) {
+      await session
+        .run(isExistsUserInCustomer, {
+          user_email: userEmail,
+          cust_id: customerId,
+        })
+        .then((result) => {
+          if (result && result.records.length > 0) {
+            const singleRecord = result.records[0];
+            if (!singleRecord.get("count")) {
+              throw new APIError({
+                lang: userSurfLang,
+                message: "INTERNAL_SERVER_ERROR",
+              });
+            }
+            return true;
+          }
+          throw new APIError({
+            lang: userSurfLang,
+            message: "INTERNAL_SERVER_ERROR",
+          });
+        })
+        .catch((error) => {
+          session.close();
+          throw error;
+        });
+    }
     if (orderBy && orderBy.length > 0) {
       orderBy.forEach((orderCustomer) => {
         const field = orderCustomer.slice(0, orderCustomer.lastIndexOf("_"));

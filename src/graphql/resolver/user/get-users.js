@@ -1,7 +1,8 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { common } = require("../../../utils");
+const { common, APIError } = require("../../../utils");
+const { defaultLanguage } = require("../../../config/application");
 const { getUsersCountQuery, getUsersQuery } = require("../../../neo4j/query");
 
 /**
@@ -12,8 +13,11 @@ const { getUsersCountQuery, getUsersQuery } = require("../../../neo4j/query");
  * @returns
  */
 module.exports = async (object, params, ctx) => {
+  const { user } = ctx;
   params = JSON.parse(JSON.stringify(params));
   const session = driver.session();
+  const userSurfLang = user.user_surf_lang || defaultLanguage;
+  const userIsSysAdmin = user.user_is_sys_admin || false;
   const offset = params.offset || 0;
   const limit = params.first || 10;
   let total = 0;
@@ -28,6 +32,12 @@ module.exports = async (object, params, ctx) => {
   } = params;
   let condition = `WHERE r2.to IS NULL`;
   try {
+    if (!userIsSysAdmin) {
+      throw new APIError({
+        lang: userSurfLang,
+        message: "INTERNAL_SERVER_ERROR",
+      });
+    }
     if (orderBy && orderBy.length > 0) {
       orderBy.forEach((orderCustomer) => {
         const field = orderCustomer.slice(0, orderCustomer.lastIndexOf("_"));

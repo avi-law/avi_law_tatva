@@ -150,6 +150,11 @@ MATCH (u:User)-[:USER_TO_CUSTOMER]->(c:Customer)-[r1:HAS_CUST_STATE]->(cs:Custom
 WHERE u.user_email = $user_email AND r1.to IS NULL
 RETURN cs`;
 
+exports.isExistsUserInCustomer = `
+MATCH (u:User)-[:USER_TO_CUSTOMER]->(c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
+WHERE  c.cust_id = $cust_id AND u.user_email = $user_email AND r1.to IS NULL
+RETURN count(cs) as count`;
+
 exports.getConnectUserList = `
 MATCH (u:User { user_email: $user_email})-[:USER_TO_CUSTOMER]->(c:Customer)
 MATCH (c)<-[:USER_TO_CUSTOMER]-(u2)
