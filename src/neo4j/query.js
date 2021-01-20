@@ -158,7 +158,8 @@ RETURN count(cs) as count`;
 exports.getConnectUserList = `
 MATCH (u:User { user_email: $user_email})-[:USER_TO_CUSTOMER]->(c:Customer)
 MATCH (c)<-[:USER_TO_CUSTOMER]-(u2)
-Return u2`;
+Return u2
+ORDER BY toLower(u2.user_email) ASC`;
 
 exports.getUsersCountQuery = (condition = "") => `
 MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)
@@ -607,3 +608,48 @@ FOREACH (cou IN nl_cous | MERGE (us2)-[:USER_WANTS_NL_FROM_COUNTRY]->(cou))
 MERGE (u2)-[r4:USER_INVITED_BY]->(u1)
 ON CREATE SET r4.from = apoc.date.currentTimestamp()
 RETURN u2, us2`;
+
+exports.register = `
+MATCH (c0:Customer) WITH MAX(c0.cust_id) AS max_cust_id
+MATCH (cou1:Country {iso_3166_1_alpha_2: $user_pref_country_iso_3166_1_alpha_2})
+MATCH (cou4:Country {iso_3166_1_alpha_2: $to_be_invoiced_from_country })
+MATCH (curr:Currency {iso_4217: $cust_inv_currency_iso_4217})
+MATCH (lang1:Language {iso_639_1: $user_pref_1st_lang_iso_639_1})
+MATCH (lang3:Language  {iso_639_1: $user_pref_2nd_lang_iso_639_1})
+MATCH (cou3:Country {iso_3166_1_alpha_2: $cust_alt_inv_country})
+CALL {
+  MATCH (cou2:Country) WHERE cou2.iso_3166_1_alpha_2 IN $user_want_nl_from_country_iso_3166_1_alpha_2
+  RETURN collect(cou2) AS nl_cous
+}
+MERGE (u:User { user_email: $user_email })
+MERGE (us:User_State $user_state)
+MERGE (c:Customer { cust_id: max_cust_id + 1 })
+MERGE (cs:Customer_State $customer_state)
+MERGE (c)-[r1:HAS_CUST_STATE]->(cs)
+ON CREATE SET r1.from = apoc.date.currentTimestamp()
+MERGE (c)-[:TO_BE_INVOICED_FROM_COUNTRY]->(cou4)
+MERGE (cs)-[:IS_LOCATED_IN_COUNTRY]->(cou1)
+MERGE (cs)-[:INV_TO_ALT_COUNTRY]->(cou3)
+
+MERGE (c)<-[r2:USER_TO_CUSTOMER]->(u)
+ON CREATE SET r2.from = apoc.date.currentTimestamp()
+
+MERGE (u)-[r3:HAS_USER_STATE]->(us)
+ON CREATE SET r3.from = apoc.date.currentTimestamp()
+
+MERGE (u)<-[r4:CUST_HAS_CONTACT_USER]->(cs)
+ON CREATE SET r4.from = apoc.date.currentTimestamp()
+
+MERGE (cs)<-[:TO_BE_INVOICED_IN_CURRENCY]->(curr)
+
+MERGE (us)-[:USER_HAS_PREF_COUNTRY]->(cou1)
+
+MERGE (us)-[:USER_HAS_PREF_SURF_LANG]->(lang1)
+MERGE (us)-[:USER_HAS_1ST_SURF_LANG]->(lang1)
+MERGE (us)-[:USER_HAS_2ND_SURF_LANG]->(lang2)
+MERGE (cs)-[:INV_IN_LANG]->(lang1)
+
+FOREACH (cou IN nl_cous | MERGE (us)-[:USER_WANTS_NL_FROM_COUNTRY]->(cou))
+FOREACH (_ IN CASE WHEN $is_cust_admin IS NOT NULL THEN [1] END | SET r2.user_is_cust_admin = true )
+
+RETURN c, cs, u, us`;

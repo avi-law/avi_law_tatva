@@ -2,19 +2,112 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { APIError, common } = require("../../../utils");
+const { APIError, common, auth, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
+const { register, getUserByEmail } = require("../../../neo4j/query");
 
-module.exports = (object, params) => {
-  params = JSON.parse(JSON.stringify(params));
+module.exports = async (object, params) => {
   const session = driver.session();
+  params = JSON.parse(JSON.stringify(params));
+  const userState = params.data.user_state || null;
+  const customerState = params.data.customer_state || null;
+  const userDetails = params.data.user || null;
+  let isCustomerAdmin = null;
+  const plan = params.data.subscriptionPlan
+    ? constants.SUBSCRIPTION_PLAN[params.data.subscriptionPlan]
+    : null;
   try {
-    console.log("params", params);
+    if (!userState || !customerState || !userDetails.user_email || !plan) {
+      throw new APIError({
+        lang: defaultLanguage,
+        message: "INTERNAL_SERVER_ERROR",
+      });
+    }
+    await session
+      .run(getUserByEmail, {
+        user_email: userDetails.user_email,
+      })
+      .then((checkEmailresult) => {
+        if (checkEmailresult && checkEmailresult.records.length > 0) {
+          throw new APIError({
+            lang: defaultLanguage,
+            message: "EMAIL_ALREADY_EXISTS",
+          });
+        }
+        return true;
+      })
+      .catch((error) => {
+        session.close();
+        throw error;
+      });
+    if (!plan.cust_single) {
+      isCustomerAdmin = true;
+    }
+    const pwd = userState.user_pwd;
+    const encryptedPassword = await auth.hashPassword(pwd);
+    userState.user_pwd = encryptedPassword;
+    let invoiceToBeCountry = "AT";
+    const queryParams = {
+      user_email: userDetails.user_email,
+      user: userDetails,
+      user_state: common.cleanObject(userState),
+      customer_state: common.cleanObject(customerState),
+      user_is_sys_admin: null,
+      user_is_author: null,
+      is_cust_admin: isCustomerAdmin,
+      user_pref_1st_lang_iso_639_1: params.data.cust_inv_lang_iso_639_1.toLowerCase(),
+      user_pref_country_iso_3166_1_alpha_2:
+        params.data.cust_country_iso_3166_1_alpha_2,
+      cust_alt_inv_country_iso_3166_1_alpha_2:
+        params.data.cust_alt_inv_country_iso_3166_1_alpha_2,
+      cust_inv_currency_iso_4217: params.data.cust_inv_currency_iso_4217,
+      user_want_nl_from_country_iso_3166_1_alpha_2: [
+        params.data.cust_country_iso_3166_1_alpha_2,
+      ],
+    };
+    if (params.data.cust_inv_lang_iso_639_1.toUpperCase() === "DE") {
+      queryParams.user_pref_2nd_lang_iso_639_1 = "en";
+    } else {
+      queryParams.user_pref_2nd_lang_iso_639_1 = "de";
+    }
+    const currentDate = new Date();
+    currentDate.setMonth(
+      currentDate.getMonth() + constants.FREE_SUBSCRIPTION_IN_MONTH
+    );
+    const date = new Date();
+    const y = date.getFullYear();
+    const m = date.getMonth();
+    const lastDay = new Date(y, m + 1, 0);
+    queryParams.customer_state = {
+      ...queryParams.customer_state,
+      ...plan,
+      cust_status: 1,
+      cust_gtc_accepted: +Date.now(),
+      cust_acc_until: common.getNeo4jDateType(currentDate),
+      cust_paid_until: common.getNeo4jDateType(lastDay),
+      cust_no_invoice: false,
+      cust_share_klein: 0.0,
+    };
+    queryParams.user_state.user_login_count = 0;
+    queryParams.user_state.user_last_login = null;
+    if (
+      params.data.cust_country_iso_3166_1_alpha_2 === "DE" ||
+      (customerState.inv_goes_to_alt_rec &&
+        params.data.cust_alt_inv_country_iso_3166_1_alpha_2 === "DE")
+    ) {
+      invoiceToBeCountry = "DE";
+      queryParams.user_state.cust_vat_perc = 0.07;
+    } else {
+      queryParams.user_state.cust_vat_perc = 0.0;
+    }
+    queryParams.to_be_invoiced_from_country = invoiceToBeCountry;
+    queryParams.user_want_nl_from_country_iso_3166_1_alpha_2.push("EU");
+    console.log(queryParams);
     return true;
-    // const result = await session.run(createNewCustomerSate, queryParams);
-    // if (result && result.records.length > 0) {
-    //   return true;
-    // }
+    const result = await session.run(register, queryParams);
+    if (result && result.records.length > 0) {
+      return true;
+    }
     throw new APIError({
       lang: defaultLanguage,
       message: "INTERNAL_SERVER_ERROR",

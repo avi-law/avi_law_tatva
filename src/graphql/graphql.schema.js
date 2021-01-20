@@ -488,12 +488,11 @@ const typeDefs = gql`
     user_state: UserStateCustomInput!
     customer: CustomerInput
     customer_state: Customer_StateInput!
-    cust_to_be_invoiced_from_country_iso_3166_1_alpha_2: String
-    cust_country_iso_3166_1_alpha_2: String
-    cust_inv_lang_iso_639_1: String
+    cust_country_iso_3166_1_alpha_2: String!
+    cust_inv_lang_iso_639_1: String!
+    cust_inv_currency_iso_4217: String!
     cust_alt_inv_country_iso_3166_1_alpha_2: String
-    cust_inv_currency_iso_4217: String
-    subscriptionPlan: Subscription_Plan
+    subscriptionPlan: Subscription_Plan!
   }
   enum GENDER {
     f

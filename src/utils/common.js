@@ -148,6 +148,13 @@ const amountNumberFormat = (value) =>
 const getSalutation = (gender, lang) =>
   constants.EMAIL[lang.toUpperCase()].SALUTATION[gender.toUpperCase()];
 
+const getNeo4jDateType = (date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return new neo4j.types.Date(year, month, day);
+};
+
 module.exports = {
   getMessage,
   asyncForEach,
@@ -161,4 +168,5 @@ module.exports = {
   getPropertiesFromRecord,
   getSalutation,
   loggingData,
+  getNeo4jDateType,
 };

@@ -84,6 +84,7 @@ module.exports = {
     GDPR_NOT_ACCEPTED: "GDPR_NOT_ACCEPTED",
   },
   RESET_PASSWORD_TOKEN_EXPIRY_HOUR: 24,
+  FREE_SUBSCRIPTION_IN_MONTH: 1,
   SUBSCRIPTION_PLAN: {
     SINGLE: {
       cust_single: true,
