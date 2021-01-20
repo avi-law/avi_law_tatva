@@ -84,6 +84,23 @@ module.exports = {
     GDPR_NOT_ACCEPTED: "GDPR_NOT_ACCEPTED",
   },
   RESET_PASSWORD_TOKEN_EXPIRY_HOUR: 24,
+  SUBSCRIPTION_PLAN: {
+    SINGLE: {
+      cust_single: true,
+      cust_rate: 10,
+      cust_disc_perc: 0,
+    },
+    MULTIPLE: {
+      cust_single: false,
+      cust_rate: 20,
+      cust_disc_perc: 0,
+    },
+    UNLIMITED: {
+      cust_single: false,
+      cust_rate: 50,
+      cust_disc_perc: 0,
+    },
+  },
   EMAIL: {
     EN: {
       SALUTATION: {

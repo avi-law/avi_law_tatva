@@ -105,12 +105,12 @@ module.exports = async (object, params, ctx) => {
     );
     if (result && result.records.length > 0) {
       const users = result.records.map((record) => {
-        const user = {
+        const userResult = {
           user: common.getPropertiesFromRecord(record, "u"),
           user_state: common.getPropertiesFromRecord(record, "us"),
           user_to_customer: common.getPropertiesFromRecord(record, "r1"),
         };
-        return user;
+        return userResult;
       });
       return {
         users,

@@ -22,6 +22,7 @@ const setUserProperties = require("./user/set-user-properties");
 const getCustomers = require("./customers/get-customers");
 const getUsersByCustomer = require("./user/get-users-by-customer");
 const getUsers = require("./user/get-users");
+const User = require("./user");
 const getUser = require("./user/get-user");
 const invite = require("./invite/invite");
 const getUserCustomerList = require("./customers/get-user-customer-list");
@@ -61,6 +62,7 @@ const resolvers = {
     invitedUserCreate,
   },
   Query: {
+    User,
     user,
     verifyForgotPasswordLink,
     getNewsLetters,
