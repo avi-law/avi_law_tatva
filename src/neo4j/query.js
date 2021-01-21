@@ -653,7 +653,7 @@ exports.register = (queryParams) => {
 
   if (queryParams.user_state) {
     query = `${query}
-    MERGE (cs:Customer_State { `;
+    MERGE (cs:Customer_State { cust_id: max_cust_id + 1, `;
     Object.keys(queryParams.customer_state).forEach((key) => {
       if (typeof queryParams.customer_state[key] === "string") {
         query = `${query} ${key}: "${queryParams.customer_state[key]}",`;
