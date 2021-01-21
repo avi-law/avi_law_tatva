@@ -3,7 +3,10 @@
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
 const { APIError, common, auth, constants } = require("../../../utils");
-const { defaultLanguage, blindcarbonCopyEmail } = require("../../../config/application");
+const {
+  defaultLanguage,
+  blindcarbonCopyEmail,
+} = require("../../../config/application");
 const { register, getUserByEmail } = require("../../../neo4j/query");
 const sendMail = require("../../../libs/email");
 

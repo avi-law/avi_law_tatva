@@ -672,16 +672,16 @@ exports.register = (queryParams) => {
   MERGE (c)-[:TO_BE_INVOICED_FROM_COUNTRY]->(cou4)
   MERGE (cs)-[:IS_LOCATED_IN_COUNTRY]->(cou1)
 
-  MERGE (c)<-[r2:USER_TO_CUSTOMER]->(u)
+  MERGE (c)<-[r2:USER_TO_CUSTOMER]-(u)
   ON CREATE SET r2.from = apoc.date.currentTimestamp()
 
   MERGE (u)-[r3:HAS_USER_STATE]->(us)
   ON CREATE SET r3.from = apoc.date.currentTimestamp()
 
-  MERGE (u)<-[r4:CUST_HAS_CONTACT_USER]->(cs)
+  MERGE (u)<-[r4:CUST_HAS_CONTACT_USER]-(cs)
   ON CREATE SET r4.from = apoc.date.currentTimestamp()
 
-  MERGE (cs)<-[:TO_BE_INVOICED_IN_CURRENCY]->(curr)
+  MERGE (cs)-[:TO_BE_INVOICED_IN_CURRENCY]->(curr)
 
   MERGE (us)-[:USER_HAS_PREF_COUNTRY]->(cou1)
 
