@@ -21,6 +21,10 @@ module.exports = async (object, params, ctx) => {
   const userEmail = user.user_email;
   const session = driver.session();
   const inputData = params.data || null;
+  let firstNameExistUser = "";
+  let lastNameExistUser = "";
+  let sexExistUser = "";
+  let surfLanguageExistUser = "en";
   let userAlreadyExists = false;
   const response = {
     status: true,
@@ -42,6 +46,7 @@ module.exports = async (object, params, ctx) => {
           const connectToCustomer = {
             user_state: common.getPropertiesFromRecord(record, "us"),
             customer: common.getPropertiesFromRecord(record, "c"),
+            user_surf_lang: record.get("user_surf_lang"),
           };
           return connectToCustomer;
         });
@@ -53,6 +58,10 @@ module.exports = async (object, params, ctx) => {
             message: "USER_HAS_ENTITLED_ALREADY",
           });
         }
+        firstNameExistUser = users[0].user_state.user_first_name;
+        lastNameExistUser = users[0].user_state.user_last_name;
+        sexExistUser = users[0].user_state.user_sex;
+        surfLanguageExistUser = users[0].user_surf_lang;
       }
     }
     const randomString =
@@ -62,9 +71,16 @@ module.exports = async (object, params, ctx) => {
     token = token.replace("=", "");
     const queryParams = {
       ...inputData,
-      token,
       user_email: userEmail,
     };
+    if (userAlreadyExists) {
+      queryParams.new_user_first_name = firstNameExistUser;
+      queryParams.new_user_last_name = lastNameExistUser;
+      queryParams.new_user_sex = sexExistUser;
+      queryParams.invitation_token = null;
+    } else {
+      queryParams.invitation_token = token;
+    }
     const result = await session.run(invite, queryParams);
     if (result && result.records.length > 0) {
       let mailOption = {};
@@ -85,7 +101,8 @@ module.exports = async (object, params, ctx) => {
       }
 
       if (userAlreadyExists) {
-        mailContent = constants.EMAIL[userSurfLang.toUpperCase()].ADDED_USER;
+        mailContent =
+          constants.EMAIL[surfLanguageExistUser.toUpperCase()].ADDED_USER;
       } else {
         mailContent = constants.EMAIL[userSurfLang.toUpperCase()].INVITED;
       }

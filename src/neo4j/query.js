@@ -253,7 +253,8 @@ exports.getUserByEmailWithCustomer = `
 MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User { user_email: $user_email })
 WHERE r1.to IS NULL
 OPTIONAL MATCH (u)-[r2:USER_TO_CUSTOMER]->(c:Customer)
-RETURN us , c`;
+OPTIONAL MATCH (us)-[r3:USER_HAS_PREF_SURF_LANG]->(l1:Language)
+RETURN us , c, l1.iso_639_1 as user_surf_lang`;
 
 exports.setPasswordToken = `
 MATCH ( us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
@@ -597,7 +598,7 @@ MERGE (u2:User {user_email: $new_user_email})
 ON CREATE SET u2.user_status = "invited"
 MERGE (u2)-[r2:USER_TO_CUSTOMER]->(c)
 ON CREATE SET r2.from = apoc.date.currentTimestamp()
-MERGE (us2:User_State {user_first_name: $new_user_first_name, user_last_name: $new_user_last_name, user_sex: $new_user_sex, invitation_token: $token})
+MERGE (us2:User_State {user_first_name: $new_user_first_name, user_last_name: $new_user_last_name, user_sex: $new_user_sex})
 MERGE (u2)-[r3:HAS_USER_STATE]->(us2)
 ON CREATE SET r3.from = apoc.date.currentTimestamp()
 MERGE (us2)-[:USER_HAS_PREF_COUNTRY]->(cou1)
@@ -605,6 +606,7 @@ MERGE (us2)-[:USER_HAS_PREF_SURF_LANG]->(lang1)
 MERGE (us2)-[:USER_HAS_PREF_1ST_LANG]->(lang2)
 MERGE (us2)-[:USER_HAS_PREF_2ND_LANG]->(lang3)
 FOREACH (cou IN nl_cous | MERGE (us2)-[:USER_WANTS_NL_FROM_COUNTRY]->(cou))
+FOREACH (_ IN CASE WHEN $invitation_token IS NOT NULL THEN [1] END | SET us2.invitation_token = $invitation_token )
 MERGE (u2)-[r4:USER_INVITED_BY]->(u1)
 ON CREATE SET r4.from = apoc.date.currentTimestamp()
 RETURN u2, us2`;
