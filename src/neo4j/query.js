@@ -611,47 +611,89 @@ MERGE (u2)-[r4:USER_INVITED_BY]->(u1)
 ON CREATE SET r4.from = apoc.date.currentTimestamp()
 RETURN u2, us2`;
 
-exports.register = `
-MATCH (c0:Customer) WITH MAX(c0.cust_id) AS max_cust_id
-MATCH (cou1:Country {iso_3166_1_alpha_2: $user_pref_country_iso_3166_1_alpha_2})
-MATCH (cou4:Country {iso_3166_1_alpha_2: $to_be_invoiced_from_country })
-MATCH (curr:Currency {iso_4217: $cust_inv_currency_iso_4217})
-MATCH (lang1:Language {iso_639_1: $user_pref_1st_lang_iso_639_1})
-MATCH (lang3:Language  {iso_639_1: $user_pref_2nd_lang_iso_639_1})
-MATCH (cou3:Country {iso_3166_1_alpha_2: $cust_alt_inv_country})
-CALL {
-  MATCH (cou2:Country) WHERE cou2.iso_3166_1_alpha_2 IN $user_want_nl_from_country_iso_3166_1_alpha_2
-  RETURN collect(cou2) AS nl_cous
-}
-MERGE (u:User { user_email: $user_email })
-MERGE (us:User_State $user_state)
-MERGE (c:Customer { cust_id: max_cust_id + 1 })
-MERGE (cs:Customer_State $customer_state)
-MERGE (c)-[r1:HAS_CUST_STATE]->(cs)
-ON CREATE SET r1.from = apoc.date.currentTimestamp()
-MERGE (c)-[:TO_BE_INVOICED_FROM_COUNTRY]->(cou4)
-MERGE (cs)-[:IS_LOCATED_IN_COUNTRY]->(cou1)
-MERGE (cs)-[:INV_TO_ALT_COUNTRY]->(cou3)
+exports.register = (queryParams) => {
+  let nlCountry = "";
+  if (queryParams.user_want_nl_from_country_iso_3166_1_alpha_2.length > 0) {
+    queryParams.user_want_nl_from_country_iso_3166_1_alpha_2.forEach((ln) => {
+      nlCountry = `${nlCountry}, "${ln}"`;
+    });
+  }
+  nlCountry = nlCountry.replace(/^,|,$/g, "");
+  let query = `
+  MATCH (c0:Customer) WITH MAX(c0.cust_id) AS max_cust_id
+  MATCH (cou1:Country {iso_3166_1_alpha_2: "${queryParams.user_pref_country_iso_3166_1_alpha_2}" })
+  MATCH (cou4:Country {iso_3166_1_alpha_2: "${queryParams.to_be_invoiced_from_country}"  })
+  MATCH (curr:Currency {iso_4217: "${queryParams.cust_inv_currency_iso_4217}" })
+  MATCH (lang1:Language {iso_639_1: "${queryParams.user_pref_1st_lang_iso_639_1}" })
+  MATCH (lang2:Language  {iso_639_1: "${queryParams.user_pref_2nd_lang_iso_639_1}" })
+  OPTIONAL MATCH (cou3:Country {iso_3166_1_alpha_2: "${queryParams.cust_alt_inv_country_iso_3166_1_alpha_2}" })
+  CALL {
+    MATCH (cou2:Country) WHERE cou2.iso_3166_1_alpha_2 IN [${nlCountry}]
+    RETURN collect(cou2) AS nl_cous
+  }
+  MERGE (u:User { user_email: "${queryParams.user_email}" })
+  ON CREATE SET u.is_email_verified = false
+  `;
+  if (queryParams.user_state) {
+    query = `${query}
+    MERGE (us:User_State { `;
+    Object.keys(queryParams.user_state).forEach((key) => {
+      if (typeof queryParams.user_state[key] === "string") {
+        query = `${query} ${key}: "${queryParams.user_state[key]}",`;
+      } else {
+        query = `${query} ${key}: ${queryParams.user_state[key]},`;
+      }
+    });
+    query = query.replace(/,\s*$/, "");
+    query = `${query} })`;
+  }
 
-MERGE (c)<-[r2:USER_TO_CUSTOMER]->(u)
-ON CREATE SET r2.from = apoc.date.currentTimestamp()
+  query = `${query}
+  MERGE (c:Customer { cust_id: max_cust_id + 1 })`;
 
-MERGE (u)-[r3:HAS_USER_STATE]->(us)
-ON CREATE SET r3.from = apoc.date.currentTimestamp()
+  if (queryParams.user_state) {
+    query = `${query}
+    MERGE (cs:Customer_State { `;
+    Object.keys(queryParams.customer_state).forEach((key) => {
+      if (typeof queryParams.customer_state[key] === "string") {
+        query = `${query} ${key}: "${queryParams.customer_state[key]}",`;
+      } else if (key === "cust_acc_until" || key === "cust_paid_until") {
+        query = `${query} ${key}: Date({ year: ${queryParams.customer_state[key].year}, month: ${queryParams.customer_state[key].month} , day: ${queryParams.customer_state[key].day} }),`;
+      } else {
+        query = `${query} ${key}: ${queryParams.customer_state[key]},`;
+      }
+    });
+    query = query.replace(/,\s*$/, "");
+    query = `${query} })`;
+  }
+  query = `${query}
+  MERGE (c)-[r1:HAS_CUST_STATE]->(cs)
+  ON CREATE SET r1.from = apoc.date.currentTimestamp()
+  MERGE (c)-[:TO_BE_INVOICED_FROM_COUNTRY]->(cou4)
+  MERGE (cs)-[:IS_LOCATED_IN_COUNTRY]->(cou1)
 
-MERGE (u)<-[r4:CUST_HAS_CONTACT_USER]->(cs)
-ON CREATE SET r4.from = apoc.date.currentTimestamp()
+  MERGE (c)<-[r2:USER_TO_CUSTOMER]->(u)
+  ON CREATE SET r2.from = apoc.date.currentTimestamp()
 
-MERGE (cs)<-[:TO_BE_INVOICED_IN_CURRENCY]->(curr)
+  MERGE (u)-[r3:HAS_USER_STATE]->(us)
+  ON CREATE SET r3.from = apoc.date.currentTimestamp()
 
-MERGE (us)-[:USER_HAS_PREF_COUNTRY]->(cou1)
+  MERGE (u)<-[r4:CUST_HAS_CONTACT_USER]->(cs)
+  ON CREATE SET r4.from = apoc.date.currentTimestamp()
 
-MERGE (us)-[:USER_HAS_PREF_SURF_LANG]->(lang1)
-MERGE (us)-[:USER_HAS_1ST_SURF_LANG]->(lang1)
-MERGE (us)-[:USER_HAS_2ND_SURF_LANG]->(lang2)
-MERGE (cs)-[:INV_IN_LANG]->(lang1)
+  MERGE (cs)<-[:TO_BE_INVOICED_IN_CURRENCY]->(curr)
 
-FOREACH (cou IN nl_cous | MERGE (us)-[:USER_WANTS_NL_FROM_COUNTRY]->(cou))
-FOREACH (_ IN CASE WHEN $is_cust_admin IS NOT NULL THEN [1] END | SET r2.user_is_cust_admin = true )
+  MERGE (us)-[:USER_HAS_PREF_COUNTRY]->(cou1)
 
-RETURN c, cs, u, us`;
+  MERGE (us)-[:USER_HAS_PREF_SURF_LANG]->(lang1)
+  MERGE (us)-[:USER_HAS_PREF_1ST_LANG]->(lang1)
+  MERGE (us)-[:USER_HAS_PREF_2ND_LANG]->(lang2)
+  MERGE (cs)-[:INV_IN_LANG]->(lang1)
+
+  FOREACH (cou IN nl_cous | MERGE (us)-[:USER_WANTS_NL_FROM_COUNTRY]->(cou))
+  FOREACH (_ IN CASE WHEN ${queryParams.is_cust_admin}  IS NOT NULL THEN [1] END | SET r2.user_is_cust_admin = true )
+  FOREACH (_ IN CASE WHEN cou3 IS NOT NULL THEN [1] END | MERGE (cs)-[:INV_TO_ALT_COUNTRY]->(cou3) )
+  RETURN c, cs, u, us
+  `;
+  return query;
+};

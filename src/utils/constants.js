@@ -85,6 +85,8 @@ module.exports = {
   },
   RESET_PASSWORD_TOKEN_EXPIRY_HOUR: 24,
   FREE_SUBSCRIPTION_IN_MONTH: 1,
+  CUSTOMER_VAT_PER_DE: 0.07,
+  CUSTOMER_VAT_PER: 0.0,
   SUBSCRIPTION_PLAN: {
     SINGLE: {
       cust_single: true,
@@ -168,6 +170,18 @@ module.exports = {
         FOOTER_TITLE: "Best regards,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
+      REGISTRATION_VERIFICATION: {
+        SUBJECT: "Registration confirmation",
+        CONT010: "Thank you for having signed up to",
+        CONT020: "www.avi-law.com",
+        CONT040:
+          "We hereby confirm that you have registered for a subscription against payment at",
+        CONT050: "An invoice will be sent to you within the next few days.",
+        CONT060:
+          "If you have questions, please do not hesitate to contact us via",
+        FOOTER_TITLE: "Best regards,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
     },
     DE: {
       SALUTATION: {
@@ -232,6 +246,20 @@ module.exports = {
         CONT020: "Please login to www.avi-law using below password",
         CONT050: "Password",
         FOOTER_TITLE: "Best regards,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
+      REGISTRATION_VERIFICATION: {
+        SUBJECT: "Anmeldebestätigung",
+        CONT010: "Danke, dass Sie sich für",
+        CONT020: "www.avi-law.com",
+        CONT030: "entschieden haben.",
+        CONT040: "Hiermit bestätigen wir, dass Sie sich kostenpflichtig auf",
+        CONT050:
+          "angemeldet haben. Eine Rechnung für Ihren Zugang wird Ihnen in den nächsten Tagen zugestellt werden.",
+        CONT060:
+          "Wenn Sie Fragen haben, stehen wir Ihnen jederzeit gerne unter",
+        CONT070: "zur Verfügung.",
+        FOOTER_TITLE: "Mit freundlichen Grüßen,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
     },

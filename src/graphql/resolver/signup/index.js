@@ -5,6 +5,7 @@ const driver = require("../../../config/db");
 const { APIError, common, auth, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const { register, getUserByEmail } = require("../../../neo4j/query");
+const sendMail = require("../../../libs/email");
 
 module.exports = async (object, params) => {
   const session = driver.session();
@@ -29,10 +30,11 @@ module.exports = async (object, params) => {
       })
       .then((checkEmailresult) => {
         if (checkEmailresult && checkEmailresult.records.length > 0) {
-          throw new APIError({
-            lang: defaultLanguage,
-            message: "EMAIL_ALREADY_EXISTS",
-          });
+          return false;
+          // throw new APIError({
+          //   lang: defaultLanguage,
+          //   message: "EMAIL_ALREADY_EXISTS",
+          // });
         }
         return true;
       })
@@ -96,16 +98,36 @@ module.exports = async (object, params) => {
         params.data.cust_alt_inv_country_iso_3166_1_alpha_2 === "DE")
     ) {
       invoiceToBeCountry = "DE";
-      queryParams.user_state.cust_vat_perc = 0.07;
+      queryParams.customer_state.cust_vat_perc = constants.CUSTOMER_VAT_PER_DE;
     } else {
-      queryParams.user_state.cust_vat_perc = 0.0;
+      queryParams.customer_state.cust_vat_perc = constants.CUSTOMER_VAT_PER;
     }
     queryParams.to_be_invoiced_from_country = invoiceToBeCountry;
     queryParams.user_want_nl_from_country_iso_3166_1_alpha_2.push("EU");
-    console.log(queryParams);
-    return true;
-    const result = await session.run(register, queryParams);
+
+    queryParams.user_state = common.cleanObject(queryParams.user_state);
+    queryParams.customer_state = common.cleanObject(queryParams.customer_state);
+    const result = await session.run(register(queryParams));
     if (result && result.records.length > 0) {
+      const mailContent =
+        constants.EMAIL[params.data.cust_inv_lang_iso_639_1.toUpperCase()]
+          .REGISTRATION_VERIFICATION;
+      const mailOption = {
+        to: userDetails.user_email,
+        subject: mailContent.SUBJECT,
+        data: {
+          salutation: common.getSalutation(
+            userState.user_sex,
+            params.data.cust_inv_lang_iso_639_1
+          ),
+          user_first_name: userState.user_first_name,
+          user_last_name: userState.user_last_name,
+          ...mailContent,
+        },
+      };
+      await sendMail(mailOption, "registration-comfirmation").catch((error) => {
+        console.error("Send Mail :", error);
+      });
       return true;
     }
     throw new APIError({
