@@ -86,6 +86,7 @@ module.exports = async (object, params) => {
     queryParams.customer_state = {
       ...queryParams.customer_state,
       ...plan,
+      cust_contact_user: userDetails.user_email,
       cust_status: 1,
       cust_gtc_accepted: +Date.now(),
       cust_acc_until: common.getNeo4jDateType(currentDate),

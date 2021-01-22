@@ -4,7 +4,7 @@ MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 WHERE r1.to IS NULL
   Call { With u MATCH (u:User)-[r2:USER_TO_CUSTOMER]->(c:Customer)-[r3:HAS_CUST_STATE]->(cs:Customer_State)
     WHERE r3.to IS NULL
-    RETURN collect({ cust_id: cs.cust_id, cust_acc_until: toString(cs.cust_acc_until), cust_gtc_accepted: cs.cust_gtc_accepted, user_is_cust_admin: r2.user_is_cust_admin, cust_spec_cont: r2.cust_spec_cont, single_user: cs.cust_single, user_to: r2.to } ) AS cust_states }
+    RETURN collect({ cust_id: c.cust_id, cust_acc_until: toString(cs.cust_acc_until), cust_gtc_accepted: cs.cust_gtc_accepted, user_is_cust_admin: r2.user_is_cust_admin, cust_spec_cont: r2.cust_spec_cont, single_user: cs.cust_single, user_to: r2.to } ) AS cust_states }
   Call { With us MATCH (us:User_State)-[r8:USER_WANTS_NL_FROM_COUNTRY]->(cou:Country)
     WHERE r8.to IS NULL
     RETURN collect(cou.iso_3166_1_alpha_2) AS user_NL_state
@@ -380,7 +380,7 @@ exports.getCustomersQuery = (
   ${condition}
   RETURN {
     cust_name_01: cs.cust_name_01,
-    cust_id: cs.cust_id,
+    cust_id: c.cust_id,
     cust_status: cs.cust_status,
     is_located_in_country: {
       country_name_de: cou.country_name_de,
@@ -441,7 +441,7 @@ RETURN {
     cust_alt_inv_zip: cs.cust_alt_inv_zip,
     cust_country: cs.cust_country,
     cust_alt_inv_salut: cs.cust_alt_inv_salut,
-    cust_id: cs.cust_id,
+    cust_id: c.cust_id,
     cust_vat_id: cs.cust_vat_id,
     cust_rmk: cs.cust_rmk,
     cust_city: cs.cust_city,
