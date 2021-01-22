@@ -219,6 +219,19 @@ MATCH (c:Customer {cust_id: $cust_id})
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a);
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(c);`;
 
+exports.logUser = `
+MATCH (a: Log_Type {log_type_id: 23})
+MATCH (b:User {user_email: $current_user_email})
+MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a);
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(b);`;
+
+exports.logUserByAdmin = `
+MATCH (a: Log_Type {log_type_id: 22})
+MATCH (b:User {user_email: $current_user_email})
+MATCH (u:User {user_email: $user_email})
+MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a);
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(u);`;
+
 exports.manageLoginCountQuery = `
 MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 SET us.user_login_count = us.user_login_count + 1

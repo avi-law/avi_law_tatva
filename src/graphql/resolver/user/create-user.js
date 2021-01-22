@@ -3,14 +3,21 @@
 /* eslint-disable consistent-return */
 const _ = require("lodash");
 const driver = require("../../../config/db");
-const { APIError, common, auth } = require("../../../utils");
+const { APIError, common, auth, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const { createUser, getUser, getUserByEmail } = require("../../../neo4j/query");
+const {
+  createUser,
+  getUser,
+  getUserByEmail,
+  logUserByAdmin,
+  logUser,
+} = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const systemAdmin = user.user_is_sys_admin || null;
+  const loginUserEmail = user.user_email || null;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const userEmail = params.user_email;
@@ -114,6 +121,16 @@ module.exports = async (object, params, ctx) => {
     }
     const result = await session.run(createUser, queryParams);
     if (result && result.records.length > 0) {
+      const logObject = {
+        type: constants.LOG_TYPE_ID.CREATE_USER,
+        current_user_email: loginUserEmail,
+      };
+      if (systemAdmin) {
+        logObject.user_email = userEmail;
+        common.loggingData(logUserByAdmin, logObject);
+      } else {
+        common.loggingData(logUser, logObject);
+      }
       return true;
     }
     throw new APIError({

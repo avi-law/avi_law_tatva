@@ -2,14 +2,19 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { APIError, common, auth } = require("../../../utils");
+const { APIError, common, auth, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const { newUser, getUserByEmail } = require("../../../neo4j/query");
+const {
+  newUser,
+  getUserByEmail,
+  logUserByAdmin,
+} = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const systemAdmin = user.user_is_sys_admin || null;
+  const userEmail = user.user_email || null;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const userState = params.data.user_state || null;
@@ -60,6 +65,13 @@ module.exports = async (object, params, ctx) => {
     // return true;
     const result = await session.run(newUser, queryParams);
     if (result && result.records.length > 0) {
+      if (systemAdmin) {
+        common.loggingData(logUserByAdmin, {
+          type: constants.LOG_TYPE_ID.CREATE_USER,
+          current_user_email: userEmail,
+          user_email: userDetails.user_email,
+        });
+      }
       return true;
     }
     throw new APIError({
