@@ -118,7 +118,7 @@ module.exports = async (object, params) => {
           .REGISTRATION_VERIFICATION;
       const mailOption = {
         to: userDetails.user_email,
-        // bcc: blindcarbonCopyEmail,
+        bcc: blindcarbonCopyEmail,
         subject: mailContent.SUBJECT,
         data: {
           salutation: common.getSalutation(
