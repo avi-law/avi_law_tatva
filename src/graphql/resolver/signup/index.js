@@ -5,7 +5,7 @@ const driver = require("../../../config/db");
 const { APIError, common, auth, constants } = require("../../../utils");
 const {
   defaultLanguage,
-  blindcarbonCopyEmail,
+  carbonCopyEmail,
 } = require("../../../config/application");
 const { register, getUserByEmail } = require("../../../neo4j/query");
 const sendMail = require("../../../libs/email");
@@ -118,7 +118,7 @@ module.exports = async (object, params) => {
           .REGISTRATION_VERIFICATION;
       const mailOption = {
         to: userDetails.user_email,
-        bcc: blindcarbonCopyEmail,
+        bcc: carbonCopyEmail,
         subject: mailContent.SUBJECT,
         data: {
           salutation: common.getSalutation(
