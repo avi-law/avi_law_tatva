@@ -61,6 +61,9 @@ module.exports = async (object, params, ctx) => {
     if (typeof params.data.user_is_author === "boolean") {
       queryParams.user_is_author = params.data.user_is_author;
     }
+    if (params.data.user_acronym) {
+      queryParams.user_state.user_acronym = params.data.user_acronym;
+    }
     // console.log(queryParams);
     // return true;
     const result = await session.run(newUser, queryParams);
