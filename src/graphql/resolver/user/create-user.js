@@ -122,7 +122,7 @@ module.exports = async (object, params, ctx) => {
     const result = await session.run(createUser, queryParams);
     if (result && result.records.length > 0) {
       const logObject = {
-        type: constants.LOG_TYPE_ID.CREATE_USER,
+        type: constants.LOG_TYPE_ID.UPDATE_USER,
         current_user_email: loginUserEmail,
       };
       if (systemAdmin) {

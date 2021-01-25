@@ -220,13 +220,13 @@ MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(c);`;
 
 exports.logUser = `
-MATCH (a: Log_Type {log_type_id: 23})
+MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a);
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(b);`;
 
 exports.logUserByAdmin = `
-MATCH (a: Log_Type {log_type_id: 22})
+MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (u:User {user_email: $user_email})
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a);
