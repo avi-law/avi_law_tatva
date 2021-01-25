@@ -27,9 +27,15 @@ const getMessage = (messageKey, lang = "en") => {
 const loggingData = (query, data) => {
   const session = driver.session();
   try {
-    session.run(query, data);
-    session.close();
-    return true;
+    return session
+      .run(query, data)
+      .then(() => {
+        session.close();
+        return true;
+      })
+      .catch((err) => {
+        throw err;
+      });
   } catch (error) {
     session.close();
     console.log("Logging Error", error.message);
