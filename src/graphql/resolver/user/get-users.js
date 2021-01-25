@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { common, APIError } = require("../../../utils");
+const { common, APIError, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const { getUsersCountQuery, getUsersQuery } = require("../../../neo4j/query");
 
@@ -89,7 +89,10 @@ module.exports = async (object, params, ctx) => {
       });
     }
     if (filterByString) {
-      const value = filterByString.replace(/[&/\\#,+()$~%.'":*?^<>{}]/g, "");
+      const value = filterByString.replace(
+        constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
+        ""
+      );
       condition = `${condition} AND ( us.user_first_name CONTAINS "${value}" OR us.user_last_name CONTAINS "${value}" OR u.user_email CONTAINS "${value}")`;
     }
     if (queryOrderBy === "") {
