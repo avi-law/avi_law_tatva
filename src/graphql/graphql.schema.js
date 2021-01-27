@@ -188,7 +188,7 @@ const typeDefs = gql`
     inv_amount_total: Float
     inv_disc_perc: Float
     inv_disc_net: Float
-    inv_cancelled: Boolean
+    inv_cancelled: _Neo4jDate
     inv_name_03: String
     inv_name_02: String
     inv_no_of_months: Int
@@ -540,6 +540,7 @@ const typeDefs = gql`
     newUser(data: UserCustomInput!): Boolean @isAdmin
     invite(data: InvitationInput!): Invitation @isAuthenticated
     invitedUserCreate(token: String!, data: UserCustomInput!): Boolean
+    invoiceCancel(invoice_id: String!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated

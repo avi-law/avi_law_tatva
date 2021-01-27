@@ -541,6 +541,12 @@ CREATE (inv:Invoice $invoice)-[:INV_FOR_CUST]->(c)
 MERGE (inv)-[:INV_SENT_FROM]->(cou1)
 RETURN cou1`;
 
+exports.cancelInvoice = `
+MATCH (inv: Invoice {inv_id_strg: $inv_id_strg})
+WHERE inv.inv_paid IS NULL AND inv.inv_cancelled IS NULL
+SET inv.inv_cancelled = date()
+RETURN inv`;
+
 exports.createNewCustomer = `
 MATCH (c:Customer) WITH MAX(c.cust_id) AS max_cust_id
 CREATE (c2:Customer {cust_id: max_cust_id + 1})-[:HAS_CUST_STATE {from: apoc.date.currentTimestamp()}]->(cs:Customer_State $customer_state)
