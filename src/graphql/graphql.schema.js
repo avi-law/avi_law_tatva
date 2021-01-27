@@ -217,21 +217,23 @@ const typeDefs = gql`
     user_address_de: String
   }
 
-  type NL_Article {
-    nl_article_active: Boolean
-    nl_article_author: String
-    nl_article_date: String
-    nl_article_id: Int
-    nl_article_last_updated: Float
-    nl_article_no: String
-    nl_article_order: String
-    nl_article_text_de: String
-    nl_article_text_en: String
-    nl_article_title_de_long: String
-    nl_article_title_de_short: String
-    nl_article_title_en_long: String
-    nl_article_title_en_short: String
-    Country: Country @relation(name: "NL_REFERS_TO_COUNTRY", direction: OUT)
+  type NL {
+    nl_active: Boolean
+    nl_author: String
+    nl_date: _Neo4jDate
+    nl_id: ID
+    nl_no: String
+    nl_ord: String
+    nl_state: NL_State @relation(name: "HAS_NL_STATE", direction: OUT)
+    user: User @relation(name: "NL_HAS_AUTHOR", direction: OUT)
+    country: Country @relation(name: "NL_REFERS_TO_COUNTRY", direction: OUT)
+  }
+
+  type NL_State {
+    nl_text: String
+    nl_title_long: String
+    nl_title_short: String
+    nl_language: Language @relation(name: "NL_LANG_IS", direction: OUT)
   }
 
   type UserCustom {
@@ -577,8 +579,8 @@ const typeDefs = gql`
     ): InvoiceCustom @isAuthenticated
     getInvoice(customer_id: Int, invoice_id: String!): Invoice @isAuthenticated
     verifyForgotPasswordLink(token: String!): Boolean
-    getNewsLetters(lang: [String!]): [NL_Article!]
-    getNewsLetter(id: Int!): NL_Article @isAuthenticated
+    getNewsLetters(lang: [String!]): [NL!]
+    getNewsLetter(id: Int!): NL @isAuthenticated
     getCustomers(
       first: Int
       offset: Int
