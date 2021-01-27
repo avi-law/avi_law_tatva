@@ -16,7 +16,7 @@ const { APIError, constants, common } = require("../../../utils");
 const { htmlToPdfBuffer, htmlToPdfFile } = require("../../../libs/html-to-pdf");
 const sendMail = require("../../../libs/email");
 const getPreparedNewInvoiceDetails = require("./get-prepared-new-invoice");
-const { createInvoice } = require("../../../neo4j/query");
+const { createInvoice, logInvoice } = require("../../../neo4j/query");
 
 const availableInvoice = [
   "INV_de_AT_CUST",
@@ -45,8 +45,10 @@ const getInvoicePdf = (filename, invoiceData) =>
 
 module.exports = async (object, params, ctx) => {
   params = JSON.parse(JSON.stringify(params));
-  const systemAdmin = ctx.user.user_is_sys_admin;
-  const userSurfLang = ctx.user.user_surf_lang || defaultLanguage;
+  const { user } = ctx;
+  const systemAdmin = user.user_is_sys_admin;
+  const userSurfLang = user.user_surf_lang || defaultLanguage;
+  const userEmail = user.user_email;
   const customerId = params.customer_id;
   let session;
   try {
@@ -189,6 +191,11 @@ module.exports = async (object, params, ctx) => {
         })
         .then((res) => {
           if (res && res.records.length > 0) {
+            common.loggingData(logInvoice, {
+              type: constants.LOG_TYPE_ID.CREATE_INVOICE,
+              current_user_email: userEmail,
+              inv_id_strg: invoiceIdString,
+            });
             tx.commit();
             return true;
           }

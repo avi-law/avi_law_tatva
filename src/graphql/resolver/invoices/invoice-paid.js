@@ -1,13 +1,14 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { APIError, common } = require("../../../utils");
+const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const { paidInvoice } = require("../../../neo4j/query");
+const { paidInvoice, logInvoice } = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
+  const userEmail = user.user_email;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const invoiceId = params.invoice_id;
@@ -18,6 +19,11 @@ module.exports = async (object, params, ctx) => {
     };
     const result = await session.run(paidInvoice, queryParams);
     if (result && result.records.length > 0) {
+      common.loggingData(logInvoice, {
+        type: constants.LOG_TYPE_ID.PAID_INVOICE,
+        current_user_email: userEmail,
+        inv_id_strg: invoiceId,
+      });
       return true;
     }
     throw new APIError({
