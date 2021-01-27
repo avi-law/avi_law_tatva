@@ -80,7 +80,7 @@ const getCypherQueryOpt = (key, value, alias) => {
 };
 
 const getPropertiesFromRecord = (record, key) => {
-  if (record.get(key)) {
+  if (record.keys.indexOf(key) !== -1 && record.get(key)) {
     return record.get(key).properties;
   }
   return null;
