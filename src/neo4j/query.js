@@ -388,6 +388,7 @@ RETURN {
   },
   customer_state: {
     cust_contact_user: cs.cust_contact_user,
+    cust_inv_spec_email: cs.cust_inv_spec_email,
     cust_single: cs.cust_single,
     cust_vat_perc: cs.cust_vat_perc,
     cust_alt_inv_dept: cs.cust_alt_inv_dept,

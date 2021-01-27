@@ -14,7 +14,7 @@ module.exports = async (object, params, ctx) => {
   params = JSON.parse(JSON.stringify(params));
   const customerState = params.data.customer_state || null;
   try {
-    if (!customerState) {
+    if (!customerState || !systemAdmin) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",

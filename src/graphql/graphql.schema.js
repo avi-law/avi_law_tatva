@@ -16,7 +16,7 @@ const typeDefs = gql`
     log_for_user: [Log] @relation(name: "LOG_FOR_USER", direction: IN)
   }
 
-  type User_State @isAuthenticated {
+  type User_State {
     user_id: Int
     user_first_name: String
     user_middle_name: String
@@ -44,7 +44,7 @@ const typeDefs = gql`
       @relation(name: "USER_HAS_PREF_COUNTRY", direction: OUT)
   }
 
-  type Customer @isAuthenticated {
+  type Customer {
     cust_id: ID!
     cust_status: Int
     cust_rmk: String
@@ -109,15 +109,16 @@ const typeDefs = gql`
       @relation(name: "TO_BE_INVOICED_IN_CURRENCY", direction: IN)
   }
 
-  type Log @isAuthenticated {
+  type Log {
     log_par_02: String
     log_par_01: String
     log_timestamp: Int
     log_for_user: User @relation(name: "LOG_FOR_USER", direction: OUT)
   }
 
-  type Customer_State @isAuthenticated {
+  type Customer_State {
     cust_contact_user: String
+    cust_inv_spec_email: String
     cust_single: Boolean
     cust_vat_perc: Float
     cust_alt_inv_dept: String
@@ -299,6 +300,7 @@ const typeDefs = gql`
 
   input Customer_StateInput {
     cust_contact_user: String
+    cust_inv_spec_email: String
     cust_single: Boolean
     cust_vat_perc: Float
     cust_alt_inv_dept: String
