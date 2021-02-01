@@ -211,8 +211,7 @@ module.exports = {
       },
       EMAIL_VERIFIED: {
         SUBJECT: "Email verified",
-        CONT010:
-          "Congratulation!, you have successfully verified the register email address.",
+        CONT010: "The verification of your email-address was successful!",
         CONT030:
           "If you have questions, please do not hesitate to contact us via",
         FOOTER_TITLE: "Best regards,",
@@ -312,9 +311,8 @@ module.exports = {
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
       EMAIL_VERIFIED: {
-        SUBJECT: "Email verified",
-        CONT010:
-          "Congratulation!, you have successfully verified the register email address.",
+        SUBJECT: "eMail-Adresse erfolgreich überprüft",
+        CONT010: "Die Überprüfung Ihrer eMail-Adresse war erfolgreich!",
         CONT030:
           "Wenn Sie Fragen haben, stehen wir Ihnen jederzeit gerne unter",
         CONT040: "zur Verfügung.",
