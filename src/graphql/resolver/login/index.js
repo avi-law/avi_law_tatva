@@ -18,9 +18,13 @@ module.exports = async (object, params) => {
   let loginFailedCode = null;
   try {
     const result = await session.run(loginQuery, params);
-    const userState = result.records.map(
-      (record) => record.get("userState").properties
-    );
+    const userState = result.records.map((record) => {
+      const userResult = {
+        ...common.getPropertiesFromRecord(record, "us"),
+        user: common.getPropertiesFromRecord(record, "u"),
+      };
+      return userResult;
+    });
     if (userState && userState[0]) {
       if (!auth.comparePassword(userState[0].user_pwd, params.user_pwd)) {
         // Log invalid password query
@@ -34,6 +38,13 @@ module.exports = async (object, params) => {
         throw new APIError({
           lang: defaultLanguage,
           message: "INCORRECT_LOGIN_DATA",
+        });
+      }
+      if (typeof userState[0].user.is_email_verified === "boolean") {
+        throw new APIError({
+          type: "info",
+          lang: defaultLanguage,
+          message: "EMAIL_VERIFICATION_FAILED",
         });
       }
       const userStateInformation = await session

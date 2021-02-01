@@ -48,11 +48,17 @@ module.exports = async (object, params) => {
     if (!plan.cust_single) {
       isCustomerAdmin = true;
     }
+    const randomString =
+      Math.random().toString(36) + Math.random().toString(36);
+    let token = Buffer.from(randomString).toString("base64");
+    token = token.replace("==", "");
+    token = token.replace("=", "");
     const pwd = userState.user_pwd;
     const encryptedPassword = await auth.hashPassword(pwd);
     userState.user_pwd = encryptedPassword;
     let invoiceToBeCountry = "AT";
     const queryParams = {
+      verificationToken: token,
       user_email: userDetails.user_email,
       user: userDetails,
       user_state: common.cleanObject(userState),
@@ -127,6 +133,8 @@ module.exports = async (object, params) => {
           ),
           user_first_name: userState.user_first_name,
           user_last_name: userState.user_last_name,
+          verificationToken: token,
+          link: "user/email-verification",
           ...mailContent,
         },
       };

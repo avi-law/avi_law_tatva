@@ -60,7 +60,7 @@ RETURN {
 exports.loginQuery = `
 MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 WHERE r1.to IS NULL
-RETURN us as userState`;
+RETURN us, u`;
 
 exports.getUser = `
 MATCH (u:User)-[r1:HAS_USER_STATE]->(us:User_State)
@@ -618,7 +618,7 @@ exports.register = (queryParams) => {
     RETURN collect(cou2) AS nl_cous
   }
   MERGE (u:User { user_email: "${queryParams.user_email}" })
-  ON CREATE SET u.is_email_verified = false
+  ON CREATE SET u.is_email_verified = false, u.email_verification_token = "${queryParams.verificationToken}"
   `;
   if (queryParams.user_state) {
     query = `${query}
@@ -679,7 +679,6 @@ exports.register = (queryParams) => {
   FOREACH (cou IN nl_cous | MERGE (us)-[:USER_WANTS_NL_FROM_COUNTRY]->(cou))
   FOREACH (_ IN CASE WHEN ${queryParams.is_cust_admin}  IS NOT NULL THEN [1] END | SET r2.user_is_cust_admin = true )
   FOREACH (_ IN CASE WHEN cou3 IS NOT NULL THEN [1] END | MERGE (cs)-[:INV_TO_ALT_COUNTRY]->(cou3) )
-  RETURN c, cs, u, us
-  `;
+  RETURN c, cs, u, us`;
   return query;
 };

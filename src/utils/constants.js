@@ -30,6 +30,8 @@ module.exports = {
       USER_ADDED_SUCCESSFULLY:
         "This user has now been added to your company successfully!",
       INCORRECT_OLD_PASSWORD: "You have enter incorrect old password",
+      EMAIL_VERIFICATION_FAILED:
+        "Your email address is not verified, Please verify your email address or resend verification click <a> here </a>",
     },
     DE: {
       INVALID_LOGIN_EMAIL: "Die eingegebene eMail-Adresse ist nicht korrekt!",
@@ -61,6 +63,8 @@ module.exports = {
       USER_ADDED_SUCCESSFULLY:
         "Der Nutzer wurde Ihrem Kundenkonto hinzugefügt!",
       INCORRECT_OLD_PASSWORD: "You have enter incorrect old password",
+      EMAIL_VERIFICATION_FAILED:
+        "Your email address is not verified, Please verify your email address or resend verification click <a> here </a>",
     },
   },
   LOG_TYPE_ID: {
@@ -186,6 +190,9 @@ module.exports = {
         CONT050: "An invoice will be sent to you within the next few days.",
         CONT060:
           "If you have questions, please do not hesitate to contact us via",
+        CONT080:
+          "Before being able to use your account you need to verify that this is your email address by clicking here",
+        CONT090: "Verification Link",
         FOOTER_TITLE: "Best regards,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
@@ -266,6 +273,9 @@ module.exports = {
         CONT060:
           "Wenn Sie Fragen haben, stehen wir Ihnen jederzeit gerne unter",
         CONT070: "zur Verfügung.",
+        CONT080:
+          "Before being able to use your account you need to verify that this is your email address by clicking here",
+        CONT090: "Verification Link",
         FOOTER_TITLE: "Mit freundlichen Grüßen,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },

@@ -161,6 +161,10 @@
                 <% if( typeof(CONT050) !=="undefined") { %> <%= CONT050 %> <% } %>
               </p>
               <p>
+                 <% if( typeof(CONT080) !=="undefined") { %> <%= CONT080 %> <% } %>
+                 <% if( typeof(verificationToken) !=="undefined") { %> <a style="color: #029fdb;" href="<%- frontendURL -%><%- link -%><%= verificationToken %>"><%= CONT090 %></a> <% } %>
+              </p>
+              <p>
                 <% if( typeof(CONT060) !=="undefined") { %> <%= CONT060 %> <% } %>
                 <a style="color: #029fdb;" href='mailto:office@avi-law.com'>office@avi-law.com</a><% if( typeof(CONT070) ==="undefined") { %>.<% } %>
                 <% if( typeof(CONT070) !=="undefined") { %> <%= CONT070 %> <% } %>
