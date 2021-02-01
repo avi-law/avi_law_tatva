@@ -202,10 +202,10 @@ module.exports = {
       },
       RESEND_EMAIL_VERIFICATION_LINK: {
         SUBJECT: "Resend email verification link",
-        CONT010: "Click here",
-        CONT020: "Verification Link",
+        CONT010: "Please click the button below to verify your email address.",
         CONT030:
           "If you have questions, please do not hesitate to contact us via",
+        BUTT010: "Verify Email Address",
         FOOTER_TITLE: "Best regards,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
@@ -294,11 +294,11 @@ module.exports = {
       },
       RESEND_EMAIL_VERIFICATION_LINK: {
         SUBJECT: "Resend email verification link",
-        CONT010: "Click here",
-        CONT020: "Verification Link",
+        CONT010: "Please click the button below to verify your email address.",
         CONT030:
           "Wenn Sie Fragen haben, stehen wir Ihnen jederzeit gerne unter",
         CONT040: "zur Verfügung.",
+        BUTT010: "Verify Email Address",
         FOOTER_TITLE: "Mit freundlichen Grüßen,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
