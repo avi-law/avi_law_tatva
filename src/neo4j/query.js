@@ -287,9 +287,11 @@ WHERE us.reset_pwd_token = $token AND r1.to IS NULL
 RETURN us as userState, u.user_email as userEmail`;
 
 exports.getUserByEmailVerificationToken = `
-MATCH (u:User { email_verification_token: $token })
-FOREACH (_ IN CASE WHEN u IS NOT NULL THEN [1] END | REMOVE u.test)
-RETURN u`;
+MATCH (u:User { email_verification_token: $token })-[r1:HAS_USER_STATE]->(us:User_State)
+WHERE r1.to IS NULL
+OPTIONAL MATCH (us)-[r2:USER_HAS_PREF_SURF_LANG]->(l1:Language)
+FOREACH (_ IN CASE WHEN u IS NOT NULL THEN [1] END | REMOVE u.email_verification_token, u.is_email_verified)
+RETURN u, us, l1`;
 
 exports.setEmailVerifyToken = `
 MATCH (u:User { user_email: $user_email })

@@ -209,6 +209,15 @@ module.exports = {
         FOOTER_TITLE: "Best regards,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
+      EMAIL_VERIFIED: {
+        SUBJECT: "Email verified",
+        CONT010:
+          "Congratulation!, you have successfully verified the register email address.",
+        CONT030:
+          "If you have questions, please do not hesitate to contact us via",
+        FOOTER_TITLE: "Best regards,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
     },
     DE: {
       SALUTATION: {
@@ -299,6 +308,16 @@ module.exports = {
           "Wenn Sie Fragen haben, stehen wir Ihnen jederzeit gerne unter",
         CONT040: "zur Verfügung.",
         BUTT010: "Verify Email Address",
+        FOOTER_TITLE: "Mit freundlichen Grüßen,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
+      EMAIL_VERIFIED: {
+        SUBJECT: "Email verified",
+        CONT010:
+          "Congratulation!, you have successfully verified the register email address.",
+        CONT030:
+          "Wenn Sie Fragen haben, stehen wir Ihnen jederzeit gerne unter",
+        CONT040: "zur Verfügung.",
         FOOTER_TITLE: "Mit freundlichen Grüßen,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
