@@ -22,6 +22,8 @@ module.exports = {
       INVALID_FORGOT_PASSWORD_LINK:
         "The link to change your password is invalid - please request a password change again!.",
       INTERNAL_SERVER_ERROR: "Internal server error",
+      INVALID_EMAIL_VERIFICATION_LINK:
+        "The link to verify your email is invalid - please request a email verification again!.",
       FILE_NOT_FOUND: "File no found",
       EMAIL_ALREADY_EXISTS:
         "A User with this email-address already exists! Please change the user's email-address in order to create this user account",
@@ -65,6 +67,8 @@ module.exports = {
       INCORRECT_OLD_PASSWORD: "You have enter incorrect old password",
       EMAIL_VERIFICATION_FAILED:
         "Your email address is not verified, Please verify your email address or resend verification click <a> here </a>",
+      INVALID_EMAIL_VERIFICATION_LINK:
+        "The link to verify your email is invalid - please request a email verification again!.",
     },
   },
   LOG_TYPE_ID: {
@@ -196,6 +200,15 @@ module.exports = {
         FOOTER_TITLE: "Best regards,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
+      RESEND_EMAIL_VERIFICATION_LINK: {
+        SUBJECT: "Resend email verification link",
+        CONT010: "Click here",
+        CONT020: "Verification Link",
+        CONT030:
+          "If you have questions, please do not hesitate to contact us via",
+        FOOTER_TITLE: "Best regards,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
     },
     DE: {
       SALUTATION: {
@@ -276,6 +289,16 @@ module.exports = {
         CONT080:
           "Before being able to use your account you need to verify that this is your email address by clicking here",
         CONT090: "Verification Link",
+        FOOTER_TITLE: "Mit freundlichen Grüßen,",
+        FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
+      RESEND_EMAIL_VERIFICATION_LINK: {
+        SUBJECT: "Resend email verification link",
+        CONT010: "Click here",
+        CONT020: "Verification Link",
+        CONT030:
+          "Wenn Sie Fragen haben, stehen wir Ihnen jederzeit gerne unter",
+        CONT040: "zur Verfügung.",
         FOOTER_TITLE: "Mit freundlichen Grüßen,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },

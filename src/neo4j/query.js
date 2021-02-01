@@ -267,7 +267,7 @@ exports.getUserByEmail = `
 MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User { user_email: $user_email })
 MATCH (us)-[r2:USER_HAS_PREF_SURF_LANG]->(l1:Language)
 WHERE r1.to IS NULL
-RETURN us as userState, l1.iso_639_1 as user_surf_lang`;
+RETURN us as userState, l1.iso_639_1 as user_surf_lang, u`;
 
 exports.getUserByEmailWithCustomer = `
 MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User { user_email: $user_email })
@@ -285,6 +285,16 @@ exports.getUserByToken = `
 MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User)
 WHERE us.reset_pwd_token = $token AND r1.to IS NULL
 RETURN us as userState, u.user_email as userEmail`;
+
+exports.getUserByEmailVerificationToken = `
+MATCH (u:User { email_verification_token: $token })
+FOREACH (_ IN CASE WHEN u IS NOT NULL THEN [1] END | REMOVE u.test)
+RETURN u`;
+
+exports.setEmailVerifyToken = `
+MATCH (u:User { user_email: $user_email })
+FOREACH (_ IN CASE WHEN u IS NOT NULL THEN [1] END | SET u.email_verification_token = $token)
+RETURN u`;
 
 exports.getUserByInvitationToken = `
 MATCH (u:User)-[r1:HAS_USER_STATE]->(us:User_State)

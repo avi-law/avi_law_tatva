@@ -541,6 +541,7 @@ const typeDefs = gql`
     invite(data: InvitationInput!): Invitation @isAuthenticated
     invitedUserCreate(token: String!, data: UserCustomInput!): Boolean
     invoiceCancel(invoice_id: String!): Boolean @isAdmin
+    resendEmailVerify(user_email: String!): Boolean
   }
   type Query {
     user: User_State @isAuthenticated
@@ -605,6 +606,7 @@ const typeDefs = gql`
     downloadInvoice(invoice_id: String!): String @isAuthenticated
     userEmailExists(user_email: String!): Boolean @isAuthenticated
     verifyInvitation(token: String!): CustomUser
+    verifyEmail(token: String!): Boolean
   }
 `;
 

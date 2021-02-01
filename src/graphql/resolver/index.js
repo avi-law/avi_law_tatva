@@ -5,6 +5,8 @@ const forgotPassword = require("./forgot-password/send-forgot-password-link");
 const verifyForgotPasswordLink = require("./forgot-password/verify-forgot-password-link");
 const setNewPassword = require("./forgot-password/set-new-password");
 const verifyInvitation = require("./invite/verify-invitation");
+const verifyEmail = require("./signup/email-verify");
+const resendEmailVerify = require("./signup/resend-email-verify");
 const invitedUserCreate = require("./invite/invited-user-create");
 
 const getNewsLetters = require("./new-letters/get-news-letters");
@@ -62,6 +64,7 @@ const resolvers = {
     register,
     invitedUserCreate,
     invoiceCancel,
+    resendEmailVerify,
   },
   Query: {
     User,
@@ -83,6 +86,7 @@ const resolvers = {
     getUser,
     userEmailExists,
     verifyInvitation,
+    verifyEmail,
   },
 };
 
