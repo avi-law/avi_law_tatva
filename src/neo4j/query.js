@@ -477,7 +477,6 @@ FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | DELETE r3 )
 FOREACH (_ IN CASE WHEN cou3 IS NOT NULL THEN [1] END | MERGE (c)-[:TO_BE_INVOICED_FROM_COUNTRY {from:apoc.date.currentTimestamp()}]->(cou3))
 RETURN ncs`;
 
-
 exports.getInvoicesCount = `
 MATCH (c:Customer)<-[:INV_FOR_CUST]-(inv:Invoice)
 WHERE c.cust_id = $customerId

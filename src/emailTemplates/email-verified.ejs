@@ -155,36 +155,21 @@
               </p>
             </td>
           </tr>
-          <% if( typeof(BUTT010) !=="undefined") { %>
-            <!-- BULLETPROOF BUTTON -->
-            <tr>
-              <td bgcolor="#ffffff" align="left">
-                <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                  <tr>
-                    <td bgcolor="#ffffff" align="center" style="padding: 10px 30px 60px 30px;">
-                      <table border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td align="center" style="border-radius: 3px;" bgcolor="#029fdb"><a
-                              href="<%- frontendURL -%><%- link -%>/<%- verificationToken -%>" target="_blank"
-                              style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 10px 15px; border-radius: 2px; border: 1px solid #029fdb; display: inline-block;">
-                                <%= BUTT010 %>
-                            </a>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          <% } %>
           <tr>
               <td bgcolor="#ffffff" align="left"
                 style="padding: 0px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                 <p>
-                  <% if( typeof(CONT030) !=="undefined") { %> <%= CONT030 %> <% } %>
-                  <a style="color: #029fdb;" href='mailto:office@avi-law.com'>office@avi-law.com</a><% if( typeof(CONT040) ==="undefined") { %>.<% } %>
+                  <% if( typeof(CONT020) !=="undefined") { %> <%= CONT020 %> <% } %>
+                  <% if( typeof(CONT030) !=="undefined") { %><a style="color: #029fdb;" href='<%- CONT030 -%>'><%= CONT030 %></a><% if( typeof(CONT040) ==="undefined") { %>.<% } %><% } %>
                   <% if( typeof(CONT040) !=="undefined") { %> <%= CONT040 %> <% } %>
+                </p>
+                <p>
+                  <% if( typeof(CONT050) !=="undefined") { %> <%= CONT050 %> <% } %>
+                </p>
+                <p>
+                  <% if( typeof(CONT060) !=="undefined") { %> <%= CONT060 %> <% } %>
+                  <a style="color: #029fdb;" href='mailto:office@avi-law.com'>office@avi-law.com</a><% if( typeof(CONT070) ==="undefined") { %>.<% } %>
+                  <% if( typeof(CONT070) !=="undefined") { %> <%= CONT070 %> <% } %>
                 </p>
               </td>
           </tr>

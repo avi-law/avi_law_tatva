@@ -189,31 +189,32 @@ module.exports = {
         SUBJECT: "Registration confirmation",
         CONT010: "Thank you for having signed up to",
         CONT020: "www.avi-law.com",
-        CONT040:
-          "We hereby confirm that you have registered for a subscription against payment at",
-        CONT050: "An invoice will be sent to you within the next few days.",
         CONT060:
           "If you have questions, please do not hesitate to contact us via",
         CONT080:
-          "Before being able to use your account you need to verify that this is your email address by clicking here",
-        CONT090: "Verification Link",
+          "Before being able to use your account you need to verify your email address by",
+        CONT090: "clicking here",
         FOOTER_TITLE: "Best regards,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
       RESEND_EMAIL_VERIFICATION_LINK: {
-        SUBJECT: "Resend email verification link",
-        CONT010: "Please click the button below to verify your email address.",
+        SUBJECT: "Email-address verification",
+        CONT010: "Please click the button below to verify your email-address.",
         CONT030:
-          "If you have questions, please do not hesitate to contact us via",
-        BUTT010: "Verify Email Address",
+          "If you have any question, please do not hesitate to contact us via",
+        BUTT010: "Verify Email-address",
         FOOTER_TITLE: "Best regards,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
       EMAIL_VERIFIED: {
-        SUBJECT: "Email verified",
-        CONT010: "The verification of your email-address was successful!",
-        CONT030:
-          "If you have questions, please do not hesitate to contact us via",
+        SUBJECT: "Email-address verified",
+        CONT010: "You have verified the registered email-address.",
+        CONT020:
+          "The sign-up-process has been completed successfully and you are now able to use",
+        CONT030: "https://www.avi-law.com/",
+        CONT050: "We will send you an invoice in the next few days.",
+        CONT060:
+          "If you have any question, please do not hesitate to contact us via",
         FOOTER_TITLE: "Best regards,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
@@ -288,34 +289,38 @@ module.exports = {
         CONT010: "Danke, dass Sie sich für",
         CONT020: "www.avi-law.com",
         CONT030: "entschieden haben.",
-        CONT040: "Hiermit bestätigen wir, dass Sie sich kostenpflichtig auf",
-        CONT050:
-          "angemeldet haben. Eine Rechnung für Ihren Zugang wird Ihnen in den nächsten Tagen zugestellt werden.",
         CONT060:
           "Wenn Sie Fragen haben, stehen wir Ihnen jederzeit gerne unter",
         CONT070: "zur Verfügung.",
         CONT080:
-          "Before being able to use your account you need to verify that this is your email address by clicking here",
-        CONT090: "Verification Link",
+          "Bevor Sie Ihren Zugang verwenden können, müssen Sie Ihre eMail-Adresse bestätigen. Bitte klicken Sie ",
+        CONT090: "hier.",
         FOOTER_TITLE: "Mit freundlichen Grüßen,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
       RESEND_EMAIL_VERIFICATION_LINK: {
-        SUBJECT: "Resend email verification link",
-        CONT010: "Please click the button below to verify your email address.",
+        SUBJECT: "Bestätigung Ihrer eMail-Adresse",
+        CONT010:
+          "Zur Bestätigung Ihrer eMail-Adresse klicken Sie bitte den unten stehenden Button.",
         CONT030:
           "Wenn Sie Fragen haben, stehen wir Ihnen jederzeit gerne unter",
         CONT040: "zur Verfügung.",
-        BUTT010: "Verify Email Address",
+        BUTT010: "eMail-Adresse bestätigen",
         FOOTER_TITLE: "Mit freundlichen Grüßen,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
       EMAIL_VERIFIED: {
-        SUBJECT: "eMail-Adresse erfolgreich überprüft",
-        CONT010: "Die Überprüfung Ihrer eMail-Adresse war erfolgreich!",
-        CONT030:
+        SUBJECT: "EMail-Adresse bestätigt",
+        CONT010: "Sie haben Ihre eMail-Adresse erfolgreich bestätigt.",
+        CONT020:
+          "Der Registrierungs-Prozess ist nun erfolgreich abgeschlossen. Sie können ",
+        CONT030: "https://www.avi-law.com/",
+        CONT040: "ab sofort benutzen.",
+        CONT050:
+          "Wir werden Ihnen in den nächsten Tagen eine Rechnung übermitteln.",
+        CONT060:
           "Wenn Sie Fragen haben, stehen wir Ihnen jederzeit gerne unter",
-        CONT040: "zur Verfügung.",
+        CONT070: "zur Verfügung.",
         FOOTER_TITLE: "Mit freundlichen Grüßen,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },

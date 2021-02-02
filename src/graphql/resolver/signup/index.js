@@ -134,7 +134,7 @@ module.exports = async (object, params) => {
           user_first_name: userState.user_first_name,
           user_last_name: userState.user_last_name,
           verificationToken: token,
-          link: "user/email-verification",
+          link: "user/email-verification/",
           ...mailContent,
         },
       };
