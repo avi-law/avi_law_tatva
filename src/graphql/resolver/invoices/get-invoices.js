@@ -4,7 +4,6 @@ const driver = require("../../../config/db");
 const { APIError } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
-  getInvoices,
   getInvoicesCount,
   isExistsUserInCustomer,
 } = require("../../../neo4j/query");
@@ -66,7 +65,6 @@ module.exports = async (object, params, ctx) => {
     if (queryOrderBy === "") {
       queryOrderBy = defaultOrderBy;
     }
-    console.log(queryOrderBy);
     const countResult = await session.run(getInvoicesCount, {
       customerId,
     });
@@ -74,12 +72,13 @@ module.exports = async (object, params, ctx) => {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
-    const result = await session.run(getInvoices, {
-      customerId,
-      offset,
-      limit,
-      queryOrderBy,
-    });
+    const query = `MATCH (c:Customer)<-[:INV_FOR_CUST]-(inv:Invoice)
+    WHERE c.cust_id = ${customerId}
+    RETURN inv as invoices
+    ORDER BY ${queryOrderBy}
+    SKIP toInteger(${offset})
+    LIMIT toInteger(${limit})`;
+    const result = await session.run(query);
     session.close();
     if (result && result.records.length > 0) {
       const invoices = result.records.map(
