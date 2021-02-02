@@ -350,6 +350,24 @@ RETURN nl, nls, cou, lang
 ORDER BY nl.nl_ord DESC
 LIMIT 10`;
 
+exports.getNewsLetterListCount = (condition = "") => `
+MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:HAS_NL_STATE]->(nls:Nl_State)-[:NL_LANG_IS]->(lang:Language)
+${condition}
+RETURN count(*) as count`;
+
+exports.getNewsLetterList = (
+  condition,
+  limit = 10,
+  skip = 0,
+  orderBy = "nl.nl_ord DESC"
+) => `
+MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:HAS_NL_STATE]->(nls:Nl_State)-[:NL_LANG_IS]->(lang:Language)
+${condition}
+RETURN nl, nls, lang, cou
+ORDER BY ${orderBy}
+SKIP toInteger(${skip})
+LIMIT toInteger(${limit})`;
+
 exports.getNewsletter = `
 MATCH (nl:NL_Article )
 WHERE nl.nl_article_id = $nl_article_id

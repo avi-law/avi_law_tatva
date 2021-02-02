@@ -469,6 +469,10 @@ const typeDefs = gql`
     users: [UserCustomer]
     total: Int
   }
+  type CustomNL {
+    nls: [NL]
+    total: Int
+  }
 
   input UserStateCustomInput {
     user_first_name: String!
@@ -585,6 +589,12 @@ const typeDefs = gql`
     verifyForgotPasswordLink(token: String!): Boolean
     getNewsLetters(lang: [String!]): [NL!]
     getNewsLetter(id: Int!): NL @isAuthenticated
+    getNewsLetterList(
+      lang: LanguageForUser!
+      first: Int
+      offset: Int
+      orderBy: [_NLOrdering]
+    ): CustomNL @isAdmin
     getCustomers(
       first: Int
       offset: Int
