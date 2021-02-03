@@ -122,8 +122,8 @@ module.exports = {
   EMAIL: {
     EN: {
       SALUTATION: {
-        M: "Mr.",
-        F: "Mrs./Ms.",
+        M: "Dear Mr.",
+        F: "Dear Mrs.",
       },
       FORGOT_PASSWORD: {
         SUBJECT: "Avi-law - Password reset link",
@@ -221,8 +221,8 @@ module.exports = {
     },
     DE: {
       SALUTATION: {
-        M: "Her",
-        F: "Frau",
+        M: "Sehr geehrter Herr",
+        F: "Sehr geehrte Frau",
       },
       FORGOT_PASSWORD: {
         SUBJECT: "Avi-law - Link zum Zurücksetzen Ihres Passwortes",
