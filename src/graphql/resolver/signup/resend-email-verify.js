@@ -46,10 +46,7 @@ module.exports = async (object, params) => {
       const userResult = {
         user: common.getPropertiesFromRecord(record, "u"),
         user_state: common.getPropertiesFromRecord(record, "userState"),
-        user_surf_lang: common.getPropertiesFromRecord(
-          record,
-          "user_surf_lang"
-        ),
+        user_surf_lang: record.get("user_surf_lang"),
       };
       return userResult;
     });
