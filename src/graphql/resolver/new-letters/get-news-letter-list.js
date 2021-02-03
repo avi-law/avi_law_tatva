@@ -59,7 +59,7 @@ module.exports = async (object, params, ctx) => {
         constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
         ""
       );
-      condition = `${condition} AND ( nls.nl_title_long CONTAINS "${value}" OR nl.nl_no CONTAINS "${value}")`;
+      condition = `${condition} AND ( toLower(nls.nl_title_long) CONTAINS toLower("${value}") OR toLower(nl.nl_no) CONTAINS toLower("${value}"))`;
     }
     const countResult = await session.run(getNewsLetterListCount(condition));
     if (countResult && countResult.records.length > 0) {
