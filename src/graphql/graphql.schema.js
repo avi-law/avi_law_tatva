@@ -590,10 +590,12 @@ const typeDefs = gql`
     getNewsLetters(lang: [String!]): [NL!]
     getNewsLetter(id: Int!): NL @isAuthenticated
     getNewsLetterList(
+      filterByString: String
       lang: LanguageForUser!
       first: Int
       offset: Int
       orderBy: [_NLOrdering]
+      filterByCountry: [_CountryFilter]
     ): CustomNL @isAdmin
     getCustomers(
       first: Int

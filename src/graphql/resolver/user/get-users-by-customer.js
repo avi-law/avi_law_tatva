@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { common, APIError } = require("../../../utils");
+const { common, APIError, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
   getCustomerUsersCountQuery,
@@ -97,7 +97,10 @@ module.exports = async (object, params, ctx) => {
       });
     }
     if (filterByString) {
-      const value = filterByString.replace(/[&/\\#,+()$~%.'":*?^<>{}]/g, "");
+      const value = filterByString.replace(
+        constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
+        ""
+      );
       condition = `${condition} AND ( us.user_first_name CONTAINS "${value}" OR us.user_last_name CONTAINS "${value}" OR u.user_email CONTAINS "${value}")`;
     }
     if (queryOrderBy === "") {
@@ -115,13 +118,13 @@ module.exports = async (object, params, ctx) => {
     );
     if (result && result.records.length > 0) {
       const users = result.records.map((record) => {
-        const user = {
+        const userResult = {
           user: common.getPropertiesFromRecord(record, "u"),
           user_state: common.getPropertiesFromRecord(record, "us"),
           customer: common.getPropertiesFromRecord(record, "c"),
           user_to_customer: common.getPropertiesFromRecord(record, "r1"),
         };
-        return user;
+        return userResult;
       });
       return {
         users,

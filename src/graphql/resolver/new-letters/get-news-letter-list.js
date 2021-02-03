@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { APIError, common } = require("../../../utils");
+const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
   getNewsLetterListCount,
@@ -19,8 +19,8 @@ module.exports = async (object, params, ctx) => {
   const defaultOrderBy = "nl.nl_ord DESC";
   let queryOrderBy = "";
   let total = 0;
-  const { orderBy, lang } = params;
-  const condition = `WHERE lang.iso_639_1 = "${lang}" `;
+  const { orderBy, filterByCountry, filterByString, lang } = params;
+  let condition = `WHERE lang.iso_639_1 = "${lang}" `;
   try {
     if (!userIsSysAdmin) {
       throw new APIError({
@@ -41,6 +41,25 @@ module.exports = async (object, params, ctx) => {
     }
     if (queryOrderBy === "") {
       queryOrderBy = defaultOrderBy;
+    }
+
+    if (filterByCountry && filterByCountry.length > 0) {
+      filterByCountry.forEach((country) => {
+        Object.keys(country).forEach((key) => {
+          if (/^\d+$/.test(country[key])) {
+            condition = `${condition} AND cou.${key} = ${country[key]}`;
+          } else {
+            condition = `${condition} AND cou.${key} = '${country[key]}'`;
+          }
+        });
+      });
+    }
+    if (filterByString) {
+      const value = filterByString.replace(
+        constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
+        ""
+      );
+      condition = `${condition} AND ( nls.nl_title_long CONTAINS "${value}" OR nl.nl_no CONTAINS "${value}")`;
     }
     const countResult = await session.run(getNewsLetterListCount(condition));
     if (countResult && countResult.records.length > 0) {
