@@ -220,6 +220,7 @@ const typeDefs = gql`
 
   type NL {
     nl_active: Boolean
+    nl_implemented: Boolean
     nl_author: String
     nl_date: _Neo4jDate
     nl_id: ID
