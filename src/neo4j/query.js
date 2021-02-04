@@ -377,7 +377,7 @@ exports.logNewsletter = `
 MATCH (lt: Log_Type {log_type_id: $type})
 MATCH (u:User {user_email: $current_user_email})
 MATCH (nl:Newsletter {nl_id: $nl_id})
-MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt);
+MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(nl)`;
 
 exports.logDeleteNewsletter = `
@@ -403,11 +403,20 @@ exports.newsletterQuery = (queryParams) => {
   let query = `
     MATCH (nl:Nl) WITH MAX(nl.nl_id) AS max_nl_id
     MATCH (u:User {user_email: "${queryParams.user_email}"})
-    MATCH (cou:Country {iso_3166_1_alpha_2: "${queryParams.country}"})
+    MATCH (cou:Country {iso_3166_1_alpha_2: "${queryParams.country.iso_3166_1_alpha_2}"})
     MATCH (lang1:Language {iso_639_1: "de"})
-    MATCH (lang2:Language {iso_639_1: "en"})
+    MATCH (lang2:Language {iso_639_1: "en"})`;
+  if (!queryParams.isUpdate) {
+    query = `
+    ${query}
     MERGE (nl:Nl {nl_id: max_nl_id + 1 })
     SET nl.nl_ord = "${queryParams.nl.nl_ord}", nl.nl_date = Date({ year: ${queryParams.nl.nl_date.year}, month: ${queryParams.nl.nl_date.month} , day: ${queryParams.nl.nl_date.day}}) , nl.nl_active = ${queryParams.nl.nl_active}, nl.nl_implemented = ${queryParams.nl.nl_implemented}`;
+  } else {
+    query = `
+    ${query}
+    MATCH (nl:Nl {nl_id: ${queryParams.nl.nl_id} })
+    SET nl.nl_ord = "${queryParams.nl.nl_ord}", nl.nl_date = Date({ year: ${queryParams.nl.nl_date.year}, month: ${queryParams.nl.nl_date.month} , day: ${queryParams.nl.nl_date.day}}) , nl.nl_active = ${queryParams.nl.nl_active}, nl.nl_implemented = ${queryParams.nl.nl_implemented}`;
+  }
 
   // Set the properties for the German version of the (Nl_State) - please do it only in case when the data-fields for the German version are filled
   // Maybe that the distinction between ON CREATE and ON MATCH is not necessary
@@ -423,16 +432,16 @@ exports.newsletterQuery = (queryParams) => {
     MERGE (nl)-[:HAS_NL_STATE]->(nls_en:Nl_State)-[:NL_LANG_IS]->(lang2)
     SET nls_en.nl_title_short = "${queryParams.nls.en.nl_title_short}", nls_en.nl_title_long = "${queryParams.nls.en.nl_title_long}", nls_en.nl_text = "${queryParams.nls.en.nl_text}"`;
   }
-  // Whatever was the country of the NL before, delete this relationship and set it new
-  query = `${query}
-  MATCH (nl)-[r1:NL_REFERS_TO_COUNTRY]->() DETACH DELETE r1
-  CREATE (nl)-[:NL_REFERS_TO_COUNTRY]->(cou)`;
+  if (queryParams.isUpdate) {
+    query = `${query}
+    OPTIONAL MATCH (nl)-[r1:NL_REFERS_TO_COUNTRY]->() DETACH DELETE r1
+    OPTIONAL MATCH (nl)-[r2:NL_HAS_AUTHOR]->() DETACH DELETE r2`;
+  }
 
-  // Whoever was the author of the NL before, delete this relationship and set it new
   query = `${query}
-  MATCH (nl)-[r2:NL_HAS_AUTHOR]->() DETACH DELETE r2
-  CREATE (nl)-[:NL_HAS_AUTHOR]->(u)
-  RETURN nl`;
+    CREATE (nl)-[:NL_REFERS_TO_COUNTRY]->(cou)
+    CREATE (nl)-[:NL_HAS_AUTHOR]->(u)
+    RETURN nl`;
 
   return query;
 };

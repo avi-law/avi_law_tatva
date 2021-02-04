@@ -510,10 +510,14 @@ const typeDefs = gql`
     nl_ord: String!
   }
 
+  input nlCountry {
+    iso_3166_1_alpha_2: NL_Country!
+  }
+
   input CustomCreateNLInput {
     nl: CustomNLInput!
     nls: CustomNLStateInput
-    country: NL_Country!
+    country: nlCountry
   }
 
   type NLStateEN {
@@ -609,6 +613,7 @@ const typeDefs = gql`
     deleteNewsletter(nl_id: ID!): Boolean @isAdmin
     resendEmailVerify(user_email: String!): Boolean
     createNewsletter(data: CustomCreateNLInput!): Boolean @isAdmin
+    updateNewsletter(nl_id: Int!, data: CustomCreateNLInput!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated

@@ -33,21 +33,22 @@ module.exports = async (object, params, ctx) => {
 
     if (
       data.nls &&
-      data.nls.de.nl_text_de &&
-      data.nls.de.nl_title_long_de &&
-      data.nls.de.nl_title_short_de
+      data.nls.de.nl_text &&
+      data.nls.de.nl_title_long &&
+      data.nls.de.nl_title_short
     ) {
       isValidDE = true;
     }
     if (
       data.nls &&
-      data.nls.en.nl_text_en &&
-      data.nls.en.nl_title_long_en &&
-      data.nls.en.nl_title_short_en
+      data.nls.en.nl_text &&
+      data.nls.en.nl_title_long &&
+      data.nls.en.nl_title_short
     ) {
       isValidEN = true;
     }
     const queryParams = {
+      isUpdate: false,
       user_email: userEmail,
       nl: data.nl,
       nls: data.nls,
@@ -55,7 +56,6 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
-    console.log("newsletterQuery(queryParams)", newsletterQuery(queryParams));
     const result = await session.run(newsletterQuery(queryParams));
     if (result && result.records.length > 0) {
       const newsLetters = result.records.map((record) => {
@@ -64,7 +64,6 @@ module.exports = async (object, params, ctx) => {
         };
         return nlResult;
       });
-      console.log("newsLetters", newsLetters);
       common.loggingData(logNewsletter, {
         type: constants.LOG_TYPE_ID.CREATE_NL,
         current_user_email: userEmail,
