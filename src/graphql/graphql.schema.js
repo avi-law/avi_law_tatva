@@ -388,6 +388,7 @@ const typeDefs = gql`
     user_login_count: Int
   }
   enum NL_Country {
+    EU
     AT
     DE
     CH
@@ -486,6 +487,28 @@ const typeDefs = gql`
     user_title_pre: String
   }
 
+  input CustomNLState {
+    nl_text_de: String
+    nl_title_long_de: String
+    nl_title_short_de: String
+    nl_text_en: String
+    nl_title_long_en: String
+    nl_title_short_en: String
+  }
+  input CustomeNLInput {
+    nl_id: ID
+    nl_active: Boolean!
+    nl_implemented: Boolean!
+    nl_date: _Neo4jDate!
+    nl_ord: String!
+  }
+
+  input CustomerCreateNLInput {
+    nl: CustomeNLInput!
+    nls: CustomNLState
+    country: NL_Country!
+  }
+
   enum Subscription_Plan {
     SINGLE
     MULTIPLE
@@ -546,7 +569,9 @@ const typeDefs = gql`
     invite(data: InvitationInput!): Invitation @isAuthenticated
     invitedUserCreate(token: String!, data: UserCustomInput!): Boolean
     invoiceCancel(invoice_id: String!): Boolean @isAdmin
+    deleteNewsletter(nl_id: ID!): Boolean @isAdmin
     resendEmailVerify(user_email: String!): Boolean
+    createNewsletter(data: CustomerCreateNLInput!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated

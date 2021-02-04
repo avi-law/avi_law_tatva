@@ -42,6 +42,8 @@ const getPreparedNewInvoiceDetails = require("./invoices/get-prepared-new-invoic
 const getInvoiceCustomers = require("./invoices/get-invoice-customers");
 const invoiceCancel = require("./invoices/invoice-cancel");
 const getNewsLetterList = require("./new-letters/get-news-letter-list");
+const deleteNewsletter = require("./new-letters/delete-news-letter");
+const createNewsletter = require("./new-letters/create-news-letter");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -66,6 +68,8 @@ const resolvers = {
     invitedUserCreate,
     invoiceCancel,
     resendEmailVerify,
+    deleteNewsletter,
+    createNewsletter,
   },
   Query: {
     User,

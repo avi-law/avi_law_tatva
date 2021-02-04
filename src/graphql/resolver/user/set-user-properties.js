@@ -1,8 +1,6 @@
 const driver = require("../../../config/db");
 
-module.exports = async (object, params, ctx) => {
-  const { user } = ctx;
-  const email = user.user_email;
+module.exports = async (object, params) => {
   const userEmail = params.user_email;
   const { entitled, admin, specCount } = params;
   const session = driver.session();
