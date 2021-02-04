@@ -17,14 +17,14 @@ module.exports = async (object, params, ctx) => {
   const nlID = params.nl_id;
   const session = driver.session();
   try {
-    if (!userIsSysAdmin) {
+    if (!userIsSysAdmin || Number.isNaN(nlID)) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
       });
     }
     const result = await session.run(deleteNewsletter, {
-      nl_id: nlID,
+      nl_id: Number(nlID),
     });
     if (result && result.records.length > 0) {
       session.close();

@@ -369,9 +369,10 @@ SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;
 
 exports.deleteNewsletter = `
-MATCH (nl:Nl {nl_id: $nl_id})-[:HAS_NL_STATE]-(nls:Nl_State)
+MATCH (nl:Nl {nl_id: $nl_id})-[:HAS_NL_STATE]->(nls:Nl_State)
 // DETACH DELETE nl, nls
-RETURN nl`;
+RETURN nl,nls
+`;
 
 exports.logNewsletter = `
 MATCH (lt: Log_Type {log_type_id: $type})
@@ -383,7 +384,7 @@ MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(nl)`;
 exports.logDeleteNewsletter = `
 MATCH (lt: Log_Type {log_type_id: $type})
 MATCH (u:User {user_email: $current_user_email})
-MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()`;
+MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})`;
 
 exports.getNewsletterDetails = `
 MATCH (nl:Nl {nl_id : $nl_id})

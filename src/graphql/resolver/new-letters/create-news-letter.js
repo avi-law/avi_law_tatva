@@ -47,6 +47,12 @@ module.exports = async (object, params, ctx) => {
     ) {
       isValidEN = true;
     }
+    if (!data.nl.nl_implemented) {
+      data.nl.nl_implemented = false;
+    }
+    if (!data.nl.nl_active) {
+      data.nl.nl_implemented = false;
+    }
     const queryParams = {
       isUpdate: false,
       user_email: userEmail,

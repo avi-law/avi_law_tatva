@@ -24,6 +24,12 @@ module.exports = async (object, params, ctx) => {
       });
     }
     data.nl.nl_id = nlID;
+    if (!data.nl.nl_implemented) {
+      data.nl.nl_implemented = false;
+    }
+    if (!data.nl.nl_active) {
+      data.nl.nl_implemented = false;
+    }
     const queryParams = {
       isUpdate: true,
       user_email: userEmail,
