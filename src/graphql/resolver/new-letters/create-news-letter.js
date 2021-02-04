@@ -40,6 +40,7 @@ module.exports = async (object, params, ctx) => {
       isValidEN = true;
     }
     const queryParams = {
+      user_email: userEmail,
       nl: data.nl,
       nls: data.nls,
       country: data.country,

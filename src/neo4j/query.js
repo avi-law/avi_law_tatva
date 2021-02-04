@@ -393,14 +393,12 @@ RETURN nl`;
 exports.newsletterQuery = (queryParams) => {
   let query = `
     MATCH (nl:Nl) WITH MAX(nl.nl_id) AS max_nl_id
-    MATCH (u:User {user_email: ${queryParams.user_email}})
-    MATCH (cou:Country {iso_3166_1_alpha_2: ${queryParams.country}})
+    MATCH (u:User {user_email: "${queryParams.user_email}"})
+    MATCH (cou:Country {iso_3166_1_alpha_2: "${queryParams.country}"})
     MATCH (lang1:Language {iso_639_1: "de"})
-    MATCH (lang2:Language {iso_639_1: "en"})`;
-  query = `${query}
-    MERGE (nl:Nl {nl_id: max_cust_id + 1 })
-    SET nl.nl_ord = ${queryParams.nl.nl_ord}, nl.nl_date = ${queryParams.nl.nl_date}, nl.nl_active = ${queryParams.nl.nl_active}, nl.nl_implemented = ${queryParams.nl.nl_implemented}
-    ON MATCH SET nl.nl_ord = ${queryParams.nl.nl_ord}, nl.nl_date = ${queryParams.nl.nl_date}, nl.nl_active = ${queryParams.nl.nl_active}, nl.nl_implemented = ${queryParams.nl.nl_implemented} `;
+    MATCH (lang2:Language {iso_639_1: "en"})
+    MERGE (nl:Nl {nl_id: max_nl_id + 1 })
+    SET nl.nl_ord = "${queryParams.nl.nl_ord}", nl.nl_date = Date({ year: ${queryParams.nl.nl_date.year}, month: ${queryParams.nl.nl_date.month} , day: ${queryParams.nl.nl_date.day}}) , nl.nl_active = ${queryParams.nl.nl_active}, nl.nl_implemented = ${queryParams.nl.nl_implemented}`;
 
   // Set the properties for the German version of the (Nl_State) - please do it only in case when the data-fields for the German version are filled
   // Maybe that the distinction between ON CREATE and ON MATCH is not necessary
@@ -424,7 +422,8 @@ exports.newsletterQuery = (queryParams) => {
   // Whoever was the author of the NL before, delete this relationship and set it new
   query = `${query}
   MATCH (nl)-[r2:NL_HAS_AUTHOR]->() DETACH DELETE r2
-  CREATE (nl)-[:NL_HAS_AUTHOR]->(u)`;
+  CREATE (nl)-[:NL_HAS_AUTHOR]->(u)
+  RETURN nl, nls, cou`;
 
   return query;
 };
