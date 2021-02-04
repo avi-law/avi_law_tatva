@@ -471,7 +471,7 @@ const typeDefs = gql`
     users: [UserCustomer]
     total: Int
   }
-  type CustomNL {
+  type CustomNLList {
     nls: [NL]
     total: Int
   }
@@ -660,7 +660,7 @@ const typeDefs = gql`
       offset: Int
       orderBy: [_NLOrdering]
       filterByCountry: [_CountryFilter]
-    ): CustomNL @isAdmin
+    ): CustomNLList @isAdmin
     getCustomers(
       first: Int
       offset: Int
