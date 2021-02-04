@@ -487,15 +487,22 @@ const typeDefs = gql`
     user_title_pre: String
   }
 
-  input CustomNLState {
-    nl_text_de: String
-    nl_title_long_de: String
-    nl_title_short_de: String
-    nl_text_en: String
-    nl_title_long_en: String
-    nl_title_short_en: String
+  input NLStateENInput {
+    nl_text: String
+    nl_title_long: String
+    nl_title_short: String
   }
-  input CustomeNLInput {
+  input NLStateDEInput {
+    nl_text: String
+    nl_title_long: String
+    nl_title_short: String
+  }
+
+  input CustomNLStateInput {
+    de: NLStateDEInput
+    en: NLStateENInput
+  }
+  input CustomNLInput {
     nl_id: ID
     nl_active: Boolean!
     nl_implemented: Boolean!
@@ -503,10 +510,40 @@ const typeDefs = gql`
     nl_ord: String!
   }
 
-  input CustomerCreateNLInput {
-    nl: CustomeNLInput!
-    nls: CustomNLState
+  input CustomCreateNLInput {
+    nl: CustomNLInput!
+    nls: CustomNLStateInput
     country: NL_Country!
+  }
+
+  type NLStateEN {
+    nl_text: String
+    nl_title_long: String
+    nl_title_short: String
+  }
+  type NLStateDE {
+    nl_text: String
+    nl_title_long: String
+    nl_title_short: String
+  }
+  type CustomNLState {
+    de: NLStateDE
+    en: NLStateEN
+  }
+
+  type CustomNL {
+    nl_id: ID
+    nl_active: Boolean
+    nl_implemented: Boolean
+    nl_date: _Neo4jDate
+    nl_ord: String
+  }
+
+  type GetCustomNL {
+    nl: CustomNL
+    nls: CustomNLState
+    user: User
+    country: Country
   }
 
   enum Subscription_Plan {
@@ -571,7 +608,7 @@ const typeDefs = gql`
     invoiceCancel(invoice_id: String!): Boolean @isAdmin
     deleteNewsletter(nl_id: ID!): Boolean @isAdmin
     resendEmailVerify(user_email: String!): Boolean
-    createNewsletter(data: CustomerCreateNLInput!): Boolean @isAdmin
+    createNewsletter(data: CustomCreateNLInput!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
@@ -614,7 +651,8 @@ const typeDefs = gql`
     getInvoice(customer_id: Int, invoice_id: String!): Invoice @isAuthenticated
     verifyForgotPasswordLink(token: String!): Boolean
     getNewsLetters(lang: [String!]): [NL!]
-    getNewsLetter(id: Int!): NL @isAuthenticated
+    getNewsLetterDetails(nl_id: Int!): NL @isAuthenticated
+    getNewsLetter(nl_id: Int!): GetCustomNL @isAdmin
     getNewsLetterList(
       filterByString: String
       lang: LanguageForUser!

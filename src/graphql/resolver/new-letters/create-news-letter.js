@@ -22,20 +22,28 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    data.nls = common.cleanObject(data.nls);
+    if (data.nls) {
+      if (data.nls.de) {
+        data.nls.de = common.cleanObject(data.nls.de);
+      }
+      if (data.nls.de) {
+        data.nls.en = common.cleanObject(data.nls.en);
+      }
+    }
+
     if (
       data.nls &&
-      data.nls.nl_text_de &&
-      data.nls.nl_title_long_de &&
-      data.nls.nl_title_short_de
+      data.nls.de.nl_text_de &&
+      data.nls.de.nl_title_long_de &&
+      data.nls.de.nl_title_short_de
     ) {
       isValidDE = true;
     }
     if (
       data.nls &&
-      data.nls.nl_text_en &&
-      data.nls.nl_title_long_en &&
-      data.nls.nl_title_short_en
+      data.nls.en.nl_text_en &&
+      data.nls.en.nl_title_long_en &&
+      data.nls.en.nl_title_short_en
     ) {
       isValidEN = true;
     }
@@ -47,14 +55,20 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
-    console.log(newsletterQuery(queryParams));
-    return true;
+    console.log("newsletterQuery(queryParams)", newsletterQuery(queryParams));
     const result = await session.run(newsletterQuery(queryParams));
     if (result && result.records.length > 0) {
+      const newsLetters = result.records.map((record) => {
+        const nlResult = {
+          ...common.getPropertiesFromRecord(record, "nl"),
+        };
+        return nlResult;
+      });
+      console.log("newsLetters", newsLetters);
       common.loggingData(logNewsletter, {
         type: constants.LOG_TYPE_ID.CREATE_NL,
         current_user_email: userEmail,
-        nl_id: 1,
+        nl_id: newsLetters[0].nl_id || null,
       });
       return true;
     }

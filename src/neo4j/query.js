@@ -385,10 +385,19 @@ MATCH (lt: Log_Type {log_type_id: $type})
 MATCH (u:User {user_email: $current_user_email})
 MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()`;
 
-exports.getNewsletter = `
-MATCH (nl:NL_Article )
-WHERE nl.nl_article_id = $nl_article_id
+exports.getNewsletterDetails = `
+MATCH (nl:Nl {nl_id : $nl_id})
 RETURN nl`;
+
+exports.getNewsletter = `
+MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:NL_HAS_AUTHOR]->(u:User)
+WHERE nl.nl_id = $nl_id
+CALL {
+  WITH nl
+  MATCH (nl)-[:HAS_NL_STATE]->(nls:Nl_State)-[:NL_LANG_IS]->(lang:Language)
+  RETURN collect({ nls: nls, lang: lang }) AS nls
+}
+RETURN nl, nls, cou, u`;
 
 exports.newsletterQuery = (queryParams) => {
   let query = `
@@ -405,14 +414,14 @@ exports.newsletterQuery = (queryParams) => {
   if (queryParams.isValidDE) {
     query = `${query}
     MERGE (nl)-[:HAS_NL_STATE]->(nls_de:Nl_State)-[:NL_LANG_IS]->(lang1)
-    SET nls_de.nl_title_short = ${queryParams.nls.nl_title_short_de}, nls_de.nl_title_long = ${queryParams.nls.nl_title_long_de}, nls_de.nl_text = ${queryParams.nls.nl_text_de}`;
+    SET nls_de.nl_title_short = "${queryParams.nls.de.nl_title_short}", nls_de.nl_title_long = "${queryParams.nls.de.nl_title_long}", nls_de.nl_text = "${queryParams.nls.de.nl_text}"`;
   }
   // Set the properties for the English version of the (Nl_State) - please do it only in case when the data-fields for the English version are filled
   // Maybe that the distinction between ON CREATE and ON MATCH is not necessary
   if (queryParams.isValidEN) {
     query = `${query}
     MERGE (nl)-[:HAS_NL_STATE]->(nls_en:Nl_State)-[:NL_LANG_IS]->(lang2)
-    SET nls_en.nl_title_short = ${queryParams.nls.nl_title_short_en}, nls_en.nl_title_long = ${queryParams.nls.nl_title_long_en}, nls_en.nl_text = ${queryParams.nls.nl_text_en}`;
+    SET nls_en.nl_title_short = "${queryParams.nls.en.nl_title_short}", nls_en.nl_title_long = "${queryParams.nls.en.nl_title_long}", nls_en.nl_text = "${queryParams.nls.en.nl_text}"`;
   }
   // Whatever was the country of the NL before, delete this relationship and set it new
   query = `${query}
@@ -423,7 +432,7 @@ exports.newsletterQuery = (queryParams) => {
   query = `${query}
   MATCH (nl)-[r2:NL_HAS_AUTHOR]->() DETACH DELETE r2
   CREATE (nl)-[:NL_HAS_AUTHOR]->(u)
-  RETURN nl, nls, cou`;
+  RETURN nl`;
 
   return query;
 };

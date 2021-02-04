@@ -44,6 +44,7 @@ const invoiceCancel = require("./invoices/invoice-cancel");
 const getNewsLetterList = require("./new-letters/get-news-letter-list");
 const deleteNewsletter = require("./new-letters/delete-news-letter");
 const createNewsletter = require("./new-letters/create-news-letter");
+const getNewsLetterDetails = require("./new-letters/get-news-letter-details");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -77,6 +78,7 @@ const resolvers = {
     verifyForgotPasswordLink,
     getNewsLetters,
     getNewsLetter,
+    getNewsLetterDetails,
     getCustomers,
     getCustomer,
     getInvoices,

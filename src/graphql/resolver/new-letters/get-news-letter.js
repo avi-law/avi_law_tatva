@@ -4,17 +4,29 @@ const { common } = require("../../../utils");
 const { getNewsletter } = require("../../../neo4j/query");
 
 module.exports = async (object, params) => {
-  const { id } = params;
+  const nlID = params.nl_id;
   const session = driver.session();
   try {
-    const result = await session.run(getNewsletter, { nl_id: id });
+    const result = await session.run(getNewsletter, { nl_id: nlID });
     if (result && result.records.length > 0) {
       const newsLetters = result.records.map((record) => {
+        const nls = {};
+        if (record.get("nls") && record.get("nls").length > 0) {
+          record.get("nls").forEach((nlState) => {
+            if (
+              nlState.lang &&
+              nlState.nls &&
+              nlState.lang.properties.iso_639_1
+            ) {
+              nls[nlState.lang.properties.iso_639_1] = nlState.nls.properties;
+            }
+          });
+        }
         const nlResult = {
-          ...common.getPropertiesFromRecord(record, "nl"),
-          nl_state: common.getPropertiesFromRecord(record, "nls"),
-          user: common.getPropertiesFromRecord(record, "u"),
+          nl: common.getPropertiesFromRecord(record, "nl"),
+          nls,
           country: common.getPropertiesFromRecord(record, "cou"),
+          user: common.getPropertiesFromRecord(record, "u"),
         };
         return nlResult;
       });
