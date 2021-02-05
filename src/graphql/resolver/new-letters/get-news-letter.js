@@ -10,7 +10,18 @@ module.exports = async (object, params) => {
     const result = await session.run(getNewsletter, { nl_id: nlID });
     if (result && result.records.length > 0) {
       const newsLetters = result.records.map((record) => {
-        const nls = {};
+        const nls = {
+          de: {
+            nl_text: null,
+            nl_title_long: null,
+            nl_title_short: null,
+          },
+          en: {
+            nl_text: null,
+            nl_title_long: null,
+            nl_title_short: null,
+          },
+        };
         if (record.get("nls") && record.get("nls").length > 0) {
           record.get("nls").forEach((nlState) => {
             if (
