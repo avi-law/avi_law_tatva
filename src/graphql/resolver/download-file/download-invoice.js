@@ -7,7 +7,6 @@ const { APIError } = require("../../../utils");
 module.exports = async (object, params, ctx) => {
   params = JSON.parse(JSON.stringify(params));
   const session = driver.session();
-  const systemAdmin = ctx.user.user_is_sys_admin;
   const userSurfLang = ctx.user.user_surf_lang || defaultLanguage;
   const invoiceIdString = params.invoice_id;
   const yearOfInvoice = invoiceIdString.split("_")[1];

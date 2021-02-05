@@ -195,7 +195,7 @@ module.exports = async (object, params, ctx) => {
   const customerId = params.customer_id;
   let session;
   try {
-    if (!systemAdmin && !customerId) {
+    if (!systemAdmin || !customerId) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",

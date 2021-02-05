@@ -9,10 +9,17 @@ module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const userEmail = user.user_email;
+  const systemAdmin = user.user_is_sys_admin;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const invoiceId = params.invoice_id;
   try {
+    if (!systemAdmin) {
+      throw new APIError({
+        lang: userSurfLang,
+        message: "INTERNAL_SERVER_ERROR",
+      });
+    }
     const queryParams = {
       invoiceId,
       currentDate: common.convertToTemporalDate(),
