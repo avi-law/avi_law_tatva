@@ -370,7 +370,7 @@ LIMIT toInteger(${limit})`;
 
 exports.deleteNewsletter = `
 MATCH (nl:Nl {nl_id: $nl_id})-[:HAS_NL_STATE]->(nls:Nl_State)
-// DETACH DELETE nl, nls
+DETACH DELETE nl, nls
 RETURN nl,nls
 `;
 
