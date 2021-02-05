@@ -343,7 +343,7 @@ MERGE (us_new)-[:HAS_USER_STATE_PRED {from: apoc.date.currentTimestamp()}]->(us1
 exports.getNewsletterByLang = `
 MATCH (nls:Nl_State)<-[:HAS_NL_STATE]-(nl:Nl)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
 MATCH (nls)-[r3:NL_LANG_IS]->(lang:Language)
-WHERE nl.nl_active = true AND cou.iso_3166_1_alpha_2 IN $LANG_ARRAY
+WHERE nl.nl_active = true AND cou.iso_3166_1_alpha_2 IN $country AND lang.iso_639_1 = $lang
 RETURN nl, nls, cou, lang
 ORDER BY nl.nl_ord DESC
 LIMIT toInteger($limit)`;
@@ -351,7 +351,7 @@ LIMIT toInteger($limit)`;
 exports.getDefaultNewsletter = `
 MATCH (nls:Nl_State)<-[:HAS_NL_STATE]-(nl:Nl)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
 MATCH (nls)-[r3:NL_LANG_IS]->(lang:Language)
-WHERE nl.nl_active = true
+WHERE nl.nl_active = true AND lang.iso_639_1 = $lang
 RETURN nl, nls, cou, lang
 ORDER BY nl.nl_ord DESC
 LIMIT toInteger($limit)`;

@@ -659,7 +659,7 @@ const typeDefs = gql`
     ): InvoiceCustom @isAuthenticated
     getInvoice(customer_id: Int, invoice_id: String!): Invoice @isAuthenticated
     verifyForgotPasswordLink(token: String!): Boolean
-    getNewsLetters(lang: [String!]): [NL!]
+    getNewsLettersOnLanding(country: [String!], lang: LanguageForUser!): [NL!]
     getNewsLetterDetails(nl_id: Int!): NL @isAuthenticated
     getNewsLetter(nl_id: Int!): GetCustomNL @isAdmin
     getNewsLetterList(

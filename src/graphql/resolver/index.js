@@ -9,7 +9,7 @@ const verifyEmail = require("./signup/email-verify");
 const resendEmailVerify = require("./signup/resend-email-verify");
 const invitedUserCreate = require("./invite/invited-user-create");
 
-const getNewsLetters = require("./new-letters/get-news-letters");
+const getNewsLettersOnLanding = require("./new-letters/get-news-letters_on_landing");
 const getNewsLetter = require("./new-letters/get-news-letter");
 
 // AUTH Resolver
@@ -80,7 +80,7 @@ const resolvers = {
     User,
     user,
     verifyForgotPasswordLink,
-    getNewsLetters,
+    getNewsLettersOnLanding,
     getNewsLetter,
     getNewsLetterDetails,
     getCustomers,
