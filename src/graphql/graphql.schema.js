@@ -33,6 +33,7 @@ const typeDefs = gql`
     user_acronym: String
     user_pref_country: Int
     user_rmk: String
+    nl_email_unsubscribed: Boolean
     user: User @relation(name: "HAS_USER_STATE", direction: IN)
     user_has_pref_surf_lang: Language
       @relation(name: "USER_HAS_PREF_SURF_LANG", direction: OUT)
@@ -386,6 +387,7 @@ const typeDefs = gql`
     user_rmk: String
     user_last_login: String
     user_login_count: Int
+    nl_email_unsubscribed: Boolean
   }
   enum NL_Country {
     EU
@@ -455,6 +457,7 @@ const typeDefs = gql`
     user_rmk: String
     user_last_login: String
     user_login_count: Int
+    nl_email_unsubscribed: Boolean
   }
   type CustomUser {
     user: User
