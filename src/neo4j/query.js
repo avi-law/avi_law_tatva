@@ -377,14 +377,14 @@ RETURN nl,nls
 exports.logNewsletter = `
 MATCH (lt: Log_Type {log_type_id: $type})
 MATCH (u:User {user_email: $current_user_email})
-MATCH (nl:Newsletter {nl_id: $nl_id})
+MATCH (nl:Nl {nl_id: $nl_id})
 MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(nl)`;
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(nl)`;
 
 exports.logDeleteNewsletter = `
 MATCH (lt: Log_Type {log_type_id: $type})
 MATCH (u:User {user_email: $current_user_email})
-MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})`;
+MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)`;
 
 exports.getNewsletterDetails = `
 MATCH (nl:Nl {nl_id : $nl_id})
@@ -435,8 +435,15 @@ exports.newsletterQuery = (queryParams) => {
   }
   if (queryParams.isUpdate) {
     query = `${query}
-    OPTIONAL MATCH (nl)-[r1:NL_REFERS_TO_COUNTRY]->() DETACH DELETE r1
-    OPTIONAL MATCH (nl)-[r2:NL_HAS_AUTHOR]->() DETACH DELETE r2`;
+    WITH nl,cou,u
+    CALL {
+      WITH nl
+      MATCH (nl)-[r1:NL_REFERS_TO_COUNTRY]->()
+      MATCH (nl)-[r2:NL_HAS_AUTHOR]->()
+      RETURN r1, r2
+    }
+    DETACH DELETE r1
+    DETACH DELETE r2`;
   }
 
   query = `${query}

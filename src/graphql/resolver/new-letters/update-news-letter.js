@@ -39,10 +39,6 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
-    console.log(
-      "Update newsletterQuery(queryParams)",
-      newsletterQuery(queryParams)
-    );
     const result = await session.run(newsletterQuery(queryParams));
     if (result && result.records.length > 0) {
       common.loggingData(logNewsletter, {
