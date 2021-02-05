@@ -12,6 +12,7 @@ module.exports = {
   // JWT token for authentication
   jwtSecret: process.env.JWT_SECRET || "secret",
   jwtExpiresIn: process.env.JWT_EXPIRED_IN || "1d",
+  jwtAlgorithms: process.env.JWT_ALGORITHMS || "HS256",
 
   websiteOwnerEmail: process.env.WEBSITE_OWNER_EMAIL || "janezic@avi-law.com",
   carbonCopyEmail: process.env.CARBON_COPY_EMAIL || "janezic@avi-law.com",

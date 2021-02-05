@@ -23,13 +23,6 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    // Added for temp delete action
-    if (Number(nlID) <= 2209) {
-      throw new APIError({
-        lang: userSurfLang,
-        message: "INTERNAL_SERVER_ERROR",
-      });
-    }
     const result = await session.run(deleteNewsletter, {
       nl_id: Number(nlID),
     });

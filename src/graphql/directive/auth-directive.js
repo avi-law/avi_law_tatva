@@ -4,11 +4,7 @@
 const { SchemaDirectiveVisitor } = require("apollo-server-express");
 const { DirectiveLocation, GraphQLDirective } = require("graphql");
 const jwt = require("jsonwebtoken");
-const {
-  jwtSecret,
-  websiteOwnerEmail,
-  defaultLanguage,
-} = require("../../config/application");
+const { jwtSecret, defaultLanguage } = require("../../config/application");
 const { constants, APIError } = require("../../utils");
 
 const verifyAndDecodeToken = ({ context }) => {
@@ -62,7 +58,6 @@ const checkValidRequest = (ctx, payload) => {
   const loginFailedCode = payload.login_failed_code;
   const { operationName } = req.body;
   const userSurfLang = payload.user_surf_lang;
-  const userEmail = payload.user_email;
   let valid = true;
   if (
     ["acceptGTC", "acceptGDPR"].indexOf(operationName) === -1 &&

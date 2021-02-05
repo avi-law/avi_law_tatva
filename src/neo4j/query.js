@@ -258,6 +258,12 @@ MATCH (cs:Customer_State)<-[HAS_CUSTOMER_STATE]-(c:Customer)<-[r:USER_TO_CUSTOME
 WHERE r.user_is_cust_admin = true OR cs.cust_single = true AND r1.to IS NULL
 SET cs.cust_gtc_accepted = apoc.date.currentTimestamp();`;
 
+exports.unsubscribeNLForUser = `
+MATCH ( us:User_State )<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
+WHERE r1.to IS NULL
+SET us.nl_email_unsubscribed = TRUE
+RETURN u, us`;
+
 exports.updateGDPRAccept = `
 MATCH ( us:User_State )<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 WHERE r1.to IS NULL

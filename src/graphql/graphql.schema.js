@@ -614,6 +614,7 @@ const typeDefs = gql`
     resendEmailVerify(user_email: String!): Boolean
     createNewsletter(data: CustomCreateNLInput!): Boolean @isAdmin
     updateNewsletter(nl_id: Int!, data: CustomCreateNLInput!): Boolean @isAdmin
+    unsubscribeNewsletter(token: String!): Boolean
   }
   type Query {
     user: User_State @isAuthenticated
