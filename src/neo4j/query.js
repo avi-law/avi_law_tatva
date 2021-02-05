@@ -346,7 +346,7 @@ MATCH (nls)-[r3:NL_LANG_IS]->(lang:Language)
 WHERE nl.nl_active = true AND cou.iso_3166_1_alpha_2 IN $LANG_ARRAY
 RETURN nl, nls, cou, lang
 ORDER BY nl.nl_ord DESC
-LIMIT 10`;
+LIMIT toInteger($limit)`;
 
 exports.getDefaultNewsletter = `
 MATCH (nls:Nl_State)<-[:HAS_NL_STATE]-(nl:Nl)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
@@ -354,7 +354,7 @@ MATCH (nls)-[r3:NL_LANG_IS]->(lang:Language)
 WHERE nl.nl_active = true
 RETURN nl, nls, cou, lang
 ORDER BY nl.nl_ord DESC
-LIMIT 10`;
+LIMIT toInteger($limit)`;
 
 exports.getNewsLetterListCount = (condition = "") => `
 MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:HAS_NL_STATE]->(nls:Nl_State)-[:NL_LANG_IS]->(lang:Language)

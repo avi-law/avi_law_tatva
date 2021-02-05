@@ -105,6 +105,7 @@ module.exports = {
   FREE_SUBSCRIPTION_IN_MONTH: 1,
   CUSTOMER_VAT_PER_DE: 0.07,
   CUSTOMER_VAT_PER: 0.0,
+  NL_LIMIT_ON_LANDING_PAGE: 6,
   SUBSCRIPTION_PLAN: {
     SINGLE: {
       cust_single: true,

@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { common } = require("../../../utils");
+const { common, constants } = require("../../../utils");
 const {
   getNewsletterByLang,
   getDefaultNewsletter,
@@ -9,12 +9,13 @@ const {
 module.exports = async (object, params) => {
   const { lang } = params;
   const session = driver.session();
+  const limit = constants.NL_LIMIT_ON_LANDING_PAGE;
   try {
     let query = getDefaultNewsletter;
     if (lang && lang.length > 0) {
       query = getNewsletterByLang;
     }
-    const result = await session.run(query, { LANG_ARRAY: lang });
+    const result = await session.run(query, { LANG_ARRAY: lang, limit });
     if (result && result.records.length > 0) {
       const newsLetters = result.records.map((record) => {
         const nlResult = {
