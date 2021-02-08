@@ -29,6 +29,7 @@ const getUser = require("./user/get-user");
 const invite = require("./invite/invite");
 const getUserCustomerList = require("./customers/get-user-customer-list");
 const getConnectUserList = require("./user/get-connected-users");
+const getUsersNotConnectedByCustomer = require("./user/get-users-not-connected-by-customer");
 const createCustomer = require("./customers/create-customer");
 const createUser = require("./user/create-user");
 const newUser = require("./user/new-user");
@@ -99,6 +100,7 @@ const resolvers = {
     verifyInvitation,
     verifyEmail,
     getNewsLetterList,
+    getUsersNotConnectedByCustomer,
   },
 };
 

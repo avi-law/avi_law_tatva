@@ -161,6 +161,12 @@ MATCH (c)<-[:USER_TO_CUSTOMER]-(u2)
 Return u2
 ORDER BY toLower(u2.user_email) ASC`;
 
+exports.getUsersNotConnectByCustomer = `
+MATCH (c:Customer)<-[r1:USER_TO_CUSTOMER]-(u:User)
+where r1.from IS NULL
+Return u
+ORDER BY toLower(u.user_email) ASC`;
+
 exports.getUsersCountQuery = (condition = "") => `
 MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)
 ${condition}

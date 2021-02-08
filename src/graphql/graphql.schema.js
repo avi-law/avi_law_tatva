@@ -623,6 +623,7 @@ const typeDefs = gql`
     user: User_State @isAuthenticated
     getUserCustomerList: [UserCustomersList] @isAuthenticated
     getConnectUserList: [User] @isAuthenticated
+    getUsersNotConnectedByCustomer: [User] @isAuthenticated
     getUsersByCustomer(
       customerId: Int!
       first: Int
