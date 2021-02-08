@@ -57,6 +57,13 @@ module.exports = async (object, params, ctx) => {
       } else {
         customerState.cust_vat_perc = 0.0;
       }
+      if (customerState && customerState.cust_share_klein > 0) {
+        customerState.cust_share_klein = (
+          customerState.cust_share_klein / 100
+        ).toFixed(2);
+      } else {
+        customerState.cust_share_klein = 0.0;
+      }
     } else {
       const oldCustomerStateResult = await session.run(getCustomer, {
         customerId,
