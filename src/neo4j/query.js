@@ -168,7 +168,7 @@ MATCH (u:User)
 OPTIONAL MATCH (u)-[:USER_TO_CUSTOMER]->(i)
 WHERE i in cust
 WITH u
-WHERE i IS NULL
+WHERE i IS NULL AND u.user_email IS NOT NULL
 RETURN u
 ORDER BY toLower(u.user_email) ASC`;
 
