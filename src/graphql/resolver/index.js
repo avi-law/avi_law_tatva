@@ -21,6 +21,7 @@ const downloadInvoice = require("./download-file/download-invoice");
 const setUserProperties = require("./user/set-user-properties");
 
 // System Admin Resolver
+const addUserInCustomer = require("./customers/add-user-in-customer");
 const getCustomers = require("./customers/get-customers");
 const getUsersByCustomer = require("./user/get-users-by-customer");
 const getUsers = require("./user/get-users");
@@ -76,6 +77,7 @@ const resolvers = {
     createNewsletter,
     updateNewsletter,
     unsubscribeNewsletter,
+    addUserInCustomer,
   },
   Query: {
     User,

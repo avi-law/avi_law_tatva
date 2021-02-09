@@ -162,10 +162,21 @@ Return u2
 ORDER BY toLower(u2.user_email) ASC`;
 
 exports.getUsersNotConnectByCustomer = `
-MATCH (c:Customer)<-[r1:USER_TO_CUSTOMER]-(u:User)
-where r1.from IS NULL
-Return u
+MATCH (c:Customer)
+WITH collect(c) as cust
+MATCH (u:User)
+OPTIONAL MATCH (u)-[:USER_TO_CUSTOMER]->(i)
+WHERE i in cust
+WITH u
+WHERE i IS NULL
+RETURN u
 ORDER BY toLower(u.user_email) ASC`;
+
+exports.addUserToCustomer = `
+OPTIONAL MATCH (c:Customer {cust_id: $cust_id})
+OPTIONAL MATCH (u:User {user_email: $user_email})
+FOREACH (_ IN CASE WHEN u IS NOT NULL AND c IS NOT NULL THEN [1] END | MERGE (u)-[r1:USER_TO_CUSTOMER]->(c))
+Return u, c`;
 
 exports.getUsersCountQuery = (condition = "") => `
 MATCH (us:User_State)<-[r2:HAS_USER_STATE]-(u:User)

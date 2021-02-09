@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { common } = require("../../../utils");
+const { constants } = require("../../../utils");
 const {
   getInvoiceCustomers,
   getInvoiceCustomersCount,
@@ -16,7 +16,7 @@ module.exports = async (object, params) => {
   let queryOrderBy = "";
   let total = 0;
   let condition = "WHERE r1.to IS NULL ";
-  const { orderByInvoice, orderBy, filterInvoice, filterByCustomer } = params;
+  const { orderByInvoice, orderBy, filterByString } = params;
   let invoiceCustomer = [];
   try {
     if (orderByInvoice && orderByInvoice.length > 0) {
@@ -41,19 +41,12 @@ module.exports = async (object, params) => {
         }
       });
     }
-    if (filterByCustomer) {
-      Object.keys(filterByCustomer).forEach((key) => {
-        const { whereCondition, field } = common.getCypherQueryOpt(
-          key,
-          filterByCustomer[key],
-          "cs"
-        );
-        if (/^\d+$/.test(filterByCustomer[key])) {
-          condition = `${condition} AND cs.${field} = ${filterByCustomer[key]}`;
-        } else {
-          condition = `${condition} AND ${whereCondition}`;
-        }
-      });
+    if (filterByString) {
+      const value = filterByString.replace(
+        constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
+        ""
+      );
+      condition = `${condition} AND ( toLower(cs.cust_name_01_contains) CONTAINS toLower("${value}") OR toLower(inv.inv_id_strg) CONTAINS toLower("${value}"))`;
     }
     if (queryOrderBy === "") {
       queryOrderBy = defaultOrderBy;

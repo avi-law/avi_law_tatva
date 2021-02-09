@@ -612,6 +612,7 @@ const typeDefs = gql`
     newUser(data: UserCustomInput!): Boolean @isAdmin
     invite(data: InvitationInput!): Invitation @isAuthenticated
     invitedUserCreate(token: String!, data: UserCustomInput!): Boolean
+    addUserInCustomer(user_email: String!, customer_id: Int!): Boolean @isAdmin
     invoiceCancel(invoice_id: String!): Boolean @isAdmin
     deleteNewsletter(nl_id: String!): Boolean @isAdmin
     resendEmailVerify(user_email: String!): Boolean
@@ -685,7 +686,7 @@ const typeDefs = gql`
       orderByInvoice: [_InvoiceOrdering]
       filterInvoice: [_InvoiceFilter]
       orderBy: [_Customer_StateOrdering]
-      filterByCustomer: _Customer_StateFilter
+      filterByString: String
     ): InvoiceCustomersCustom @isAdmin
     getCustomer(customer_id: Int!): CustomerCustom @isAuthenticated
     getPreparedNewInvoiceDetails(customer_id: Int!): Invoice @isAuthenticated
