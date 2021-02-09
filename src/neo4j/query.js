@@ -357,6 +357,32 @@ DELETE r3
 SET r2.from = apoc.date.currentTimestamp()
 MERGE (us_new)-[:HAS_USER_STATE_PRED {from: apoc.date.currentTimestamp()}]->(us1)`;
 
+exports.getNewsletterYearList = (queryParams) => {
+  let nlCountry = "";
+  if (queryParams.country && queryParams.country.length > 0) {
+    queryParams.country.forEach((ln) => {
+      nlCountry = `${nlCountry}, "${ln.toUpperCase()}"`;
+    });
+  }
+  let query = `
+  MATCH (nls:Nl_State)<-[:HAS_NL_STATE]-(nl:Nl)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
+  MATCH (nls)-[r3:NL_LANG_IS]->(lang:Language)
+  WHERE nl.nl_active = true
+  `;
+  if (queryParams.lang) {
+    query = `${query} AND lang.iso_639_1 = "${queryParams.lang}"`;
+  }
+  if (queryParams.country) {
+    nlCountry = nlCountry.replace(/^,|,$/g, "");
+    query = `${query} AND cou.iso_3166_1_alpha_2 IN [${nlCountry}]`;
+  }
+  query = `${query}
+  RETURN DISTINCT nl.nl_date.year as year
+  ORDER BY nl.nl_date.year DESC`;
+
+  return query;
+};
+
 exports.getNewsletterByLang = `
 MATCH (nls:Nl_State)<-[:HAS_NL_STATE]-(nl:Nl)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
 MATCH (nls)-[r3:NL_LANG_IS]->(lang:Language)

@@ -664,6 +664,7 @@ const typeDefs = gql`
     getNewsLettersOnLanding(country: [String!], lang: LanguageForUser!): [NL!]
     getNewsLetterDetails(nl_id: Int!): NL @isAuthenticated
     getNewsLetter(nl_id: Int!): GetCustomNL @isAdmin
+    getNewsLetterYearList(country: [NL_Country!], lang: LanguageForUser!): [Int]
     getNewsLetterList(
       filterByString: String
       lang: LanguageForUser!

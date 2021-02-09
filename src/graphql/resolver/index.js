@@ -49,6 +49,7 @@ const createNewsletter = require("./new-letters/create-news-letter");
 const updateNewsletter = require("./new-letters/update-news-letter");
 const getNewsLetterDetails = require("./new-letters/get-news-letter-details");
 const unsubscribeNewsletter = require("./new-letters/unsubscribe-news-letter");
+const getNewsLetterYearList = require("./new-letters/get-news-letter-year-list");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -103,6 +104,7 @@ const resolvers = {
     verifyEmail,
     getNewsLetterList,
     getUsersNotConnectedByCustomer,
+    getNewsLetterYearList,
   },
 };
 
