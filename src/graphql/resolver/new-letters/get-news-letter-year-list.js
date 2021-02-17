@@ -32,7 +32,8 @@ module.exports = async (object, params) => {
       response.years = newsLetterYears;
     }
     if (!year && response.years.length > 0) {
-      currentYear = response.years.shift();
+      // eslint-disable-next-line prefer-destructuring
+      currentYear = response.years[0];
     }
     const nlResult = await session.run(
       getNewsletterListByYear({
