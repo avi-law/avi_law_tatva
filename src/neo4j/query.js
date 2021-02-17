@@ -383,6 +383,40 @@ exports.getNewsletterYearList = (queryParams) => {
   return query;
 };
 
+exports.getNewsletterListByYear = (queryParams) => {
+  let nlCountry = "";
+  if (queryParams.country && queryParams.country.length > 0) {
+    queryParams.country.forEach((ln) => {
+      nlCountry = `${nlCountry}, "${ln.toUpperCase()}"`;
+    });
+  }
+  let query = `
+  MATCH (nls:Nl_State)<-[:HAS_NL_STATE]-(nl:Nl)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
+  MATCH (nls)-[r3:NL_LANG_IS]->(lang:Language)
+  WHERE nl.nl_active = true
+  `;
+  if (queryParams.lang) {
+    query = `${query} AND lang.iso_639_1 = "${queryParams.lang}"`;
+  }
+  if (queryParams.country) {
+    nlCountry = nlCountry.replace(/^,|,$/g, "");
+    query = `${query} AND cou.iso_3166_1_alpha_2 IN [${nlCountry}]`;
+  }
+  if (queryParams.currentYear) {
+    query = `${query} AND nl.nl_date.year = ${queryParams.currentYear}`;
+  }
+  query = `${query}
+  CALL {
+    WITH nls
+    MATCH (nls)-[:NL_LANG_IS]->(lang:Language)
+    RETURN collect({ nls: nls, lang: lang }) AS nlState
+  }
+  RETURN nl, nlState as nls, lang, cou
+  ORDER BY nl.nl_date DESC`;
+
+  return query;
+};
+
 exports.getNewsletterByLang = `
 MATCH (nls:Nl_State)<-[:HAS_NL_STATE]-(nl:Nl)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
 MATCH (nls)-[r3:NL_LANG_IS]->(lang:Language)

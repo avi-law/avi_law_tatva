@@ -545,6 +545,12 @@ const typeDefs = gql`
     nl_date: _Neo4jDate
     nl_ord: String
   }
+  type GetNLListByYear {
+    years: [Int]
+    nl_list: [GetCustomNL]
+    nl_first: GetCustomNL
+    total: Int
+  }
 
   type GetCustomNL {
     nl: CustomNL
@@ -664,7 +670,12 @@ const typeDefs = gql`
     getNewsLettersOnLanding(country: [String!], lang: LanguageForUser!): [NL!]
     getNewsLetterDetails(nl_id: Int!): NL @isAuthenticated
     getNewsLetter(nl_id: Int!): GetCustomNL @isAdmin
-    getNewsLetterYearList(country: [NL_Country!], lang: LanguageForUser!): [Int]
+    getNewsLetterYearList(
+      country: [NL_Country!]
+      lang: LanguageForUser!
+      year: Int
+      nl_id: Int
+    ): GetNLListByYear
     getNewsLetterList(
       filterByString: String
       lang: LanguageForUser!
