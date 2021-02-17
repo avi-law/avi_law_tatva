@@ -13,11 +13,12 @@ module.exports = async (object, params, ctx) => {
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const userEmail = user.user_email || null;
   const userIsSysAdmin = user.user_is_sys_admin || false;
+  const userIsAuthor = user.user_is_author || false;
   params = JSON.parse(JSON.stringify(params));
   const nlID = params.nl_id;
   const session = driver.session();
   try {
-    if (!userIsSysAdmin || Number.isNaN(nlID)) {
+    if ((!userIsSysAdmin && !userIsAuthor) || Number.isNaN(nlID)) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",

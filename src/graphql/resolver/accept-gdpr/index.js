@@ -73,6 +73,7 @@ module.exports = async (object, params, ctx) => {
         user_last_name: userStateInformation.user_last_name,
         user_pref_country: userStateInformation.user_pref_country,
         user_is_sys_admin: userStateInformation.user_is_sys_admin,
+        user_is_author: userStateInformation.user_is_author,
       }),
     };
   } catch (error) {

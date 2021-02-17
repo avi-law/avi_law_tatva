@@ -7,6 +7,14 @@ const jwt = require("jsonwebtoken");
 const { jwtSecret, defaultLanguage } = require("../../config/application");
 const { APIError } = require("../../utils");
 
+const authorValidRoutes = [
+  "getNewsLetterList",
+  "getNewsletter",
+  "updateNewsletter",
+  "createNewsletter",
+  "deleteNewsletter",
+];
+
 const verifyAndDecodeToken = ({ context }) => {
   const { req } = context;
   if (
@@ -56,10 +64,17 @@ const verifyAndDecodeToken = ({ context }) => {
 const checkValidRequest = (ctx, payload) => {
   const userSurfLang = payload.user_surf_lang;
   const systemAdmin = payload.user_is_sys_admin;
+  const isAuthor = payload.user_is_author;
   let valid = true;
   // Validate encrypt password request
   if (!systemAdmin) {
     valid = false;
+  }
+  if (
+    isAuthor &&
+    authorValidRoutes.indexOf(ctx.req.body.operationName) !== -1
+  ) {
+    valid = true;
   }
   if (!valid) {
     throw new APIError({

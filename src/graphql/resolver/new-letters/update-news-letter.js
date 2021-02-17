@@ -8,6 +8,7 @@ const { newsletterQuery, logNewsletter } = require("../../../neo4j/query");
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const systemAdmin = user.user_is_sys_admin || null;
+  const userIsAuthor = user.user_is_author || null;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const userEmail = user.user_email || null;
   const session = driver.session();
@@ -17,7 +18,7 @@ module.exports = async (object, params, ctx) => {
   const isValidDE = true;
   const isValidEN = true;
   try {
-    if (!systemAdmin) {
+    if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",

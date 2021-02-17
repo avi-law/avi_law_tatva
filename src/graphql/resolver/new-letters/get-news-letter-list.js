@@ -12,6 +12,7 @@ module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const userIsSysAdmin = user.user_is_sys_admin || false;
+  const userIsAuthor = user.user_is_author || false;
   params = JSON.parse(JSON.stringify(params));
   const session = driver.session();
   const offset = params.offset || 0;
@@ -22,7 +23,7 @@ module.exports = async (object, params, ctx) => {
   const { orderBy, filterByCountry, filterByString, lang } = params;
   let condition = `WHERE lang.iso_639_1 = "${lang}" `;
   try {
-    if (!userIsSysAdmin) {
+    if (!userIsSysAdmin && !userIsAuthor) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
