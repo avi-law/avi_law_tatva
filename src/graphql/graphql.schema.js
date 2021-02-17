@@ -672,7 +672,7 @@ const typeDefs = gql`
     getNewsLetter(nl_id: Int!): GetCustomNL @isAdmin
     getNewsLetterYearList(
       country: [NL_Country!]
-      lang: LanguageForUser!
+      lang: LanguageForUser
       year: Int
       nl_id: Int
     ): GetNLListByYear
