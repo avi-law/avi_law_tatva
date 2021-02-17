@@ -412,7 +412,7 @@ exports.getNewsletterListByYear = (queryParams) => {
     RETURN collect({ nls: nls, lang: lang }) AS nlState
   }
   RETURN nl, nlState as nls, lang, cou
-  ORDER BY nl.nl_date DESC`;
+  ORDER BY nl.nl_date DESC, nl.nl_ord DESC`;
 
   return query;
 };
