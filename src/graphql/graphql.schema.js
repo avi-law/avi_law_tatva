@@ -583,6 +583,11 @@ const typeDefs = gql`
     country: Country
   }
 
+  type GetNLEmailTagCustom {
+    nl: CustomNL
+    nls: CustomNLState
+  }
+
   enum Subscription_Plan {
     SINGLE
     MULTIPLE
@@ -709,6 +714,7 @@ const typeDefs = gql`
       filterByCountry: [_CountryFilter]
     ): CustomNLList @isAdmin
     getNewsLetterEmailList(first: Int, offset: Int): CustomNLEmailList
+    getNewsLetterTagForEmail: [GetNLEmailTagCustom]
     getCustomers(
       first: Int
       offset: Int
