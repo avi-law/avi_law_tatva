@@ -12,11 +12,9 @@ module.exports = async () => {
     if (result && result.records.length > 0) {
       const nlEmails = result.records.map((record) => {
         const nlResult = {
-          ...common.getPropertiesFromRecord(record, "nl"),
           ...common.getPropertiesFromRecord(record, "nle"),
-          nl_state: {
+          nl_email_state: {
             ...common.getPropertiesFromRecord(record, "nles"),
-            nl_language: common.getPropertiesFromRecord(record, "lang"),
           },
         };
         return nlResult;

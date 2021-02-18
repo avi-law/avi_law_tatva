@@ -240,7 +240,7 @@ const typeDefs = gql`
   }
 
   type NL_Email {
-    nl_email_ord: Int
+    nl_email_ord: String
     nl_email_date: _Neo4jDate
     nl_email_sent: Boolean
     nl_email_state: NL_Email_State

@@ -474,9 +474,8 @@ exports.getNewsLetterEmailList = (
   skip = 0,
   orderBy = "nle.nl_email_ord DESC"
 ) => `
-MATCH (nle:Nl_Email)-[:HAS_NL_EMAIL_STATE]->(nles:Nl_Email_State)-[:NL_EMAIL_LANG_IS]->(lang:Language)
-MATCH (nl:Nl)<-[:CONTAINS_LINK_TO_NL]-(nle)-[:NL_HAS_AUTHOR]->(u:User)
-RETURN nle, nl, nles, lang, u
+MATCH (nle:Nl_Email)-[:HAS_NL_EMAIL_STATE]->(nles:Nl_Email_State)
+RETURN nle, nles
 ORDER BY ${orderBy}
 SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;
