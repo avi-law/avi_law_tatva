@@ -586,7 +586,7 @@ exports.newsletterEmailQuery = (queryParams) => {
   if (queryParams.nle.nl_email_sent) {
     query = `
     ${query}
-    SET nle.nl_email_date = Date({ year: ${queryParams.nle.nl_email_date.year}, month: ${queryParams.nle.nl_email_date.month} , day: ${queryParams.nle.nl_email_date.day}}) , nle.nl_email_sent = ${queryParams.nle.nl_email_sent}`;
+    SET nle.nl_email_date = ${queryParams.nle.nl_email_date} , nle.nl_email_sent = ${queryParams.nle.nl_email_sent}`;
   } else {
     query = `
     ${query}

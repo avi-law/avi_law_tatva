@@ -40,6 +40,7 @@ module.exports = async (object, params, ctx) => {
       isValidEN = true;
     }
     data.nle.nl_email_ord = await generateNewsLetterEmailOrder();
+    data.nle.nl_email_date = common.convertToTemporalDate();
     const queryParams = {
       isUpdate: false,
       user_email: userEmail,
