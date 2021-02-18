@@ -458,14 +458,14 @@ RETURN nl,nls
 `;
 
 exports.getNewsLetterTagForEmail = `
-MATCH (nl:Nl)-[:HAS_NL_STATE]->(nls:Nl_State)
+MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:HAS_NL_STATE]->(nls:Nl_State)
 WHERE nl.nl_active = true
 CALL {
   WITH nls
   MATCH (nls)-[:NL_LANG_IS]->(lang:Language)
   RETURN collect({ nls: nls, lang: lang }) AS nlState
 }
-RETURN nl, nlState as nls
+RETURN nl, nlState as nls, cou
 ORDER BY nl.nl_ord DESC`;
 
 exports.getNewsLetterEmailList = (

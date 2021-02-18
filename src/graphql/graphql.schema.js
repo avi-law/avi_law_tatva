@@ -586,6 +586,7 @@ const typeDefs = gql`
   type GetNLEmailTagCustom {
     nl: CustomNL
     nls: CustomNLState
+    country: Country
   }
 
   enum Subscription_Plan {
