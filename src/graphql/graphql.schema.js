@@ -743,7 +743,11 @@ const typeDefs = gql`
       orderBy: [_NLOrdering]
       filterByCountry: [_CountryFilter]
     ): CustomNLList @isAdmin
-    getNewsLetterEmailList(first: Int, offset: Int): CustomNLEmailList
+    getNewsLetterEmailList(
+      first: Int
+      offset: Int
+      orderBy: [_NL_EmailOrdering]
+    ): CustomNLEmailList @isAdmin
     getNewsLetterTagForEmail: [GetNLEmailTagCustom]
     getNewsLetterEmailOrder: String
     getCustomers(

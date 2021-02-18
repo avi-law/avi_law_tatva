@@ -468,6 +468,11 @@ CALL {
 RETURN nl, nlState as nls, cou
 ORDER BY nl.nl_ord DESC`;
 
+exports.getNewsLetterEmailListCount = (condition = "") => `
+MATCH (nle:Nl_Email)-[:HAS_NL_EMAIL_STATE]->(nles:Nl_Email_State)
+${condition}
+RETURN count(*) as count`;
+
 exports.getNewsLetterEmailList = (
   condition,
   limit = 10,
@@ -475,6 +480,7 @@ exports.getNewsLetterEmailList = (
   orderBy = "nle.nl_email_ord DESC"
 ) => `
 MATCH (nle:Nl_Email)-[:HAS_NL_EMAIL_STATE]->(nles:Nl_Email_State)
+${condition}
 RETURN nle, nles
 ORDER BY ${orderBy}
 SKIP toInteger(${skip})
