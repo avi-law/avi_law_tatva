@@ -9,8 +9,8 @@ const verifyEmail = require("./signup/email-verify");
 const resendEmailVerify = require("./signup/resend-email-verify");
 const invitedUserCreate = require("./invite/invited-user-create");
 
-const getNewsLettersOnLanding = require("./new-letters/get-news-letters_on_landing");
-const getNewsLetter = require("./new-letters/get-news-letter");
+const getNewsLettersOnLanding = require("./news-letters/get-news-letters_on_landing");
+const getNewsLetter = require("./news-letters/get-news-letter");
 
 // AUTH Resolver
 const acceptGTC = require("./accept-gtc");
@@ -43,13 +43,14 @@ const createInvoice = require("./invoices/create-invoice");
 const getPreparedNewInvoiceDetails = require("./invoices/get-prepared-new-invoice");
 const getInvoiceCustomers = require("./invoices/get-invoice-customers");
 const invoiceCancel = require("./invoices/invoice-cancel");
-const getNewsLetterList = require("./new-letters/get-news-letter-list");
-const deleteNewsletter = require("./new-letters/delete-news-letter");
-const createNewsletter = require("./new-letters/create-news-letter");
-const updateNewsletter = require("./new-letters/update-news-letter");
-const getNewsLetterDetails = require("./new-letters/get-news-letter-details");
-const unsubscribeNewsletter = require("./new-letters/unsubscribe-news-letter");
-const getNewsLetterYearList = require("./new-letters/get-news-letter-year-list");
+const getNewsLetterList = require("./news-letters/get-news-letter-list");
+const deleteNewsletter = require("./news-letters/delete-news-letter");
+const createNewsletter = require("./news-letters/create-news-letter");
+const updateNewsletter = require("./news-letters/update-news-letter");
+const getNewsLetterDetails = require("./news-letters/get-news-letter-details");
+const unsubscribeNewsletter = require("./news-letters/unsubscribe-news-letter");
+const getNewsLetterYearList = require("./news-letters/get-news-letter-year-list");
+const getNewsLetterEmailList = require("./news-letter-email/get-news-letter-email-list");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -105,6 +106,7 @@ const resolvers = {
     getNewsLetterList,
     getUsersNotConnectedByCustomer,
     getNewsLetterYearList,
+    getNewsLetterEmailList,
   },
 };
 

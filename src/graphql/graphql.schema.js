@@ -239,6 +239,25 @@ const typeDefs = gql`
     nl_language: Language @relation(name: "NL_LANG_IS", direction: OUT)
   }
 
+  type NL_Email {
+    nl_email_ord: Int
+    nl_email_date: _Neo4jDate
+    nl_email_sent: Boolean
+    nl_email_state: NL_Email_State
+      @relation(name: "HAS_NL_EMAIL_STATE", direction: OUT)
+    nl: NL @relation(name: "CONTAINS_LINK_TO_NL", direction: OUT)
+    user: User @relation(name: "NL_HAS_AUTHOR", direction: OUT)
+  }
+
+  type NL_Email_State {
+    nl_email_subject: String!
+    nl_email_text_initial: String
+    nl_email_text_final: String
+    nl_email_language: Language
+      @relation(name: "NL_EMAIL_LANG_IS", direction: OUT)
+    nl_email: NL_Email @relation(name: "HAS_NL_EMAIL_STATE", direction: IN)
+  }
+
   type UserCustom {
     user_id: ID
     user_first_name: String
@@ -479,6 +498,11 @@ const typeDefs = gql`
     total: Int
   }
 
+  type CustomNLEmailList {
+    nlEmails: [NL_Email]
+    total: Int
+  }
+
   input UserStateCustomInput {
     user_first_name: String!
     user_middle_name: String
@@ -684,6 +708,7 @@ const typeDefs = gql`
       orderBy: [_NLOrdering]
       filterByCountry: [_CountryFilter]
     ): CustomNLList @isAdmin
+    getNewsLetterEmailList(first: Int, offset: Int): CustomNLEmailList
     getCustomers(
       first: Int
       offset: Int
