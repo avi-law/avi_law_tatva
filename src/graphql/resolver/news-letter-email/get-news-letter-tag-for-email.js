@@ -36,6 +36,7 @@ module.exports = async () => {
         const nlResultArray = {
           nl: common.getPropertiesFromRecord(record, "nl"),
           nls,
+          country: common.getPropertiesFromRecord(record, "cou"),
         };
         return nlResultArray;
       });
