@@ -454,8 +454,13 @@ LIMIT toInteger(${limit})`;
 exports.deleteNewsletter = `
 MATCH (nl:Nl {nl_id: $nl_id})-[:HAS_NL_STATE]->(nls:Nl_State)
 DETACH DELETE nl, nls
-RETURN nl,nls
-`;
+RETURN nl,nls`;
+
+exports.deleteNewsletterEmail = `
+MATCH (nle:Nl_Email {nl_email_ord: $nl_email_ord})-[:HAS_NL_EMAIL_STATE]->(nles:Nl_Email_State)
+WHERE nle.nl_email_sent = false OR nle.nl_email_sent = NULL
+DETACH DELETE nle, nles
+RETURN nle,nles`;
 
 exports.getNewsLetterTagForEmail = `
 MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:HAS_NL_STATE]->(nls:Nl_State)
@@ -511,6 +516,21 @@ CALL {
   RETURN collect({ nls: nls, lang: lang }) AS nls
 }
 RETURN nl, nls, cou, u`;
+
+exports.getNewsletterEmail = `
+MATCH (nle:Nl_Email)-[:NL_EMAIL_HAS_AUTHOR]->(u:User)
+WHERE nle.nl_email_ord = $nl_email_ord
+CALL {
+  WITH nle
+  MATCH (nle)-[:HAS_NL_EMAIL_STATE]->(nles:Nl_Email_State)-[:NL_EMAIL_LANG_IS]->(lang:Language)
+  RETURN collect({ nles: nles, lang: lang }) AS nles
+}
+CALL {
+  WITH nle
+  MATCH (nle)-[r1:CONTAINS_LINK_TO_NL]->(nl:Nl)
+  RETURN collect(nl.nl_id) AS nl
+}
+RETURN nle, nles, nl`;
 
 exports.newsletterQuery = (queryParams) => {
   let query = `
@@ -605,7 +625,7 @@ exports.newsletterEmailQuery = (queryParams) => {
   }
   if (queryParams.isValidEN) {
     query = `${query}
-    MERGE (nle)-[:HAS_NL_EMAIL_STATE]->(nles_en:Nl_State)-[:NL_EMAIL_LANG_IS]->(lang2)
+    MERGE (nle)-[:HAS_NL_EMAIL_STATE]->(nles_en:Nl_Email_State)-[:NL_EMAIL_LANG_IS]->(lang2)
     SET nles_en.nl_email_subject = "${queryParams.nles.en.nl_email_subject}", nles_en.nl_email_text_initial = "${queryParams.nles.en.nl_email_text_initial}", nles_en.nl_email_text_final = "${queryParams.nles.en.nl_email_text_final}"`;
   }
   if (queryParams.isUpdate) {
@@ -613,7 +633,8 @@ exports.newsletterEmailQuery = (queryParams) => {
     WITH nle,u
     CALL {
       WITH nle
-      MATCH (nle)-[r2:NL_EMAIL_HAS_AUTHOR]->()
+      MATCH (nle)-[r1:NL_EMAIL_HAS_AUTHOR]->()
+      MATCH (nle)-[r2:CONTAINS_LINK_TO_NL]->()
       RETURN r1, r2
     }
     DETACH DELETE r1

@@ -611,6 +611,35 @@ const typeDefs = gql`
     country: Country
   }
 
+  type NLEmailStateEN {
+    nl_email_subject: String
+    nl_email_text_initial: String
+    nl_email_text_final: String
+  }
+
+  type NLEmailStateDE {
+    nl_email_subject: String
+    nl_email_text_initial: String
+    nl_email_text_final: String
+  }
+
+  type CustomNLEmailState {
+    de: NLStateDE
+    en: NLStateEN
+  }
+
+  type CustomNLEmail {
+    nl_email_ord: String
+    nl_email_sent: Boolean
+    nl_email_date: _Neo4jDate
+  }
+
+  type GetNLEmailCustom {
+    nle: CustomNLEmail
+    nles: CustomNLEmailState
+    nl_tags: [Int]
+  }
+
   type GetNLEmailTagCustom {
     nl: CustomNL
     nls: CustomNLState
@@ -684,6 +713,11 @@ const typeDefs = gql`
     updateNewsletter(nl_id: Int!, data: CustomCreateNLInput!): Boolean @isAdmin
     unsubscribeNewsletter(token: String!): Boolean
     createNewsletterEmail(data: CustomCreateNLEmailInput!): Boolean @isAdmin
+    updateNewsletterEmail(
+      nl_email_ord: String!
+      data: CustomCreateNLEmailInput!
+    ): Boolean @isAdmin
+    deleteNewsletterEmail(nl_email_ord: String!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
@@ -729,6 +763,7 @@ const typeDefs = gql`
     getNewsLettersOnLanding(country: [String!], lang: LanguageForUser!): [NL!]
     getNewsLetterDetails(nl_id: Int!): NL @isAuthenticated
     getNewsLetter(nl_id: Int!): GetCustomNL @isAdmin
+    getNewsLetterEmail(nl_email_ord: String!): GetNLEmailCustom @isAdmin
     getNewsLetterYearList(
       country: [NL_Country!]
       lang: LanguageForUser
