@@ -561,6 +561,71 @@ exports.newsletterQuery = (queryParams) => {
   return query;
 };
 
+exports.newsletterEmailQuery = (queryParams) => {
+  let nlTags = "";
+  let i = 0;
+  if (queryParams.nl_tags.length > 0) {
+    queryParams.nl_tags.forEach((ln) => {
+      nlTags = `${nlTags}, { order: ${(i += 1)}, nl_id: ${ln.nl_id} }`;
+    });
+  }
+  nlTags = nlTags.replace(/^,|,$/g, "");
+  let query = `
+    MATCH (u:User {user_email: "${queryParams.user_email}"})
+    MATCH (lang1:Language {iso_639_1: "de"})
+    MATCH (lang2:Language {iso_639_1: "en"})`;
+  if (!queryParams.isUpdate) {
+    query = `
+    ${query}
+    MERGE (nle:Nl_Email {nl_email_ord: "${queryParams.nle.nl_email_ord}" })`;
+  } else {
+    query = `
+    ${query}
+    MATCH (nle:Nl_Email {nl_email_ord: "${queryParams.nle.nl_email_ord}" })`;
+  }
+  if (queryParams.nle.nl_email_sent) {
+    query = `
+    ${query}
+    SET nle.nl_email_date = Date({ year: ${queryParams.nle.nl_email_date.year}, month: ${queryParams.nle.nl_email_date.month} , day: ${queryParams.nle.nl_email_date.day}}) , nle.nl_email_sent = ${queryParams.nle.nl_email_sent}`;
+  } else {
+    query = `
+    ${query}
+    SET nle.nl_email_sent = ${queryParams.nle.nl_email_sent}`;
+  }
+
+  if (queryParams.isValidDE) {
+    query = `${query}
+    MERGE (nle)-[:HAS_NL_EMAIL_STATE]->(nles_de:Nl_Email_State)-[:NL_EMAIL_LANG_IS]->(lang1)
+    SET nles_de.nl_email_subject = "${queryParams.nles.de.nl_email_subject}", nles_de.nl_email_text_initial = "${queryParams.nles.de.nl_email_text_initial}", nles_de.nl_email_text_final = "${queryParams.nles.de.nl_email_text_final}"`;
+  }
+  if (queryParams.isValidEN) {
+    query = `${query}
+    MERGE (nle)-[:HAS_NL_EMAIL_STATE]->(nles_en:Nl_State)-[:NL_EMAIL_LANG_IS]->(lang2)
+    SET nles_en.nl_email_subject = "${queryParams.nles.en.nl_email_subject}", nles_en.nl_email_text_initial = "${queryParams.nles.en.nl_email_text_initial}", nles_en.nl_email_text_final = "${queryParams.nles.en.nl_email_text_final}"`;
+  }
+  if (queryParams.isUpdate) {
+    query = `${query}
+    WITH nle,u
+    CALL {
+      WITH nle
+      MATCH (nle)-[r2:NL_EMAIL_HAS_AUTHOR]->()
+      RETURN r1, r2
+    }
+    DETACH DELETE r1
+    DETACH DELETE r2`;
+  }
+
+  query = `${query}
+    CREATE (nle)-[:NL_EMAIL_HAS_AUTHOR]->(u)
+    WITH nle
+    UNWIND [${nlTags}] as nlTags
+    MATCH (nl:Nl {nl_id: nlTags.nl_id})
+    MERGE (nle)-[:CONTAINS_LINK_TO_NL {order: nlTags.order}]->(nl)
+    RETURN nle`;
+
+  return query;
+};
+
 exports.getCustomersCountQuery = (condition = "") => `
 MATCH (cs:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
 MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs)

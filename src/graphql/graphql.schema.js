@@ -547,6 +547,39 @@ const typeDefs = gql`
     country: nlCountry
   }
 
+  input CustomNLEmailInput {
+    nl_email_ord: String!
+    nl_email_sent: Boolean!
+    nl_email_date: _Neo4jDate
+  }
+
+  input NLEmailStateENInput {
+    nl_email_subject: String!
+    nl_email_text_initial: String
+    nl_email_text_final: String
+  }
+  input NLEmailStateDEInput {
+    nl_email_subject: String!
+    nl_email_text_initial: String
+    nl_email_text_final: String
+  }
+
+  input CustomNLEmailStateInput {
+    de: NLEmailStateENInput
+    en: NLEmailStateDEInput
+  }
+
+  input NLEmailTagInput {
+    order: Int!
+    nl_id: Int!
+  }
+
+  input CustomCreateNLEmailInput {
+    nle: CustomNLEmailInput!
+    nles: CustomNLEmailStateInput
+    nl_tags: [NLEmailTagInput!]!
+  }
+
   type NLStateEN {
     nl_text: String
     nl_title_long: String
@@ -655,6 +688,7 @@ const typeDefs = gql`
     createNewsletter(data: CustomCreateNLInput!): Boolean @isAdmin
     updateNewsletter(nl_id: Int!, data: CustomCreateNLInput!): Boolean @isAdmin
     unsubscribeNewsletter(token: String!): Boolean
+    createNewsletterEmail(data: CustomCreateNLEmailInput!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated

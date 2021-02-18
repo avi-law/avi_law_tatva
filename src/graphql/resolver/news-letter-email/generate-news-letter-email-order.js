@@ -7,19 +7,23 @@ module.exports = async () => {
   const year = d.getFullYear();
   let session;
   let total;
+  let lastNumber = 1;
   try {
     session = driver.session();
     const query = `
       MATCH (nle:Nl_Email)
       WHERE toLower(nle.nl_email_ord) CONTAINS toLower("${year}")
-      RETURN Count(nle) as count`;
-    const countResult = await session.run(query);
-    if (countResult && countResult.records.length > 0) {
-      const singleRecord = countResult.records[0];
-      total = singleRecord.get("count");
+      RETURN nle.nl_email_ord as order
+      ORDER BY nle.nl_email_ord DESC
+      LIMIT 1`;
+    const result = await session.run(query);
+    if (result && result.records.length > 0) {
+      const singleRecord = result.records[0];
+      total = singleRecord.get("order");
+      lastNumber = +total.split("_")[1];
+      lastNumber += 1;
     }
-    total += 1;
-    const order = `00${total}`.slice(-3);
+    const order = `00${lastNumber}`.slice(-3);
     return `${year}_${order}`;
   } catch (error) {
     if (session) {
