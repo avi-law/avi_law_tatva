@@ -484,8 +484,13 @@ exports.getNewsLetterEmailList = (
   skip = 0,
   orderBy = "nle.nl_email_ord DESC"
 ) => `
-MATCH (nle:Nl_Email)-[:HAS_NL_EMAIL_STATE]->(nles:Nl_Email_State)
+MATCH (nle:Nl_Email)
 ${condition}
+CALL {
+  WITH nle
+  MATCH (nle)-[:HAS_NL_EMAIL_STATE]->(nles:Nl_Email_State)
+  RETURN collect(nles) AS nles
+}
 RETURN nle, nles
 ORDER BY ${orderBy}
 SKIP toInteger(${skip})
