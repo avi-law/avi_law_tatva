@@ -548,7 +548,7 @@ const typeDefs = gql`
   }
 
   input CustomNLEmailInput {
-    nl_email_ord: String!
+    nl_email_ord: String
     nl_email_sent: Boolean!
     nl_email_date: _Neo4jDate
   }
@@ -569,15 +569,10 @@ const typeDefs = gql`
     en: NLEmailStateDEInput
   }
 
-  input NLEmailTagInput {
-    order: Int!
-    nl_id: Int!
-  }
-
   input CustomCreateNLEmailInput {
     nle: CustomNLEmailInput!
     nles: CustomNLEmailStateInput
-    nl_tags: [NLEmailTagInput!]!
+    nl_tags: [Int!]!
   }
 
   type NLStateEN {

@@ -565,8 +565,8 @@ exports.newsletterEmailQuery = (queryParams) => {
   let nlTags = "";
   let i = 0;
   if (queryParams.nl_tags.length > 0) {
-    queryParams.nl_tags.forEach((ln) => {
-      nlTags = `${nlTags}, { order: ${(i += 1)}, nl_id: ${ln.nl_id} }`;
+    queryParams.nl_tags.forEach((nlId) => {
+      nlTags = `${nlTags}, { order: ${(i += 1)}, nl_id: ${nlId} }`;
     });
   }
   nlTags = nlTags.replace(/^,|,$/g, "");
