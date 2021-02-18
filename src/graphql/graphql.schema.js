@@ -715,6 +715,7 @@ const typeDefs = gql`
     ): CustomNLList @isAdmin
     getNewsLetterEmailList(first: Int, offset: Int): CustomNLEmailList
     getNewsLetterTagForEmail: [GetNLEmailTagCustom]
+    getNewsLetterEmailOrder: String
     getCustomers(
       first: Int
       offset: Int
