@@ -624,8 +624,8 @@ const typeDefs = gql`
   }
 
   type CustomNLEmailState {
-    de: NLStateDE
-    en: NLStateEN
+    de: NLEmailStateDE
+    en: NLEmailStateEN
   }
 
   type CustomNLEmail {
