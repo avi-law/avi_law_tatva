@@ -474,8 +474,13 @@ RETURN nl, nlState as nls, cou
 ORDER BY nl.nl_ord DESC`;
 
 exports.getNewsLetterEmailListCount = (condition = "") => `
-MATCH (nle:Nl_Email)-[:HAS_NL_EMAIL_STATE]->(nles:Nl_Email_State)
+MATCH (nle:Nl_Email)
 ${condition}
+CALL {
+  WITH nle
+  MATCH (nle)-[:HAS_NL_EMAIL_STATE]->(nles:Nl_Email_State)
+  RETURN collect(nles) AS nles
+}
 RETURN count(*) as count`;
 
 exports.getNewsLetterEmailList = (
