@@ -463,11 +463,11 @@ DETACH DELETE nle, nles
 RETURN nle,nles`;
 
 exports.getNewsLetterTagForEmail = `
-MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:HAS_NL_STATE]->(nls:Nl_State)
+MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)
 WHERE nl.nl_active = true
 CALL {
-  WITH nls
-  MATCH (nls)-[:NL_LANG_IS]->(lang:Language)
+  WITH nl
+  MATCH (nl)-[:HAS_NL_STATE]->(nls:Nl_State)-[:NL_LANG_IS]->(lang:Language)
   RETURN collect({ nls: nls, lang: lang }) AS nlState
 }
 RETURN nl, nlState as nls, cou
