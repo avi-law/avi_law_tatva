@@ -17,6 +17,9 @@ module.exports = async (object, params) => {
     nl_first: null,
     total: 0,
   };
+  if (country) {
+    country.push("EU");
+  }
   const session = driver.session();
   try {
     const result = await session.run(
