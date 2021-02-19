@@ -27,10 +27,27 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    // const isAlreadySent = await session.run(getNewsletterEmail, {
-    //   nl_email_ord: nlEmailOrd,
-    // });
-    // console.log(isAlreadySent);
+    const isAlreadySent = await session.run(getNewsletterEmail, {
+      nl_email_ord: nlEmailOrd,
+    });
+    if (isAlreadySent && isAlreadySent.records.length > 0) {
+      const isAlreadySentArray = isAlreadySent.records.map((record) => {
+        const nlResult = {
+          ...common.getPropertiesFromRecord(record, "nle"),
+        };
+        return nlResult;
+      });
+      if (
+        isAlreadySentArray.length > 0 &&
+        isAlreadySentArray[0].nl_email_sent
+      ) {
+        throw new APIError({
+          lang: defaultLanguage,
+          message: "NL_EMAIL_ALREADY_SENT",
+        });
+      }
+    }
+
     if (data.nles) {
       if (data.nles.de) {
         data.nles.de = common.cleanObject(data.nles.de);
@@ -57,7 +74,9 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
-    const result = await session.run(newsletterEmailQuery(queryParams));
+    const result = await session.run(newsletterEmailQuery(queryParams), {
+      queryParams,
+    });
     if (result && result.records.length > 0) {
       return true;
     }

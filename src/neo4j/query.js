@@ -545,8 +545,8 @@ RETURN nle, nles, nl`;
 exports.newsletterQuery = (queryParams) => {
   let query = `
     MATCH (nl:Nl) WITH MAX(nl.nl_id) AS max_nl_id
-    MATCH (u:User {user_email: "${queryParams.user_email}"})
-    MATCH (cou:Country {iso_3166_1_alpha_2: "${queryParams.country.iso_3166_1_alpha_2}"})
+    MATCH (u:User {user_email: $queryParams.user_email})
+    MATCH (cou:Country {iso_3166_1_alpha_2: $queryParams.country.iso_3166_1_alpha_2})
     MATCH (lang1:Language {iso_639_1: "de"})
     MATCH (lang2:Language {iso_639_1: "en"})`;
   if (!queryParams.isUpdate) {
@@ -566,14 +566,14 @@ exports.newsletterQuery = (queryParams) => {
   if (queryParams.isValidDE) {
     query = `${query}
     MERGE (nl)-[:HAS_NL_STATE]->(nls_de:Nl_State)-[:NL_LANG_IS]->(lang1)
-    SET nls_de.nl_title_short = "${queryParams.nls.de.nl_title_short}", nls_de.nl_title_long = "${queryParams.nls.de.nl_title_long}", nls_de.nl_text = "${queryParams.nls.de.nl_text}"`;
+    SET nls_de = $queryParams.nls.de`;
   }
   // Set the properties for the English version of the (Nl_State) - please do it only in case when the data-fields for the English version are filled
   // Maybe that the distinction between ON CREATE and ON MATCH is not necessary
   if (queryParams.isValidEN) {
     query = `${query}
     MERGE (nl)-[:HAS_NL_STATE]->(nls_en:Nl_State)-[:NL_LANG_IS]->(lang2)
-    SET nls_en.nl_title_short = "${queryParams.nls.en.nl_title_short}", nls_en.nl_title_long = "${queryParams.nls.en.nl_title_long}", nls_en.nl_text = "${queryParams.nls.en.nl_text}"`;
+    SET nls_en = $queryParams.nls.en`;
   }
   if (queryParams.isUpdate) {
     query = `${query}
@@ -606,37 +606,37 @@ exports.newsletterEmailQuery = (queryParams) => {
   }
   nlTags = nlTags.replace(/^,|,$/g, "");
   let query = `
-    MATCH (u:User {user_email: "${queryParams.user_email}"})
+    MATCH (u:User {user_email: $queryParams.user_email})
     MATCH (lang1:Language {iso_639_1: "de"})
     MATCH (lang2:Language {iso_639_1: "en"})`;
   if (!queryParams.isUpdate) {
     query = `
     ${query}
-    MERGE (nle:Nl_Email {nl_email_ord: "${queryParams.nle.nl_email_ord}" })`;
+    MERGE (nle:Nl_Email {nl_email_ord: $queryParams.nle.nl_email_ord })`;
   } else {
     query = `
     ${query}
-    MATCH (nle:Nl_Email {nl_email_ord: "${queryParams.nle.nl_email_ord}" })`;
+    MATCH (nle:Nl_Email {nl_email_ord: $queryParams.nle.nl_email_ord })`;
   }
   if (queryParams.nle.nl_email_sent) {
     query = `
     ${query}
-    SET nle.nl_email_date = ${queryParams.nle.nl_email_date} , nle.nl_email_sent = ${queryParams.nle.nl_email_sent}`;
+    SET nle.nl_email_date = date() , nle.nl_email_sent = $queryParams.nle.nl_email_sent`;
   } else {
     query = `
     ${query}
-    SET nle.nl_email_sent = ${queryParams.nle.nl_email_sent}`;
+    SET nle.nl_email_sent = $queryParams.nle.nl_email_sent`;
   }
 
   if (queryParams.isValidDE) {
     query = `${query}
     MERGE (nle)-[:HAS_NL_EMAIL_STATE]->(nles_de:Nl_Email_State)-[:NL_EMAIL_LANG_IS]->(lang1)
-    SET nles_de.nl_email_subject = "${queryParams.nles.de.nl_email_subject}", nles_de.nl_email_text_initial = "${queryParams.nles.de.nl_email_text_initial}", nles_de.nl_email_text_final = "${queryParams.nles.de.nl_email_text_final}"`;
+    SET nles_de = $queryParams.nles.de`;
   }
   if (queryParams.isValidEN) {
     query = `${query}
     MERGE (nle)-[:HAS_NL_EMAIL_STATE]->(nles_en:Nl_Email_State)-[:NL_EMAIL_LANG_IS]->(lang2)
-    SET nles_en.nl_email_subject = "${queryParams.nles.en.nl_email_subject}", nles_en.nl_email_text_initial = "${queryParams.nles.en.nl_email_text_initial}", nles_en.nl_email_text_final = "${queryParams.nles.en.nl_email_text_final}"`;
+    SET nles_en = $queryParams.nles.en`;
   }
   if (queryParams.isUpdate) {
     query = `${query}
@@ -645,10 +645,10 @@ exports.newsletterEmailQuery = (queryParams) => {
       WITH nle
       MATCH (nle)-[r1:NL_EMAIL_HAS_AUTHOR]->()
       MATCH (nle)-[r2:CONTAINS_LINK_TO_NL]->()
+      DETACH DELETE r1
+      DETACH DELETE r2
       RETURN r1, r2
-    }
-    DETACH DELETE r1
-    DETACH DELETE r2`;
+    }`;
   }
 
   query = `${query}

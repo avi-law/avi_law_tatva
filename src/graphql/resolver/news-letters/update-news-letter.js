@@ -40,7 +40,9 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
-    const result = await session.run(newsletterQuery(queryParams));
+    const result = await session.run(newsletterQuery(queryParams), {
+      queryParams,
+    });
     if (result && result.records.length > 0) {
       common.loggingData(logNewsletter, {
         type: constants.LOG_TYPE_ID.UPDATE_NL,

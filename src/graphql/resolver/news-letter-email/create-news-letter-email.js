@@ -40,7 +40,6 @@ module.exports = async (object, params, ctx) => {
       isValidEN = true;
     }
     data.nle.nl_email_ord = await generateNewsLetterEmailOrder();
-    data.nle.nl_email_date = common.convertToTemporalDate();
     const queryParams = {
       isUpdate: false,
       user_email: userEmail,
@@ -50,7 +49,9 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
-    const result = await session.run(newsletterEmailQuery(queryParams));
+    const result = await session.run(newsletterEmailQuery(queryParams), {
+      queryParams,
+    });
     if (result && result.records.length > 0) {
       return true;
     }

@@ -34,6 +34,7 @@ module.exports = {
       INCORRECT_OLD_PASSWORD: "You have enter incorrect old password",
       EMAIL_VERIFICATION_FAILED:
         "Your email address is not verified, Please verify your email address or resend verification click <a> here </a>",
+      NL_EMAIL_ALREADY_SENT: "This Newsletter Email already sent to user",
     },
     DE: {
       INVALID_LOGIN_EMAIL: "Die eingegebene eMail-Adresse ist nicht korrekt!",
@@ -69,6 +70,7 @@ module.exports = {
         "Your email address is not verified, Please verify your email address or resend verification click <a> here </a>",
       INVALID_EMAIL_VERIFICATION_LINK:
         "The link to verify your email is invalid - please request a email verification again!.",
+      NL_EMAIL_ALREADY_SENT: "This Newsletter Email already sent to user",
     },
   },
   LOG_TYPE_ID: {

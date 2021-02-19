@@ -1,9 +1,12 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { APIError } = require("../../../utils");
+const { APIError, common } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const { deleteNewsletterEmail } = require("../../../neo4j/query");
+const {
+  deleteNewsletterEmail,
+  getNewsletterEmail,
+} = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
@@ -19,6 +22,26 @@ module.exports = async (object, params, ctx) => {
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
       });
+    }
+    const isAlreadySent = await session.run(getNewsletterEmail, {
+      nl_email_ord: nlEmailOrd,
+    });
+    if (isAlreadySent && isAlreadySent.records.length > 0) {
+      const isAlreadySentArray = isAlreadySent.records.map((record) => {
+        const nlResult = {
+          ...common.getPropertiesFromRecord(record, "nle"),
+        };
+        return nlResult;
+      });
+      if (
+        isAlreadySentArray.length > 0 &&
+        isAlreadySentArray[0].nl_email_sent
+      ) {
+        throw new APIError({
+          lang: defaultLanguage,
+          message: "NL_EMAIL_ALREADY_SENT",
+        });
+      }
     }
     const result = await session.run(deleteNewsletterEmail, {
       nl_email_ord: nlEmailOrd,

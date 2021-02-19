@@ -63,7 +63,9 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
-    const result = await session.run(newsletterQuery(queryParams));
+    const result = await session.run(newsletterQuery(queryParams), {
+      queryParams,
+    });
     if (result && result.records.length > 0) {
       const newsLetters = result.records.map((record) => {
         const nlResult = {
