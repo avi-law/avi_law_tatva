@@ -761,7 +761,7 @@ const typeDefs = gql`
     getInvoice(customer_id: Int, invoice_id: String!): Invoice @isAuthenticated
     verifyForgotPasswordLink(token: String!): Boolean
     getNewsLettersOnLanding(country: [String!], lang: LanguageForUser!): [NL!]
-    getNewsLetterDetails(nl_id: Int!): NL @isAuthenticated
+    getNewsLetterDetails(nl_id: Int!): GetCustomNL @isAuthenticated
     getNewsLetter(nl_id: Int!): GetCustomNL @isAdmin
     getNewsLetterEmail(nl_email_ord: String!): GetNLEmailCustom @isAdmin
     getNewsLetterYearList(
