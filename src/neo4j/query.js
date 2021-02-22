@@ -514,8 +514,14 @@ MATCH (u:User {user_email: $current_user_email})
 MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)`;
 
 exports.getNewsletterDetails = `
-MATCH (nl:Nl {nl_id : $nl_id})
-RETURN nl`;
+MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:NL_HAS_AUTHOR]->(u:User)
+WHERE nl.nl_id = $nl_id
+CALL {
+  WITH nl
+  MATCH (nl)-[:HAS_NL_STATE]->(nls:Nl_State)-[:NL_LANG_IS]->(lang:Language)
+  RETURN collect({ nls: nls, lang: lang }) AS nls
+}
+RETURN nl, nls, cou, u`;
 
 exports.getNewsletter = `
 MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:NL_HAS_AUTHOR]->(u:User)
