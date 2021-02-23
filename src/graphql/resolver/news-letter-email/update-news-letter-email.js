@@ -1,8 +1,10 @@
 /* eslint-disable no-param-reassign */
 
+const _ = require("lodash");
 const driver = require("../../../config/db");
 const { APIError, common } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
+const sendNewsletterToUser = require("./nl-send-email-to-user");
 const {
   newsletterEmailQuery,
   getNewsletterEmail,
@@ -20,6 +22,8 @@ module.exports = async (object, params, ctx) => {
   const nlEmailOrd = params.nl_email_ord;
   let isValidDE = false;
   let isValidEN = false;
+  let isSent = false;
+  let isSentSuccess = false;
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
@@ -63,6 +67,9 @@ module.exports = async (object, params, ctx) => {
     if (data.nles && data.nles.en.nl_email_subject) {
       isValidEN = true;
     }
+    if (data.nle) {
+      isSent = data.nle.nl_email_sent;
+    }
     data.nle.nl_email_ord = nlEmailOrd;
     data.nle.nl_email_date = common.convertToTemporalDate();
     const queryParams = {
@@ -78,6 +85,9 @@ module.exports = async (object, params, ctx) => {
       queryParams,
     });
     if (result && result.records.length > 0) {
+      if (isSent) {
+        await sendNewsletterToUser(queryParams);
+      }
       return true;
     }
     throw new APIError({

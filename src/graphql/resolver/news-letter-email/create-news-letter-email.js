@@ -5,6 +5,7 @@ const { APIError, common } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const { newsletterEmailQuery } = require("../../../neo4j/query");
 const generateNewsLetterEmailOrder = require("./generate-news-letter-email-order");
+const sendNewsletterToUser = require("./nl-send-email-to-user");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
@@ -53,6 +54,9 @@ module.exports = async (object, params, ctx) => {
       queryParams,
     });
     if (result && result.records.length > 0) {
+      if (data.nle.nl_email_sent) {
+        await sendNewsletterToUser(queryParams);
+      }
       return true;
     }
     throw new APIError({

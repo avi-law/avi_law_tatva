@@ -513,6 +513,29 @@ MATCH (lt: Log_Type {log_type_id: $type})
 MATCH (u:User {user_email: $current_user_email})
 MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)`;
 
+exports.getMultipleNewsletterDetails = `
+MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:NL_HAS_AUTHOR]->(u:User)
+WHERE nl.nl_id IN $nlIds
+CALL {
+  WITH nl
+  MATCH (nl)-[:HAS_NL_STATE]->(nls:Nl_State)-[:NL_LANG_IS]->(lang:Language)
+  RETURN collect({ nls: nls, lang: lang }) AS nls
+}
+RETURN nl, nls, cou, u`;
+
+exports.getUsersByNewsletterPreference = `
+MATCH (u:User)-[r1:HAS_USER_STATE]->(us:User_State)
+WHERE r1.to IS NULL AND us.nl_email_unsubscribed IS NULL AND u.user_status IS NULL AND u. is_email_verified IS NULL
+CALL {
+  WITH us
+  MATCH (us:User_State)-[r2:USER_WANTS_NL_FROM_COUNTRY]->(cou1:Country)
+  WHERE cou1.iso_3166_1_alpha_2 IN $nlCountry
+  RETURN collect({iso_3166_1_alpha_2: cou1.iso_3166_1_alpha_2}) AS cou
+}
+MATCH (us)-[:USER_HAS_PREF_SURF_LANG]->(lang:Language)
+RETURN u, us, lang, cou
+LIMIT 1`;
+
 exports.getNewsletterDetails = `
 MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:NL_HAS_AUTHOR]->(u:User)
 WHERE nl.nl_id = $nl_id
@@ -627,7 +650,7 @@ exports.newsletterEmailQuery = (queryParams) => {
   if (queryParams.nle.nl_email_sent) {
     query = `
     ${query}
-    SET nle.nl_email_date = date() , nle.nl_email_sent = $queryParams.nle.nl_email_sent`;
+    // SET nle.nl_email_date = date() , nle.nl_email_sent = $queryParams.nle.nl_email_sent`;
   } else {
     query = `
     ${query}

@@ -1,3 +1,4 @@
+const fs = require("fs");
 const ejs = require("ejs");
 const nodemailer = require("nodemailer");
 const { mailSmtp } = require("../config/application");
@@ -39,6 +40,10 @@ const sendMail = (mail, templateName) => {
           html: htmlOutput,
           attachments: mail && mail.attachments ? mail.attachments : [],
         };
+        // fs.writeFile("nl_create.html", htmlOutput, (err) => {
+        //   if (err) return console.log(err);
+        // });
+        // return true;
         if (mail && mail.cc) {
           mailOptions.cc = mail.cc;
         }

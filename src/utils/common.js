@@ -2,6 +2,7 @@
 const neo4j = require("neo4j-driver");
 const driver = require("../config/db");
 const constants = require("./constants");
+const { frontendURL } = require("../config/application");
 /**
  * get message
  *
@@ -159,6 +160,46 @@ const getNeo4jDateType = (date) => {
   return new neo4j.types.Date(year, month, day);
 };
 
+const transformNLOrderNumber = (value) => {
+  if (value) {
+    const noFormat = value.split("_");
+    if (noFormat[1]) {
+      noFormat[1] = noFormat[1].replace(/^0+/, "");
+      return `${noFormat[1]}/${noFormat[0]}`;
+    }
+  }
+  return value;
+};
+
+const nlContentTransformLink = (value) => {
+  let final = value;
+  let href = constants.NEWSLETTER_SERVICE_PATH;
+  const pattern = constants.NL_CONTENT_TRANSFORM_LINK_REGEX;
+  let link = value && value.toString() ? value.toString().match(pattern) : "";
+  if (link && link.length && link[1]) {
+    link = link[1].split("*");
+    if (link && link.length) {
+      let year =
+        link[1] && link[1].split("/") && link[1].split("/").length
+          ? link[1].split("/")[1]
+          : "";
+      year = year ? year.match(/\d/g) : "";
+      year = year && year.length ? year.join("") : "";
+      const id = link[0];
+      const content = link[1];
+      if (year) {
+        href += `/${year}`;
+      }
+      if (id) {
+        href += `/${id}`;
+      }
+      const anchor = `<a style="color: #029fdb;" href="${frontendURL}${href}">${content}</a>`;
+      final = value.toString().replace(pattern, anchor);
+    }
+  }
+  return final;
+};
+
 module.exports = {
   getMessage,
   asyncForEach,
@@ -173,4 +214,6 @@ module.exports = {
   getSalutation,
   loggingData,
   getNeo4jDateType,
+  transformNLOrderNumber,
+  nlContentTransformLink,
 };
