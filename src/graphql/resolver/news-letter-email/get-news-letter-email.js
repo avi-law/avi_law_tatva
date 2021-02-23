@@ -1,4 +1,5 @@
 /* eslint-disable consistent-return */
+const _ = require("lodash");
 const driver = require("../../../config/db");
 const { common } = require("../../../utils");
 const { getNewsletterEmail } = require("../../../neo4j/query");
@@ -6,6 +7,7 @@ const { getNewsletterEmail } = require("../../../neo4j/query");
 module.exports = async (object, params) => {
   const nlEmailOrd = params.nl_email_ord;
   const session = driver.session();
+  let nlIds = null;
   try {
     const result = await session.run(getNewsletterEmail, {
       nl_email_ord: nlEmailOrd,
@@ -36,10 +38,15 @@ module.exports = async (object, params) => {
             }
           });
         }
+        const nlList = _.orderBy(record.get("nl"), ["order"], ["asc"]);
+        if (nlList) {
+          nlIds = _.map(nlList, "nl_id");
+        }
+
         const nlEmailResult = {
           nle: common.getPropertiesFromRecord(record, "nle"),
           nles,
-          nl_tags: record.get("nl"),
+          nl_tags: nlIds,
         };
         return nlEmailResult;
       });

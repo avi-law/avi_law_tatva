@@ -567,7 +567,7 @@ CALL {
 CALL {
   WITH nle
   MATCH (nle)-[r1:CONTAINS_LINK_TO_NL]->(nl:Nl)
-  RETURN collect(nl.nl_id) AS nl
+  RETURN collect({nl_id:nl.nl_id, order: r1.order}) AS nl
 }
 RETURN nle, nles, nl`;
 
@@ -650,7 +650,7 @@ exports.newsletterEmailQuery = (queryParams) => {
   if (queryParams.nle.nl_email_sent) {
     query = `
     ${query}
-    // SET nle.nl_email_date = date() , nle.nl_email_sent = $queryParams.nle.nl_email_sent`;
+    SET nle.nl_email_date = date() , nle.nl_email_sent = $queryParams.nle.nl_email_sent`;
   } else {
     query = `
     ${query}
