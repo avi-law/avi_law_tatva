@@ -411,7 +411,8 @@ exports.getNewsletterListByYear = (queryParams) => {
     MATCH (nls)-[:NL_LANG_IS]->(lang:Language)
     RETURN collect({ nls: nls, lang: lang }) AS nlState
   }
-  RETURN nl, nlState as nls, lang, cou
+  OPTIONAL MATCH (user:User { user_email: "${queryParams.userEmail}"})
+  RETURN nl, nlState as nls, lang, cou, user
   ORDER BY nl.nl_ord DESC`;
 
   return query;
@@ -544,7 +545,8 @@ CALL {
   MATCH (nl)-[:HAS_NL_STATE]->(nls:Nl_State)-[:NL_LANG_IS]->(lang:Language)
   RETURN collect({ nls: nls, lang: lang }) AS nls
 }
-RETURN nl, nls, cou, u`;
+OPTIONAL MATCH (user:User { user_email: $user_email})
+RETURN nl, nls, cou, u, user`;
 
 exports.getNewsletter = `
 MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:NL_HAS_AUTHOR]->(u:User)

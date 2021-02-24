@@ -85,10 +85,10 @@ const checkValidRequest = (ctx, payload) => {
   return valid;
 };
 
-class IsAuthenticatedDirective extends SchemaDirectiveVisitor {
+class IsAdminDirective extends SchemaDirectiveVisitor {
   static getDirectiveDeclaration() {
     return new GraphQLDirective({
-      name: "isAuthenticated",
+      name: "isAdminDirective",
       locations: [DirectiveLocation.FIELD_DEFINITION, DirectiveLocation.OBJECT],
     });
   }
@@ -119,4 +119,4 @@ class IsAuthenticatedDirective extends SchemaDirectiveVisitor {
   }
 }
 
-module.exports = IsAuthenticatedDirective;
+module.exports = IsAdminDirective;

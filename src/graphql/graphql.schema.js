@@ -2,6 +2,7 @@ const { gql } = require("apollo-server-express");
 
 const typeDefs = gql`
   directive @isAuthenticated on OBJECT | FIELD_DEFINITION
+  directive @isUnAuthenticated on OBJECT | FIELD_DEFINITION
   directive @isAdmin on OBJECT | FIELD_DEFINITION
 
   type User {
@@ -9,6 +10,7 @@ const typeDefs = gql`
     user_is_author: Boolean
     user_status: String
     user_is_sys_admin: Boolean
+    nl_export: Boolean
     has_user_state: [User_State]
       @relation(name: "HAS_USER_STATE", direction: OUT)
     user_to_customer: [Customer]
@@ -607,6 +609,7 @@ const typeDefs = gql`
   type GetCustomNL {
     nl: CustomNL
     nls: CustomNLState
+    nl_author: User
     user: User
     country: Country
   }
@@ -769,7 +772,7 @@ const typeDefs = gql`
       lang: LanguageForUser
       year: Int
       nl_id: Int
-    ): GetNLListByYear
+    ): GetNLListByYear @isUnAuthenticated
     getNewsLetterList(
       filterByString: String
       lang: LanguageForUser!

@@ -4,10 +4,15 @@ const { common } = require("../../../utils");
 const {
   getNewsletterYearList,
   getNewsletterListByYear,
-  getNewsletter,
+  getNewsletterDetails,
 } = require("../../../neo4j/query");
 
-module.exports = async (object, params) => {
+module.exports = async (object, params, ctx) => {
+  const { user } = ctx;
+  let userEmail = null;
+  if (user) {
+    userEmail = user.user_email;
+  }
   const { lang, country, year } = params;
   const nlId = params.nl_id || null;
   let currentYear = year;
@@ -43,6 +48,7 @@ module.exports = async (object, params) => {
         country,
         lang,
         currentYear,
+        userEmail,
       })
     );
     if (nlResult && nlResult.records.length > 0) {
@@ -67,6 +73,9 @@ module.exports = async (object, params) => {
               nlState.lang.properties.iso_639_1
             ) {
               nls[nlState.lang.properties.iso_639_1] = nlState.nls.properties;
+              if (!userEmail) {
+                nls[nlState.lang.properties.iso_639_1].nl_text = null;
+              }
             }
           });
         }
@@ -74,7 +83,8 @@ module.exports = async (object, params) => {
           nl: common.getPropertiesFromRecord(record, "nl"),
           nls,
           country: common.getPropertiesFromRecord(record, "cou"),
-          user: common.getPropertiesFromRecord(record, "u"),
+          nl_author: common.getPropertiesFromRecord(record, "u"),
+          user: common.getPropertiesFromRecord(record, "user"),
         };
         return nlResultArray;
       });
@@ -83,9 +93,10 @@ module.exports = async (object, params) => {
       // eslint-disable-next-line prefer-destructuring
       response.nl_first = newsLetters[0];
     }
-    if (nlId) {
-      const nlResultDetails = await session.run(getNewsletter, {
+    if (nlId && userEmail) {
+      const nlResultDetails = await session.run(getNewsletterDetails, {
         nl_id: nlId,
+        user_email: userEmail,
       });
       if (nlResultDetails && nlResultDetails.records.length > 0) {
         const nlResultDetailsArray = nlResultDetails.records.map((record) => {
@@ -116,7 +127,8 @@ module.exports = async (object, params) => {
             nl: common.getPropertiesFromRecord(record, "nl"),
             nls,
             country: common.getPropertiesFromRecord(record, "cou"),
-            user: common.getPropertiesFromRecord(record, "u"),
+            nl_author: common.getPropertiesFromRecord(record, "u"),
+            user: common.getPropertiesFromRecord(record, "user"),
           };
         });
         // eslint-disable-next-line prefer-destructuring

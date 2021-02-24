@@ -3,12 +3,15 @@ const driver = require("../../../config/db");
 const { common } = require("../../../utils");
 const { getNewsletterDetails } = require("../../../neo4j/query");
 
-module.exports = async (object, params) => {
+module.exports = async (object, params, ctx) => {
+  const { user } = ctx;
+  const userEmail = user.user_email || null;
   const nlId = params.nl_id;
   const session = driver.session();
   try {
     const nlResultDetails = await session.run(getNewsletterDetails, {
       nl_id: nlId,
+      user_email: userEmail,
     });
     if (nlResultDetails && nlResultDetails.records.length > 0) {
       const nlResultDetailsArray = nlResultDetails.records.map((record) => {
@@ -39,7 +42,8 @@ module.exports = async (object, params) => {
           nl: common.getPropertiesFromRecord(record, "nl"),
           nls,
           country: common.getPropertiesFromRecord(record, "cou"),
-          user: common.getPropertiesFromRecord(record, "u"),
+          nl_author: common.getPropertiesFromRecord(record, "u"),
+          user: common.getPropertiesFromRecord(record, "user"),
         };
       });
       // eslint-disable-next-line prefer-destructuring
