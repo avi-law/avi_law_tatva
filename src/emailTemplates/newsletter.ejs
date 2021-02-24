@@ -44,17 +44,35 @@
       -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
     }
+
     a:hover {
-      color: #029fdb ;
+      color: #029fdb;
     }
+
     a:focus {
-      outline:none
+      outline: none
     }
 
     table,
     td {
       mso-table-lspace: 0pt;
       mso-table-rspace: 0pt;
+    }
+
+    .nl-list {
+      color: black;
+    }
+
+    .nl-list tr:nth-child(even) {
+      background-color: rgba(2, 159, 219, 0.1)
+    }
+
+    .nl-list tr:nth-child(odd) {
+      background: #FFF
+    }
+
+    .table-link:hover {
+      /* background-color:rgba(2, 159, 219, 0.1) !important */
     }
 
     img {
@@ -95,6 +113,121 @@
     div[style*="margin: 16px 0;"] {
       margin: 0 !important;
     }
+
+    .table-link {
+      cursor: pointer;
+    }
+
+    .site-footer .title-block-wrapper p {
+      color: #fff;
+    }
+
+    .site-footer {
+      background-color: #000;
+      padding-top: 10px;
+      color: #fff;
+      font-family: "Open Sans", sans-serif;
+    }
+
+    .site-footer .footer-grid-row {
+      flex: 1;
+    }
+
+    .site-footer .footer-grid-row .footer-grid-column {
+      max-width: 217px;
+      flex-basis: 33.33%;
+      padding: 0 15px;
+    }
+
+    .site-footer .footer-grid-row .footer-grid-column.email-us a {
+      color: #029fdb;
+      text-decoration: underline;
+    }
+
+    .site-footer .footer-grid-row .footer-grid-column+.footer-grid-column {
+      border-left: 1px solid #707070;
+    }
+
+    .site-footer .footer-grid-row .footer-grid-column span,
+    .site-footer .footer-grid-row .footer-grid-column a,
+    .site-footer .footer-grid-row .footer-grid-column address {
+      font-size: 18px;
+      font-weight: 500;
+      color: #cdcdcd;
+      margin: 0;
+    }
+
+    .site-footer .footer-grid-row .footer-grid-column .footer-title {
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .site-footer .copyright-text a {
+      background-color: #029fdb;
+      padding: 5px;
+    }
+
+    .site-footer .copyright-text a img {
+      width: 20px;
+    }
+
+    .site-footer .copyright-text p {
+      color: #707070;
+      margin: 0;
+    }
+
+    .site-footer .copyright-text .copyright-inner-wrapper {
+      /* max-width: 640px; */
+      padding: 0 15px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .site-footer .copyright-text {
+      border-top: 1px solid #707070;
+      padding: 18px 0;
+      margin-top: 50px;
+    }
+
+    .site-footer .footer-grid-row {
+      display: flex;
+      margin: 0 -15px;
+    }
+
+    .footer-grid-column a {
+      text-decoration: none;
+    }
+
+    .title-block-wrapper h2 {
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #cdcdcd;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .title-block-wrapper p {
+      font-size: 30px;
+      line-height: 1.5;
+      color: #000;
+      margin-bottom: 0;
+      font-weight: 700;
+    }
+
+    address {
+      font-style: normal;
+      line-height: inherit;
+    }
+
+    .title-block-wrapper {
+      margin-bottom: 40px;
+    }
   </style>
 </head>
 
@@ -104,7 +237,7 @@
     <!-- LOGO -->
     <tr>
       <td bgcolor="#029fdb" align="center">
-        <table border="0" cellpadding="0" cellspacing="0" width="480">
+        <table border="0" cellpadding="0" cellspacing="0" width="700">
           <tr>
             <td align="center" valign="top" style="padding: 40px 10px 40px 10px;"></td>
           </tr>
@@ -114,16 +247,14 @@
     <!-- HERO -->
     <tr>
       <td bgcolor="#029fdb" align="center" style="padding: 0px 10px 0px 10px;">
-        <table border="0" cellpadding="0" cellspacing="0" width="480">
+        <table border="0" cellpadding="0" cellspacing="0" width="700">
           <tr>
             <td bgcolor="#ffffff" align="center" valign="top"
-              style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
+              style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Open Sans',sans-serif; font-weight: 400; letter-spacing: 4px; line-height: 1.5;">
               <a href="<%- frontendURL -%>" target="_blank">
                 <img alt="Logo" src="https://avi-law.com/img/Logo_AVI-LAW.png" width="200" height="auto"
-                  style="display: block;  font-family: 'Lato', Helvetica, Arial, sans-serif; color: #ffffff;"
-                  border="0">
+                  style="display: block;  font-family: 'Open Sans',sans-serif; color: #ffffff;" border="0">
               </a>
-              <h1 style="font-size: 32px; font-weight: 400; margin-top: 30px;"></h1>
             </td>
           </tr>
         </table>
@@ -132,20 +263,24 @@
     <!-- COPY BLOCK -->
     <tr>
       <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
-        <table border="0" cellpadding="0" cellspacing="0" width="480">
+        <table border="0" cellpadding="0" cellspacing="0" width="700">
           <!-- COPY -->
           <tr>
             <td bgcolor="#ffffff" align="right">
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td bgcolor="#ffffff" style="padding: 20px 30px 60px 30px;">
+                  <td bgcolor="#ffffff" style="padding: 20px 30px 20px 30px;">
                     <table border="0" cellspacing="0" cellpadding="0">
                       <tr>
                         <td>
-                          <p
-                            style="color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; line-height: 25px;">
-                            <% if( typeof(salutation) !=="undefined") { %><%= salutation %> <% } %> <% if( typeof(user_last_name) !=="undefined") { %> <%= user_last_name %><% } %>,
-                          <p>
+                          <p style="color: #666666; font-family: 'Open Sans',sans-serif; line-height: 1.5;">
+                            <% if( typeof(salutation) !=="undefined" ) { %>
+                              <%= salutation %>
+                                <% } %>
+                                  <% if( typeof(user_last_name) !=="undefined" ) { %>
+                                    <%= user_last_name %>
+                                      <% } %>,
+                                        <p>
                         </td>
                       </tr>
                     </table>
@@ -156,32 +291,113 @@
           </tr>
           <tr>
             <td bgcolor="#ffffff" align="left"
-              style="padding: 0px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; line-height: 25px;">
-              <% if( typeof(nl_email_text_initial) !=="undefined") { %> <%-nl_email_text_initial%> <% } %>
+              style="padding: 0px 30px 20px 30px; color: #666666; font-family: 'Open Sans',sans-serif; line-height: 1.5;">
+              <% if( typeof(nl_email_text_initial) !=="undefined" ) { %>
+                <%-nl_email_text_initial%>
+                  <% } %>
             </td>
           </tr>
           <tr>
-              <td bgcolor="#ffffff"
-                style="color: #029fdb; padding: 0px 30px 40px 30px; line-height: 25px;">
-                <% if( typeof(nlEmailLinks) !=="undefined") { %>
-                  <% var i=0 %>
-                  <% for (var link in nlEmailLinks) {
-                    i++
-                    if (Object.prototype.hasOwnProperty.call(nlEmailLinks, link)) { %>
-                      <p><%- i %>. <a style = "color: #029fdb; text-decoration: none;" href="<%-link%>"><%- nlEmailLinks[link] %></a></p>
-                    <% }%>
-                  <% } %>
-               <% } %>
-              </td>
+            <td bgcolor="#ffffff" align="right" style="padding: 10px;">
+              <table class="nl-list" align="center" border="0" cellpadding="0" cellspacing="0" width="650">
+                <tbody>
+                  <tr>
+                    <td bgcolor="#ffffff"
+                      style="padding: 0px 30px 20px 30px; font-family: 'Open Sans',sans-serif; line-height: 1.5;">
+                      <table>
+                        <% if( typeof(nlEmailLinks) !=="undefined" ) { %>
+                          <% for(var i=0; i < nlEmailLinks.length; i++) { %>
+                            <tr class="table-link" valign="top" onclick="nlRedirect('<%= nlEmailLinks[i].link %>')">
+                              <td style="padding:5px; color: #666666;">
+                                <%= nlEmailLinks[i].nl_date %>
+                              </td>
+                              <td style="padding:5px; color: #666666; width:150px; color: #029fdb">
+                                <%= nlEmailLinks[i].nl_ord %> - <%= nlEmailLinks[i].cou %>
+                              </td>
+                              <td style="padding:5px; color: #666666;">
+                                <%= nlEmailLinks[i].nl_title_long %>
+                              </td>
+                            </tr>
+                            <% } %>
+                              <% } %>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
           </tr>
-           <tr>
+          <tr>
             <td bgcolor="#ffffff" align="left"
-              style="padding: 0px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; line-height: 25px;">
-              <% if( typeof(nl_email_text_final) !=="undefined") { %> <%-nl_email_text_final%> <% } %>
+              style="padding: 0px 30px 20px 30px; color: #666666; font-family: 'Open Sans',sans-serif; line-height: 1.5;">
+              <% if( typeof(nl_email_text_final) !=="undefined" ) { %>
+                <%-nl_email_text_final%>
+                  <% } %>
             </td>
           </tr>
         </table>
       </td>
     </tr>
+    <% if( typeof(footer) !=="undefined" ) { %>
+      <tr>
+        <td align="center" style="padding: 0px 10px 0px 10px;">
+          <table border="0" cellpadding="0" cellspacing="0" width="700">
+            <tr>
+              <td>
+                <footer class="site-footer">
+                  <div style="padding: 0 24px;">
+                    <div class="title-block-wrapper">
+                      <h2>
+                        <%-footer.HELP%>
+                      </h2>
+                      <p>
+                        <%-footer.GET_IN_TOUCH%>
+                      </p>
+                    </div>
+                    <div class="footer-grid-row">
+                      <div class="footer-grid-column visit-us">
+                        <div class="footer-title">
+                          <%-footer.VISIT_US%>
+                        </div>
+                        <address>
+                          <%-footer.ADDRESS1%> <br>
+                            <%-footer.ADDRESS2%>
+                        </address>
+                      </div>
+                      <div class="footer-grid-column email-us">
+                        <div class="footer-title">
+                          <%-footer.EMAIL_US%>
+                        </div>
+                        <a href="mailto:office@avi-law.com">office@avi-law.com</a>
+                      </div>
+                      <div class="footer-grid-column call-us">
+                        <div class="footer-title">
+                          <%-footer.GIVE_CALL%>
+                        </div>
+                        <a href="tel:+43(0)316/722220">+43 (0) 316 / 722 220</a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="copyright-text">
+                    <div class="copyright-inner-wrapper">
+                      <p>
+                        <%-footer.COPYRIGHT%> © <%-previousYear%>-<%-currentYear%> Avi-Law
+                      </p>
+                      <a href="<%- twitterLink -%>" target="_blank"><img
+                          src="<%- frontendURL -%>assets/logos/twitter.svg" alt="Twitter"></a>
+                    </div>
+                  </div>
+                </footer>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <% } %>
   </table>
 </body>
+<script>
+  function nlRedirect(url) {
+    window.open(url, "_blank");
+  }
+</script>

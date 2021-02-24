@@ -110,6 +110,8 @@ module.exports = {
   CUSTOMER_VAT_PER_DE: 0.07,
   CUSTOMER_VAT_PER: 0.0,
   NL_LIMIT_ON_LANDING_PAGE: 6,
+  TWITTER_LINK: `https://twitter.com/intent/follow?
+  original_referer=https%3A%2F%2Favi-law.com%2F&ref_src=twsrc%5Etfw&screen_name=Avi_Law_com&tw_p=followbutton`,
   SUBSCRIPTION_PLAN: {
     SINGLE: {
       cust_single: true,
@@ -226,6 +228,16 @@ module.exports = {
         FOOTER_TITLE: "Best regards,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
       },
+      FOOTER: {
+        HELP: "Do you need any help?",
+        GET_IN_TOUCH: "Get in touch",
+        VISIT_US: "Visit us at:",
+        EMAIL_US: "Email us at:",
+        GIVE_CALL: "Give us a call:",
+        ADDRESS1: "Grieskai 76",
+        ADDRESS2: "8020 Graz, Austria",
+        COPYRIGHT: "Copyright",
+      },
     },
     DE: {
       SALUTATION: {
@@ -331,6 +343,16 @@ module.exports = {
         CONT070: "zur Verfügung.",
         FOOTER_TITLE: "Mit freundlichen Grüßen,",
         FOOTER_SIGNATURE: "Joachim J. Janezic",
+      },
+      FOOTER: {
+        HELP: "Benötigen Sie Hilfe?",
+        GET_IN_TOUCH: "Nehmen Sie Kontakt mit uns auf!",
+        VISIT_US: "Besuchen Sie uns:",
+        EMAIL_US: "Schreiben Sie uns ein eMail:",
+        GIVE_CALL: "Rufen Sie uns an:",
+        ADDRESS1: "Grieskai 76",
+        ADDRESS2: "8020 Graz, Austria",
+        COPYRIGHT: "Copyright",
       },
     },
   },

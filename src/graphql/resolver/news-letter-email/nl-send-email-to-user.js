@@ -11,15 +11,16 @@ const {
 } = require("../../../neo4j/query");
 
 const nlURL = `${frontendURL}${constants.NEWSLETTER_SERVICE_PATH}`;
-const generateNLLink = (nl, nls, lang) => {
+const generateNLLink = (nl, nls, cou, lang) => {
   const link = `${nlURL}/${nl.nl_date.year}/${nl.nl_id}`;
-  if (nls[lang].nl_title_short) {
-    const content = `NL ${common.transformNLOrderNumber(nl.nl_ord)} ${
-      nls[lang].nl_title_short
-    }`;
+  if (nl && nls) {
     return {
-      [link]: content,
+      link,
+      nl_ord: common.transformNLOrderNumber(nl.nl_ord),
+      cou: cou.iso_3166_1_alpha_2,
       nl_id: nl.nl_id,
+      nl_date: common.formatDate(nl.nl_date).replace(/-/g, "."),
+      nl_title_long: nls[lang].nl_title_long,
     };
   }
   return false;
@@ -102,8 +103,8 @@ module.exports = async (params) => {
         }
         const nl = common.getPropertiesFromRecord(record, "nl");
         const country = common.getPropertiesFromRecord(record, "cou");
-        const nlENLink = generateNLLink(nl, nls, "en");
-        const nlDELink = generateNLLink(nl, nls, "de");
+        const nlENLink = generateNLLink(nl, nls, country, "en");
+        const nlDELink = generateNLLink(nl, nls, country, "de");
         nlCountry.push(country.iso_3166_1_alpha_2);
         if (nlLinkList && nlLinkList[country.iso_3166_1_alpha_2]) {
           if (nlLinkList[country.iso_3166_1_alpha_2].DE) {
@@ -152,8 +153,8 @@ module.exports = async (params) => {
             ..._.filter(nlEmailLinks, (o) => ids === o.nl_id)
           );
         });
-        const list = Object.assign(...finalOrderLink);
-        delete list.nl_id;
+        const currentYear = new Date().getFullYear();
+        const previousYear = currentYear - 1;
         promises.push(
           new Promise((resolve, reject) => {
             // const recipients = userDetails.user.user_email;
@@ -162,6 +163,12 @@ module.exports = async (params) => {
               to: recipients,
               subject: params.nles[userDetails.pref_lang].nl_email_subject,
               data: {
+                currentYear,
+                previousYear,
+                footer: {
+                  ...constants.EMAIL[userDetails.pref_lang.toUpperCase()]
+                    .FOOTER,
+                },
                 nl_email_text_initial: common.nlContentTransformLink(
                   params.nles[
                     userDetails.pref_lang
@@ -178,7 +185,8 @@ module.exports = async (params) => {
                 ),
                 user_first_name: userDetails.user_state.user_first_name,
                 user_last_name: userDetails.user_state.user_last_name,
-                nlEmailLinks: list,
+                nlEmailLinks: finalOrderLink,
+                twitterLink: constants.TWITTER_LINK,
               },
             };
             return sendMail(mailOption, "newsletter")
