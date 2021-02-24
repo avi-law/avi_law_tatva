@@ -103,6 +103,7 @@ module.exports = {
     GDPR_NOT_ACCEPTED: "GDPR_NOT_ACCEPTED",
   },
   NEWSLETTER_SERVICE_PATH: "service/news",
+  NEWSLETTER_UNSUBSCRIBE_PATH: "unsubscribe",
   NL_CONTENT_TRANSFORM_LINK_REGEX: /\[\*NL_(.*?)\]/,
   SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX: /[\\'"]/g,
   RESET_PASSWORD_TOKEN_EXPIRY_HOUR: 24,
@@ -237,6 +238,9 @@ module.exports = {
         ADDRESS1: "Grieskai 76",
         ADDRESS2: "8020 Graz, Austria",
         COPYRIGHT: "Copyright",
+        UNSUBSCRIBE_CONTENT:
+          "If you would like to unsubscribe from our newsletter service, click",
+        UNSUBSCRIBE: "here.",
       },
     },
     DE: {
@@ -353,6 +357,9 @@ module.exports = {
         ADDRESS1: "Grieskai 76",
         ADDRESS2: "8020 Graz, Austria",
         COPYRIGHT: "Copyright",
+        UNSUBSCRIBE_CONTENT:
+          "Wenn Sie unseren Newsletter abbestellen wollen, klicken Sie hier",
+        UNSUBSCRIBE: "hier.",
       },
     },
   },

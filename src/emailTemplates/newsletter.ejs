@@ -117,117 +117,6 @@
     .table-link {
       cursor: pointer;
     }
-
-    .site-footer .title-block-wrapper p {
-      color: #fff;
-    }
-
-    .site-footer {
-      background-color: #000;
-      padding-top: 10px;
-      color: #fff;
-      font-family: "Open Sans", sans-serif;
-    }
-
-    .site-footer .footer-grid-row {
-      flex: 1;
-    }
-
-    .site-footer .footer-grid-row .footer-grid-column {
-      max-width: 217px;
-      flex-basis: 33.33%;
-      padding: 0 15px;
-    }
-
-    .site-footer .footer-grid-row .footer-grid-column.email-us a {
-      color: #029fdb;
-      text-decoration: underline;
-    }
-
-    .site-footer .footer-grid-row .footer-grid-column+.footer-grid-column {
-      border-left: 1px solid #707070;
-    }
-
-    .site-footer .footer-grid-row .footer-grid-column span,
-    .site-footer .footer-grid-row .footer-grid-column a,
-    .site-footer .footer-grid-row .footer-grid-column address {
-      font-size: 18px;
-      font-weight: 500;
-      color: #cdcdcd;
-      margin: 0;
-    }
-
-    .site-footer .footer-grid-row .footer-grid-column .footer-title {
-      font-size: 22px;
-      font-weight: 600;
-      line-height: 1.5;
-      margin-bottom: 8px;
-    }
-
-    .site-footer .copyright-text a {
-      background-color: #029fdb;
-      padding: 5px;
-    }
-
-    .site-footer .copyright-text a img {
-      width: 20px;
-    }
-
-    .site-footer .copyright-text p {
-      color: #707070;
-      margin: 0;
-    }
-
-    .site-footer .copyright-text .copyright-inner-wrapper {
-      /* max-width: 640px; */
-      padding: 0 15px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .site-footer .copyright-text {
-      border-top: 1px solid #707070;
-      padding: 18px 0;
-      margin-top: 50px;
-    }
-
-    .site-footer .footer-grid-row {
-      display: flex;
-      margin: 0 -15px;
-    }
-
-    .footer-grid-column a {
-      text-decoration: none;
-    }
-
-    .title-block-wrapper h2 {
-      font-size: 16px;
-      font-weight: 400;
-      line-height: 1.5;
-      color: #cdcdcd;
-      margin-bottom: 5px;
-      text-transform: uppercase;
-    }
-
-    .title-block-wrapper p {
-      font-size: 30px;
-      line-height: 1.5;
-      color: #000;
-      margin-bottom: 0;
-      font-weight: 700;
-    }
-
-    address {
-      font-style: normal;
-      line-height: inherit;
-    }
-
-    .title-block-wrapper {
-      margin-bottom: 40px;
-    }
   </style>
 </head>
 
@@ -306,8 +195,10 @@
                       style="padding: 0px 30px 20px 30px; font-family: 'Open Sans',sans-serif; line-height: 1.5;">
                       <table>
                         <% if( typeof(nlEmailLinks) !=="undefined" ) { %>
-                          <% for(var i=0; i < nlEmailLinks.length; i++) { %>
-                            <tr class="table-link" valign="top" onclick="nlRedirect('<%= nlEmailLinks[i].link %>')">
+                          <% for(var i=0; i < nlEmailLinks.length; i++) { var bgStyle='' ; if((i+1 % 2)==0) {
+                            bgStyle='background-color: rgba(2, 159, 219, 0.1)' } %>
+                            <tr class="table-link" style="<%=bgStyle%>" valign="top"
+                              onclick="nlRedirect('<%= nlEmailLinks[i].link %>')">
                               <td style="padding:5px; color: #666666;">
                                 <%= nlEmailLinks[i].nl_date %>
                               </td>
@@ -340,52 +231,50 @@
     </tr>
     <% if( typeof(footer) !=="undefined" ) { %>
       <tr>
-        <td align="center" style="padding: 0px 10px 0px 10px;">
+        <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
           <table border="0" cellpadding="0" cellspacing="0" width="700">
             <tr>
               <td>
-                <footer class="site-footer">
+                <footer class="site-footer" style="background-color: #000; padding-top: 10px;  color: #fff; font-family: 'Open Sans', sans-serif;">
                   <div style="padding: 0 24px;">
-                    <div class="title-block-wrapper">
-                      <h2>
-                        <%-footer.HELP%>
-                      </h2>
-                      <p>
-                        <%-footer.GET_IN_TOUCH%>
-                      </p>
-                    </div>
-                    <div class="footer-grid-row">
-                      <div class="footer-grid-column visit-us">
-                        <div class="footer-title">
+                    <div class="footer-grid-row" style=" display: flex;
+                    margin: 0 -15px;">
+                      <div class="footer-grid-column visit-us" style=" max-width: 217px; flex-basis: 33.33%; padding: 0 15px; text-decoration: none;">
+                        <div class="footer-title" style="  font-size: 22px; font-weight: 600; line-height: 1.5; margin-bottom: 8px;">
                           <%-footer.VISIT_US%>
                         </div>
-                        <address>
+                        <address style=" font-size: 18px; font-weight: 500; color: #cdcdcd; font-style: normal; line-height: inherit; margin: 0;">
                           <%-footer.ADDRESS1%> <br>
                             <%-footer.ADDRESS2%>
                         </address>
                       </div>
-                      <div class="footer-grid-column email-us">
-                        <div class="footer-title">
-                          <%-footer.EMAIL_US%>
+                      <div class="footer-grid-column email-us" style=" max-width: 217px; flex-basis: 33.33%; padding: 0 15px; border-left: 1px solid #707070;">
+                        <div class="footer-title" style="  font-size: 22px; font-weight: 600; line-height: 1.5; margin-bottom: 8px;">                          <%-footer.EMAIL_US%>
                         </div>
-                        <a href="mailto:office@avi-law.com">office@avi-law.com</a>
+                        <a style="color: #029fdb;text-decoration: underline;  font-size: 18px;font-weight: 500 margin: 0;" href="mailto:office@avi-law.com">office@avi-law.com</a>
                       </div>
-                      <div class="footer-grid-column call-us">
-                        <div class="footer-title">
+                      <div class="footer-grid-column call-us" style=" max-width: 217px; flex-basis: 33.33%; padding: 0 15px; border-left: 1px solid #707070; ">
+                        <div class="footer-title" style="  font-size: 22px; font-weight: 600; line-height: 1.5; margin-bottom: 8px;">
                           <%-footer.GIVE_CALL%>
                         </div>
-                        <a href="tel:+43(0)316/722220">+43 (0) 316 / 722 220</a>
+                        <a href="tel:+43(0)316/722220" style=" font-size: 18px; font-weight: 500; color: #cdcdcd; margin: 0;">+43 (0) 316 / 722 220</a>
                       </div>
                     </div>
                   </div>
-                  <div class="copyright-text">
-                    <div class="copyright-inner-wrapper">
-                      <p>
+                  <div class="copyright-text" style="  border-top: 1px solid #707070; padding: 18px 0; margin-top: 50px;">
+                    <div class="copyright-inner-wrapper" style=" padding: 0 15px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
+                      <p style="color: #707070; margin: 0; flex: 1;">
                         <%-footer.COPYRIGHT%> © <%-previousYear%>-<%-currentYear%> Avi-Law
                       </p>
-                      <a href="<%- twitterLink -%>" target="_blank"><img
-                          src="<%- frontendURL -%>assets/logos/twitter.svg" alt="Twitter"></a>
+                      <a href="<%- twitterLink -%>" target="_blank" style="background-color: #029fdb; padding: 5px;"><img style="width: 20px;" src="<%- frontendURL -%>assets/logos/twitter.svg"
+                          alt="Twitter"></a>
                     </div>
+                  </div>
+                  <div
+                    style="padding: 0px 10px 10px; margin: 0 10px; text-align: center; color: #707070; font-size: 12px;">
+                    <%-footer.UNSUBSCRIBE_CONTENT%><a href="<%-unsubscribeLink%>" style="color:#707070 ;">
+                        <%-footer.UNSUBSCRIBE%>
+                      </a>
                   </div>
                 </footer>
               </td>

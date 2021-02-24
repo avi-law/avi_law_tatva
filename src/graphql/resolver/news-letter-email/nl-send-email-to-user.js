@@ -2,7 +2,7 @@
 
 const _ = require("lodash");
 const driver = require("../../../config/db");
-const { common, constants } = require("../../../utils");
+const { common, constants, auth } = require("../../../utils");
 const { frontendURL } = require("../../../config/application");
 const sendMail = require("../../../libs/email");
 const {
@@ -155,6 +155,10 @@ module.exports = async (params) => {
         });
         const currentYear = new Date().getFullYear();
         const previousYear = currentYear - 1;
+        const token = auth.generateToken({
+          email: userDetails.user.user_email,
+        });
+        const unsubscribeLink = `${frontendURL}${constants.NEWSLETTER_UNSUBSCRIBE_PATH}/${token}`;
         promises.push(
           new Promise((resolve, reject) => {
             // const recipients = userDetails.user.user_email;
@@ -187,6 +191,7 @@ module.exports = async (params) => {
                 user_last_name: userDetails.user_state.user_last_name,
                 nlEmailLinks: finalOrderLink,
                 twitterLink: constants.TWITTER_LINK,
+                unsubscribeLink,
               },
             };
             return sendMail(mailOption, "newsletter")
