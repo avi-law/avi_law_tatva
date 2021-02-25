@@ -14,7 +14,7 @@ const validNLEmail = [
   "praful.mali@tatvasoft.com",
   "janezic@avi-law.com",
   "praful3.mali@mailinator.com",
-  "praful.mali2@mailinator.com",
+  "malipraful@gmail.com",
 ];
 
 const nlURL = `${frontendURL}${constants.NEWSLETTER_SERVICE_PATH}`;
