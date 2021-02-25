@@ -158,18 +158,18 @@
             <td bgcolor="#ffffff" align="right">
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td bgcolor="#ffffff" style="padding: 20px 30px 20px 30px;">
+                  <td bgcolor="#ffffff" style="padding: 20px 30px 10px 30px;">
                     <table border="0" cellspacing="0" cellpadding="0">
                       <tr>
                         <td>
                           <p style="color: #666666; font-family: 'Open Sans',sans-serif; line-height: 1.5;">
                             <% if( typeof(salutation) !=="undefined" ) { %>
                               <%= salutation %>
-                                <% } %>
-                                  <% if( typeof(user_last_name) !=="undefined" ) { %>
-                                    <%= user_last_name %>
-                                      <% } %>,
-                                        <p>
+                            <% } %>
+                            <% if( typeof(user_last_name) !=="undefined" ) { %>
+                              <%= user_last_name %>
+                            <% } %>,
+                          <p>
                         </td>
                       </tr>
                     </table>
@@ -183,7 +183,7 @@
               style="padding: 0px 30px 20px 30px; color: #666666; font-family: 'Open Sans',sans-serif; line-height: 1.5;">
               <% if( typeof(nl_email_text_initial) !=="undefined" ) { %>
                 <%-nl_email_text_initial%>
-                  <% } %>
+              <% } %>
             </td>
           </tr>
           <tr>
@@ -192,7 +192,7 @@
                 <tbody>
                   <tr>
                     <td bgcolor="#ffffff"
-                      style="padding: 0px 30px 20px 30px; font-family: 'Open Sans',sans-serif; line-height: 1.5;">
+                      style="padding: 0px 20px 10px 20px; font-family: 'Open Sans',sans-serif; line-height: 1.5;">
                       <table>
                         <% if( typeof(nlEmailLinks) !=="undefined" ) { %>
                           <% for(var i=0; i < nlEmailLinks.length; i++) { var bgStyle='' ; if((i+1 % 2)==0) {
@@ -210,7 +210,7 @@
                               </td>
                             </tr>
                             <% } %>
-                              <% } %>
+                          <% } %>
                       </table>
                     </td>
                   </tr>
@@ -223,7 +223,7 @@
               style="padding: 0px 30px 20px 30px; color: #666666; font-family: 'Open Sans',sans-serif; line-height: 1.5;">
               <% if( typeof(nl_email_text_final) !=="undefined" ) { %>
                 <%-nl_email_text_final%>
-                  <% } %>
+              <% } %>
             </td>
           </tr>
         </table>
@@ -270,11 +270,9 @@
                           alt="Twitter"></a>
                     </div>
                   </div>
-                  <div
-                    style="padding: 0px 10px 10px; margin: 0 10px; text-align: center; color: #707070; font-size: 12px;">
-                    <%-footer.UNSUBSCRIBE_CONTENT%><a href="<%-unsubscribeLink%>" style="color:#707070 ;">
-                        <%-footer.UNSUBSCRIBE%>
-                      </a>
+                  <div style="padding: 0px 10px 10px; margin: 0 10px; text-align: center; color: #707070; font-size: 12px;">
+                    <%-footer.UNSUBSCRIBE_CONTENT%>
+                    <a href="<%-unsubscribeLink%>" style="color:#707070 ;"> <%-footer.UNSUBSCRIBE%> </a>
                   </div>
                 </footer>
               </td>
