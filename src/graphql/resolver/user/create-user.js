@@ -88,6 +88,9 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
+    if (!userState.nl_email_unsubscribed) {
+      userState.nl_email_unsubscribed = null;
+    }
     const queryParams = {
       user_email: userEmail,
       user: userDetails,
