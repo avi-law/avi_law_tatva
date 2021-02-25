@@ -162,7 +162,7 @@ module.exports = async (params) => {
         promises.push(
           new Promise((resolve, reject) => {
             // const recipients = userDetails.user.user_email;
-            const recipients = "praful.mali2@mailinator.com";
+            const recipients = "praful.mali@tatvasoft.com";
             const mailOption = {
               to: recipients,
               subject: params.nles[userDetails.pref_lang].nl_email_subject,
@@ -194,6 +194,7 @@ module.exports = async (params) => {
                 unsubscribeLink,
               },
             };
+            // return true;
             return sendMail(mailOption, "newsletter")
               .then((info) => resolve(info))
               .catch((error) => {

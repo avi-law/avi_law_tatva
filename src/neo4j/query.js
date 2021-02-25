@@ -525,7 +525,7 @@ CALL {
 RETURN nl, nls, cou, u`;
 
 exports.getUsersByNewsletterPreference = `
-MATCH (u:User)-[r1:HAS_USER_STATE]->(us:User_State)
+MATCH (u:User)-[r1:HAS_USER_STATE]->(us:User_State)-[:USER_HAS_PREF_SURF_LANG]->(lang:Language)
 WHERE r1.to IS NULL AND us.nl_email_unsubscribed IS NULL AND u.user_status IS NULL AND u. is_email_verified IS NULL
 CALL {
   WITH us
@@ -533,9 +533,8 @@ CALL {
   WHERE cou1.iso_3166_1_alpha_2 IN $nlCountry
   RETURN collect({iso_3166_1_alpha_2: cou1.iso_3166_1_alpha_2}) AS cou
 }
-MATCH (us)-[:USER_HAS_PREF_SURF_LANG]->(lang:Language)
 RETURN u, us, lang, cou
-LIMIT 1`;
+LIMIT 2`;
 
 exports.getNewsletterDetails = `
 MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:NL_HAS_AUTHOR]->(u:User)

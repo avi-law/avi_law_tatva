@@ -23,7 +23,6 @@ module.exports = async (object, params, ctx) => {
   let isValidDE = false;
   let isValidEN = false;
   let isSent = false;
-  let isSentSuccess = false;
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
