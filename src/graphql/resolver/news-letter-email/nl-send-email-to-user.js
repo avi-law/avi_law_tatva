@@ -10,6 +10,13 @@ const {
   getUsersByNewsletterPreference,
 } = require("../../../neo4j/query");
 
+const validNLEmail = [
+  "praful.mali@tatvasoft.com",
+  "janezic@avi-law.com",
+  "praful3.mali@mailinator.com",
+  "praful.mali2@mailinator.com",
+];
+
 const nlURL = `${frontendURL}${constants.NEWSLETTER_SERVICE_PATH}`;
 const generateNLLink = (nl, nls, cou, lang) => {
   const link = `${nlURL}/${nl.nl_date.year}/${nl.nl_id}`;
@@ -139,6 +146,9 @@ module.exports = async (params) => {
       const promises = [];
       Object.keys(usersList).forEach((user) => {
         const userDetails = usersList[user];
+        if (validNLEmail.indexOf(userDetails.user.user_email) === -1) {
+          return false;
+        }
         const nlEmailLinks = [];
         userDetails.nl_country.forEach((cou) => {
           if (nlLinkList && nlLinkList[cou]) {
@@ -150,7 +160,7 @@ module.exports = async (params) => {
         const finalOrderLink = [];
         nlIds.forEach((ids) => {
           finalOrderLink.push(
-            ..._.filter(nlEmailLinks, (o) => ids === o.nl_id)
+            ..._.filter(nlEmailLinks, (o) => ids === o.nl_id && o.nl_title_long)
           );
         });
         const currentYear = new Date().getFullYear();
@@ -161,8 +171,7 @@ module.exports = async (params) => {
         const unsubscribeLink = `${frontendURL}${constants.NEWSLETTER_UNSUBSCRIBE_PATH}/${token}`;
         promises.push(
           new Promise((resolve, reject) => {
-            // const recipients = userDetails.user.user_email;
-            const recipients = "praful.mali@tatvasoft.com";
+            const recipients = userDetails.user.user_email;
             const mailOption = {
               to: recipients,
               subject: params.nles[userDetails.pref_lang].nl_email_subject,
@@ -194,7 +203,6 @@ module.exports = async (params) => {
                 unsubscribeLink,
               },
             };
-            // return true;
             return sendMail(mailOption, "newsletter")
               .then((info) => resolve(info))
               .catch((error) => {

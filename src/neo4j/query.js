@@ -533,8 +533,7 @@ CALL {
   WHERE cou1.iso_3166_1_alpha_2 IN $nlCountry
   RETURN collect({iso_3166_1_alpha_2: cou1.iso_3166_1_alpha_2}) AS cou
 }
-RETURN u, us, lang, cou
-LIMIT 2`;
+RETURN u, us, lang, cou`;
 
 exports.getNewsletterDetails = `
 MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:NL_HAS_AUTHOR]->(u:User)
