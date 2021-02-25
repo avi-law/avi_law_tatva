@@ -526,7 +526,7 @@ RETURN nl, nls, cou, u`;
 
 exports.getUsersByNewsletterPreference = `
 MATCH (u:User)-[r1:HAS_USER_STATE]->(us:User_State)-[:USER_HAS_PREF_SURF_LANG]->(lang:Language)
-WHERE r1.to IS NULL AND us.nl_email_unsubscribed IS NULL AND u.user_status IS NULL AND u. is_email_verified IS NULL
+WHERE r1.to IS NULL AND us.nl_email_unsubscribed IS NULL AND u.user_status IS NULL AND u.is_email_verified IS NULL
 CALL {
   WITH us
   MATCH (us:User_State)-[r2:USER_WANTS_NL_FROM_COUNTRY]->(cou1:Country)
