@@ -23,6 +23,7 @@ const sendResetPasswordEmail = (userData, token) => {
       user_last_name: userData.user_state.user_last_name,
       verificationToken: token,
       link: "user/email-verification/",
+      email: userData.user_email,
       ...mailContent,
     },
   };
