@@ -115,7 +115,7 @@ const typeDefs = gql`
   type Log {
     log_par_02: String
     log_par_01: String
-    log_timestamp: Int
+    log_timestamp: Float
     log_for_user: User @relation(name: "LOG_FOR_USER", direction: OUT)
   }
 
@@ -607,12 +607,17 @@ const typeDefs = gql`
     nl_first: GetCustomNL
     total: Int
   }
-
+  type customLog {
+    timestamp: Float
+    user_state: User_State
+  }
   type GetCustomNL {
     nl: CustomNL
     nls: CustomNLState
     nl_author: User
     user: User
+    createdLog: [customLog]
+    updatedLog: [customLog]
     country: Country
   }
 

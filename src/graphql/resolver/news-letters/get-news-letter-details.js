@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { common } = require("../../../utils");
+const { common, constants } = require("../../../utils");
 const { getNewsletterDetails } = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
@@ -44,6 +44,8 @@ module.exports = async (object, params, ctx) => {
           country: common.getPropertiesFromRecord(record, "cou"),
           nl_author: common.getPropertiesFromRecord(record, "u"),
           user: common.getPropertiesFromRecord(record, "user"),
+          createdLog: record.get("createdLog"),
+          updatedLog: record.get("updatedLog"),
         };
       });
       // eslint-disable-next-line prefer-destructuring
