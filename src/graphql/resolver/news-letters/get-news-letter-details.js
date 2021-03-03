@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { common, constants } = require("../../../utils");
+const { common } = require("../../../utils");
 const { getNewsletterDetails } = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
