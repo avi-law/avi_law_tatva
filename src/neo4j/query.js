@@ -281,6 +281,11 @@ WHERE r1.to IS NULL
 SET us.nl_email_unsubscribed = TRUE
 RETURN u, us`;
 
+exports.tweetNewsletter = `
+MATCH ( nl:Nl { nl_id: $nl_id })
+SET nl.nl_tweeted = TRUE
+RETURN nl`;
+
 exports.updateGDPRAccept = `
 MATCH ( us:User_State )<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 WHERE r1.to IS NULL

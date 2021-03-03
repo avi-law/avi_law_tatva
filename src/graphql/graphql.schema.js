@@ -229,6 +229,7 @@ const typeDefs = gql`
     nl_id: ID
     nl_no: String
     nl_ord: String
+    nl_tweeted: Boolean
     nl_state: NL_State @relation(name: "HAS_NL_STATE", direction: OUT)
     user: User @relation(name: "NL_HAS_AUTHOR", direction: OUT)
     country: Country @relation(name: "NL_REFERS_TO_COUNTRY", direction: OUT)
@@ -598,6 +599,7 @@ const typeDefs = gql`
     nl_implemented: Boolean
     nl_date: _Neo4jDate
     nl_ord: String
+    nl_tweeted: String
   }
   type GetNLListByYear {
     years: [Int]
@@ -721,6 +723,7 @@ const typeDefs = gql`
       data: CustomCreateNLEmailInput!
     ): Boolean @isAdmin
     deleteNewsletterEmail(nl_email_ord: String!): Boolean @isAdmin
+    tweetNewsletter(nl_id: Int!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated

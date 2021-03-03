@@ -57,6 +57,7 @@ const createNewsletterEmail = require("./news-letter-email/create-news-letter-em
 const updateNewsletterEmail = require("./news-letter-email/update-news-letter-email");
 const deleteNewsletterEmail = require("./news-letter-email/delete-news-letter-email");
 const getNewsLetterEmail = require("./news-letter-email/get-news-letter-email");
+const tweetNewsletter = require("./news-letters/tweet-news-letter");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -89,6 +90,7 @@ const resolvers = {
     createNewsletterEmail,
     updateNewsletterEmail,
     deleteNewsletterEmail,
+    tweetNewsletter,
   },
   Query: {
     User,
