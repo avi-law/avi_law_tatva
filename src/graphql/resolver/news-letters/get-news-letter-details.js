@@ -1,4 +1,5 @@
 /* eslint-disable consistent-return */
+const _ = require("lodash");
 const driver = require("../../../config/db");
 const { common } = require("../../../utils");
 const { getNewsletterDetails } = require("../../../neo4j/query");
@@ -49,6 +50,20 @@ module.exports = async (object, params, ctx) => {
         };
       });
       // eslint-disable-next-line prefer-destructuring
+      if (nlResultDetailsArray[0] && nlResultDetailsArray[0].createdLog) {
+        nlResultDetailsArray[0].createdLog = _.orderBy(
+          nlResultDetailsArray[0].createdLog,
+          ["timestamp"],
+          ["desc"]
+        );
+      }
+      if (nlResultDetailsArray[0] && nlResultDetailsArray[0].updatedLog) {
+        nlResultDetailsArray[0].updatedLog = _.orderBy(
+          nlResultDetailsArray[0].updatedLog,
+          ["timestamp"],
+          ["desc"]
+        );
+      }
       return nlResultDetailsArray[0];
     }
     return null;
