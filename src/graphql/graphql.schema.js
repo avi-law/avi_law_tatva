@@ -826,7 +826,6 @@ const typeDefs = gql`
     userEmailExists(user_email: String!): Boolean @isAuthenticated
     verifyInvitation(token: String!): CustomUser
     verifyEmail(token: String!): Boolean
-    getReferenceLink: [Ref_Link]
   }
 `;
 
