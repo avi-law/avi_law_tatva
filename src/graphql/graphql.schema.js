@@ -261,6 +261,14 @@ const typeDefs = gql`
     nl_email: NL_Email @relation(name: "HAS_NL_EMAIL_STATE", direction: IN)
   }
 
+  type Ref_Link {
+    ref_active: Boolean
+    ref_desc: String
+    ref_link: String
+    ref_logo_img: String
+    ref_ord: Int
+  }
+
   type UserCustom {
     user_id: ID
     user_first_name: String
@@ -818,6 +826,7 @@ const typeDefs = gql`
     userEmailExists(user_email: String!): Boolean @isAuthenticated
     verifyInvitation(token: String!): CustomUser
     verifyEmail(token: String!): Boolean
+    getReferenceLink: [Ref_Link]
   }
 `;
 
