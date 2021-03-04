@@ -269,6 +269,12 @@ const typeDefs = gql`
     ref_ord: Int
   }
 
+  type Link {
+    link_desc: String
+    link_ord: Int
+    link_url: String
+  }
+
   type UserCustom {
     user_id: ID
     user_first_name: String
