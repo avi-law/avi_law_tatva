@@ -552,6 +552,7 @@ const typeDefs = gql`
     nl_implemented: Boolean
     nl_date: _Neo4jDate!
     nl_ord: String!
+    nl_tweeted: Boolean
   }
 
   input nlCountry {
