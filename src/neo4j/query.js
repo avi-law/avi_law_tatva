@@ -288,6 +288,9 @@ MATCH ( nl:Nl { nl_id: $nl_id })
 SET nl.nl_tweeted = TRUE
 RETURN nl`;
 
+exports.getNewsLetterContentLink = `
+MATCH (l:Link) RETURN l`;
+
 exports.updateGDPRAccept = `
 MATCH ( us:User_State )<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
 WHERE r1.to IS NULL

@@ -3,6 +3,7 @@ const _ = require("lodash");
 const driver = require("../../../config/db");
 const { common } = require("../../../utils");
 const { getNewsletterDetails } = require("../../../neo4j/query");
+const getLinkList = require("../link");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
@@ -14,6 +15,7 @@ module.exports = async (object, params, ctx) => {
       nl_id: nlId,
       user_email: userEmail,
     });
+    const listLinks = await getLinkList();
     if (nlResultDetails && nlResultDetails.records.length > 0) {
       const nlResultDetailsArray = nlResultDetails.records.map((record) => {
         const nls = {
@@ -36,6 +38,12 @@ module.exports = async (object, params, ctx) => {
               nlState.lang.properties.iso_639_1
             ) {
               nls[nlState.lang.properties.iso_639_1] = nlState.nls.properties;
+              nls[
+                nlState.lang.properties.iso_639_1
+              ].nl_text = common.nlContentTransformLink(
+                nls[nlState.lang.properties.iso_639_1].nl_text.toString(),
+                listLinks
+              );
             }
           });
         }

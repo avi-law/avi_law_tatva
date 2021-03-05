@@ -2,12 +2,14 @@
 const driver = require("../../../config/db");
 const { common } = require("../../../utils");
 const { getNewsletter } = require("../../../neo4j/query");
+const getLinkList = require("../link");
 
 module.exports = async (object, params) => {
   const nlID = params.nl_id;
   const session = driver.session();
   try {
     const result = await session.run(getNewsletter, { nl_id: nlID });
+    const listLinks = await getLinkList();
     if (result && result.records.length > 0) {
       const newsLetters = result.records.map((record) => {
         const nls = {
@@ -30,6 +32,12 @@ module.exports = async (object, params) => {
               nlState.lang.properties.iso_639_1
             ) {
               nls[nlState.lang.properties.iso_639_1] = nlState.nls.properties;
+              nls[
+                nlState.lang.properties.iso_639_1
+              ].nl_text = common.nlContentTransformLink(
+                nls[nlState.lang.properties.iso_639_1].nl_text.toString(),
+                listLinks
+              );
             }
           });
         }

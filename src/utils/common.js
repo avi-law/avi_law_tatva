@@ -171,7 +171,7 @@ const transformNLOrderNumber = (value) => {
   return value;
 };
 
-const nlContentTransformLink = (value) => {
+const nlContentTransformLink = (value, hrefOptions = []) => {
   let final = value;
   let href = constants.NEWSLETTER_SERVICE_PATH;
   const pattern = constants.NL_CONTENT_TRANSFORM_LINK_REGEX;
@@ -195,6 +195,20 @@ const nlContentTransformLink = (value) => {
       }
       const anchor = `<a style="color: #029fdb;" href="${frontendURL}${href}">${content}</a>`;
       final = value.toString().replace(pattern, anchor);
+    }
+  }
+  const lPattern = constants.NL_CONTENT_TRANSFORM_REFERENCE_LINK_REGEX;
+  let lLink = final && final.toString() ? final.toString().match(lPattern) : "";
+  if (lLink && lLink.length && lLink[1]) {
+    lLink = lLink[1].split("*");
+    if (lLink && lLink.length && hrefOptions && hrefOptions.length > 0) {
+      const id = Number(lLink[0]);
+      const content = lLink[1];
+      const findObj = hrefOptions.find((o) => o.link_ord === id);
+      if (findObj) {
+        const anchor = `<a href="${findObj.link_url}" target="_blank">${content}</a>`;
+        final = final.toString().replace(lPattern, anchor);
+      }
     }
   }
   return final;
