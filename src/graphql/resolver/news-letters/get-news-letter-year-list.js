@@ -9,8 +9,6 @@ const {
   getNewsletterLog,
 } = require("../../../neo4j/query");
 
-const getLinkList = require("../link");
-
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   let userEmail = null;
@@ -30,7 +28,6 @@ module.exports = async (object, params, ctx) => {
     country.push("EU");
   }
   const session = driver.session();
-  const listLinks = await getLinkList();
   try {
     const result = await session.run(
       getNewsletterYearList({
@@ -80,13 +77,6 @@ module.exports = async (object, params, ctx) => {
               nls[nlState.lang.properties.iso_639_1] = nlState.nls.properties;
               if (!userEmail) {
                 nls[nlState.lang.properties.iso_639_1].nl_text = null;
-              } else {
-                nls[
-                  nlState.lang.properties.iso_639_1
-                ].nl_text = common.nlContentTransformLink(
-                  nls[nlState.lang.properties.iso_639_1].nl_text.toString(),
-                  listLinks
-                );
               }
             }
           });
@@ -132,12 +122,6 @@ module.exports = async (object, params, ctx) => {
                 nlState.lang.properties.iso_639_1
               ) {
                 nls[nlState.lang.properties.iso_639_1] = nlState.nls.properties;
-                nls[
-                  nlState.lang.properties.iso_639_1
-                ].nl_text = common.nlContentTransformLink(
-                  nls[nlState.lang.properties.iso_639_1].nl_text.toString(),
-                  listLinks
-                );
               }
             });
           }

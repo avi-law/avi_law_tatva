@@ -508,5 +508,27 @@ module.exports = {
       CONT290: "Your order number:",
       CONT300: "UID DE274785644",
     },
+    FOOTER_DE: {
+      CONT240: "Verlag Luftverkehr, Inhaber Werner Klein",
+      CONT250: "Auenstraße 71, 85737 Ismaning, Deutschland",
+      CONT260: "https://www.avi-law.com/",
+      CONT300: "UID DE274785644",
+    },
+    FOOTER_EN: {
+      CONT240: "Verlag Luftverkehr, Inhaber Werner Klein",
+      CONT250: "Auenstraße 71, 85737 Ismaning, Deutschland",
+      CONT260: "https://www.avi-law.com/",
+      CONT300: "UID DE274785644",
+    },
+    NL_INFO_DE: {
+      CREATOR: "erstellt am",
+      UPDATER: "zuletzt bearbeitet am",
+      BY: "durch",
+    },
+    NL_INFO_EN: {
+      CREATOR: "created",
+      UPDATER: "last edited",
+      BY: "by",
+    },
   },
 };

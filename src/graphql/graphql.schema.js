@@ -830,6 +830,8 @@ const typeDefs = gql`
     getCustomer(customer_id: Int!): CustomerCustom @isAuthenticated
     getPreparedNewInvoiceDetails(customer_id: Int!): Invoice @isAuthenticated
     downloadInvoice(invoice_id: String!): String @isAuthenticated
+    downloadNewsletter(nl_id: Int!, lang: LanguageForUser!): String
+      @isAuthenticated
     userEmailExists(user_email: String!): Boolean @isAuthenticated
     verifyInvitation(token: String!): CustomUser
     verifyEmail(token: String!): Boolean

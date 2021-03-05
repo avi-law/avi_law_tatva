@@ -171,7 +171,11 @@ const transformNLOrderNumber = (value) => {
   return value;
 };
 
-const nlContentTransformLink = (value, hrefOptions = []) => {
+const nlContentTransformLink = (
+  value,
+  hrefOptions = [],
+  linkTranlate = false
+) => {
   let final = value;
   let href = constants.NEWSLETTER_SERVICE_PATH;
   const pattern = constants.NL_CONTENT_TRANSFORM_LINK_REGEX;
@@ -199,7 +203,7 @@ const nlContentTransformLink = (value, hrefOptions = []) => {
   }
   const lPattern = constants.NL_CONTENT_TRANSFORM_REFERENCE_LINK_REGEX;
   let lLink = final && final.toString() ? final.toString().match(lPattern) : "";
-  if (lLink && lLink.length && lLink[1] && 0) {
+  if (lLink && lLink.length && lLink[1] && linkTranlate) {
     lLink = lLink[1].split("*");
     if (lLink && lLink.length && hrefOptions && hrefOptions.length > 0) {
       const id = Number(lLink[0]);

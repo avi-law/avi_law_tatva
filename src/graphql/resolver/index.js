@@ -58,6 +58,7 @@ const updateNewsletterEmail = require("./news-letter-email/update-news-letter-em
 const deleteNewsletterEmail = require("./news-letter-email/delete-news-letter-email");
 const getNewsLetterEmail = require("./news-letter-email/get-news-letter-email");
 const tweetNewsletter = require("./news-letters/tweet-news-letter");
+const downloadNewsletter = require("./news-letters/download-news-letter");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -106,6 +107,7 @@ const resolvers = {
     getPreparedNewInvoiceDetails,
     getInvoiceCustomers,
     downloadInvoice,
+    downloadNewsletter,
     getUserCustomerList,
     getConnectUserList,
     getUsersByCustomer,
