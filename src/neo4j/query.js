@@ -569,6 +569,27 @@ CALL {
 OPTIONAL MATCH (user:User { user_email: $user_email})
 RETURN nl, nls, cou, u, user, updatedLog, createdLog`;
 
+exports.getNewsletterLog = `
+MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:NL_HAS_AUTHOR]->(u:User)
+WHERE nl.nl_id = $nl_id
+CALL {
+  WITH nl
+  MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.CREATE_NL}})
+  MATCH (nl)<-[:LOG_REFERS_TO_OBJECT]-(l1:Log)-[:HAS_LOG_TYPE]->(lt)
+  MATCH (l1)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]-(us1:User_State)
+  WHERE r1.to IS NULL
+  RETURN collect({timestamp: l1.log_timestamp, user_state: {user_first_name: us1.user_first_name, user_middle_name: us1.user_middle_name, user_last_name: us1.user_last_name} }) AS createdLog
+}
+CALL {
+  WITH nl
+  MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.UPDATE_NL}})
+  MATCH (nl)<-[:LOG_REFERS_TO_OBJECT]-(l2:Log)-[:HAS_LOG_TYPE]->(lt)
+  MATCH (l2)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]-(us1:User_State)
+  WHERE r1.to IS NULL
+  RETURN collect({timestamp: l2.log_timestamp, user_state: { user_first_name: us1.user_first_name, user_middle_name: us1.user_middle_name, user_last_name: us1.user_last_name  } }) AS updatedLog
+}
+RETURN updatedLog, createdLog`;
+
 exports.getNewsletter = `
 MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:NL_HAS_AUTHOR]->(u:User)
 WHERE nl.nl_id = $nl_id

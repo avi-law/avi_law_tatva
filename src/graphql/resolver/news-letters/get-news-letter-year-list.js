@@ -6,6 +6,7 @@ const {
   getNewsletterYearList,
   getNewsletterListByYear,
   getNewsletterDetails,
+  getNewsletterLog,
 } = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
@@ -150,6 +151,27 @@ module.exports = async (object, params, ctx) => {
         }
         // eslint-disable-next-line prefer-destructuring
         response.nl_first = nlResultDetailsArray[0];
+      }
+    } else {
+      const nlResultLogDetails = await session.run(getNewsletterLog, {
+        nl_id: response.nl_first.nl.nl_id,
+      });
+      if (nlResultLogDetails && nlResultLogDetails.records.length > 0) {
+        let createdLog = [];
+        let updatedLog = [];
+        nlResultLogDetails.records.map((record) => {
+          createdLog = record.get("createdLog");
+          updatedLog = record.get("updatedLog");
+          return true;
+        });
+        if (createdLog && createdLog.length > 0) {
+          createdLog = _.orderBy(createdLog, ["timestamp"], ["desc"]);
+        }
+        if (updatedLog && updatedLog.length > 0) {
+          updatedLog = _.orderBy(updatedLog, ["timestamp"], ["desc"]);
+        }
+        response.nl_first.createdLog = createdLog;
+        response.nl_first.updatedLog = updatedLog;
       }
     }
     if (response.nl_list.length === 0) {
