@@ -17,7 +17,7 @@ module.exports = async (object, params, ctx) => {
   const defaultOrderBy = "sl.sol_id ASC";
   let queryOrderBy = "";
   let total = 0;
-  const { orderBy, filterByCountry, filterByString } = params;
+  const { orderBy, filterCountry, filterByString } = params;
   let condition = `WHERE sl.sol_id IS NOT NULL`;
   try {
     if (!userIsSysAdmin && !userIsAuthor) {
@@ -40,9 +40,8 @@ module.exports = async (object, params, ctx) => {
     if (queryOrderBy === "") {
       queryOrderBy = defaultOrderBy;
     }
-
-    if (filterByCountry && filterByCountry.length > 0) {
-      filterByCountry.forEach((country) => {
+    if (filterCountry && filterCountry.length > 0) {
+      filterCountry.forEach((country) => {
         Object.keys(country).forEach((key) => {
           if (/^\d+$/.test(country[key])) {
             condition = `${condition} AND cou.${key} = ${country[key]}`;
@@ -59,6 +58,7 @@ module.exports = async (object, params, ctx) => {
       );
       condition = `${condition} AND ( toLower(sls.sol_name_01) CONTAINS toLower("${value}"))`;
     }
+    console.log(condition);
     const countResult = await session.run(getSolCount(condition));
     if (countResult && countResult.records.length > 0) {
       const singleRecord = countResult.records[0];
