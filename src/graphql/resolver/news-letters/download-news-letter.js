@@ -131,8 +131,8 @@ module.exports = async (object, params, ctx) => {
         timeout: "100000",
       };
       // Temp for testing
-      // const filePath = `${__dirname}/../../../uploads/newsletter/test.pdf`;
-      // await htmlToPdfFile(pdfHtml, options, filePath);
+      const filePath = `${__dirname}/../../../uploads/newsletter/test.pdf`;
+      await htmlToPdfFile(pdfHtml, options, filePath);
       const contents = await htmlToPdfBuffer(pdfHtml, options);
       return contents.toString("base64");
     }
