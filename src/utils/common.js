@@ -178,31 +178,39 @@ const nlContentTransformLink = (
 ) => {
   let final = value;
   let href = constants.NEWSLETTER_SERVICE_PATH;
-  const pattern = constants.NL_CONTENT_TRANSFORM_LINK_REGEX;
-  let link = value && value.toString() ? value.toString().match(pattern) : "";
-  if (link && link.length && link[1]) {
-    link = link[1].split("*");
-    if (link && link.length) {
-      let year =
-        link[1] && link[1].split("/") && link[1].split("/").length
-          ? link[1].split("/")[1]
-          : "";
-      year = year ? year.match(/\d/g) : "";
-      year = year && year.length ? year.join("") : "";
-      const id = link[0];
-      const content = link[1];
-      if (year) {
-        href += `/${year}`;
+  const pattern = /\[\*NL_(.*?)\]/g;
+  const links =
+    value && value.toString() ? value.toString().match(pattern) : "";
+  if (links && links.length) {
+    links.forEach((data) => {
+      let link = data.toString();
+      link = link.split("*");
+      if (link && link.length) {
+        let year =
+          link[2] && link[2].split("/") && link[2].split("/").length
+            ? link[2].split("/")[1]
+            : "";
+        year = year ? year.match(/\d/g) : "";
+        year = year && year.length ? year.join("") : "";
+        let id = link[1].split("_");
+        id = id && id.length ? id[1] : "";
+        const content = link[2];
+        if (year) {
+          href += `/${year}`;
+        }
+        if (id) {
+          href += `/${id}`;
+        }
+        const anchor = `<a href="${href}" target="_blank">${content}</a>`;
+        final = final.toString().replace(data, anchor);
       }
-      if (id) {
-        href += `/${id}`;
-      }
-      const anchor = `<a style="color: #029fdb;" href="${frontendURL}${href}">${content}</a>`;
-      final = value.toString().replace(pattern, anchor);
-    }
+    });
   }
   const lPattern = constants.NL_CONTENT_TRANSFORM_REFERENCE_LINK_REGEX;
+  const lStartPattern = /\[\\(\*)L_(.*?)\]/;
   let lLink = final && final.toString() ? final.toString().match(lPattern) : "";
+  const lsLink =
+    final && final.toString() ? final.toString().match(lStartPattern) : "";
   if (lLink && lLink.length && lLink[1] && linkTranlate) {
     lLink = lLink[1].split("*");
     if (lLink && lLink.length && hrefOptions && hrefOptions.length > 0) {

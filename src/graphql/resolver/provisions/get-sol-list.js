@@ -58,7 +58,6 @@ module.exports = async (object, params, ctx) => {
       );
       condition = `${condition} AND ( toLower(sls.sol_name_01) CONTAINS toLower("${value}"))`;
     }
-    console.log(condition);
     const countResult = await session.run(getSolCount(condition));
     if (countResult && countResult.records.length > 0) {
       const singleRecord = countResult.records[0];
