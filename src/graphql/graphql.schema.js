@@ -861,7 +861,7 @@ const typeDefs = gql`
       first: Int
       offset: Int
       filterCountry: [_CountryFilter]
-      orderBy: [_Sol_StateOrdering]
+      orderBy: [_SolOrdering]
       filterByString: String
     ): SolCustom @isAdmin
     getCustomer(customer_id: Int!): CustomerCustom @isAuthenticated
