@@ -274,6 +274,35 @@ const typeDefs = gql`
     link_ord: Int
     link_url: String
   }
+  type Sol {
+    sol_date: _Neo4jDate
+    sol_id: Int
+    sol_no: String
+    sol_section: String
+  }
+
+  type Sol_State {
+    sol_id: Int
+    sol_link: String
+    sol_name_01: String
+    sol_name_02: String
+    sol_name_03: String
+    sol_page: String
+  }
+
+  type Sol_State {
+    sol_date: _Neo4jDate
+    sol_id: Int
+    sol_no: String
+    sol_section: String
+  }
+
+  type Sol_Type {
+    sol_type_desc: String
+    sol_type_desc_de: String
+    sol_type_desc_en: String
+    sol_type_id: Int
+  }
 
   type UserCustom {
     user_id: ID
