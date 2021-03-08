@@ -509,16 +509,18 @@ module.exports = {
       CONT300: "UID DE274785644",
     },
     FOOTER_DE: {
-      CONT240: "Verlag Luftverkehr, Inhaber Werner Klein",
-      CONT250: "Auenstraße 71, 85737 Ismaning, Deutschland",
+      CONT240:
+        "Institut für Österreichisches und Internationales Luftfahrtrecht",
+      CONT250: "Grieskai 76, 8020 Graz, Österreich",
       CONT260: "https://www.avi-law.com/",
-      CONT300: "UID DE274785644",
+      CONT300: "",
     },
     FOOTER_EN: {
-      CONT240: "Verlag Luftverkehr, Inhaber Werner Klein",
-      CONT250: "Auenstraße 71, 85737 Ismaning, Deutschland",
+      CONT240:
+        "Institut für Österreichisches und Internationales Luftfahrtrecht",
+      CONT250: "Grieskai 76, 8020 Graz, Österreich",
       CONT260: "https://www.avi-law.com/",
-      CONT300: "UID DE274785644",
+      CONT300: "",
     },
     NL_INFO_DE: {
       CREATOR: "erstellt am",
