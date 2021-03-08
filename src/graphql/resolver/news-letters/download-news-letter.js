@@ -128,6 +128,7 @@ module.exports = async (object, params, ctx) => {
         header: {
           height: "50px",
         },
+        timeout: "100000",
       };
       // Temp for testing
       // const filePath = `${__dirname}/../../../uploads/newsletter/test.pdf`;
