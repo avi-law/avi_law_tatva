@@ -3,6 +3,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const ejs = require("ejs");
+const QRCode = require("qrcode");
 const fs = require("fs");
 const { frontendURL, defaultLanguage } = require("../../../config/application");
 const driver = require("../../../config/db");
@@ -45,28 +46,8 @@ module.exports = async (object, params, ctx) => {
     const result = await getNewsletterDetails(object, params, ctx);
     const listLinks = await getLinkList();
     if (result) {
-      const filePath = `${__dirname}/../../../uploads/newsletter/test.pdf`;
-      // const filePath = '';
-      // if (!fs.existsSync(filePath)) {
-      //   throw new APIError({
-      //     lang: userSurfLang,
-      //     message: "FILE_NOT_FOUND",
-      //   });
-      // }
-      const nlDiretory = `${__dirname}/../../../uploads/newsletter`;
-      fs.access(nlDiretory, (err) => {
-        if (err && err.code === "ENOENT") {
-          fs.mkdir(nlDiretory, (error) => {
-            if (error) {
-              console.error("NL directory not created :", error);
-              throw new APIError({
-                lang: userSurfLang,
-                message: "INTERNAL_SERVER_ERROR",
-              });
-            }
-          });
-        }
-      });
+      const nlYear = result.nl.nl_date.year;
+      const qrURL = `${frontendURL}${constants.NEWSLETTER_SERVICE_PATH}/${nlYear}/${nlId}`;
       const filename = `newsletter`;
       const pdfContent = constants.PDF[`FOOTER_${lang.toUpperCase()}`];
       const nlInfo = constants.PDF[`NL_INFO_${lang.toUpperCase()}`];
@@ -101,12 +82,13 @@ module.exports = async (object, params, ctx) => {
       const hour = plus0(currentDate.getHours());
       const minute = plus0(currentDate.getMinutes());
       const currentTimestamp = `${date}.${month}.${year} ${hour}:${minute}`;
-
+      const generateQR = await QRCode.toDataURL(qrURL);
       const pdfHtml = await getNewsletterPdf(`${filename}.ejs`, {
         frontendURL,
         createdLog,
         updatedLog,
         ...nlInfo,
+        generateQR,
         currentTimestamp,
         nl_ord: common.transformNLOrderNumber(result.nl.nl_ord),
         iso_3166_1_alpha_2: result.country.iso_3166_1_alpha_2,
@@ -143,9 +125,13 @@ module.exports = async (object, params, ctx) => {
             </footer>`,
           },
         },
+        header: {
+          height: "50px",
+        },
       };
       // Temp for testing
-      await htmlToPdfFile(pdfHtml, options, filePath);
+      // const filePath = `${__dirname}/../../../uploads/newsletter/test.pdf`;
+      // await htmlToPdfFile(pdfHtml, options, filePath);
       const contents = await htmlToPdfBuffer(pdfHtml, options);
       return contents.toString("base64");
     }

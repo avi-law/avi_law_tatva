@@ -16,15 +16,17 @@
   </head>
   <body
     style="font-family: 'Open Sans', sans-serif;font-weight: 400;margin: 0;padding: 30px 0;font-size:11px;color:#000;">
-    <div class="wrapper" style="max-width: 1140px;padding: 0 30px;margin: 0 auto;">
+    <div class="wrapper" style="max-width: 1140px;padding: 0 40px;margin: 0 auto;">
       <header style="width: 100%;margin-bottom: 50px;">
         <div class="left-logo" style="width: 180px;height: auto; float: left;"><img
-            src="https://avi-law.com/img/Logo_AVI-LAW.png" alt="Avi-Law" style="max-width: 100%;"></div>
-        <div class="right-logo" style="width: 180px;height: auto; float:right"><img
-            src="https://avi-law.com/img/Logo_AVI-LAW.png" alt="Avi-Law" style="max-width: 100%;"></div>
+            src="<%- frontendURL %>assets/logos/avi_law_logo.png" alt="Avi-Law" style="max-width: 100%;"></div>
+            <% if( typeof(generateQR) !=="undefined" ) { %>
+              <div class="right-logo" style="width: 100px;height: auto; float:right"><img
+                src="<%- generateQR %>" alt="Avi-Law" style="max-width: 100%;"></div>
+            <% } %>
         <div style="clear: both;"></div>
       </header>
-      <main class="main-wrapper">
+      <main class="main-wrappcccccer">
         <section>
           <div style="margin-bottom: 5.5vh;">
             <h3
@@ -78,7 +80,7 @@
             </div>
             </p>
           </div>
-          <div style="margin-top: 10vh; font-size: 8px;">
+          <div style="margin-top: 10vh;">
             <% if( typeof(currentTimestamp) !=="undefined" ) { %>
               pdf-downloaded: <%-currentTimestamp%>
             <% } %>
