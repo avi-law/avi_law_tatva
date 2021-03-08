@@ -45,7 +45,6 @@ module.exports = async (object, params, ctx) => {
     const result = await getNewsletterDetails(object, params, ctx);
     const listLinks = await getLinkList();
     if (result) {
-      // console.log(result);
       const filePath = `${__dirname}/../../../uploads/newsletter/test.pdf`;
       // const filePath = '';
       // if (!fs.existsSync(filePath)) {
@@ -145,6 +144,7 @@ module.exports = async (object, params, ctx) => {
           },
         },
       };
+      // Temp for testing
       await htmlToPdfFile(pdfHtml, options, filePath);
       const contents = await htmlToPdfBuffer(pdfHtml, options);
       return contents.toString("base64");

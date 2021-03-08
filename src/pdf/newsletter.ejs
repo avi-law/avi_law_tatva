@@ -1,77 +1,90 @@
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-  <title>Avi-Law</title>
-  <meta name="msapplication-TileColor" content="#ffffff">
-  <meta name="theme-color" content="#ffffff">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-  <link href="https://sandbox.avi-law.com/assets/styles/tinymce-custom.css" rel="stylesheet">
-</head>
-<body style="font-family: 'Open Sans', sans-serif;font-weight: 400;margin: 0;padding: 11.5vh 0;font-size:6.5px;color:#000;">
-  <div class="wrapper" style="max-width: 1140px;padding: 0 70px;margin: 0 auto;">
-      <header style="width: 100%;margin-bottom: 8.5vh;">
-        <div><img src="https://sandbox.avi-law.com/assets/logos/logo-avi-law.jpg" alt="Avi-Law" style="max-width: 100%;"></div>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Avi-Law</title>
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://sandbox.avi-law.com/assets/styles/tinymce-custom.css" rel="stylesheet">
+    <style>
+      a {
+        color: #029fdb !important;
+      }
+    </style>
+  </head>
+  <body
+    style="font-family: 'Open Sans', sans-serif;font-weight: 400;margin: 0;padding: 30px 0;font-size:11px;color:#000;">
+    <div class="wrapper" style="max-width: 1140px;padding: 0 30px;margin: 0 auto;">
+      <header style="width: 100%;margin-bottom: 50px;">
+        <div class="left-logo" style="width: 180px;height: auto; float: left;"><img
+            src="https://avi-law.com/img/Logo_AVI-LAW.png" alt="Avi-Law" style="max-width: 100%;"></div>
+        <div class="right-logo" style="width: 180px;height: auto; float:right"><img
+            src="https://avi-law.com/img/Logo_AVI-LAW.png" alt="Avi-Law" style="max-width: 100%;"></div>
+        <div style="clear: both;"></div>
       </header>
       <main class="main-wrapper">
-          <section>
-              <div style="margin-bottom: 5.5vh;">
-                <h3 style="line-height: 1.2; height: auto; font-size: 16px; font-weight: 700; text-align: center; margin: 12px 0;">
-                  <% if( typeof(nl_title_long) !=="undefined" ) { %>
-                    <%-nl_title_long%>
+        <section>
+          <div style="margin-bottom: 5.5vh;">
+            <h3
+              style="line-height: 1.2; height: auto; font-size: 16px; font-weight: 700; text-align: center; margin: 12px 0;">
+              <% if( typeof(nl_title_long) !=="undefined" ) { %>
+                <%-nl_title_long%>
+              <% } %>
+            </h3>
+          </div>
+          <div style="margin-bottom: 5.5vh;">
+            <% if( typeof(nl_text) !=="undefined" ) { %>
+              <%-nl_text%>
+            <% } %>
+          </div>
+          <div style="margin-top: 10vh;">
+            <p style="line-height: 1.5;color: #000;margin: 0;">
+            <div style="margin-top: 20px; background-color: #cdcdcd; padding: 10px; line-height: 1.2;">
+              <div>NL
+                <% if( typeof(nl_ord) !=="undefined" ) { %>
+                  <%-nl_ord%> -
+                <% } %>
+                <% if( typeof(iso_3166_1_alpha_2) !=="undefined" ) { %>
+                  <%-iso_3166_1_alpha_2%>,
+                <% } %>
+                <div style="display:inline;color:#000000">
+                  <% if( typeof(nl_date) !=="undefined" ) { %>
+                    <%-nl_date%>
                   <% } %>
-                </h3>
-              </div>
-              <div style="margin-bottom: 5.5vh;">
-                <% if( typeof(nl_text) !=="undefined" ) { %>
-                  <%-nl_text%>
-                <% } %>
-              </div>
-              <div style="margin-top: 10vh;">
-                <p style="font-size: 8.5px;line-height: 1.5;color: #000;margin: 0;">
-                  <div style="margin-top: 20px; background-color: #cdcdcd; padding: 10px; line-height: 1.2; font-size: 12px;">
-                    <div>NL
-                      <% if( typeof(nl_ord) !=="undefined" ) { %>
-                        <%-nl_ord%> -
-                      <% } %>
-                      <% if( typeof(iso_3166_1_alpha_2) !=="undefined" ) { %>
-                        <%-iso_3166_1_alpha_2%>,
-                      <% } %>
-                      <div style="display:inline;color:#000000">
-                        <% if( typeof(nl_date) !=="undefined" ) { %>
-                          <%-nl_date%>
-                        <% } %>
-                      </div>
-                    </div>
-                  <div>
-                    <% if( typeof(createdLog) !=="undefined" && typeof(createdLog.user_state) !=="undefined") { %>
-                      <% if( typeof(CREATOR) !=="undefined" ) { %> <%-CREATOR %> <% } %>
-                      <% if( typeof(createdLog.timestamp) !=="undefined" ) { %> <%-createdLog.timestamp %> <% } %>
-                      <% if( typeof(BY) !=="undefined" ) { %> <%-BY %> <% } %>
-                      <% if( typeof(createdLog.user_state.user_first_name) !=="undefined" ) { %> <%-createdLog.user_state.user_first_name%> <% } %>
-                      <% if( typeof(createdLog.user_state.user_middle_name) !=="undefined" ) { %> <%-createdLog.user_state.user_middle_name%> <% } %>
-                      <% if( typeof(createdLog.user_state.user_last_name) !=="undefined" ) { %> <%-createdLog.user_state.user_last_name%> <% } %>
-                    <% } %>
-                  </div>
-                  <div>
-                      <% if( typeof(updatedLog) !=="undefined" && typeof(updatedLog.user_state) !=="undefined") { %>
-                        <% if( typeof(UPDATER) !=="undefined" ) { %> <%-UPDATER %> <% } %>
-                        <% if( typeof(updatedLog.timestamp) !=="undefined" ) { %> <%-updatedLog.timestamp %> <% } %>
-                        <% if( typeof(BY) !=="undefined" ) { %> <%-BY %> <% } %>
-                        <% if( typeof(updatedLog.user_state.user_first_name) !=="undefined" ) { %> <%-updatedLog.user_state.user_first_name%> <% } %>
-                        <% if( typeof(updatedLog.user_state.user_middle_name) !=="undefined" ) { %> <%-updatedLog.user_state.user_middle_name%> <% } %>
-                        <% if( typeof(updatedLog.user_state.user_last_name) !=="undefined" ) { %> <%-updatedLog.user_state.user_last_name%> <% } %>
-                      <% } %>
-                    </div>
                 </div>
-                </p>
               </div>
-              <div style="margin-top: 10vh;">
-                <% if( typeof(currentTimestamp) !=="undefined" ) { %>
-                  pdf-downloaded: <%-currentTimestamp%>
+            <div>
+              <% if( typeof(createdLog) !=="undefined" && typeof(createdLog.user_state) !=="undefined") { %>
+                <% if( typeof(CREATOR) !=="undefined" ) { %> <%-CREATOR %> <% } %>
+                <% if( typeof(createdLog.timestamp) !=="undefined" ) { %> <%-createdLog.timestamp %> <% } %>
+                <% if( typeof(BY) !=="undefined" ) { %> <%-BY %> <% } %>
+                <% if( typeof(createdLog.user_state.user_first_name) !=="undefined" ) { %> <%-createdLog.user_state.user_first_name%> <% } %>
+                <% if( typeof(createdLog.user_state.user_middle_name) !=="undefined" ) { %> <%-createdLog.user_state.user_middle_name%> <% } %>
+                <% if( typeof(createdLog.user_state.user_last_name) !=="undefined" ) { %> <%-createdLog.user_state.user_last_name%> <% } %>
+              <% } %>
+            </div>
+            <div>
+                <% if( typeof(updatedLog) !=="undefined" && typeof(updatedLog.user_state) !=="undefined") { %>
+                <% if( typeof(UPDATER) !=="undefined" ) { %> <%-UPDATER %> <% } %>
+                  <% if( typeof(updatedLog.timestamp) !=="undefined" ) { %> <%-updatedLog.timestamp %> <% } %>
+                  <% if( typeof(BY) !=="undefined" ) { %> <%-BY %> <% } %>
+                  <% if( typeof(updatedLog.user_state.user_first_name) !=="undefined" ) { %> <%-updatedLog.user_state.user_first_name%> <% } %>
+                  <% if( typeof(updatedLog.user_state.user_middle_name) !=="undefined" ) { %> <%-updatedLog.user_state.user_middle_name%> <% } %>
+                  <% if( typeof(updatedLog.user_state.user_last_name) !=="undefined" ) { %> <%-updatedLog.user_state.user_last_name%> <% } %>
                 <% } %>
               </div>
-          </section>
+            </div>
+            </p>
+          </div>
+          <div style="margin-top: 10vh; font-size: 8px;">
+            <% if( typeof(currentTimestamp) !=="undefined" ) { %>
+              pdf-downloaded: <%-currentTimestamp%>
+            <% } %>
+          </div>
+        </section>
       </main>
-  </div>
-</body>
+    </div>
+  </body>
+</html>
