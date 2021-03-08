@@ -207,10 +207,7 @@ const nlContentTransformLink = (
     });
   }
   const lPattern = constants.NL_CONTENT_TRANSFORM_REFERENCE_LINK_REGEX;
-  const lStartPattern = /\[\\(\*)L_(.*?)\]/;
   let lLink = final && final.toString() ? final.toString().match(lPattern) : "";
-  const lsLink =
-    final && final.toString() ? final.toString().match(lStartPattern) : "";
   if (lLink && lLink.length && lLink[1] && linkTranlate) {
     lLink = lLink[1].split("*");
     if (lLink && lLink.length && hrefOptions && hrefOptions.length > 0) {
