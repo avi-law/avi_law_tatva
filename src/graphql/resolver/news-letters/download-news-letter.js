@@ -45,7 +45,7 @@ module.exports = async (object, params, ctx) => {
     const result = await getNewsletterDetails(object, params, ctx);
     const listLinks = await getLinkList();
     if (result) {
-      console.log(result);
+      // console.log(result);
       const filePath = `${__dirname}/../../../uploads/newsletter/test.pdf`;
       // const filePath = '';
       // if (!fs.existsSync(filePath)) {
@@ -145,10 +145,9 @@ module.exports = async (object, params, ctx) => {
           },
         },
       };
-      // return htmlToPdfBuffer(pdfHtml, options);
       await htmlToPdfFile(pdfHtml, options, filePath);
-      const contents = await fs.readFileSync(filePath, { encoding: "base64" });
-      return contents;
+      const contents = await htmlToPdfBuffer(pdfHtml, options);
+      return contents.toString("base64");
     }
     throw new APIError({
       lang: userSurfLang,
