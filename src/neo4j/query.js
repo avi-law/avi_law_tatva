@@ -444,6 +444,24 @@ RETURN nl, nls, cou, lang
 ORDER BY nl.nl_ord DESC
 LIMIT toInteger($limit)`;
 
+exports.getSolCount = (condition = "") => `
+MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
+${condition}
+RETURN count(*) as count`;
+
+exports.getSols = (
+  condition,
+  limit = 10,
+  skip = 0,
+  orderBy = "sl.sol_id ASC"
+) => `
+MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
+${condition}
+RETURN cou, sl, sls, lang
+ORDER BY ${orderBy}
+SKIP toInteger(${skip})
+LIMIT toInteger(${limit})`;
+
 exports.getNewsLetterListCount = (condition = "") => `
 MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:HAS_NL_STATE]->(nls:Nl_State)-[:NL_LANG_IS]->(lang:Language)
 ${condition}

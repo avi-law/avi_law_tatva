@@ -274,27 +274,23 @@ const typeDefs = gql`
     link_ord: Int
     link_url: String
   }
+
   type Sol {
     sol_date: _Neo4jDate
     sol_id: Int
     sol_no: String
     sol_section: String
+    sol_state: Sol_State @relation(name: "HAS_SOL_STATE", direction: OUT)
+    country: Country @relation(name: "SOL_STEMS_FROM_COUNTRY", direction: OUT)
   }
 
   type Sol_State {
-    sol_id: Int
     sol_link: String
     sol_name_01: String
     sol_name_02: String
     sol_name_03: String
     sol_page: String
-  }
-
-  type Sol_State {
-    sol_date: _Neo4jDate
-    sol_id: Int
-    sol_no: String
-    sol_section: String
+    lang: Language @relation(name: "SOL_STATE_LANGUAGE_IS", direction: OUT)
   }
 
   type Sol_Type {
@@ -336,6 +332,11 @@ const typeDefs = gql`
 
   type CustomersCustom {
     customers: [Customer_State]
+    total: Int
+  }
+
+  type SolCustom {
+    sols: [Sol]
     total: Int
   }
   type InvoiceCustom {
@@ -856,6 +857,13 @@ const typeDefs = gql`
       orderBy: [_Customer_StateOrdering]
       filterByString: String
     ): InvoiceCustomersCustom @isAdmin
+    getSolList(
+      first: Int
+      offset: Int
+      filterCountry: [_CountryFilter]
+      orderBy: [_Sol_StateOrdering]
+      filterByString: String
+    ): SolCustom @isAdmin
     getCustomer(customer_id: Int!): CustomerCustom @isAuthenticated
     getPreparedNewInvoiceDetails(customer_id: Int!): Invoice @isAuthenticated
     downloadInvoice(invoice_id: String!): String @isAuthenticated

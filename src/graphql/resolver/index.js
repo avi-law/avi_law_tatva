@@ -59,6 +59,7 @@ const deleteNewsletterEmail = require("./news-letter-email/delete-news-letter-em
 const getNewsLetterEmail = require("./news-letter-email/get-news-letter-email");
 const tweetNewsletter = require("./news-letters/tweet-news-letter");
 const downloadNewsletter = require("./news-letters/download-news-letter");
+const getSolList = require("./provisions/get-sol-list");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -123,6 +124,7 @@ const resolvers = {
     getNewsLetterTagForEmail,
     getNewsLetterEmailOrder,
     getNewsLetterEmail,
+    getSolList,
   },
 };
 
