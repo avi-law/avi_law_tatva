@@ -821,6 +821,11 @@ CALL {
 }
 RETURN sl, sls, slt`;
 
+exports.deleteSol = `
+MATCH (sl:Sol {sol_id: $sol_id})-[:HAS_SOL_STATE]->(sls:Sol_State)
+// DETACH DELETE sl, sls
+RETURN sl,sls`;
+
 exports.getCustomersCountQuery = (condition = "") => `
 MATCH (cs:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
 MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs)

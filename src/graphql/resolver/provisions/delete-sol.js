@@ -1,41 +1,32 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { APIError, constants, common } = require("../../../utils");
+const { APIError } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const {
-  deleteNewsletter,
-  logDeleteNewsletter,
-} = require("../../../neo4j/query");
+const { deleteSol } = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
-  const userEmail = user.user_email || null;
   const userIsSysAdmin = user.user_is_sys_admin || false;
   const userIsAuthor = user.user_is_author || false;
   params = JSON.parse(JSON.stringify(params));
-  const nlID = params.nl_id;
+  const slId = params.sol_id;
   const session = driver.session();
   try {
-    if ((!userIsSysAdmin && !userIsAuthor) || Number.isNaN(nlID)) {
+    if ((!userIsSysAdmin && !userIsAuthor) || Number.isNaN(slId)) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    const result = await session.run(deleteNewsletter, {
-      nl_id: Number(nlID),
+    const result = await session.run(deleteSol, {
+      sol_id: Number(slId),
     });
     if (result && result.records.length > 0) {
-      session.close();
-      common.loggingData(logDeleteNewsletter, {
-        type: constants.LOG_TYPE_ID.DELETE_NL,
-        current_user_email: userEmail,
-      });
       return true;
     }
-    console.error("Error: Newsletter not found");
+    console.error("Error:Sol not found");
     throw new APIError({
       lang: userSurfLang,
       message: "INTERNAL_SERVER_ERROR",

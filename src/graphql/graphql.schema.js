@@ -824,6 +824,8 @@ const typeDefs = gql`
     deleteNewsletterEmail(nl_email_ord: String!): Boolean @isAdmin
     tweetNewsletter(nl_id: Int!): Boolean @isAdmin
     createSol(data: CustomCreateSolInput!): Boolean @isAdmin
+    updateSol(sol_id: Int!, data: CustomCreateSolInput!): Boolean @isAdmin
+    deleteSol(sol_id: Int!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
