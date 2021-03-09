@@ -14,7 +14,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   const offset = params.offset || 0;
   const limit = params.first || 10;
-  const defaultOrderBy = "sl.sol_id ASC";
+  const defaultOrderBy = "sl.sol_date DESC";
   let queryOrderBy = "";
   let total = 0;
   const { orderBy, filterCountry, filterByString, lang } = params;

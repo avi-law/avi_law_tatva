@@ -453,7 +453,7 @@ exports.getSols = (
   condition,
   limit = 10,
   skip = 0,
-  orderBy = "sl.sol_id ASC"
+  orderBy = "sl.sol_date DESC"
 ) => `
 MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
 ${condition}
