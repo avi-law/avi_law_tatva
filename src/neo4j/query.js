@@ -793,21 +793,24 @@ exports.solQuery = (queryParams) => {
   }
   if (queryParams.isUpdate) {
     query = `${query}
-    WITH sl,sls
+    WITH sl, slt, cou
     CALL {
       WITH sl
       MATCH (sl)-[r1:SOL_STEMS_FROM_COUNTRY]->()
       MATCH (sl)-[r2:HAS_SOL_TYPE]->()
       DETACH DELETE r1, r2
       RETURN r1, r2
-    }`;
-  }
-
-  query = `${query}
+    }
+    MERGE (sl)-[:SOL_STEMS_FROM_COUNTRY]->(cou)
+    MERGE (sl)-[:HAS_SOL_TYPE]->(slt)
+    RETURN sl
+    `;
+  } else {
+    query = `${query}
     MERGE (sl)-[:SOL_STEMS_FROM_COUNTRY]->(cou)
     MERGE (sl)-[:HAS_SOL_TYPE]->(slt)
     RETURN sl`;
-
+  }
   return query;
 };
 

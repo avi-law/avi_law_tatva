@@ -14,11 +14,11 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   const offset = params.offset || 0;
   const limit = params.first || 10;
-  const defaultOrderBy = "sl.sol_date DESC";
+  const defaultOrderBy = "sl.sol_date DESC, sl.sol_id DESC";
   let queryOrderBy = "";
   let total = 0;
   const { orderBy, filterCountry, filterByString, lang } = params;
-  let condition = `WHERE lang.iso_639_1 = "${lang}" `;
+  let condition = `WHERE sl.sol_id IS NOT NULL `;
   try {
     if (!userIsSysAdmin && !userIsAuthor) {
       throw new APIError({

@@ -14,7 +14,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const { data } = params;
-  const solID = params.nl_id;
+  const solID = params.sol_id;
   const isValidDE = true;
   const isValidEN = true;
   try {
@@ -42,8 +42,6 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
-    console.log(solQuery(queryParams));
-    return true;
     const result = await session.run(solQuery(queryParams), {
       queryParams,
     });
