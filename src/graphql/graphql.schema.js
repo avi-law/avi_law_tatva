@@ -691,6 +691,29 @@ const typeDefs = gql`
     updatedLog: [customLog]
     country: Country
   }
+  type CustomSol {
+    sol_date: _Neo4jDate
+    sol_id: Int
+    sol_no: String
+    sol_section: String
+  }
+  type CustomSolState {
+    sol_link: String
+    sol_name_01: String
+    sol_name_02: String
+    sol_name_03: String
+    sol_page: String
+  }
+  type LangSolState {
+    de: CustomSolState
+    en: CustomSolState
+  }
+
+  type GetCustomSol {
+    sl: CustomSol
+    sls: LangSolState
+    sol_type_id: Int
+  }
 
   type NLEmailStateEN {
     nl_email_subject: String
@@ -869,6 +892,7 @@ const typeDefs = gql`
     getNewsLetterTagForEmail: [GetNLEmailTagCustom]
     getNewsLetterEmailOrder: String
     getSolId: Int!
+    getSol(sol_id: Int!): GetCustomSol @isAuthenticated
     getCustomers(
       first: Int
       offset: Int

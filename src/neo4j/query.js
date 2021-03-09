@@ -797,17 +797,29 @@ exports.solQuery = (queryParams) => {
     CALL {
       WITH sl
       MATCH (sl)-[r1:SOL_STEMS_FROM_COUNTRY]->()
-      DETACH DELETE r1
-      RETURN r1
+      MATCH (sl)-[r2:HAS_SOL_TYPE]->()
+      DETACH DELETE r1, r2
+      RETURN r1, r2
     }`;
   }
 
   query = `${query}
     MERGE (sl)-[:SOL_STEMS_FROM_COUNTRY]->(cou)
+    MERGE (sl)-[:HAS_SOL_TYPE]->(slt)
     RETURN sl`;
 
   return query;
 };
+
+exports.getSol = `
+MATCH (sl:Sol)-[:HAS_SOL_TYPE]->(slt:Sol_Type)
+WHERE sl.sol_id = $sol_id
+CALL {
+  WITH sl
+  MATCH (sl)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
+  RETURN collect({ sls: sls, lang: lang }) AS sls
+}
+RETURN sl, sls, slt`;
 
 exports.getCustomersCountQuery = (condition = "") => `
 MATCH (cs:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
