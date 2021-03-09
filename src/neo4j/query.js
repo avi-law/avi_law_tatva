@@ -756,6 +756,59 @@ exports.newsletterEmailQuery = (queryParams) => {
   return query;
 };
 
+exports.solQuery = (queryParams) => {
+  let query = "";
+  if (!queryParams.isUpdate) {
+    query = `
+    ${query}
+    MATCH (sl:Sol) WITH MAX(sl.sol_id) + 1 AS max_sol_id`;
+  }
+  query = `
+  ${query}
+  MATCH (slt:Sol_Type {sol_type_id: ${queryParams.sol_type_id}})-[:SOL_TYPE_STEMS_FROM_COUNTRY]->(cou:Country)
+  MATCH (lang1:Language {iso_639_1: "de"})
+  MATCH (lang2:Language {iso_639_1: "en"})`;
+  if (!queryParams.isUpdate) {
+    query = `
+    ${query}
+    MERGE (sl:Sol {sol_id: max_sol_id })`;
+  } else {
+    query = `
+    ${query}
+    MATCH (sl:Sol {sol_id: ${queryParams.sl.sol_id} })`;
+  }
+  query = `
+  ${query}
+  SET sl.sol_date = Date({ year: ${queryParams.sl.sol_date.year}, month: ${queryParams.sl.sol_date.month} , day: ${queryParams.sl.sol_date.day}}) , sl.sol_no = "${queryParams.sl.sol_no}", sl.sol_section = "${queryParams.sl.sol_section}"`;
+
+  if (queryParams.isValidDE) {
+    query = `${query}
+    MERGE (sl)-[:HAS_SOL_STATE]->(sls_de:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang1)
+    SET sls_de = $queryParams.sls.de`;
+  }
+  if (queryParams.isValidEN) {
+    query = `${query}
+    MERGE (sl)-[:HAS_SOL_STATE]->(sls_en:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang2)
+    SET sls_en = $queryParams.sls.en`;
+  }
+  if (queryParams.isUpdate) {
+    query = `${query}
+    WITH sl,sls
+    CALL {
+      WITH sl
+      MATCH (sl)-[r1:SOL_STEMS_FROM_COUNTRY]->()
+      DETACH DELETE r1
+      RETURN r1
+    }`;
+  }
+
+  query = `${query}
+    MERGE (sl)-[:SOL_STEMS_FROM_COUNTRY]->(cou)
+    RETURN sl`;
+
+  return query;
+};
+
 exports.getCustomersCountQuery = (condition = "") => `
 MATCH (cs:Customer_State)-[:IS_LOCATED_IN_COUNTRY]->(cou:Country)
 MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs)

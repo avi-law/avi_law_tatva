@@ -17,8 +17,8 @@ module.exports = async (object, params, ctx) => {
   const defaultOrderBy = "sl.sol_id ASC";
   let queryOrderBy = "";
   let total = 0;
-  const { orderBy, filterCountry, filterByString } = params;
-  let condition = `WHERE sl.sol_id IS NOT NULL`;
+  const { orderBy, filterCountry, filterByString, lang } = params;
+  let condition = `WHERE lang.iso_639_1 = "${lang}" `;
   try {
     if (!userIsSysAdmin && !userIsAuthor) {
       throw new APIError({

@@ -60,6 +60,8 @@ const getNewsLetterEmail = require("./news-letter-email/get-news-letter-email");
 const tweetNewsletter = require("./news-letters/tweet-news-letter");
 const downloadNewsletter = require("./news-letters/download-news-letter");
 const getSolList = require("./provisions/get-sol-list");
+const getSolId = require("./provisions/get-sol-id");
+const createSol = require("./provisions/create-sol");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -93,6 +95,7 @@ const resolvers = {
     updateNewsletterEmail,
     deleteNewsletterEmail,
     tweetNewsletter,
+    createSol,
   },
   Query: {
     User,
@@ -125,6 +128,7 @@ const resolvers = {
     getNewsLetterEmailOrder,
     getNewsLetterEmail,
     getSolList,
+    getSolId,
   },
 };
 

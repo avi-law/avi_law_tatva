@@ -589,6 +589,32 @@ const typeDefs = gql`
     iso_3166_1_alpha_2: NL_Country!
   }
 
+  input CustomSolInput {
+    sol_date: _Neo4jDate!
+    sol_id: Int!
+    sol_no: String!
+    sol_section: String!
+  }
+
+  input SolStateLangInput {
+    sol_link: String
+    sol_name_01: String!
+    sol_name_02: String
+    sol_name_03: String
+    sol_page: String
+  }
+
+  input CustomSolStateInput {
+    de: SolStateLangInput
+    en: SolStateLangInput
+  }
+
+  input CustomCreateSolInput {
+    sl: CustomSolInput!
+    sls: CustomSolStateInput
+    sol_type_id: Int!
+  }
+
   input CustomCreateNLInput {
     nl: CustomNLInput!
     nls: CustomNLStateInput
@@ -774,6 +800,7 @@ const typeDefs = gql`
     ): Boolean @isAdmin
     deleteNewsletterEmail(nl_email_ord: String!): Boolean @isAdmin
     tweetNewsletter(nl_id: Int!): Boolean @isAdmin
+    createSol(data: CustomCreateSolInput!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
@@ -841,6 +868,7 @@ const typeDefs = gql`
     ): CustomNLEmailList @isAdmin
     getNewsLetterTagForEmail: [GetNLEmailTagCustom]
     getNewsLetterEmailOrder: String
+    getSolId: Int!
     getCustomers(
       first: Int
       offset: Int
@@ -863,6 +891,7 @@ const typeDefs = gql`
       filterCountry: [_CountryFilter]
       orderBy: [_SolOrdering]
       filterByString: String
+      lang: LanguageForUser!
     ): SolCustom @isAdmin
     getCustomer(customer_id: Int!): CustomerCustom @isAuthenticated
     getPreparedNewInvoiceDetails(customer_id: Int!): Invoice @isAuthenticated
