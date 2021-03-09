@@ -298,6 +298,8 @@ const typeDefs = gql`
     sol_type_desc_de: String
     sol_type_desc_en: String
     sol_type_id: Int
+    country: Country
+      @relation(name: "SOL_TYPE_STEMS_FROM_COUNTRY", direction: OUT)
   }
 
   type UserCustom {
