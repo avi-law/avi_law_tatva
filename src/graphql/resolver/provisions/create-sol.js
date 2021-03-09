@@ -47,6 +47,8 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
+    console.log(solQuery(queryParams));
+    return true;
     const result = await session.run(solQuery(queryParams), {
       queryParams,
     });
