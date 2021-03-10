@@ -302,6 +302,20 @@ const typeDefs = gql`
       @relation(name: "SOL_TYPE_STEMS_FROM_COUNTRY", direction: OUT)
   }
 
+  type Rule_Book {
+    from: Float
+    rule_book_id: String
+    rule_book_qa_order: Int
+  }
+
+  type Rule_Book_Struct {
+    rule_book_struct_active: Boolean
+    rule_book_struct_id: String
+  }
+  type Rule_Book_Struct_State {
+    rule_book_struct_desc: String
+  }
+
   type UserCustom {
     user_id: ID
     user_first_name: String
@@ -760,6 +774,17 @@ const typeDefs = gql`
     sol_type_stems_from_country: [Country]
     has_sol_type_child: [CustomSolType]
   }
+  type RuleBookStructureStateCustom {
+    rule_book_struct_desc: String
+    rule_book_struct_language_is: [Language]
+  }
+
+  type CustomRuleBookStructure {
+    rule_book_struct_id: String
+    rule_book_struct_active: Boolean
+    has_rule_book_struct_state: [RuleBookStructureStateCustom]
+    has_rule_book_struct_child: [CustomRuleBookStructure]
+  }
 
   enum Subscription_Plan {
     SINGLE
@@ -907,6 +932,7 @@ const typeDefs = gql`
     getSolId: Int!
     getSol(sol_id: Int!): GetCustomSol @isAuthenticated
     getSolType: CustomSolType
+    getRuleBookStructure: CustomRuleBookStructure @isAuthenticated
     getCustomers(
       first: Int
       offset: Int
