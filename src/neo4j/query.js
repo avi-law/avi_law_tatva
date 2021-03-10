@@ -455,9 +455,14 @@ exports.getSols = (
   skip = 0,
   orderBy = "sl.sol_date DESC"
 ) => `
-MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
+MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)
 ${condition}
-RETURN cou, sl, sls, lang
+CALL {
+  WITH sl
+  MATCH (sl)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
+  RETURN collect({ sls: sls, lang: lang }) AS slState
+}
+RETURN cou, sl, slState as sls
 ORDER BY ${orderBy}
 SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;

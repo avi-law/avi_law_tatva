@@ -68,12 +68,41 @@ module.exports = async (object, params, ctx) => {
     );
     if (result && result.records.length > 0) {
       const sols = result.records.map((record) => {
+        const sls = {
+          de: {
+            sol_link: null,
+            sol_name_01: null,
+            sol_name_02: null,
+            sol_name_03: null,
+            sol_page: null,
+            lang: null,
+          },
+          en: {
+            sol_link: null,
+            sol_name_01: null,
+            sol_name_02: null,
+            sol_name_03: null,
+            sol_page: null,
+            lang: null,
+          },
+        };
+
+        if (record.get("sls") && record.get("sls").length > 0) {
+          record.get("sls").forEach((slState) => {
+            if (
+              slState.lang &&
+              slState.sls &&
+              slState.lang.properties.iso_639_1
+            ) {
+              sls[slState.lang.properties.iso_639_1] = slState.sls.properties;
+              sls[slState.lang.properties.iso_639_1].lang =
+                slState.lang.properties;
+            }
+          });
+        }
         const slResult = {
           ...common.getPropertiesFromRecord(record, "sl"),
-          sol_state: {
-            ...common.getPropertiesFromRecord(record, "sls"),
-            lang: common.getPropertiesFromRecord(record, "lang"),
-          },
+          sol_state: sls,
           country: common.getPropertiesFromRecord(record, "cou"),
         };
         return slResult;
