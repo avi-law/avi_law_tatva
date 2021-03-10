@@ -10,10 +10,10 @@ module.exports = async () => {
   try {
     const result = await session.run(getNewsLetterContentLink);
     nlLinkList = result.records.map((record) => {
-      const userResult = {
+      const linkResult = {
         ...common.getPropertiesFromRecord(record, "l"),
       };
-      return userResult;
+      return linkResult;
     });
     return nlLinkList;
   } catch (error) {

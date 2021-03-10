@@ -65,6 +65,7 @@ const createSol = require("./provisions/create-sol");
 const getSol = require("./provisions/get-sol");
 const updateSol = require("./provisions/update-sol");
 const deleteSol = require("./provisions/delete-sol");
+const getSolType = require("./provisions/get-sol-type");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -135,6 +136,7 @@ const resolvers = {
     getSolList,
     getSolId,
     getSol,
+    getSolType,
   },
 };
 

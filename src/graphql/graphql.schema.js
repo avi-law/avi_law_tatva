@@ -897,6 +897,7 @@ const typeDefs = gql`
     getNewsLetterEmailOrder: String
     getSolId: Int!
     getSol(sol_id: Int!): GetCustomSol @isAuthenticated
+    getSolType: [Sol_Type]
     getCustomers(
       first: Int
       offset: Int
