@@ -752,6 +752,15 @@ const typeDefs = gql`
     country: Country
   }
 
+  type CustomSolType {
+    sol_type_desc: String
+    sol_type_desc_de: String
+    sol_type_desc_en: String
+    sol_type_id: Int
+    sol_type_stems_from_country: [Country]
+    has_sol_type_child: [CustomSolType]
+  }
+
   enum Subscription_Plan {
     SINGLE
     MULTIPLE
@@ -897,7 +906,7 @@ const typeDefs = gql`
     getNewsLetterEmailOrder: String
     getSolId: Int!
     getSol(sol_id: Int!): GetCustomSol @isAuthenticated
-    getSolType: [Sol_Type]
+    getSolType: CustomSolType
     getCustomers(
       first: Int
       offset: Int

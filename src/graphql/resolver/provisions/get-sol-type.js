@@ -8,10 +8,10 @@ module.exports = async () => {
   try {
     const result = await session.run(getSolType);
     solTypeList = result.records.map((record) => {
-      const typeResult = record.get("value").has_sol_type_child;
+      const typeResult = record.get("value");
       return typeResult;
     });
-    console.log(solTypeList[0]);
+    // console.log(JSON.stringify(solTypeList[0]));
     return solTypeList[0];
   } catch (error) {
     session.close();
