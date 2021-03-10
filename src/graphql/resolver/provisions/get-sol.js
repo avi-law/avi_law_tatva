@@ -44,7 +44,7 @@ module.exports = async (object, params) => {
         return {
           sl: common.getPropertiesFromRecord(record, "sl"),
           sls,
-          sol_type_id: slt.sol_type_id,
+          sol_type_id: slt ? slt.sol_type_id : null,
         };
       });
       return solResultDetailsArray[0];

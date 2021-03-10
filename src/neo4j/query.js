@@ -815,7 +815,8 @@ exports.solQuery = (queryParams) => {
 };
 
 exports.getSol = `
-MATCH (sl:Sol)-[:HAS_SOL_TYPE]->(slt:Sol_Type)
+MATCH (sl:Sol)
+OPTIONAL MATCH (sl)-[:HAS_SOL_TYPE]->(slt:Sol_Type)
 WHERE sl.sol_id = $sol_id
 CALL {
   WITH sl
