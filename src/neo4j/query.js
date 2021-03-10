@@ -841,7 +841,7 @@ RETURN sl, sls, slt`;
 
 exports.deleteSol = `
 MATCH (sl:Sol {sol_id: $sol_id})-[:HAS_SOL_STATE]->(sls:Sol_State)
-// DETACH DELETE sl, sls
+DETACH DELETE sl, sls
 RETURN sl,sls`;
 
 exports.getCustomersCountQuery = (condition = "") => `
