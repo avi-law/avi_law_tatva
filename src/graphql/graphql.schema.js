@@ -337,26 +337,7 @@ const typeDefs = gql`
     total: Int
   }
 
-  type customSolState {
-    en: Sol_State
-    de: Sol_State
-  }
-
-  type SolStateWithCountry {
-    sol_date: _Neo4jDate
-    sol_id: Int
-    sol_no: String
-    sol_section: String
-    country: Country
-    sol_state: customSolState
-  }
-
   type SolCustom {
-    sols: [SolStateWithCountry]
-    total: Int
-  }
-
-  type SolCustom1 {
     sols: [Sol]
     total: Int
   }
