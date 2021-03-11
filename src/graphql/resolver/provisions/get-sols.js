@@ -112,7 +112,8 @@ module.exports = async (object, params, ctx) => {
           ...common.getPropertiesFromRecord(record, "sl"),
           sol_state: sls,
           country: common.getPropertiesFromRecord(record, "cou"),
-          languageDisplay: languages.length > 0 ? languages.join(" / ") : "-",
+          languageDisplay:
+            languages.length > 0 ? languages.sort().join(" / ") : "-",
         };
         return slResult;
       });
