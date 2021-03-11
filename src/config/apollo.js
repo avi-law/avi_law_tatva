@@ -24,6 +24,14 @@ const excludeMutation = [
   "Log_Type",
   "NewsletterCustom",
   "NL_Article",
+  "Rule_Book_Tag",
+  "Sol_State",
+  "Sol_Type",
+  "Sol",
+  "Link",
+  "Ref_Link",
+  "NL_Email",
+  "NL",
 ];
 const excludeQuery = [
   // "User",

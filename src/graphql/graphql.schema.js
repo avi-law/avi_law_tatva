@@ -316,6 +316,13 @@ const typeDefs = gql`
     rule_book_struct_desc: String
   }
 
+  type Rule_Book_Tag {
+    rule_book_tag_id: String
+    rule_book_tag_desc_de: String
+    rule_book_tag_desc_en: String
+    rule_book_tag_order: Int
+  }
+
   type UserCustom {
     user_id: ID
     user_first_name: String
