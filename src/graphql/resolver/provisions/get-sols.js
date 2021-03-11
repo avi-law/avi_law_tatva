@@ -57,14 +57,18 @@ module.exports = async (object, params, ctx) => {
         constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
         ""
       );
-      condition = `${condition} AND ( sl.sol_id CONTAINS "${value}")`;
+      if (/^\d+$/.test(filterByString)) {
+        condition = `${condition} AND (sl.sol_id = ${value} OR toLower(sls.sol_name_01) CONTAINS toLower("${value}"))`;
+      } else {
+        condition = `${condition} AND toLower(sls.sol_name_01) CONTAINS toLower("${value}")`;
+      }
     }
     const countResult = await session.run(getSolsCount(condition));
     if (countResult && countResult.records.length > 0) {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
-    console.log(getSols(condition, limit, offset, queryOrderBy));
+    // console.log( getSols(condition, limit, offset, queryOrderBy));
     const result = await session.run(
       getSols(condition, limit, offset, queryOrderBy)
     );
@@ -108,7 +112,6 @@ module.exports = async (object, params, ctx) => {
           sol_state: sls,
           country: common.getPropertiesFromRecord(record, "cou"),
         };
-        console.log(slResult);
         return slResult;
       });
       return {
