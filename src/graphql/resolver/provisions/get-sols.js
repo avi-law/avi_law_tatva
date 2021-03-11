@@ -3,7 +3,7 @@
 const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const { getSolListCount, getSolList } = require("../../../neo4j/query");
+const { getSolsCount, getSols } = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
@@ -17,8 +17,8 @@ module.exports = async (object, params, ctx) => {
   const defaultOrderBy = "sl.sol_date DESC, sl.sol_id DESC";
   let queryOrderBy = "";
   let total = 0;
-  const { orderBy, filterCountry, filterByString, lang } = params;
-  let condition = `WHERE lang.iso_639_1 = "${lang}" `;
+  const { orderBy, filterCountry, filterByString } = params;
+  let condition = `WHERE sl.sol_id IS NOT NULL `;
   // let condition = `WHERE sl.sol_id IS NOT NULL `;
   try {
     if (!userIsSysAdmin && !userIsAuthor) {
@@ -57,26 +57,58 @@ module.exports = async (object, params, ctx) => {
         constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
         ""
       );
-      condition = `${condition} AND ( toLower(sls.sol_name_01) CONTAINS toLower("${value}"))`;
+      condition = `${condition} AND ( sl.sol_id CONTAINS "${value}")`;
     }
-    const countResult = await session.run(getSolListCount(condition));
+    const countResult = await session.run(getSolsCount(condition));
     if (countResult && countResult.records.length > 0) {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
+    console.log(getSols(condition, limit, offset, queryOrderBy));
     const result = await session.run(
-      getSolList(condition, limit, offset, queryOrderBy)
+      getSols(condition, limit, offset, queryOrderBy)
     );
     if (result && result.records.length > 0) {
       const sols = result.records.map((record) => {
+        const sls = {
+          de: {
+            sol_link: null,
+            sol_name_01: null,
+            sol_name_02: null,
+            sol_name_03: null,
+            sol_page: null,
+            lang: null,
+          },
+          en: {
+            sol_link: null,
+            sol_name_01: null,
+            sol_name_02: null,
+            sol_name_03: null,
+            sol_page: null,
+            lang: null,
+          },
+        };
+
+        if (record.get("sls") && record.get("sls").length > 0) {
+          record.get("sls").forEach((slState) => {
+            if (
+              slState.lang &&
+              slState.sls &&
+              slState.lang.properties.iso_639_1
+            ) {
+              sls[slState.lang.properties.iso_639_1] = slState.sls.properties;
+              sls[slState.lang.properties.iso_639_1].lang =
+                slState.lang.properties;
+            }
+          });
+        }
+
         const slResult = {
           ...common.getPropertiesFromRecord(record, "sl"),
-          sol_state: {
-            ...common.getPropertiesFromRecord(record, "sls"),
-            lang: common.getPropertiesFromRecord(record, "lang"),
-          },
+          sol_state: sls,
           country: common.getPropertiesFromRecord(record, "cou"),
         };
+        console.log(slResult);
         return slResult;
       });
       return {

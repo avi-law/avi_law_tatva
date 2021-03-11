@@ -355,6 +355,26 @@ const typeDefs = gql`
     sols: [Sol]
     total: Int
   }
+
+  type customSolState {
+    en: Sol_State
+    de: Sol_State
+  }
+
+  type SolStateWithCountry {
+    sol_date: _Neo4jDate
+    sol_id: Int
+    sol_no: String
+    sol_section: String
+    country: Country
+    sol_state: customSolState
+  }
+
+  type GetSolsCustom {
+    sols: [SolStateWithCountry]
+    total: Int
+  }
+
   type InvoiceCustom {
     invoices: [Invoice]
     total: Int
@@ -614,7 +634,7 @@ const typeDefs = gql`
 
   input SolStateLangInput {
     sol_link: String
-    sol_name_01: String!
+    sol_name_01: String
     sol_name_02: String
     sol_name_03: String
     sol_page: String
@@ -957,6 +977,13 @@ const typeDefs = gql`
       filterByString: String
       lang: LanguageForUser!
     ): SolCustom @isAdmin
+    getSols(
+      first: Int
+      offset: Int
+      filterCountry: [_CountryFilter]
+      orderBy: [_SolOrdering]
+      filterByString: String
+    ): GetSolsCustom @isAdmin
     getCustomer(customer_id: Int!): CustomerCustom @isAuthenticated
     getPreparedNewInvoiceDetails(customer_id: Int!): Invoice @isAuthenticated
     downloadInvoice(invoice_id: String!): String @isAuthenticated

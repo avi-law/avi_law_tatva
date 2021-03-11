@@ -60,6 +60,7 @@ const getNewsLetterEmail = require("./news-letter-email/get-news-letter-email");
 const tweetNewsletter = require("./news-letters/tweet-news-letter");
 const downloadNewsletter = require("./news-letters/download-news-letter");
 const getSolList = require("./provisions/get-sol-list");
+const getSols = require("./provisions/get-sols");
 const getSolId = require("./provisions/get-sol-id");
 const createSol = require("./provisions/create-sol");
 const getSol = require("./provisions/get-sol");
@@ -139,6 +140,7 @@ const resolvers = {
     getSol,
     getSolType,
     getRuleBookStructure,
+    getSols,
   },
 };
 

@@ -444,12 +444,12 @@ RETURN nl, nls, cou, lang
 ORDER BY nl.nl_ord DESC
 LIMIT toInteger($limit)`;
 
-exports.getSolCount = (condition = "") => `
+exports.getSolListCount = (condition = "") => `
 MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
 ${condition}
 RETURN count(*) as count`;
 
-exports.getSols = (
+exports.getSolList = (
   condition,
   limit = 10,
   skip = 0,
@@ -461,6 +461,29 @@ RETURN cou, sl, sls, lang
 ORDER BY ${orderBy}
 SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;
+
+exports.getSols = (
+  condition,
+  limit = 10,
+  skip = 0,
+  orderBy = "sl.sol_date DESC"
+) => `
+MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)
+${condition}
+CALL {
+  WITH sl
+  MATCH (sl)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
+  RETURN collect({ sls: sls, lang: lang }) AS slState
+}
+RETURN cou, sl, slState as sls
+ORDER BY ${orderBy}
+SKIP toInteger(${skip})
+LIMIT toInteger(${limit})`;
+
+exports.getSolsCount = (condition = "") => `
+MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)
+${condition}
+RETURN count(*) as count`;
 
 exports.getSolType = `
 MATCH path=(st1:Sol_Type)-[:HAS_SOL_TYPE_CHILD*0..]->(st2:Sol_Type)-[:SOL_TYPE_STEMS_FROM_COUNTRY]->(cou:Country)
