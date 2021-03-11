@@ -368,6 +368,7 @@ const typeDefs = gql`
     sol_section: String
     country: Country
     sol_state: customSolState
+    languageDisplay: String
   }
 
   type GetSolsCustom {
