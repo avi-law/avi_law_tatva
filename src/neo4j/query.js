@@ -822,11 +822,21 @@ exports.solQuery = (queryParams) => {
     query = `${query}
     MERGE (sl)-[:HAS_SOL_STATE]->(sls_de:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang1)
     SET sls_de = $queryParams.sls.de`;
+  } else if (!queryParams.isValidDE && queryParams.isUpdate) {
+    query = `${query}
+    WITH sl, slt, cou, lang1, lang2
+    MATCH (sl)-[:HAS_SOL_STATE]->(sls_de:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang1)
+    DETACH DELETE sls_de`;
   }
   if (queryParams.isValidEN) {
     query = `${query}
     MERGE (sl)-[:HAS_SOL_STATE]->(sls_en:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang2)
     SET sls_en = $queryParams.sls.en`;
+  } else if (!queryParams.isValidEN && queryParams.isUpdate) {
+    query = `${query}
+    WITH sl, slt, cou, lang1, lang2
+    MATCH (sl)-[:HAS_SOL_STATE]->(sls_en:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang2)
+    DETACH DELETE sls_en`;
   }
   if (queryParams.isUpdate) {
     query = `${query}

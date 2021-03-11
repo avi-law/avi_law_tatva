@@ -15,8 +15,8 @@ module.exports = async (object, params, ctx) => {
   params = JSON.parse(JSON.stringify(params));
   const { data } = params;
   const solID = params.sol_id;
-  let isValidDE = true;
-  let isValidEN = true;
+  let isValidDE = false;
+  let isValidEN = false;
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
