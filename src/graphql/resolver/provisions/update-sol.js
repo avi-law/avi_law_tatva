@@ -15,8 +15,8 @@ module.exports = async (object, params, ctx) => {
   params = JSON.parse(JSON.stringify(params));
   const { data } = params;
   const solID = params.sol_id;
-  const isValidDE = true;
-  const isValidEN = true;
+  let isValidDE = true;
+  let isValidEN = true;
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
@@ -31,6 +31,13 @@ module.exports = async (object, params, ctx) => {
       if (data.sls.de) {
         data.sls.en = common.cleanObject(data.sls.en);
       }
+    }
+
+    if (data.sls && data.sls.de.sol_name_01) {
+      isValidDE = true;
+    }
+    if (data.sls && data.sls.en.sol_name_01) {
+      isValidEN = true;
     }
     data.sl.sol_id = solID;
     const queryParams = {
