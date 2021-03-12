@@ -48,8 +48,7 @@ const getNestedChildren = (array) => {
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
-  const userEmail = user.user_email || null;
-  const userSurfLang = user.user_surf_lang || defaultLanguage;
+  const userEmail = user ? user.user_email : null;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   let ruleBookList = [];
