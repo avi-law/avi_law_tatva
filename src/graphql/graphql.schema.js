@@ -802,16 +802,28 @@ const typeDefs = gql`
     sol_type_stems_from_country: [Country]
     has_sol_type_child: [CustomSolType]
   }
+
   type RuleBookStructureStateCustom {
     rule_book_struct_desc: String
     rule_book_struct_language_is: [Language]
   }
 
+  type RuleBookStructureStateByLanguage {
+    en: RuleBookStructureStateCustom
+    de: RuleBookStructureStateCustom
+  }
+
+  type languagePreferencesettings {
+    left: LanguageForUser
+    right: LanguageForUser
+  }
+
   type CustomRuleBookStructure {
     rule_book_struct_id: String
     rule_book_struct_active: Boolean
-    has_rule_book_struct_state: [RuleBookStructureStateCustom]
+    has_rule_book_struct_state: RuleBookStructureStateByLanguage
     has_rule_book_struct_child: [CustomRuleBookStructure]
+    language_preference_settings: languagePreferencesettings
   }
 
   enum Subscription_Plan {
@@ -960,7 +972,7 @@ const typeDefs = gql`
     getSolId: Int!
     getSol(sol_id: Int!): GetCustomSol @isAuthenticated
     getSolType: CustomSolType
-    getRuleBookStructure: CustomRuleBookStructure @isAuthenticated
+    getRuleBookStructure: CustomRuleBookStructure @isUnAuthenticated
     getCustomers(
       first: Int
       offset: Int
