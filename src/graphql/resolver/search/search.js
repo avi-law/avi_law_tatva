@@ -5,19 +5,21 @@ const { common } = require("../../../utils");
 const { search } = require("../../../neo4j/query");
 
 const searchNl = async (user, params) => {
-  let userEmail = null;
-  if (user) {
-    userEmail = user.user_email;
-  }
+  const { country } = params;
   const searchNL = {
     nl_list: [],
     total: 0,
   };
+  if (country) {
+    country.push("EU");
+  }
+  const queryParams = {
+    ...params,
+    country,
+  };
   const session = driver.session();
   try {
-    const nlResult = await session.run(search(params), {
-      ...params,
-    });
+    const nlResult = await session.run(search(queryParams));
     if (nlResult && nlResult.records.length > 0) {
       const newsLetters = nlResult.records.map((record) => {
         const nls = {

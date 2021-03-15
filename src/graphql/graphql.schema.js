@@ -1026,7 +1026,11 @@ const typeDefs = gql`
     userEmailExists(user_email: String!): Boolean @isAuthenticated
     verifyInvitation(token: String!): CustomUser
     verifyEmail(token: String!): Boolean
-    search(lang: LanguageForUser!, text: String!): search @isUnAuthenticated
+    search(
+      lang: LanguageForUser!
+      text: String!
+      country: [NL_Country!]
+    ): search @isUnAuthenticated
   }
 `;
 

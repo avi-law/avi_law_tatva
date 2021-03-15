@@ -1211,16 +1211,26 @@ exports.register = (queryParams) => {
 };
 
 exports.search = (queryParams) => {
+  let nlCountry = "";
+  if (queryParams.country && queryParams.country.length > 0) {
+    queryParams.country.forEach((ln) => {
+      nlCountry = `${nlCountry}, "${ln.toUpperCase()}"`;
+    });
+  }
   let query = `
-  MATCH (nls:Nl_State)<-[:HAS_NL_STATE]-(nl:Nl)
+  MATCH (nls:Nl_State)<-[:HAS_NL_STATE]-(nl:Nl)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
   MATCH (nls)-[r3:NL_LANG_IS]->(lang:Language)
   WHERE nl.nl_active = true
   `;
   if (queryParams.lang) {
     query = `${query} AND lang.iso_639_1 = "${queryParams.lang}"`;
   }
+  if (queryParams.country) {
+    nlCountry = nlCountry.replace(/^,|,$/g, "");
+    query = `${query} AND cou.iso_3166_1_alpha_2 IN [${nlCountry}]`;
+  }
   if (queryParams.text) {
-    query = `${query} AND (toLower(nls.nl_title_long) CONTAINS toLower("${queryParams.text}") OR toLower(nls.nl_title_short) CONTAINS toLower("${queryParams.text}"))`;
+    query = `${query} AND (toLower(nls.nl_text) CONTAINS toLower("${queryParams.text}") OR toLower(nls.nl_title_long) CONTAINS toLower("${queryParams.text}") OR toLower(nls.nl_title_short) CONTAINS toLower("${queryParams.text}"))`;
   }
   query = `${query}
   CALL {
@@ -1229,7 +1239,7 @@ exports.search = (queryParams) => {
     RETURN collect({ nls: nls, lang: lang }) AS nlState
   }
   RETURN nl, nlState as nls
-  ORDER BY nl.nl_ord DESC`;
+  ORDER BY nl.nl_date DESC, nl.nl_ord DESC`;
 
   return query;
 };
