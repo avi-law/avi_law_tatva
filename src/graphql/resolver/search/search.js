@@ -1,8 +1,11 @@
 /* eslint-disable consistent-return */
-const _ = require("lodash");
 const driver = require("../../../config/db");
-const { common } = require("../../../utils");
-const { search } = require("../../../neo4j/query");
+const { common, constants } = require("../../../utils");
+const {
+  searchNLQuery,
+  getSolsCount,
+  getSols,
+} = require("../../../neo4j/query");
 
 const searchNl = async (user, params) => {
   const { country } = params;
@@ -19,7 +22,7 @@ const searchNl = async (user, params) => {
   };
   const session = driver.session();
   try {
-    const nlResult = await session.run(search(queryParams));
+    const nlResult = await session.run(searchNLQuery(queryParams));
     if (nlResult && nlResult.records.length > 0) {
       const newsLetters = nlResult.records.map((record) => {
         const nls = {
@@ -61,6 +64,110 @@ const searchNl = async (user, params) => {
     throw error;
   }
 };
+
+const searchSols = async (user, params) => {
+  const searchNL = {
+    sols: [],
+    total: 0,
+  };
+  const session = driver.session();
+  const offset = params.offset || 0;
+  const limit = params.first || 10;
+  const defaultOrderBy = "sl.sol_date DESC, sl.sol_id DESC";
+  let queryOrderBy = "";
+  let total = 0;
+  const { solsOrderBy, text, lang } = params;
+  let condition = `WHERE sl.sol_id IS NOT NULL `;
+  // let condition = `WHERE sl.sol_id IS NOT NULL `;
+  try {
+    if (solsOrderBy && solsOrderBy.length > 0) {
+      solsOrderBy.forEach((sl) => {
+        const field = sl.slice(0, sl.lastIndexOf("_"));
+        const last = sl.split("_").pop().toUpperCase();
+        if (queryOrderBy === "") {
+          queryOrderBy = `sl.${field} ${last}`;
+        } else {
+          queryOrderBy = `${queryOrderBy}, sl.${field} ${last}`;
+        }
+      });
+    }
+    if (queryOrderBy === "") {
+      queryOrderBy = defaultOrderBy;
+    }
+
+    if (text) {
+      const value = text.replace(
+        constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
+        ""
+      );
+      condition = `${condition} AND (toLower(sls.sol_name_01) CONTAINS toLower("${value}") OR toLower(sls.sol_name_02) CONTAINS toLower("${value}"))`;
+    }
+    const countResult = await session.run(getSolsCount(condition));
+    if (countResult && countResult.records.length > 0) {
+      const singleRecord = countResult.records[0];
+      total = singleRecord.get("count");
+    }
+    // console.log( getSols(condition, limit, offset, queryOrderBy));
+    const result = await session.run(
+      getSols(condition, limit, offset, queryOrderBy)
+    );
+    if (result && result.records.length > 0) {
+      const sols = result.records.map((record) => {
+        const languages = [];
+        const sls = {
+          de: {
+            sol_link: null,
+            sol_name_01: null,
+            sol_name_02: null,
+            sol_name_03: null,
+            sol_page: null,
+            lang: null,
+          },
+          en: {
+            sol_link: null,
+            sol_name_01: null,
+            sol_name_02: null,
+            sol_name_03: null,
+            sol_page: null,
+            lang: null,
+          },
+        };
+
+        if (record.get("sls") && record.get("sls").length > 0) {
+          record.get("sls").forEach((slState) => {
+            if (
+              slState.lang &&
+              slState.sls &&
+              slState.lang.properties.iso_639_1
+            ) {
+              sls[slState.lang.properties.iso_639_1] = slState.sls.properties;
+              sls[slState.lang.properties.iso_639_1].lang =
+                slState.lang.properties;
+              languages.push(slState.lang.properties.iso_639_1);
+            }
+          });
+        }
+        const slResult = {
+          ...common.getPropertiesFromRecord(record, "sl"),
+          sol_state: sls,
+          languageDisplay:
+            languages.length > 0 ? languages.sort().join(" / ") : "-",
+        };
+        return slResult;
+      });
+      return {
+        sols,
+        total,
+      };
+    }
+    session.close();
+    return [];
+  } catch (error) {
+    session.close();
+    throw error;
+  }
+};
+
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const response = {
@@ -68,10 +175,15 @@ module.exports = async (object, params, ctx) => {
       nl_list: [],
       total: 0,
     },
+    searchSols: {
+      sols: [],
+      total: 0,
+    },
   };
   const session = driver.session();
   try {
     response.searchNL = await searchNl(user, params);
+    response.searchSols = await searchSols(user, params);
     return response;
   } catch (error) {
     session.close();

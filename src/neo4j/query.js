@@ -1210,7 +1210,7 @@ exports.register = (queryParams) => {
   return query;
 };
 
-exports.search = (queryParams) => {
+exports.searchNLQuery = (queryParams) => {
   let nlCountry = "";
   if (queryParams.country && queryParams.country.length > 0) {
     queryParams.country.forEach((ln) => {

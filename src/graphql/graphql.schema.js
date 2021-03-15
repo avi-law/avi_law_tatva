@@ -873,6 +873,7 @@ const typeDefs = gql`
 
   type search {
     searchNL: searchNL
+    searchSols: GetSolsCustom
   }
 
   type Mutation {
@@ -1030,6 +1031,7 @@ const typeDefs = gql`
       lang: LanguageForUser!
       text: String!
       country: [NL_Country!]
+      solsOrderBy: [_Sol_StateOrdering!]
     ): search @isUnAuthenticated
   }
 `;
