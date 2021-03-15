@@ -871,7 +871,7 @@ const typeDefs = gql`
     total: Int
   }
 
-  type search {
+  type searchCustom {
     searchNL: searchNL
     searchSols: GetSolsCustom
   }
@@ -1032,7 +1032,7 @@ const typeDefs = gql`
       text: String!
       country: [NL_Country!]
       solsOrderBy: [_Sol_StateOrdering!]
-    ): search @isUnAuthenticated
+    ): searchCustom @isUnAuthenticated
   }
 `;
 
