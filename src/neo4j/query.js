@@ -1209,3 +1209,27 @@ exports.register = (queryParams) => {
   RETURN c, cs, u, us`;
   return query;
 };
+
+exports.search = (queryParams) => {
+  let query = `
+  MATCH (nls:Nl_State)<-[:HAS_NL_STATE]-(nl:Nl)
+  MATCH (nls)-[r3:NL_LANG_IS]->(lang:Language)
+  WHERE nl.nl_active = true
+  `;
+  if (queryParams.lang) {
+    query = `${query} AND lang.iso_639_1 = "${queryParams.lang}"`;
+  }
+  if (queryParams.text) {
+    query = `${query} AND (toLower(nls.nl_title_long) CONTAINS toLower("${queryParams.text}") OR toLower(nls.nl_title_short) CONTAINS toLower("${queryParams.text}"))`;
+  }
+  query = `${query}
+  CALL {
+    WITH nls
+    MATCH (nls)-[:NL_LANG_IS]->(lang:Language)
+    RETURN collect({ nls: nls, lang: lang }) AS nlState
+  }
+  RETURN nl, nlState as nls
+  ORDER BY nl.nl_ord DESC`;
+
+  return query;
+};
