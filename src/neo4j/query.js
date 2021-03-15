@@ -492,7 +492,7 @@ WITH COLLECT(path) AS paths
 CALL apoc.convert.toTree(paths) YIELD value
 RETURN value`;
 
-exports.getRuleBooks = `
+exports.getRuleBooksStructure = `
 MATCH path=(rbs1:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_CHILD*0..]->(rbs2:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang:Language)
 WHERE rbs1.rule_book_struct_id = 'Rule Root Object'
 WITH COLLECT(path) AS paths
