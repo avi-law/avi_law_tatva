@@ -864,6 +864,7 @@ const typeDefs = gql`
   type searchCustomNL {
     nl: CustomNL
     nls: CustomNLState
+    country: Country
   }
 
   type searchNL {

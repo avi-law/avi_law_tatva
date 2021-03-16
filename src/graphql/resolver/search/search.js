@@ -73,6 +73,7 @@ const searchNl = async (user, params) => {
         const nlResultArray = {
           nl: common.getPropertiesFromRecord(record, "nl"),
           nls,
+          country: common.getPropertiesFromRecord(record, "cou"),
         };
         return nlResultArray;
       });

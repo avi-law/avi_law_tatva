@@ -1238,7 +1238,7 @@ exports.searchNLQuery = (queryParams) => {
     MATCH (nls)-[:NL_LANG_IS]->(lang:Language)
     RETURN collect({ nls: nls, lang: lang }) AS nlState
   }
-  RETURN nl, nlState as nls
+  RETURN nl, nlState as nls, cou
   ORDER BY nl.nl_date DESC, nl.nl_ord DESC`;
 
   return query;
