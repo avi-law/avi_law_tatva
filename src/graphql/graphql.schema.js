@@ -1032,6 +1032,7 @@ const typeDefs = gql`
       lang: LanguageForUser!
       text: String!
       solsOrderBy: [_Sol_StateOrdering!]
+      showAll: Boolean
     ): GetSolsCustom @isUnAuthenticated
   }
 `;
