@@ -1,7 +1,11 @@
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
 const { common, constants } = require("../../../utils");
-const { getSolsCount, getSols, getUser } = require("../../../neo4j/query");
+const {
+  searchSolQueryCount,
+  searchSolQuery,
+  getUser,
+} = require("../../../neo4j/query");
 
 const getUserDetails = async (email) => {
   const session = driver.session();
@@ -51,9 +55,9 @@ module.exports = async (object, params, ctx) => {
         const field = sol.slice(0, sol.lastIndexOf("_"));
         const last = sol.split("_").pop().toUpperCase();
         if (queryOrderBy === "") {
-          queryOrderBy = `sls.${field} ${last}`;
+          queryOrderBy = `slState.${field} ${last}`;
         } else {
-          queryOrderBy = `${queryOrderBy}, sls.${field} ${last}`;
+          queryOrderBy = `${queryOrderBy}, slState.${field} ${last}`;
         }
       });
     }
@@ -77,18 +81,18 @@ module.exports = async (object, params, ctx) => {
         constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
         ""
       );
-      condition = `${condition} AND (toLower(sls.sol_name_01) CONTAINS toLower("${value}") OR toLower(sls.sol_name_02) CONTAINS toLower("${value}") OR toLower(sls.sol_name_03) CONTAINS toLower("${value}"))`;
+      condition = `${condition} AND (toLower(slState.sol_name_01) CONTAINS toLower("${value}") OR toLower(slState.sol_name_02) CONTAINS toLower("${value}") OR toLower(slState.sol_name_03) CONTAINS toLower("${value}"))`;
     }
     if (mainInterestCountry && !showAll) {
       condition = `${condition} AND cou.iso_3166_1_alpha_2 = "${mainInterestCountry}"`;
     }
-    const countResult = await session.run(getSolsCount(condition));
+    const countResult = await session.run(searchSolQueryCount(condition));
     if (countResult && countResult.records.length > 0) {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
     const result = await session.run(
-      getSols(condition, limit, offset, queryOrderBy)
+      searchSolQuery(condition, limit, offset, queryOrderBy)
     );
     if (result && result.records.length > 0) {
       const sols = result.records.map((record) => {

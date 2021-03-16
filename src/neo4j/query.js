@@ -485,6 +485,30 @@ ORDER BY ${orderBy}
 SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;
 
+exports.searchSolQueryCount = (condition = "") => `
+MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(slState:Sol_State)
+${condition}
+RETURN count (distinct sl) as count`;
+
+exports.searchSolQuery = (
+  condition,
+  limit = 10,
+  skip = 0,
+  orderBy = "sl.sol_date DESC"
+) => `
+MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(slState:Sol_State)
+${condition}
+CALL {
+  WITH sl
+  MATCH (sl)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
+  RETURN collect({ sls: sls, lang: lang }) AS sls
+}
+RETURN distinct sl, cou, sls, slState
+ORDER BY ${orderBy}
+SKIP toInteger(${skip})
+LIMIT toInteger(${limit})`;
+
+
 exports.getSolType = `
 MATCH path=(st1:Sol_Type)-[:HAS_SOL_TYPE_CHILD*0..]->(st2:Sol_Type)-[:SOL_TYPE_STEMS_FROM_COUNTRY]->(cou:Country)
 WHERE st1.sol_type_desc = 'Sol root object'
