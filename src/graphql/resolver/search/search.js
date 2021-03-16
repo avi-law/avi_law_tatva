@@ -5,7 +5,28 @@ const {
   searchNLQuery,
   getSolsCount,
   getSols,
+  getUser,
 } = require("../../../neo4j/query");
+
+const getUserDetails = async (email) => {
+  const session = driver.session();
+  const result = await session.run(getUser, { user_email: email });
+  if (result && result.records.length > 0) {
+    const userData = result.records.map((record) => {
+      const userResult = {
+        user: common.getPropertiesFromRecord(record, "u"),
+        user_state: common.getPropertiesFromRecord(record, "us"),
+        lang1: common.getPropertiesFromRecord(record, "lang1"),
+        lang2: common.getPropertiesFromRecord(record, "lang2"),
+        lang3: common.getPropertiesFromRecord(record, "lang3"),
+        cou1: common.getPropertiesFromRecord(record, "cou1"),
+        cou3: record.get("cou3"),
+      };
+      return userResult;
+    });
+    return userData[0];
+  }
+};
 
 const searchNl = async (user, params) => {
   const { country } = params;
@@ -66,10 +87,13 @@ const searchNl = async (user, params) => {
 };
 
 const searchSols = async (user, params) => {
-  const searchNL = {
-    sols: [],
-    total: 0,
-  };
+  const userEmail = user ? user.user_email : null;
+  let userDetails = null;
+  let mainInterestCountry = null;
+  if (userEmail) {
+    userDetails = await getUserDetails(userEmail);
+    mainInterestCountry = userDetails.cou1.iso_3166_1_alpha_2;
+  }
   const session = driver.session();
   const offset = params.offset || 0;
   const limit = params.first || 10;
@@ -102,12 +126,14 @@ const searchSols = async (user, params) => {
       );
       condition = `${condition} AND (toLower(sls.sol_name_01) CONTAINS toLower("${value}") OR toLower(sls.sol_name_02) CONTAINS toLower("${value}"))`;
     }
+    if (mainInterestCountry) {
+      condition = `${condition} AND cou.iso_3166_1_alpha_2 = "${mainInterestCountry}"`;
+    }
     const countResult = await session.run(getSolsCount(condition));
     if (countResult && countResult.records.length > 0) {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
-    // console.log( getSols(condition, limit, offset, queryOrderBy));
     const result = await session.run(
       getSols(condition, limit, offset, queryOrderBy)
     );
