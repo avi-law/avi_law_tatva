@@ -39,15 +39,26 @@ module.exports = async (object, params, ctx) => {
   const defaultOrderBy = "sl.sol_date DESC, sl.sol_id DESC";
   let queryOrderBy = "";
   let total = 0;
-  const { solsOrderBy, text } = params;
+  const { solStateOrderBy, text, solOrderBy } = params;
   if (params.showAll) {
     showAll = params.showAll;
   }
   let condition = `WHERE sl.sol_id IS NOT NULL `;
   // let condition = `WHERE sl.sol_id IS NOT NULL `;
   try {
-    if (solsOrderBy && solsOrderBy.length > 0) {
-      solsOrderBy.forEach((sl) => {
+    if (solStateOrderBy && solStateOrderBy.length > 0) {
+      solStateOrderBy.forEach((sol) => {
+        const field = sol.slice(0, sol.lastIndexOf("_"));
+        const last = sol.split("_").pop().toUpperCase();
+        if (queryOrderBy === "") {
+          queryOrderBy = `sls.${field} ${last}`;
+        } else {
+          queryOrderBy = `${queryOrderBy}, sls.${field} ${last}`;
+        }
+      });
+    }
+    if (solOrderBy && solOrderBy.length > 0) {
+      solOrderBy.forEach((sl) => {
         const field = sl.slice(0, sl.lastIndexOf("_"));
         const last = sl.split("_").pop().toUpperCase();
         if (queryOrderBy === "") {

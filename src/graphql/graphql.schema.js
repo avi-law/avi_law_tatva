@@ -1031,7 +1031,8 @@ const typeDefs = gql`
     searchSol(
       lang: LanguageForUser!
       text: String!
-      solsOrderBy: [_Sol_StateOrdering!]
+      solStateOrderBy: [_Sol_StateOrdering!]
+      solOrderBy: [_SolOrdering!]
       showAll: Boolean
     ): GetSolsCustom @isUnAuthenticated
   }
