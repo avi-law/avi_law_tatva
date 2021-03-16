@@ -3,8 +3,7 @@
 /* eslint-disable consistent-return */
 const _ = require("lodash");
 const driver = require("../../../config/db");
-const { APIError, common } = require("../../../utils");
-const { defaultLanguage } = require("../../../config/application");
+const { common } = require("../../../utils");
 const { getRuleBooksStructure, getUser } = require("../../../neo4j/query");
 
 const getNestedChildren = (array) => {
@@ -79,6 +78,11 @@ module.exports = async (object, params, ctx) => {
         settings = userData[0];
       }
     }
+    ruleBookList[0].has_rule_book_struct_child = _.sortBy(
+      ruleBookList[0].has_rule_book_struct_child,
+      ["has_rule_book_struct_child.order"],
+      ["asc"]
+    );
     getNestedChildren(ruleBookList[0].has_rule_book_struct_child);
     // console.log(JSON.stringify(ruleBookList[0]));
     return {
