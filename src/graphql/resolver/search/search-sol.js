@@ -25,6 +25,7 @@ const getUserDetails = async (email) => {
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
+  let showAll = false;
   const userEmail = user ? user.user_email : null;
   let userDetails = null;
   let mainInterestCountry = null;
@@ -38,7 +39,10 @@ module.exports = async (object, params, ctx) => {
   const defaultOrderBy = "sl.sol_date DESC, sl.sol_id DESC";
   let queryOrderBy = "";
   let total = 0;
-  const { solsOrderBy, text, lang } = params;
+  const { solsOrderBy, text } = params;
+  if (params.showAll) {
+    showAll = params.showAll;
+  }
   let condition = `WHERE sl.sol_id IS NOT NULL `;
   // let condition = `WHERE sl.sol_id IS NOT NULL `;
   try {
@@ -64,7 +68,7 @@ module.exports = async (object, params, ctx) => {
       );
       condition = `${condition} AND (toLower(sls.sol_name_01) CONTAINS toLower("${value}") OR toLower(sls.sol_name_02) CONTAINS toLower("${value}") OR toLower(sls.sol_name_03) CONTAINS toLower("${value}"))`;
     }
-    if (mainInterestCountry) {
+    if (mainInterestCountry && !showAll) {
       condition = `${condition} AND cou.iso_3166_1_alpha_2 = "${mainInterestCountry}"`;
     }
     const countResult = await session.run(getSolsCount(condition));
