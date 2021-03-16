@@ -1,12 +1,7 @@
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
 const { common, constants } = require("../../../utils");
-const {
-  searchNLQuery,
-  getSolsCount,
-  getSols,
-  getUser,
-} = require("../../../neo4j/query");
+const { getSolsCount, getSols, getUser } = require("../../../neo4j/query");
 
 const getUserDetails = async (email) => {
   const session = driver.session();
@@ -28,66 +23,8 @@ const getUserDetails = async (email) => {
   }
 };
 
-const searchNl = async (user, params) => {
-  const { country } = params;
-  const searchNL = {
-    nl_list: [],
-    total: 0,
-  };
-  if (country) {
-    country.push("EU");
-  }
-  const queryParams = {
-    ...params,
-    country,
-  };
-  const session = driver.session();
-  try {
-    const nlResult = await session.run(searchNLQuery(queryParams));
-    if (nlResult && nlResult.records.length > 0) {
-      const newsLetters = nlResult.records.map((record) => {
-        const nls = {
-          de: {
-            nl_text: null,
-            nl_title_long: null,
-            nl_title_short: null,
-          },
-          en: {
-            nl_text: null,
-            nl_title_long: null,
-            nl_title_short: null,
-          },
-        };
-        if (record.get("nls") && record.get("nls").length > 0) {
-          record.get("nls").forEach((nlState) => {
-            if (
-              nlState.lang &&
-              nlState.nls &&
-              nlState.lang.properties.iso_639_1
-            ) {
-              nls[nlState.lang.properties.iso_639_1] = nlState.nls.properties;
-              nls[nlState.lang.properties.iso_639_1].nl_text = null;
-            }
-          });
-        }
-        const nlResultArray = {
-          nl: common.getPropertiesFromRecord(record, "nl"),
-          nls,
-          country: common.getPropertiesFromRecord(record, "cou"),
-        };
-        return nlResultArray;
-      });
-      searchNL.nl_list = newsLetters;
-      searchNL.total = newsLetters.length;
-    }
-    return searchNL;
-  } catch (error) {
-    session.close();
-    throw error;
-  }
-};
-
-const searchSols = async (user, params) => {
+module.exports = async (object, params, ctx) => {
+  const { user } = ctx;
   const userEmail = user ? user.user_email : null;
   let userDetails = null;
   let mainInterestCountry = null;
@@ -125,7 +62,7 @@ const searchSols = async (user, params) => {
         constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
         ""
       );
-      condition = `${condition} AND (toLower(sls.sol_name_01) CONTAINS toLower("${value}") OR toLower(sls.sol_name_02) CONTAINS toLower("${value}"))`;
+      condition = `${condition} AND (toLower(sls.sol_name_01) CONTAINS toLower("${value}") OR toLower(sls.sol_name_02) CONTAINS toLower("${value}") OR toLower(sls.sol_name_03) CONTAINS toLower("${value}"))`;
     }
     if (mainInterestCountry) {
       condition = `${condition} AND cou.iso_3166_1_alpha_2 = "${mainInterestCountry}"`;
@@ -189,29 +126,6 @@ const searchSols = async (user, params) => {
     }
     session.close();
     return [];
-  } catch (error) {
-    session.close();
-    throw error;
-  }
-};
-
-module.exports = async (object, params, ctx) => {
-  const { user } = ctx;
-  const response = {
-    searchNL: {
-      nl_list: [],
-      total: 0,
-    },
-    searchSols: {
-      sols: [],
-      total: 0,
-    },
-  };
-  const session = driver.session();
-  try {
-    response.searchNL = await searchNl(user, params);
-    response.searchSols = await searchSols(user, params);
-    return response;
   } catch (error) {
     session.close();
     throw error;

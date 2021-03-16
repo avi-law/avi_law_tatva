@@ -872,11 +872,6 @@ const typeDefs = gql`
     total: Int
   }
 
-  type searchCustom {
-    searchNL: searchNL
-    searchSols: GetSolsCustom
-  }
-
   type Mutation {
     register(data: registerCustomer!): Boolean
     login(user_email: String!, user_pwd: String!): UserCustomLogin
@@ -1028,12 +1023,16 @@ const typeDefs = gql`
     userEmailExists(user_email: String!): Boolean @isAuthenticated
     verifyInvitation(token: String!): CustomUser
     verifyEmail(token: String!): Boolean
-    search(
+    searchNL(
       lang: LanguageForUser!
       text: String!
       country: [NL_Country!]
+    ): searchNL @isUnAuthenticated
+    searchSol(
+      lang: LanguageForUser!
+      text: String!
       solsOrderBy: [_Sol_StateOrdering!]
-    ): searchCustom @isUnAuthenticated
+    ): GetSolsCustom @isUnAuthenticated
   }
 `;
 
