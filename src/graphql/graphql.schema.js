@@ -1029,6 +1029,8 @@ const typeDefs = gql`
       country: [NL_Country!]
     ): searchNL @isUnAuthenticated
     searchSol(
+      first: Int
+      offset: Int
       lang: LanguageForUser!
       text: String!
       solStateOrderBy: [_Sol_StateOrdering!]
