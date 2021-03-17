@@ -59,9 +59,9 @@ module.exports = async (object, params, ctx) => {
         const field = sol.slice(0, sol.lastIndexOf("_"));
         const last = sol.split("_").pop().toUpperCase();
         if (queryOrderBy === "") {
-          queryOrderBy = `slState.${field} ${last}`;
+          // queryOrderBy = `sls.${field} ${last}`;
         } else {
-          queryOrderBy = `${queryOrderBy}, slState.${field} ${last}`;
+          // queryOrderBy = `${queryOrderBy}, sls.${field} ${last}`;
         }
       });
     }

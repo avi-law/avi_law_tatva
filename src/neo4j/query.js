@@ -503,11 +503,10 @@ CALL {
   MATCH (sl)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
   RETURN collect({ sls: sls, lang: lang }) AS sls
 }
-RETURN distinct sl, cou, sls, slState
+RETURN distinct sl, cou, sls
 ORDER BY ${orderBy}
 SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;
-
 
 exports.getSolType = `
 MATCH path=(st1:Sol_Type)-[:HAS_SOL_TYPE_CHILD*0..]->(st2:Sol_Type)-[:SOL_TYPE_STEMS_FROM_COUNTRY]->(cou:Country)
