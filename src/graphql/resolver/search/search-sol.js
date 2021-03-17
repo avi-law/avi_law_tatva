@@ -32,6 +32,10 @@ module.exports = async (object, params, ctx) => {
   let showAll = false;
   const userEmail = user ? user.user_email : null;
   let userDetails = null;
+  const searchSol = {
+    sols: [],
+    total: 0,
+  };
   let mainInterestCountry = null;
   if (userEmail) {
     userDetails = await getUserDetails(userEmail);
@@ -138,13 +142,12 @@ module.exports = async (object, params, ctx) => {
         };
         return slResult;
       });
-      return {
-        sols,
-        total,
-      };
+      searchSol.sols = sols;
+      searchSol.total = total;
+      return searchSol;
     }
     session.close();
-    return [];
+    return searchSol;
   } catch (error) {
     session.close();
     throw error;
