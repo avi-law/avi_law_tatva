@@ -1,10 +1,11 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { common } = require("../../../utils");
+const { common, constants } = require("../../../utils");
 const { searchNLQuery } = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
-  const { country } = params;
+  const { country, text } = params;
   const searchNL = {
     nl_list: [],
     total: 0,
@@ -12,6 +13,7 @@ module.exports = async (object, params, ctx) => {
   if (country) {
     country.push("EU");
   }
+  params.text = text.replace(constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX, "");
   const queryParams = {
     ...params,
     country,

@@ -30,13 +30,12 @@ const plus0 = (num) => `0${num.toString()}`.slice(-2);
 module.exports = async (object, params, ctx) => {
   params = JSON.parse(JSON.stringify(params));
   const { user } = ctx;
-  const systemAdmin = user.user_is_sys_admin;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const nlId = params.nl_id;
   const { lang } = params;
   let session;
   try {
-    if (!systemAdmin || !nlId) {
+    if (!nlId) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
