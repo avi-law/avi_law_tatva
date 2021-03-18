@@ -486,7 +486,7 @@ SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;
 
 exports.searchSolQueryCount = (condition = "") => `
-MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(slState:Sol_State)
+MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)
 ${condition}
 RETURN count (distinct sl) as count`;
 
@@ -496,14 +496,9 @@ exports.searchSolQuery = (
   skip = 0,
   orderBy = "sl.sol_date DESC"
 ) => `
-MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(slState:Sol_State)
+MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
 ${condition}
-CALL {
-  WITH sl
-  MATCH (sl)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
-  RETURN collect({ sls: sls, lang: lang }) AS sls
-}
-RETURN distinct sl, cou, sls
+RETURN sl, cou, collect({ sls: sls, lang: lang }) as sls
 ORDER BY ${orderBy}
 SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;
@@ -515,10 +510,18 @@ WITH COLLECT(path) AS paths
 CALL apoc.convert.toTree(paths) YIELD value
 RETURN value`;
 
-exports.getRuleBooksStructure = `
+exports.getRuleBooksStructureOld = `
 MATCH path=(rbs1:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_CHILD*0..]->(rbs2:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang:Language)
 WHERE rbs1.rule_book_struct_id = 'Rule Root Object'
 WITH COLLECT(path) AS paths
+CALL apoc.convert.toTree(paths) YIELD value
+RETURN value`;
+
+exports.getRuleBooksStructure = `
+Match path=(rbs1:Rule_Book_Struct {rule_book_struct_id:"Rule Root Object"})-[:HAS_RULE_BOOK_STRUCT_CHILD*]->(rbs2:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_STATE]-(rbss:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang:Language)
+WITH path, toString(reduce(a = 1, r in relationships(path)[0..size(relationships(path))-2] | a * 1000 + r.order)) as orders
+WITH path AS path2 order by orders
+WITH collect(path2) AS paths
 CALL apoc.convert.toTree(paths) YIELD value
 RETURN value`;
 

@@ -85,7 +85,7 @@ module.exports = async (object, params, ctx) => {
         constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
         ""
       );
-      condition = `${condition} AND (toLower(slState.sol_name_01) CONTAINS toLower("${value}") OR toLower(slState.sol_name_02) CONTAINS toLower("${value}") OR toLower(slState.sol_name_03) CONTAINS toLower("${value}"))`;
+      condition = `${condition} AND (toLower(sls.sol_name_01) CONTAINS toLower("${value}") OR toLower(sls.sol_name_02) CONTAINS toLower("${value}") OR toLower(sls.sol_name_03) CONTAINS toLower("${value}"))`;
     }
     if (mainInterestCountry && !showAll) {
       condition = `${condition} AND cou.iso_3166_1_alpha_2 = "${mainInterestCountry}"`;

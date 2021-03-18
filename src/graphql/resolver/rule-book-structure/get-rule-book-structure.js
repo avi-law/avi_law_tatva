@@ -13,11 +13,11 @@ const getNestedChildren = (array) => {
         element.has_rule_book_struct_state &&
         element.has_rule_book_struct_state.length > 0
       ) {
-        element.has_rule_book_struct_child = _.sortBy(
-          element.has_rule_book_struct_child,
-          ["has_rule_book_struct_child.order"],
-          ["asc"]
-        );
+        // element.has_rule_book_struct_child = _.sortBy(
+        //   element.has_rule_book_struct_child,
+        //   ["has_rule_book_struct_child.order"],
+        //   ["asc"]
+        // );
         const stateData = _.cloneDeep(element.has_rule_book_struct_state);
         element.has_rule_book_struct_state = {};
         stateData.forEach((stateElement) => {
@@ -78,11 +78,11 @@ module.exports = async (object, params, ctx) => {
         settings = userData[0];
       }
     }
-    ruleBookList[0].has_rule_book_struct_child = _.sortBy(
-      ruleBookList[0].has_rule_book_struct_child,
-      ["has_rule_book_struct_child.order"],
-      ["asc"]
-    );
+    // ruleBookList[0].has_rule_book_struct_child = _.sortBy(
+    //   ruleBookList[0].has_rule_book_struct_child,
+    //   ["has_rule_book_struct_child.order"],
+    //   ["asc"]
+    // );
     getNestedChildren(ruleBookList[0].has_rule_book_struct_child);
     // console.log(JSON.stringify(ruleBookList[0]));
     return {
