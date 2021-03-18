@@ -498,8 +498,8 @@ exports.searchSolQuery = (
 ) => `
 MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
 ${condition}
+WITH sl, cou, lang, sls order by ${orderBy}
 RETURN sl, cou, collect({ sls: sls, lang: lang }) as sls
-ORDER BY ${orderBy}
 SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;
 

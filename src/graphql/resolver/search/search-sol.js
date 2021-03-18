@@ -44,7 +44,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   const offset = params.offset || 0;
   const limit = params.first || 10;
-  const defaultOrderBy = "sl.sol_date DESC, sl.sol_id DESC";
+  const defaultOrderBy = "sl.sol_date DESC";
   let queryOrderBy = "";
   let total = 0;
   const { solStateOrderBy, text, solOrderBy } = params;
@@ -59,9 +59,9 @@ module.exports = async (object, params, ctx) => {
         const field = sol.slice(0, sol.lastIndexOf("_"));
         const last = sol.split("_").pop().toUpperCase();
         if (queryOrderBy === "") {
-          // queryOrderBy = `sls.${field} ${last}`;
+          queryOrderBy = `sls.${field} ${last}`;
         } else {
-          // queryOrderBy = `${queryOrderBy}, sls.${field} ${last}`;
+          queryOrderBy = `${queryOrderBy}, sls.${field} ${last}`;
         }
       });
     }
@@ -130,7 +130,9 @@ module.exports = async (object, params, ctx) => {
               sls[slState.lang.properties.iso_639_1] = slState.sls.properties;
               sls[slState.lang.properties.iso_639_1].lang =
                 slState.lang.properties;
-              languages.push(slState.lang.properties.iso_639_1);
+              languages.push(
+                `<a href="">${slState.lang.properties.iso_639_1}</a>`
+              );
             }
           });
         }
