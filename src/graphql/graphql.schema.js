@@ -636,7 +636,7 @@ const typeDefs = gql`
   input CustomSolInput {
     sol_date: _Neo4jDate!
     sol_id: Int!
-    sol_no: String!
+    sol_no: String
     sol_section: String!
   }
 
