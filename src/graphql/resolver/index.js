@@ -71,6 +71,7 @@ const getRuleBookStructure = require("./rule-book-structure/get-rule-book-struct
 const searchNL = require("./search/search-nl");
 const searchSol = require("./search/search-sol");
 const solIdExists = require("./provisions/sol-id-exists");
+const newsletterTransformSolId = require("./nl-transform-sol-id");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -107,6 +108,7 @@ const resolvers = {
     createSol,
     updateSol,
     deleteSol,
+    newsletterTransformSolId,
   },
   Query: {
     User,

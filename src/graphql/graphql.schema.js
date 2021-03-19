@@ -913,6 +913,7 @@ const typeDefs = gql`
     createSol(data: CustomCreateSolInput!): Boolean @isAdmin
     updateSol(sol_id: Int!, data: CustomCreateSolInput!): Boolean @isAdmin
     deleteSol(sol_id: Int!): Boolean @isAdmin
+    newsletterTransformSolId: String @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
