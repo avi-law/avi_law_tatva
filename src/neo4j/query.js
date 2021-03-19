@@ -838,8 +838,7 @@ exports.solQuery = (queryParams) => {
   } else {
     query = `
     ${query}
-    MATCH (sl:Sol {sol_id: ${queryParams.sol_id} })
-    SET sl.sol_id = ${queryParams.sl.sol_id}`;
+    MERGE (sl:Sol {sol_id: ${queryParams.sol_id} })`;
   }
   query = `
   ${query}
