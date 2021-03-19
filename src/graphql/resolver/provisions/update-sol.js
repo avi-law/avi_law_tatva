@@ -39,8 +39,8 @@ module.exports = async (object, params, ctx) => {
     if (data.sls && data.sls.en.sol_name_01) {
       isValidEN = true;
     }
-    data.sl.sol_id = solID;
     const queryParams = {
+      sol_id: solID,
       isUpdate: true,
       user_email: userEmail,
       sl: data.sl,
