@@ -36,6 +36,11 @@ module.exports = async (object, params, ctx) => {
               nlState.lang.properties.iso_639_1
             ) {
               nls[nlState.lang.properties.iso_639_1] = nlState.nls.properties;
+              // // Tempt added
+              // nls[
+              //   nlState.lang.properties.iso_639_1
+              // ].nl_text = `${nlState.nls.properties.nl_text_clone} <br/><span style="color:red">**********************************</span><br/><br/>${nlState.nls.properties.nl_text_clone}`;
+              // // Tempt added
             }
           });
         }

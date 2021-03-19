@@ -133,19 +133,19 @@ module.exports = async (object, params, ctx) => {
       const listOfSource = await getSourceListById(listSolids);
 
       const promises = [];
-      newsLettersState.forEach((nls) => {
-        promises.push(
-          new Promise((resolve, reject) => {
-            replaceIdInContent(nls, listOfSource);
-            return updateNewsletterState(nls)
-              .then((info) => resolve(info))
-              .catch((error) => {
-                resolve(error);
-              });
-          })
-        );
-        return Promise.all(promises).then(() => true);
-      });
+      // newsLettersState.forEach((nls) => {
+      //   promises.push(
+      //     new Promise((resolve, reject) => {
+      //       replaceIdInContent(nls, listOfSource);
+      //       return updateNewsletterState(nls)
+      //         .then((info) => resolve(info))
+      //         .catch((error) => {
+      //           resolve(error);
+      //         });
+      //     })
+      //   );
+      //   return Promise.all(promises).then(() => true);
+      // });
       return JSON.stringify(newsLettersState);
       // return newsLetters;
     }
