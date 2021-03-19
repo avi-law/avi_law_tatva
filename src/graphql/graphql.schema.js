@@ -1037,6 +1037,7 @@ const typeDefs = gql`
       solOrderBy: [_SolOrdering!]
       showAll: Boolean
     ): GetSolsCustom @isUnAuthenticated
+    solIdExists(sol_id: Int!): Boolean
   }
 `;
 

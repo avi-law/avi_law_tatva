@@ -70,6 +70,7 @@ const getSolType = require("./provisions/get-sol-type");
 const getRuleBookStructure = require("./rule-book-structure/get-rule-book-structure");
 const searchNL = require("./search/search-nl");
 const searchSol = require("./search/search-sol");
+const solIdExists = require("./provisions/sol-id-exists");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -145,6 +146,7 @@ const resolvers = {
     getSols,
     searchNL,
     searchSol,
+    solIdExists,
   },
 };
 
