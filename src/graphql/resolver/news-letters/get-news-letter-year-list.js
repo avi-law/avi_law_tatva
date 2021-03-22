@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const _ = require("lodash");
 const driver = require("../../../config/db");
@@ -7,7 +8,69 @@ const {
   getNewsletterListByYear,
   getNewsletterDetails,
   getNewsletterLog,
+  getSourceOfLowBySolIds,
 } = require("../../../neo4j/query");
+
+const getSourceOfLaw = async (solIds) => {
+  const session = driver.session();
+  const resultOfSol = [];
+  try {
+    const result = await session.run(getSourceOfLowBySolIds, { solIds });
+
+    if (result && result.records.length > 0) {
+      result.records.map((record) => {
+        const sl = common.getPropertiesFromRecord(record, "sl");
+        const obj = {
+          sol_id: sl.sol_id,
+        };
+        if (record.get("sls") && record.get("sls").length > 0) {
+          record.get("sls").forEach((slState) => {
+            if (
+              slState.lang &&
+              slState.sls &&
+              slState.lang.properties.iso_639_1
+            ) {
+              obj[slState.lang.properties.iso_639_1] =
+                slState.sls.properties.sol_link;
+            }
+          });
+        }
+        resultOfSol.push(obj);
+        return obj;
+      });
+    }
+    return resultOfSol;
+  } catch (error) {
+    console.log(error);
+    session.close();
+    return resultOfSol;
+  }
+};
+
+const replaceIdToLinkInContent = (nl, sourceLink) => {
+  sourceLink.forEach((link) => {
+    if (nl.nls.de && nl.nls.de.nl_text) {
+      nl.nls.de.nl_text = nl.nls.de.nl_text.replace(
+        `[*NQ*${link.sol_id}*]"`,
+        `${link.de}" target="_blank"`
+      );
+      nl.nls.de.nl_text = nl.nls.de.nl_text.replace(
+        `[NQ*${link.sol_id}*]"`,
+        `${link.de}" target="_blank"`
+      );
+    }
+    if (nl.nls.en && nl.nls.en.nl_text) {
+      nl.nls.en.nl_text = nl.nls.en.nl_text.replace(
+        `[*NQ*${link.sol_id}*]"`,
+        `${link.en}" target="_blank"`
+      );
+      nl.nls.en.nl_text = nl.nls.en.nl_text.replace(
+        `[NQ*${link.sol_id}*]"`,
+        `${link.en}" target="_blank"`
+      );
+    }
+  });
+};
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
@@ -15,6 +78,7 @@ module.exports = async (object, params, ctx) => {
   if (user) {
     userEmail = user.user_email;
   }
+  const solIds = [];
   const { lang, country, year } = params;
   const nlId = params.nl_id || null;
   let currentYear = year;
@@ -75,11 +139,6 @@ module.exports = async (object, params, ctx) => {
               nlState.lang.properties.iso_639_1
             ) {
               nls[nlState.lang.properties.iso_639_1] = nlState.nls.properties;
-              // Tempt added
-              // nls[
-              //   nlState.lang.properties.iso_639_1
-              // ].nl_text = `${nlState.nls.properties.nl_text_clone} <br/><span style="color:red">**********************************</span><br/><br/>${nlState.nls.properties.nl_text_clone}`;
-              // Tempt added
               if (!userEmail) {
                 nls[nlState.lang.properties.iso_639_1].nl_text = null;
               }
@@ -99,6 +158,12 @@ module.exports = async (object, params, ctx) => {
       response.total = newsLetters.length;
       // eslint-disable-next-line prefer-destructuring
       response.nl_first = newsLetters[0];
+      if (response.nl_first.nls.en && response.nl_first.nls.en.nl_text) {
+        solIds.push(...common.nqTransform(response.nl_first.nls.en.nl_text));
+      }
+      if (response.nl_first.nls.de && response.nl_first.nls.de.nl_text) {
+        solIds.push(...common.nqTransform(response.nl_first.nls.de.nl_text));
+      }
     }
     if (nlId && userEmail) {
       const nlResultDetails = await session.run(getNewsletterDetails, {
@@ -127,11 +192,11 @@ module.exports = async (object, params, ctx) => {
                 nlState.lang.properties.iso_639_1
               ) {
                 nls[nlState.lang.properties.iso_639_1] = nlState.nls.properties;
-                // Tempt added
-                // nls[
-                //   nlState.lang.properties.iso_639_1
-                // ].nl_text = `${nlState.nls.properties.nl_text_clone} <br/><span style="color:red">**********************************</span><br/><br/>${nlState.nls.properties.nl_text_clone}`;
-                // Tempt added
+                solIds.push(
+                  ...common.nqTransform(
+                    nls[nlState.lang.properties.iso_639_1].nl_text
+                  )
+                );
               }
             });
           }
@@ -184,8 +249,15 @@ module.exports = async (object, params, ctx) => {
         response.nl_first.updatedLog = updatedLog;
       }
     }
+
     if (response.nl_list.length === 0) {
       response.nl_first = null;
+    }
+    if (response.nl_first) {
+      const arrayOfSourceOfLaw = await getSourceOfLaw(_.uniq(solIds));
+      if (arrayOfSourceOfLaw.length > 0) {
+        replaceIdToLinkInContent(response.nl_first, arrayOfSourceOfLaw);
+      }
     }
     return response;
   } catch (error) {

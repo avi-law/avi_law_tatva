@@ -223,6 +223,34 @@ const nlContentTransformLink = (
   return final;
 };
 
+const nqTransform = (value) => {
+  let final = value;
+  const ids = [];
+  try {
+    if (final) {
+      final = final.replace(/\\/g, "");
+      final = final.replace("[*NQ*", "[NQ*");
+      const pattern = /\[\NQ*(.*?)\]/g;
+      const links =
+        final && final.toString() ? final.toString().match(pattern) : "";
+      if (links && links.length > 0) {
+        links.forEach((data) => {
+          let link = data.toString().slice();
+          link = link.split("*");
+          if (link && link.length > 0) {
+            ids.push(Number(link[1]));
+          }
+        });
+      }
+      return ids;
+    }
+    return ids;
+  } catch (error) {
+    console.error("NQ transform error: ", error);
+    return ids;
+  }
+};
+
 module.exports = {
   getMessage,
   asyncForEach,
@@ -239,4 +267,5 @@ module.exports = {
   getNeo4jDateType,
   transformNLOrderNumber,
   nlContentTransformLink,
+  nqTransform,
 };

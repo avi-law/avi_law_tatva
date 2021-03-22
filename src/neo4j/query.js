@@ -444,6 +444,11 @@ RETURN nl, nls, cou, lang
 ORDER BY nl.nl_ord DESC
 LIMIT toInteger($limit)`;
 
+exports.getSourceOfLowBySolIds = `
+MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
+WHERE sl.sol_id IN $solIds
+RETURN cou, sl, collect({ sls: sls, lang: lang }) as sls`;
+
 exports.getSolListCount = (condition = "") => `
 MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
 ${condition}

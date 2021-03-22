@@ -69,11 +69,11 @@ const replaceIdInContent = (nl, sourceIds) => {
       const mentionObj = _.find(sourceIds, { sol_state_id: nlMentionId });
       if (mentionObj) {
         const mentionIdSolId = mentionObj.sol_id;
-        nl.nl_text_clone = nl.nl_text_clone.replace(
+        nl.nl_text = nl.nl_text.replace(
           `[*NQ*${nlMentionId}*]`,
           `[*NQ*${mentionIdSolId}*]`
         );
-        nl.nl_text_clone = nl.nl_text_clone.replace(
+        nl.nl_text = nl.nl_text.replace(
           `[NQ*${nlMentionId}*]`,
           `[NQ*${mentionIdSolId}*]`
         );
@@ -88,11 +88,12 @@ const updateNewsletterState = async (nls) => {
   try {
     await session.run(
       `MATCH (nls:Nl_State) WHERE id(nls) = ${nls.identity}
-       SET nls.nl_text_clone = $nls.nl_text_clone
+       SET nls.nl_text = $nls.nl_text
        RETURN nls`,
       { nls }
     );
   } catch (error) {
+    console.log(error);
     console.log("Error in Newsletter identity ID - ", nls.identity);
   }
 };
@@ -112,20 +113,19 @@ module.exports = async (object, params, ctx) => {
     }
     const nlResult = await session.run(
       `MATCH (nls:Nl_State)<-[:HAS_NL_STATE]-(nl:Nl)
-      WHERE nl.nl_active = true AND (nls.nl_text_clone CONTAINS "[NQ*" OR nls.nl_text_clone CONTAINS "[*NQ")
+      WHERE nl.nl_active = true AND (nls.nl_text CONTAINS "[NQ*" OR nls.nl_text CONTAINS "[*NQ")
       RETURN nl, nls`
     );
     if (nlResult && nlResult.records.length > 0) {
       const newsLettersState = nlResult.records.map((record) => {
         const solIds = nqTransform(
-          common.getPropertiesFromRecord(record, "nls").nl_text_clone
+          common.getPropertiesFromRecord(record, "nls").nl_text
         );
         listSolids.push(...solIds);
         const nlResultArray = {
           identity: record.get("nls").identity,
           sols: solIds,
-          nl_text_clone: common.getPropertiesFromRecord(record, "nls")
-            .nl_text_clone,
+          nl_text: common.getPropertiesFromRecord(record, "nls").nl_text,
         };
         return nlResultArray;
       });
@@ -133,19 +133,19 @@ module.exports = async (object, params, ctx) => {
       const listOfSource = await getSourceListById(listSolids);
 
       const promises = [];
-      // newsLettersState.forEach((nls) => {
-      //   promises.push(
-      //     new Promise((resolve, reject) => {
-      //       replaceIdInContent(nls, listOfSource);
-      //       return updateNewsletterState(nls)
-      //         .then((info) => resolve(info))
-      //         .catch((error) => {
-      //           resolve(error);
-      //         });
-      //     })
-      //   );
-      //   return Promise.all(promises).then(() => true);
-      // });
+      newsLettersState.forEach((nls) => {
+        promises.push(
+          new Promise((resolve, reject) => {
+            replaceIdInContent(nls, listOfSource);
+            // return updateNewsletterState(nls)
+            //   .then((info) => resolve(info))
+            //   .catch((error) => {
+            //     resolve(error);
+            //   });
+          })
+        );
+        return Promise.all(promises).then(() => true);
+      });
       return JSON.stringify(newsLettersState);
       // return newsLetters;
     }
