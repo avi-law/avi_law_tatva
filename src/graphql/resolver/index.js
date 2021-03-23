@@ -72,6 +72,9 @@ const searchNL = require("./search/search-nl");
 const searchSol = require("./search/search-sol");
 const solIdExists = require("./provisions/sol-id-exists");
 const newsletterTransformSolId = require("./nl-transform-sol-id");
+const createBlog = require("./blog/create-blog");
+const updateBlog = require("./blog/update-blog");
+const getBlogList = require("./blog/get-blog-list");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -109,6 +112,8 @@ const resolvers = {
     updateSol,
     deleteSol,
     newsletterTransformSolId,
+    createBlog,
+    updateBlog,
   },
   Query: {
     User,
@@ -149,6 +154,7 @@ const resolvers = {
     searchNL,
     searchSol,
     solIdExists,
+    getBlogList,
   },
 };
 

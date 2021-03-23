@@ -59,6 +59,24 @@ exports.blogQuery = (queryParams) => {
   return query;
 };
 
+exports.getBlogListCount = (condition = "") => `
+MATCH (bl:Blog)-[:HAS_BLOG_STATE]->(bls:Blog_State)-[:BLOG_LANG_IS]->(lang:Language)
+${condition}
+RETURN count(*) as count`;
+
+exports.getBlogList = (
+  condition,
+  limit = 10,
+  skip = 0,
+  orderBy = "bl.bl_date DESC"
+) => `
+MATCH (bl:Blog)-[:HAS_BLOG_STATE]->(bls:Blog_State)-[:BLOG_LANG_IS]->(lang:Language)
+${condition}
+RETURN bl, bls, lang
+ORDER BY ${orderBy}
+SKIP toInteger(${skip})
+LIMIT toInteger(${limit})`;
+
 exports.logBlog = `
 MATCH (a: Log_Type {log_type_id: $log_type})
 MATCH (b:User {user_email: $current_user_email})

@@ -607,6 +607,11 @@ const typeDefs = gql`
     total: Int
   }
 
+  type CustomBlogList {
+    bls: [Blog]
+    total: Int
+  }
+
   type CustomNLEmailList {
     nlEmails: [NL_Email]
     total: Int
@@ -1101,6 +1106,13 @@ const typeDefs = gql`
       showAll: Boolean
     ): GetSolsCustom @isUnAuthenticated
     solIdExists(sol_id: Int!): Boolean
+    getBlogList(
+      filterByString: String
+      lang: LanguageForUser!
+      first: Int
+      offset: Int
+      orderBy: [_BlogOrdering]
+    ): CustomBlogList @isAdmin
   }
 `;
 
