@@ -27,15 +27,15 @@ module.exports = async (object, params, ctx) => {
       if (data.sls.de) {
         data.sls.de = common.cleanObject(data.sls.de);
       }
-      if (data.sls.de) {
+      if (data.sls.en) {
         data.sls.en = common.cleanObject(data.sls.en);
       }
     }
 
-    if (data.sls && data.sls.de.sol_name_01) {
+    if (data.sls && data.sls.de && data.sls.de.sol_name_01) {
       isValidDE = true;
     }
-    if (data.sls && data.sls.en.sol_name_01) {
+    if (data.sls && data.sls.en && data.sls.en.sol_name_01) {
       isValidEN = true;
     }
     const queryParams = {

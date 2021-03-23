@@ -27,13 +27,14 @@ module.exports = async (object, params, ctx) => {
       if (data.nls.de) {
         data.nls.de = common.cleanObject(data.nls.de);
       }
-      if (data.nls.de) {
+      if (data.nls.en) {
         data.nls.en = common.cleanObject(data.nls.en);
       }
     }
 
     if (
       data.nls &&
+      data.nls.de &&
       data.nls.de.nl_text &&
       data.nls.de.nl_title_long &&
       data.nls.de.nl_title_short
@@ -42,6 +43,7 @@ module.exports = async (object, params, ctx) => {
     }
     if (
       data.nls &&
+      data.nls.en &&
       data.nls.en.nl_text &&
       data.nls.en.nl_title_long &&
       data.nls.en.nl_title_short

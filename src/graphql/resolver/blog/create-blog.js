@@ -26,13 +26,14 @@ module.exports = async (object, params, ctx) => {
       if (data.bls.de) {
         data.bls.de = common.cleanObject(data.bls.de);
       }
-      if (data.bls.de) {
+      if (data.bls.en) {
         data.bls.en = common.cleanObject(data.bls.en);
       }
     }
 
     if (
       data.bls &&
+      data.bls.de &&
       data.bls.de.blog_text &&
       data.bls.de.blog_title_long &&
       data.bls.de.blog_title_short
@@ -41,6 +42,7 @@ module.exports = async (object, params, ctx) => {
     }
     if (
       data.bls &&
+      data.bls.en &&
       data.bls.en.blog_text &&
       data.bls.en.blog_title_long &&
       data.bls.en.blog_title_short

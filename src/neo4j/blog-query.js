@@ -78,7 +78,7 @@ SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;
 
 exports.logBlog = `
-MATCH (a: Log_Type {log_type_id: $log_type})
+MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (bl:Blog {blog_id: $blog_id})
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)

@@ -696,16 +696,16 @@ const typeDefs = gql`
     blog_ord: String
   }
   input BlogStateInput {
-    nl_text: String
-    nl_title_long: String
-    nl_title_short: String
+    blog_text: String
+    blog_title_long: String
+    blog_title_short: String
   }
   input CustomBlogStateInput {
     de: BlogStateInput
     en: BlogStateInput
   }
-  input CustomBlogInput {
-    bl: CustomNLInput!
+  input BlogInput {
+    bl: CustomBlogInput!
     bls: CustomBlogStateInput!
   }
 
@@ -969,8 +969,8 @@ const typeDefs = gql`
     updateNewsletter(nl_id: Int!, data: CustomCreateNLInput!): Boolean @isAdmin
     unsubscribeNewsletter(token: String!): Boolean
     createNewsletterEmail(data: CustomCreateNLEmailInput!): Boolean @isAdmin
-    createBlog(data: CustomBlogInput!): Boolean @isAdmin
-    updateBlog(blog_id: Int!, data: CustomBlogInput!): Boolean @isAdmin
+    createBlog(data: BlogInput!): Boolean @isAdmin
+    updateBlog(blog_id: Int!, data: BlogInput!): Boolean @isAdmin
     updateNewsletterEmail(
       nl_email_ord: String!
       data: CustomCreateNLEmailInput!

@@ -28,7 +28,7 @@ module.exports = async (object, params, ctx) => {
       if (data.sls.de) {
         data.sls.de = common.cleanObject(data.sls.de);
       }
-      if (data.sls.de) {
+      if (data.sls.en) {
         data.sls.en = common.cleanObject(data.sls.en);
       }
     }
