@@ -100,6 +100,7 @@ module.exports = {
     CREATE_SOL: 33,
     UPDATE_SOL: 34,
     DELETE_SOL: 35,
+    READ_NL: 40,
   },
   LOGIN_FAILED_STATUS: {
     GTC_NOT_ACCEPTED: "GTC_NOT_ACCEPTED",

@@ -2,10 +2,11 @@
 /* eslint-disable consistent-return */
 const _ = require("lodash");
 const driver = require("../../../config/db");
-const { common } = require("../../../utils");
+const { common, constants } = require("../../../utils");
 const {
   getNewsletterDetails,
   getSourceOfLowBySolIds,
+  logNewsletter,
 } = require("../../../neo4j/query");
 
 const getSourceOfLaw = async (solIds) => {
@@ -160,6 +161,13 @@ module.exports = async (object, params, ctx) => {
         const arrayOfSourceOfLaw = await getSourceOfLaw(_.uniq(solIds));
         if (arrayOfSourceOfLaw.length > 0) {
           replaceIdToLinkInContent(nlResultDetailsArray[0], arrayOfSourceOfLaw);
+        }
+        if (userEmail) {
+          common.loggingData(logNewsletter, {
+            type: constants.LOG_TYPE_ID.READ_NL,
+            current_user_email: userEmail,
+            nl_id: nlResultDetailsArray[0].nl.nl_id || null,
+          });
         }
       }
       return nlResultDetailsArray[0];

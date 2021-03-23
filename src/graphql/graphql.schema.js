@@ -820,13 +820,15 @@ const typeDefs = gql`
 
   type CustomRuleBookIssue {
     rule_book_issue_no: Int
+    label: [String]
   }
   type CustomRuleBook {
     rule_book_active: Boolean
     rule_book_id: String
     res_rbi: [CustomRuleBookIssue]
     rule_book_parent_id: String
-    has_rule_book_child:[CustomRuleBook]
+    has_rule_book_child: [CustomRuleBook]
+    label: [String]
   }
 
   type CustomRuleBookStructure {
@@ -836,6 +838,7 @@ const typeDefs = gql`
     has_rule_book_struct_child: [CustomRuleBookStructure]
     rule_book_struct_parent_id: String
     rule_book: CustomRuleBook
+    label: [String]
     language_preference_settings: languagePreferencesettings
   }
 

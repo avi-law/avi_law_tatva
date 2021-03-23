@@ -106,9 +106,9 @@ module.exports = async (object, params, ctx) => {
         settings = userData[0];
       }
     }
-    const finalTree = generateTreeStructure(ruleBookStructureList);
+    // const finalTree = generateTreeStructure(ruleBookStructureList);
     return {
-      ...finalTree,
+      ...generateTreeStructure(ruleBookStructureList),
       language_preference_settings: settings,
     };
   } catch (error) {
