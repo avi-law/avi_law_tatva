@@ -605,6 +605,18 @@ MATCH (nl:Nl {nl_id: $nl_id})
 MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(nl)`;
 
+exports.logSol = `
+MATCH (a: Log_Type {log_type_id: $type})
+MATCH (b:User {user_email: $current_user_email})
+MATCH (sl:Sol {sol_id: $sol_id})
+MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(sl)`;
+
+exports.logDeleteSol = `
+MATCH (lt: Log_Type {log_type_id: $type})
+MATCH (u:User {user_email: $current_user_email})
+MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)`;
+
 exports.logDeleteNewsletter = `
 MATCH (lt: Log_Type {log_type_id: $type})
 MATCH (u:User {user_email: $current_user_email})

@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 
 const driver = require("../../../config/db");
-const { APIError, common } = require("../../../utils");
+const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const { solQuery } = require("../../../neo4j/query");
+const { solQuery, logSol } = require("../../../neo4j/query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
@@ -51,6 +51,17 @@ module.exports = async (object, params, ctx) => {
       queryParams,
     });
     if (result && result.records.length > 0) {
+      const sols = result.records.map((record) => {
+        const nlResult = {
+          ...common.getPropertiesFromRecord(record, "sl"),
+        };
+        return nlResult;
+      });
+      common.loggingData(logSol, {
+        type: constants.LOG_TYPE_ID.CREATE_SOL,
+        current_user_email: userEmail,
+        sol_id: sols[0].sol_id || null,
+      });
       return true;
     }
     throw new APIError({

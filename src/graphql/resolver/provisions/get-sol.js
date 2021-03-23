@@ -47,6 +47,12 @@ module.exports = async (object, params) => {
           sol_type_id: slt ? slt.sol_type_id : null,
         };
       });
+      if (solResultDetailsArray[0] && solResultDetailsArray[0].sl) {
+        solResultDetailsArray[0].sl.sol_no =
+          solResultDetailsArray[0].sl.sol_no !== "undefined"
+            ? solResultDetailsArray[0].sl.sol_no
+            : null;
+      }
       return solResultDetailsArray[0];
     }
     return null;
