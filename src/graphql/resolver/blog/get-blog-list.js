@@ -13,7 +13,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   const offset = params.offset || 0;
   const limit = params.first || 10;
-  const defaultOrderBy = "bl.blog_date DESC";
+  const defaultOrderBy = "bl.blog_ord DESC";
   let queryOrderBy = "";
   let total = 0;
   const { orderBy, filterByString, lang } = params;

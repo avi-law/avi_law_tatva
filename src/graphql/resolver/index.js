@@ -74,6 +74,7 @@ const solIdExists = require("./provisions/sol-id-exists");
 const newsletterTransformSolId = require("./nl-transform-sol-id");
 const createBlog = require("./blog/create-blog");
 const updateBlog = require("./blog/update-blog");
+const deleteBlog = require("./blog/delete-blog");
 const getBlogList = require("./blog/get-blog-list");
 
 // For Website Owner Resolver
@@ -114,6 +115,7 @@ const resolvers = {
     newsletterTransformSolId,
     createBlog,
     updateBlog,
+    deleteBlog,
   },
   Query: {
     User,

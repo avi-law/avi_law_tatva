@@ -77,6 +77,11 @@ ORDER BY ${orderBy}
 SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;
 
+exports.deleteBlog = `
+MATCH (bl:Blog {blog_id: $blog_id})-[:HAS_BLOG_STATE]->(bls:Blog_State)
+DETACH DELETE bl, bls
+RETURN bl,bls`;
+
 exports.logBlog = `
 MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})

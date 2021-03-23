@@ -1,7 +1,7 @@
 const { ApolloServer } = require("apollo-server-express");
 const { makeAugmentedSchema } = require("neo4j-graphql-js");
 const driver = require("./db");
-const typeDefs = require("../graphql/graphql.schema");
+const typeDefs = require("../graphql/schema.graphql");
 const resolvers = require("../graphql/resolver");
 const formatError = require("../graphql/formatError");
 const isAuthenticatedDirective = require("../graphql/directive/auth-directive");
@@ -15,7 +15,6 @@ const excludeMutation = [
   "Customer",
   "Currency",
   "Log",
-  // "Customer_State",
   "Invoice",
   "loginCustomerStatesCustom",
   "userAddresses",
@@ -31,7 +30,16 @@ const excludeMutation = [
   "Link",
   "Ref_Link",
   "NL_Email",
+  "NL_Email_State",
   "NL",
+  "NL_State",
+  "Blog",
+  "Blog_State",
+  "Language",
+  "Country_Sub",
+  "Rule_Book",
+  "Rule_Book_Struct",
+  "Rule_Book_Struct_State",
 ];
 const excludeQuery = [
   // "User",

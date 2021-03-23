@@ -971,6 +971,7 @@ const typeDefs = gql`
     createNewsletterEmail(data: CustomCreateNLEmailInput!): Boolean @isAdmin
     createBlog(data: BlogInput!): Boolean @isAdmin
     updateBlog(blog_id: Int!, data: BlogInput!): Boolean @isAdmin
+    deleteBlog(blog_id: Int!): Boolean @isAdmin
     updateNewsletterEmail(
       nl_email_ord: String!
       data: CustomCreateNLEmailInput!
