@@ -46,24 +46,44 @@ const getSourceOfLaw = async (solIds) => {
 
 const replaceIdToLinkInContent = (nl, sourceLink) => {
   sourceLink.forEach((link) => {
-    if (nl.nls.de && nl.nls.de.nl_text && link.de) {
+    let lang = "";
+    const solId = link.sol_id;
+    if (nl.nls.de && nl.nls.de.nl_text) {
+      if (link.de) {
+        lang = "de";
+      } else if (link.en) {
+        lang = "en";
+      }
       nl.nls.de.nl_text = nl.nls.de.nl_text.replace(
-        `[*NQ*${link.sol_id}*]"`,
-        `${link.de}" target="_blank"`
+        `[*NQ*${solId}*]"`,
+        `${link[lang]}" target="_blank"`
       );
       nl.nls.de.nl_text = nl.nls.de.nl_text.replace(
-        `[NQ*${link.sol_id}*]"`,
-        `${link.de}" target="_blank"`
+        `[NQ*${solId}*]"`,
+        `${link[lang]}" target="_blank"`
+      );
+      nl.nls.de.nl_text = nl.nls.de.nl_text.replace(
+        `[*NQ*${solId}**]"`,
+        `${link[lang]}" target="_blank"`
       );
     }
-    if (nl.nls.en && nl.nls.en.nl_text && link.en) {
+    if (nl.nls.en && nl.nls.en.nl_text) {
+      if (link.en) {
+        lang = "en";
+      } else if (link.de) {
+        lang = "de";
+      }
       nl.nls.en.nl_text = nl.nls.en.nl_text.replace(
-        `[*NQ*${link.sol_id}*]"`,
-        `${link.en}" target="_blank"`
+        `[*NQ*${solId}*]"`,
+        `${link[lang]}" target="_blank"`
       );
       nl.nls.en.nl_text = nl.nls.en.nl_text.replace(
-        `[NQ*${link.sol_id}*]"`,
-        `${link.en}" target="_blank"`
+        `[NQ*${solId}*]"`,
+        `${link[lang]}" target="_blank"`
+      );
+      nl.nls.en.nl_text = nl.nls.en.nl_text.replace(
+        `[*NQ*${solId}**]"`,
+        `${link[lang]}" target="_blank"`
       );
     }
   });
