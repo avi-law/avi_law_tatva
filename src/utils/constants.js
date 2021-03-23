@@ -100,6 +100,9 @@ module.exports = {
     CREATE_SOL: 33,
     UPDATE_SOL: 34,
     DELETE_SOL: 35,
+    CREATE_BLOG: 37,
+    UPDATE_BLOG: 38,
+    DELETE_BLOG: 39,
     READ_NL: 40,
   },
   LOGIN_FAILED_STATUS: {

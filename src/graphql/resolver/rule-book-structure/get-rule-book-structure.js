@@ -2,7 +2,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const _ = require("lodash");
-const fs = require("fs");
 const driver = require("../../../config/db");
 const { common } = require("../../../utils");
 const { getUser } = require("../../../neo4j/query");

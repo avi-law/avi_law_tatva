@@ -29,7 +29,7 @@ module.exports = async (object, params, ctx) => {
       data.nl.nl_implemented = false;
     }
     if (!data.nl.nl_active) {
-      data.nl.nl_implemented = false;
+      data.nl.nl_active = false;
     }
     const queryParams = {
       isUpdate: true,

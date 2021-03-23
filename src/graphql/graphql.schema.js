@@ -323,6 +323,24 @@ const typeDefs = gql`
     rule_book_tag_order: Int
   }
 
+  type Blog {
+    blog_active: Boolean
+    blog_date: _Neo4jDate
+    blog_id: ID
+    blog_no: String
+    blog_ord: String
+    blog_tweeted: Boolean
+    blog_state: Blog_State @relation(name: "HAS_BLOG_STATE", direction: OUT)
+    user: User @relation(name: "BLOG_HAS_AUTHOR", direction: OUT)
+  }
+
+  type Blog_State {
+    blog_text: String
+    blog_title_long: String
+    blog_title_short: String
+    blog_language: Language @relation(name: "BLOG_LANG_IS", direction: OUT)
+  }
+
   type UserCustom {
     user_id: ID
     user_first_name: String
@@ -665,6 +683,27 @@ const typeDefs = gql`
     country: nlCountry
   }
 
+  input CustomBlogInput {
+    blog_active: Boolean
+    blog_date: _Neo4jDate
+    blog_id: ID
+    blog_no: String
+    blog_ord: String
+  }
+  input BlogStateInput {
+    nl_text: String
+    nl_title_long: String
+    nl_title_short: String
+  }
+  input CustomBlogStateInput {
+    de: BlogStateInput
+    en: BlogStateInput
+  }
+  input CustomBlogInput {
+    bl: CustomNLInput!
+    bls: CustomBlogStateInput!
+  }
+
   input CustomNLEmailInput {
     nl_email_ord: String
     nl_email_sent: Boolean!
@@ -925,6 +964,8 @@ const typeDefs = gql`
     updateNewsletter(nl_id: Int!, data: CustomCreateNLInput!): Boolean @isAdmin
     unsubscribeNewsletter(token: String!): Boolean
     createNewsletterEmail(data: CustomCreateNLEmailInput!): Boolean @isAdmin
+    createBlog(data: CustomBlogInput!): Boolean @isAdmin
+    updateBlog(blog_id: Int!, data: CustomBlogInput!): Boolean @isAdmin
     updateNewsletterEmail(
       nl_email_ord: String!
       data: CustomCreateNLEmailInput!

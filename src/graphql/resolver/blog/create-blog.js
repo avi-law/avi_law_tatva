@@ -3,12 +3,11 @@
 const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const { newsletterQuery, logNewsletter } = require("../../../neo4j/query");
+const { blogQuery, logBlog } = require("../../../neo4j/blog-query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const systemAdmin = user.user_is_sys_admin || null;
-  const userIsAuthor = user.user_is_author || null;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const userEmail = user.user_email || null;
   const session = driver.session();
@@ -17,66 +16,62 @@ module.exports = async (object, params, ctx) => {
   let isValidDE = false;
   let isValidEN = false;
   try {
-    if (!systemAdmin && !userIsAuthor) {
+    if (!systemAdmin) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    if (data.nls) {
-      if (data.nls.de) {
-        data.nls.de = common.cleanObject(data.nls.de);
+    if (data.bls) {
+      if (data.bls.de) {
+        data.bls.de = common.cleanObject(data.bls.de);
       }
-      if (data.nls.de) {
-        data.nls.en = common.cleanObject(data.nls.en);
+      if (data.bls.de) {
+        data.bls.en = common.cleanObject(data.bls.en);
       }
     }
 
     if (
-      data.nls &&
-      data.nls.de.nl_text &&
-      data.nls.de.nl_title_long &&
-      data.nls.de.nl_title_short
+      data.bls &&
+      data.bls.de.blog_text &&
+      data.bls.de.blog_title_long &&
+      data.bls.de.blog_title_short
     ) {
       isValidDE = true;
     }
     if (
-      data.nls &&
-      data.nls.en.nl_text &&
-      data.nls.en.nl_title_long &&
-      data.nls.en.nl_title_short
+      data.bls &&
+      data.bls.en.blog_text &&
+      data.bls.en.blog_title_long &&
+      data.bls.en.blog_title_short
     ) {
       isValidEN = true;
     }
-    if (!data.nl.nl_implemented) {
-      data.nl.nl_implemented = false;
-    }
-    if (!data.nl.nl_active) {
-      data.nl.nl_active = false;
+    if (!data.bl.blog_active) {
+      data.bl.blog_active = false;
     }
     const queryParams = {
       isUpdate: false,
       user_email: userEmail,
-      nl: data.nl,
-      nls: data.nls,
-      country: data.country,
+      bl: data.bl,
+      bls: data.bls,
       isValidDE,
       isValidEN,
     };
-    const result = await session.run(newsletterQuery(queryParams), {
+    const result = await session.run(blogQuery(queryParams), {
       queryParams,
     });
     if (result && result.records.length > 0) {
-      const newsLetters = result.records.map((record) => {
-        const nlResult = {
-          ...common.getPropertiesFromRecord(record, "nl"),
+      const blogs = result.records.map((record) => {
+        const blResult = {
+          ...common.getPropertiesFromRecord(record, "bl"),
         };
-        return nlResult;
+        return blResult;
       });
-      common.loggingData(logNewsletter, {
-        type: constants.LOG_TYPE_ID.CREATE_NL,
+      common.loggingData(logBlog, {
+        type: constants.LOG_TYPE_ID.CREATE_BLOG,
         current_user_email: userEmail,
-        nl_id: newsLetters[0].nl_id || null,
+        blog_id: blogs[0].blog_id || null,
       });
       return true;
     }
