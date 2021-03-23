@@ -818,11 +818,24 @@ const typeDefs = gql`
     right: LanguageForUser
   }
 
+  type CustomRuleBookIssue {
+    rule_book_issue_no: Int
+  }
+  type CustomRuleBook {
+    rule_book_active: Boolean
+    rule_book_id: String
+    res_rbi: [CustomRuleBookIssue]
+    rule_book_parent_id: String
+    has_rule_book_child:[CustomRuleBook]
+  }
+
   type CustomRuleBookStructure {
     rule_book_struct_id: String
     rule_book_struct_active: Boolean
     has_rule_book_struct_state: RuleBookStructureStateByLanguage
     has_rule_book_struct_child: [CustomRuleBookStructure]
+    rule_book_struct_parent_id: String
+    rule_book: CustomRuleBook
     language_preference_settings: languagePreferencesettings
   }
 
@@ -870,6 +883,11 @@ const typeDefs = gql`
   type searchNL {
     nl_list: [searchCustomNL]
     total: Int
+  }
+
+  type CustomRuleBookStructureNew {
+    treeStructure: String
+    language_preference_settings: languagePreferencesettings
   }
 
   type Mutation {

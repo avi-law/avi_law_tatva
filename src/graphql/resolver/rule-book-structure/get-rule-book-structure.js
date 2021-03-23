@@ -2,52 +2,77 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const _ = require("lodash");
+const fs = require("fs");
 const driver = require("../../../config/db");
 const { common } = require("../../../utils");
-const { getRuleBooksStructure, getUser } = require("../../../neo4j/query");
+const { getUser } = require("../../../neo4j/query");
+const { getRuleBooksStructure } = require("../../../neo4j/tree-query");
 
-const getNestedChildren = (array) => {
-  array.forEach((element) => {
-    if (element.has_rule_book_struct_child) {
-      if (
-        element.has_rule_book_struct_state &&
-        element.has_rule_book_struct_state.length > 0
-      ) {
-        // element.has_rule_book_struct_child = _.sortBy(
-        //   element.has_rule_book_struct_child,
-        //   ["has_rule_book_struct_child.order"],
-        //   ["asc"]
-        // );
-        const stateData = _.cloneDeep(element.has_rule_book_struct_state);
-        element.has_rule_book_struct_state = {};
-        stateData.forEach((stateElement) => {
-          if (stateElement.rule_book_struct_language_is.length > 0) {
-            element.has_rule_book_struct_state[
-              stateElement.rule_book_struct_language_is[0].iso_639_1
-            ] = {
-              ...stateElement,
-            };
-          }
-        });
-      }
-      getNestedChildren(element.has_rule_book_struct_child);
-    } else if (
-      element.has_rule_book_struct_state &&
-      element.has_rule_book_struct_state.length > 0
-    ) {
-      const stateData = _.cloneDeep(element.has_rule_book_struct_state);
-      element.has_rule_book_struct_state = {};
-      stateData.forEach((stateElement) => {
-        if (stateElement.rule_book_struct_language_is.length > 0) {
-          element.has_rule_book_struct_state[
-            stateElement.rule_book_struct_language_is[0].iso_639_1
-          ] = {
-            ...stateElement,
-          };
-        }
-      });
+const generateRuleBookTreeStructure = (ruleBookList) => {
+  const idMapping = ruleBookList.reduce((acc, el, i) => {
+    acc[el.rule_book_id] = i;
+    return acc;
+  }, {});
+
+  let treeStructure;
+  ruleBookList.forEach((el) => {
+    // Handle the root element
+    if (el.rule_book_parent_id === null) {
+      treeStructure = el;
+      return;
     }
+    // Use our mapping to locate the parent element in our data array
+    const parentEl = ruleBookList[idMapping[el.rule_book_parent_id]];
+    // Add our current el to its parent's `children` array
+    parentEl.has_rule_book_child = [
+      ...(parentEl.has_rule_book_child || []),
+      el,
+    ];
   });
+  return treeStructure;
+};
+
+const generateTreeStructure = (ruleBookStructureList) => {
+  const idMapping = ruleBookStructureList.reduce((acc, el, i) => {
+    acc[el.rule_book_struct_id] = i;
+    return acc;
+  }, {});
+
+  let treeStructure;
+  ruleBookStructureList.forEach((el) => {
+    const stateData = _.cloneDeep(el.res_desc_lang);
+    delete el.res_desc_lang;
+    el.rule_book =
+      el.rbs_res.length > 0 ? generateRuleBookTreeStructure(el.rbs_res) : [];
+    el.has_rule_book_struct_state = {};
+    stateData.forEach((stateElement) => {
+      if (stateElement.language) {
+        el.has_rule_book_struct_state[stateElement.language] = {
+          rule_book_struct_desc: stateElement.rule_book_struct_desc,
+          rule_book_struct_language_is: [
+            {
+              iso_639_1: stateElement.language,
+            },
+          ],
+        };
+      }
+    });
+
+    // Handle the root element
+    if (el.rule_book_struct_parent_id === null) {
+      treeStructure = el;
+      return;
+    }
+    // Use our mapping to locate the parent element in our data array
+    const parentEl =
+      ruleBookStructureList[idMapping[el.rule_book_struct_parent_id]];
+    // Add our current el to its parent's `children` array
+    parentEl.has_rule_book_struct_child = [
+      ...(parentEl.has_rule_book_struct_child || []),
+      el,
+    ];
+  });
+  return treeStructure;
 };
 
 module.exports = async (object, params, ctx) => {
@@ -55,12 +80,15 @@ module.exports = async (object, params, ctx) => {
   const userEmail = user ? user.user_email : null;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
-  let ruleBookList = [];
+  let ruleBookStructureList = [];
   let settings = null;
   try {
     const result = await session.run(getRuleBooksStructure);
-    ruleBookList = result.records.map((record) => {
-      const bookResult = record.get("value");
+    ruleBookStructureList = result.records.map((record) => {
+      const bookResult = {
+        ...record.get("rbss_res"),
+        rbs_res: record.get("rbs_res"),
+      };
       return bookResult;
     });
     if (userEmail) {
@@ -78,15 +106,9 @@ module.exports = async (object, params, ctx) => {
         settings = userData[0];
       }
     }
-    // ruleBookList[0].has_rule_book_struct_child = _.sortBy(
-    //   ruleBookList[0].has_rule_book_struct_child,
-    //   ["has_rule_book_struct_child.order"],
-    //   ["asc"]
-    // );
-    getNestedChildren(ruleBookList[0].has_rule_book_struct_child);
-    // console.log(JSON.stringify(ruleBookList[0]));
+    const finalTree = generateTreeStructure(ruleBookStructureList);
     return {
-      ...ruleBookList[0],
+      ...finalTree,
       language_preference_settings: settings,
     };
   } catch (error) {
