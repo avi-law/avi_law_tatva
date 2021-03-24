@@ -327,7 +327,6 @@ const typeDefs = gql`
     blog_active: Boolean
     blog_date: _Neo4jDate
     blog_id: ID
-    blog_no: String
     blog_ord: String
     blog_tweeted: Boolean
     blog_state: Blog_State @relation(name: "HAS_BLOG_STATE", direction: OUT)
@@ -692,7 +691,6 @@ const typeDefs = gql`
     blog_active: Boolean
     blog_date: _Neo4jDate
     blog_id: ID
-    blog_no: String
     blog_ord: String
   }
   input BlogStateInput {
@@ -785,7 +783,6 @@ const typeDefs = gql`
     blog_active: Boolean
     blog_date: _Neo4jDate
     blog_ord: String
-    blog_no: String
     blog_tweeted: String
   }
   type BlogStateCustom {

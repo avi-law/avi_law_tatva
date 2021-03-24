@@ -45,7 +45,7 @@ module.exports = async (object, params, ctx) => {
         constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
         ""
       );
-      condition = `${condition} AND ( toLower(bls.blog_title_long) CONTAINS toLower("${value}") OR toLower(bl.blog_no) CONTAINS toLower("${value}"))`;
+      condition = `${condition} AND ( toLower(bls.blog_title_long) CONTAINS toLower("${value}") OR toLower(bl.blog_ord) CONTAINS toLower("${value}"))`;
     }
     const countResult = await session.run(getBlogListCount(condition));
     if (countResult && countResult.records.length > 0) {

@@ -6,6 +6,7 @@ const driver = require("../../../config/db");
 const { common } = require("../../../utils");
 const { getUser } = require("../../../neo4j/query");
 const { getRuleBooksStructure } = require("../../../neo4j/tree-query");
+const { frontendURL } = require("../../../config/application");
 
 const generateRuleBookTreeStructure = (ruleBookList) => {
   const idMapping = ruleBookList.reduce((acc, el, i) => {
@@ -30,6 +31,26 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
         };
       }
     });
+    if (el.has_rule_book_issue_state) {
+      if (el.has_rule_book_issue_state.en && !el.has_rule_book_issue_state.de) {
+        el.has_rule_book_issue_state.de = _.cloneDeep(
+          el.has_rule_book_issue_state.en
+        );
+        if (el.has_rule_book_issue_state.de.title_long) {
+          el.has_rule_book_issue_state.de.title_long = `<img src="${frontendURL}assest/images/EN.jpg" alt="EN"> ${el.has_rule_book_issue_state.de.title_long}`;
+        }
+      } else if (
+        !el.has_rule_book_issue_state.en &&
+        el.has_rule_book_issue_state.de
+      ) {
+        el.has_rule_book_issue_state.en = _.cloneDeep(
+          el.has_rule_book_issue_state.de
+        );
+        if (el.has_rule_book_issue_state.en.title_long) {
+          el.has_rule_book_issue_state.en.title_long = `<img src="${frontendURL}assest/images/GER.jpg" alt="GER"> ${el.has_rule_book_issue_state.en.title_long}`;
+        }
+      }
+    }
     // Handle the root element
     if (el.rule_book_parent_id === null) {
       treeStructure = el;
