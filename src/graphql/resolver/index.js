@@ -76,6 +76,9 @@ const createBlog = require("./blog/create-blog");
 const updateBlog = require("./blog/update-blog");
 const deleteBlog = require("./blog/delete-blog");
 const getBlogList = require("./blog/get-blog-list");
+const getBlog = require("./blog/get-blog");
+const getBlogYearList = require("./blog/get-blog-year-list");
+const tweetBlog = require("./blog/tweet-blog");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -116,6 +119,7 @@ const resolvers = {
     createBlog,
     updateBlog,
     deleteBlog,
+    tweetBlog,
   },
   Query: {
     User,
@@ -157,6 +161,8 @@ const resolvers = {
     searchSol,
     solIdExists,
     getBlogList,
+    getBlog,
+    getBlogYearList,
   },
 };
 

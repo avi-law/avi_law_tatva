@@ -779,6 +779,40 @@ const typeDefs = gql`
     updatedLog: [customLog]
     country: Country
   }
+
+  type CustomBlog {
+    blog_id: ID
+    blog_active: Boolean
+    blog_date: _Neo4jDate
+    blog_ord: String
+    blog_no: String
+    blog_tweeted: String
+  }
+  type BlogStateCustom {
+    blog_text: String
+    blog_title_long: String
+    blog_title_short: String
+  }
+  type CustomBlogState {
+    de: BlogStateCustom
+    en: BlogStateCustom
+  }
+  type GetCustomBlog {
+    bl: CustomBlog
+    bls: CustomBlogState
+    blog_author: User
+    user: User
+    createdLog: [customLog]
+    updatedLog: [customLog]
+  }
+
+  type GetBlogListByYear {
+    years: [Int]
+    blog_list: [GetCustomBlog]
+    blog_first: GetCustomBlog
+    total: Int
+  }
+
   type CustomSol {
     sol_date: _Neo4jDate
     sol_id: Int
@@ -982,6 +1016,7 @@ const typeDefs = gql`
     updateSol(sol_id: Int!, data: CustomCreateSolInput!): Boolean @isAdmin
     deleteSol(sol_id: Int!): Boolean @isAdmin
     newsletterTransformSolId: String @isAdmin
+    tweetBlog(blog_id: Int!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
@@ -1114,6 +1149,12 @@ const typeDefs = gql`
       offset: Int
       orderBy: [_BlogOrdering]
     ): CustomBlogList @isAdmin
+    getBlog(blog_id: Int!): GetCustomBlog @isAdmin
+    getBlogYearList(
+      lang: LanguageForUser
+      year: Int
+      blog_id: Int
+    ): GetBlogListByYear @isUnAuthenticated
   }
 `;
 

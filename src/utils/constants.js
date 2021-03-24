@@ -104,6 +104,7 @@ module.exports = {
     UPDATE_BLOG: 38,
     DELETE_BLOG: 39,
     READ_NL: 40,
+    READ_BLOG: 41,
   },
   LOGIN_FAILED_STATUS: {
     GTC_NOT_ACCEPTED: "GTC_NOT_ACCEPTED",
