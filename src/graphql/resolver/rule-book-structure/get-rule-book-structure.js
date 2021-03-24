@@ -36,8 +36,8 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
         el.has_rule_book_issue_state.de = _.cloneDeep(
           el.has_rule_book_issue_state.en
         );
-        if (el.has_rule_book_issue_state.de.title_long) {
-          el.has_rule_book_issue_state.de.title_long = `<img src="${frontendURL}assets/images/EN.jpg" alt="EN"> ${el.has_rule_book_issue_state.de.title_long}`;
+        if (el.has_rule_book_issue_state.de.title_short) {
+          el.has_rule_book_issue_state.de.title_short = `<img src="${frontendURL}assets/images/EN.jpg" alt="EN"> ${el.has_rule_book_issue_state.de.title_short}`;
         }
       } else if (
         !el.has_rule_book_issue_state.en &&
@@ -46,8 +46,8 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
         el.has_rule_book_issue_state.en = _.cloneDeep(
           el.has_rule_book_issue_state.de
         );
-        if (el.has_rule_book_issue_state.en.title_long) {
-          el.has_rule_book_issue_state.en.title_long = `<img src="${frontendURL}assets/images/GER.jpg" alt="GER"> ${el.has_rule_book_issue_state.en.title_long}`;
+        if (el.has_rule_book_issue_state.en.title_short) {
+          el.has_rule_book_issue_state.en.title_short = `<img src="${frontendURL}assets/images/GER.jpg" alt="GER"> ${el.has_rule_book_issue_state.en.title_short}`;
         }
       }
     }
