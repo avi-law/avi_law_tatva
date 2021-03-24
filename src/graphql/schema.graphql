@@ -896,16 +896,24 @@ const typeDefs = gql`
     right: LanguageForUser
   }
 
-  type CustomRuleBookIssue {
+  type RuleBookStateCustom {
     rule_book_issue_no: Int
+    title_long: String
+    language: String
+    title_short: String
     label: [String]
+  }
+
+  type CustomRuleBookIssue {
+    en: RuleBookStateCustom
+    de: RuleBookStateCustom
   }
   type CustomRuleBook {
     rule_book_active: Boolean
     rule_book_id: String
-    res_rbi: [CustomRuleBookIssue]
     rule_book_parent_id: String
     has_rule_book_child: [CustomRuleBook]
+    has_rule_book_issue_state: CustomRuleBookIssue
     label: [String]
   }
 

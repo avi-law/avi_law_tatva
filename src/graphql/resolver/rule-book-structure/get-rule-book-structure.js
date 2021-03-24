@@ -15,6 +15,21 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
 
   let treeStructure;
   ruleBookList.forEach((el) => {
+    const stateData = _.cloneDeep(el.res_rbi);
+    delete el.res_rbi;
+    el.has_rule_book_issue_state = {};
+    stateData.forEach((stateElement) => {
+      if (stateElement.language) {
+        el.has_rule_book_issue_state[stateElement.language] = {
+          ...stateElement,
+          rule_book_language_is: [
+            {
+              iso_639_1: stateElement.language,
+            },
+          ],
+        };
+      }
+    });
     // Handle the root element
     if (el.rule_book_parent_id === null) {
       treeStructure = el;

@@ -32,7 +32,13 @@ CALL {
 				WITH path
 				WITH nodes(path)[-1] as rb
 				MATCH (rb)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)
-				RETURN collect(rbi {.rule_book_issue_no, label: labels(rbi)}) AS res_rbi
+				WITH rbi ORDER BY rbi.rule_book_issue_no
+				CALL {
+					WITH rbi
+					MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
+					RETURN rbis, lang
+				}
+				RETURN collect(rbi {.rule_book_issue_no, title_short: rbis.rule_book_issue_title_short, title_long: rbis.rule_book_issue_title_long, language: lang.iso_639_1, label: labels(rbi)}) AS res_rbi
 			}
 
 			WITH path, nodes(path) AS n, res_rbi, apoc.text.rpad(reduce(a = "", r in relationships(path) | a + apoc.text.lpad(toString(COALESCE(r.order_rule_book_child,0)),4,"0")),100,"0") AS orders

@@ -515,6 +515,7 @@ WITH COLLECT(path) AS paths
 CALL apoc.convert.toTree(paths) YIELD value
 RETURN value`;
 
+// Just for future reference
 exports.getRuleBooksStructureOld = `
 MATCH path=(rbs1:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_CHILD*0..]->(rbs2:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang:Language)
 WHERE rbs1.rule_book_struct_id = 'Rule Root Object'
@@ -522,6 +523,7 @@ WITH COLLECT(path) AS paths
 CALL apoc.convert.toTree(paths) YIELD value
 RETURN value`;
 
+// Just for future reference
 exports.getRuleBooksStructure = `
 Match path=(rbs1:Rule_Book_Struct {rule_book_struct_id:"Rule Root Object"})-[:HAS_RULE_BOOK_STRUCT_CHILD*]->(rbs2:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_STATE]-(rbss:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang:Language)
 WITH path, toString(reduce(a = 1, r in relationships(path)[0..size(relationships(path))-2] | a * 1000 + r.order)) as orders
