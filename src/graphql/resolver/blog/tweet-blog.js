@@ -35,7 +35,7 @@ const getBlogDetails = async (blogID) => {
           });
         }
         const blogResult = {
-          bl: common.getPropertiesFromRecord(record, "nl"),
+          bl: common.getPropertiesFromRecord(record, "bl"),
           bls,
           user: common.getPropertiesFromRecord(record, "u"),
         };

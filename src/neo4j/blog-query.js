@@ -114,7 +114,7 @@ RETURN bl, bls, u
 
 exports.getBlogYearList = (queryParams) => {
   let query = `
-  MATCH (bl:Blog)-[:HAS_BLOG_STATE]->(bls:Nl_State)-[r3:BLOG_LANG_IS]->(lang:Language)
+  MATCH (bl:Blog)-[:HAS_BLOG_STATE]->(bls:Blog_State)-[r3:BLOG_LANG_IS]->(lang:Language)
   WHERE bl.blog_active = true
   `;
   if (queryParams.lang) {
@@ -129,7 +129,7 @@ exports.getBlogYearList = (queryParams) => {
 
 exports.getBlogListByYear = (queryParams) => {
   let query = `
-  MATCH (bl:Blog)-[:HAS_BLOG_STATE]->(bls:Nl_State)-[r3:BLOG_LANG_IS]->(lang:Language)
+  MATCH (bl:Blog)-[:HAS_BLOG_STATE]->(bls:Blog_State)-[r3:BLOG_LANG_IS]->(lang:Language)
   WHERE bl.blog_active = true
   `;
   if (queryParams.lang) {
@@ -157,7 +157,7 @@ CALL {
 CALL {
   WITH bl
   MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.CREATE_BLOG}})
-  MATCH (nl)<-[:LOG_REFERS_TO_OBJECT]-(l1:Log)-[:HAS_LOG_TYPE]->(lt)
+  MATCH (bl)<-[:LOG_REFERS_TO_OBJECT]-(l1:Log)-[:HAS_LOG_TYPE]->(lt)
   MATCH (l1)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]-(us1:User_State)
   WHERE r1.to IS NULL
   RETURN collect({timestamp: l1.log_timestamp, user_state: {user_first_name: us1.user_first_name, user_middle_name: us1.user_middle_name, user_last_name: us1.user_last_name} }) AS createdLog
@@ -165,7 +165,7 @@ CALL {
 CALL {
   WITH bl
   MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.UPDATE_BLOG}})
-  MATCH (nl)<-[:LOG_REFERS_TO_OBJECT]-(l2:Log)-[:HAS_LOG_TYPE]->(lt)
+  MATCH (bl)<-[:LOG_REFERS_TO_OBJECT]-(l2:Log)-[:HAS_LOG_TYPE]->(lt)
   MATCH (l2)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]-(us1:User_State)
   WHERE r1.to IS NULL
   RETURN collect({timestamp: l2.log_timestamp, user_state: { user_first_name: us1.user_first_name, user_middle_name: us1.user_middle_name, user_last_name: us1.user_last_name  } }) AS updatedLog
@@ -180,7 +180,7 @@ WHERE bl.blog_id = $blog_id
 CALL {
   WITH bl
   MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.CREATE_BLOG}})
-  MATCH (nl)<-[:LOG_REFERS_TO_OBJECT]-(l1:Log)-[:HAS_LOG_TYPE]->(lt)
+  MATCH (bl)<-[:LOG_REFERS_TO_OBJECT]-(l1:Log)-[:HAS_LOG_TYPE]->(lt)
   MATCH (l1)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]-(us1:User_State)
   WHERE r1.to IS NULL
   RETURN collect({timestamp: l1.log_timestamp, user_state: {user_first_name: us1.user_first_name, user_middle_name: us1.user_middle_name, user_last_name: us1.user_last_name} }) AS createdLog
@@ -188,7 +188,7 @@ CALL {
 CALL {
   WITH bl
   MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.UPDATE_BLOG}})
-  MATCH (nl)<-[:LOG_REFERS_TO_OBJECT]-(l2:Log)-[:HAS_LOG_TYPE]->(lt)
+  MATCH (bl)<-[:LOG_REFERS_TO_OBJECT]-(l2:Log)-[:HAS_LOG_TYPE]->(lt)
   MATCH (l2)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]-(us1:User_State)
   WHERE r1.to IS NULL
   RETURN collect({timestamp: l2.log_timestamp, user_state: { user_first_name: us1.user_first_name, user_middle_name: us1.user_middle_name, user_last_name: us1.user_last_name  } }) AS updatedLog
