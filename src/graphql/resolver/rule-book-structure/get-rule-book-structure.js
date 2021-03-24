@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const _ = require("lodash");
+// const fs = require("fs");
 const driver = require("../../../config/db");
 const { common } = require("../../../utils");
 const { getUser } = require("../../../neo4j/query");
@@ -9,106 +10,102 @@ const { getRuleBooksStructure } = require("../../../neo4j/tree-query");
 const { frontendURL } = require("../../../config/application");
 
 const generateRuleBookTreeStructure = (ruleBookList) => {
-  const idMapping = ruleBookList.reduce((acc, el, i) => {
-    acc[el.rule_book_id] = i;
-    return acc;
-  }, {});
+  const { treeStructure } = ruleBookList.reduce(
+    (acc, curr) => {
+      const stateData = _.cloneDeep(curr.res_rbi);
+      delete curr.res_rbi;
+      curr.has_rule_book_issue_state = {};
+      stateData.forEach((stateElement) => {
+        if (stateElement.language) {
+          curr.has_rule_book_issue_state[stateElement.language] = {
+            ...stateElement,
+            rule_book_language_is: [
+              {
+                iso_639_1: stateElement.language,
+              },
+            ],
+          };
+        }
+      });
+      if (curr.has_rule_book_issue_state) {
+        if (
+          curr.has_rule_book_issue_state.en &&
+          !curr.has_rule_book_issue_state.de
+        ) {
+          curr.has_rule_book_issue_state.de = _.cloneDeep(
+            curr.has_rule_book_issue_state.en
+          );
+          if (curr.has_rule_book_issue_state.de.title_short) {
+            curr.has_rule_book_issue_state.de.title_short = `<img src="${frontendURL}assets/images/EN.jpg" alt="EN"> ${curr.has_rule_book_issue_state.de.title_short}`;
+          }
+        } else if (
+          !curr.has_rule_book_issue_state.en &&
+          curr.has_rule_book_issue_state.de
+        ) {
+          curr.has_rule_book_issue_state.en = _.cloneDeep(
+            curr.has_rule_book_issue_state.de
+          );
+          if (curr.has_rule_book_issue_state.en.title_short) {
+            curr.has_rule_book_issue_state.en.title_short = `<img src="${frontendURL}assets/images/GER.jpg" alt="GER"> ${curr.has_rule_book_issue_state.en.title_short}`;
+          }
+        }
+      }
+      if (acc.parentMap[curr.rule_book_parent_id]) {
+        (acc.parentMap[curr.rule_book_parent_id].has_rule_book_child =
+          acc.parentMap[curr.rule_book_parent_id].has_rule_book_child ||
+          []).push(curr);
+      } else {
+        curr.has_rule_book_child = null;
+        acc.treeStructure.push(curr);
+      }
+      acc.parentMap[curr.rule_book_id] = curr;
+      return acc;
+    },
+    { parentMap: {}, treeStructure: [] }
+  );
 
-  let treeStructure;
-  ruleBookList.forEach((el) => {
-    const stateData = _.cloneDeep(el.res_rbi);
-    delete el.res_rbi;
-    el.has_rule_book_issue_state = {};
-    stateData.forEach((stateElement) => {
-      if (stateElement.language) {
-        el.has_rule_book_issue_state[stateElement.language] = {
-          ...stateElement,
-          rule_book_language_is: [
-            {
-              iso_639_1: stateElement.language,
-            },
-          ],
-        };
-      }
-    });
-    if (el.has_rule_book_issue_state) {
-      if (el.has_rule_book_issue_state.en && !el.has_rule_book_issue_state.de) {
-        el.has_rule_book_issue_state.de = _.cloneDeep(
-          el.has_rule_book_issue_state.en
-        );
-        if (el.has_rule_book_issue_state.de.title_short) {
-          el.has_rule_book_issue_state.de.title_short = `<img src="${frontendURL}assets/images/EN.jpg" alt="EN"> ${el.has_rule_book_issue_state.de.title_short}`;
-        }
-      } else if (
-        !el.has_rule_book_issue_state.en &&
-        el.has_rule_book_issue_state.de
-      ) {
-        el.has_rule_book_issue_state.en = _.cloneDeep(
-          el.has_rule_book_issue_state.de
-        );
-        if (el.has_rule_book_issue_state.en.title_short) {
-          el.has_rule_book_issue_state.en.title_short = `<img src="${frontendURL}assets/images/GER.jpg" alt="GER"> ${el.has_rule_book_issue_state.en.title_short}`;
-        }
-      }
-    }
-    // Handle the root element
-    if (el.rule_book_parent_id === null) {
-      treeStructure = el;
-      return;
-    }
-    // Use our mapping to locate the parent element in our data array
-    const parentEl = ruleBookList[idMapping[el.rule_book_parent_id]];
-    // Add our current el to its parent's `children` array
-    parentEl.has_rule_book_child = [
-      ...(parentEl.has_rule_book_child || []),
-      el,
-    ];
-  });
   return treeStructure;
 };
 
 const generateTreeStructure = (ruleBookStructureList) => {
-  const idMapping = ruleBookStructureList.reduce((acc, el, i) => {
-    acc[el.rule_book_struct_id] = i;
-    return acc;
-  }, {});
-
-  let treeStructure;
-  ruleBookStructureList.forEach((el) => {
-    const stateData = _.cloneDeep(el.res_desc_lang);
-    delete el.res_desc_lang;
-    el.has_rule_book_child =
-      el.rbs_res.length > 0
-        ? [generateRuleBookTreeStructure(el.rbs_res)]
-        : null;
-    el.has_rule_book_struct_state = {};
-    stateData.forEach((stateElement) => {
-      if (stateElement.language) {
-        el.has_rule_book_struct_state[stateElement.language] = {
-          rule_book_struct_desc: stateElement.rule_book_struct_desc,
-          rule_book_struct_language_is: [
-            {
-              iso_639_1: stateElement.language,
-            },
-          ],
-        };
+  const { treeStructure } = ruleBookStructureList.reduce(
+    (acc, curr) => {
+      const stateData = _.cloneDeep(curr.res_desc_lang);
+      const rbsData = _.cloneDeep(curr.rbs_res);
+      delete curr.res_desc_lang;
+      delete curr.rbs_res;
+      curr.has_rule_book_child =
+        rbsData.length > 0
+          ? generateRuleBookTreeStructure(_.cloneDeep(rbsData))
+          : null;
+      curr.has_rule_book_struct_state = {};
+      stateData.forEach((stateElement) => {
+        if (stateElement.language) {
+          curr.has_rule_book_struct_state[stateElement.language] = {
+            rule_book_struct_desc: stateElement.rule_book_struct_desc,
+            rule_book_struct_language_is: [
+              {
+                iso_639_1: stateElement.language,
+              },
+            ],
+          };
+        }
+      });
+      if (acc.parentMap[curr.rule_book_struct_parent_id]) {
+        (acc.parentMap[
+          curr.rule_book_struct_parent_id
+        ].has_rule_book_struct_child =
+          acc.parentMap[curr.rule_book_struct_parent_id]
+            .has_rule_book_struct_child || []).push(curr);
+      } else {
+        curr.has_rule_book_struct_child = null;
+        acc.treeStructure.push(curr);
       }
-    });
-
-    // Handle the root element
-    if (el.rule_book_struct_parent_id === null) {
-      treeStructure = el;
-      return;
-    }
-    // Use our mapping to locate the parent element in our data array
-    const parentEl =
-      ruleBookStructureList[idMapping[el.rule_book_struct_parent_id]];
-    // Add our current el to its parent's `children` array
-    parentEl.has_rule_book_struct_child = [
-      ...(parentEl.has_rule_book_struct_child || []),
-      el,
-    ];
-  });
+      acc.parentMap[curr.rule_book_struct_id] = curr;
+      return acc;
+    },
+    { parentMap: {}, treeStructure: [] }
+  );
   return treeStructure;
 };
 
@@ -143,10 +140,15 @@ module.exports = async (object, params, ctx) => {
         settings = userData[0];
       }
     }
+    // console.log(generateRuleBookTreeStructure(rra));
+    // return false;
     // const finalTree = generateTreeStructure(ruleBookStructureList);
+    // fs.writeFile("test1.json", JSON.stringify(finalTree[0]), (err) => {
+    //   if (err) return console.log(err);
+    // });
     // console.log(JSON.stringify(generateTreeStructure(ruleBookStructureList)));
     return {
-      ...generateTreeStructure(ruleBookStructureList),
+      ...generateTreeStructure(ruleBookStructureList)[0],
       language_preference_settings: settings,
     };
   } catch (error) {
