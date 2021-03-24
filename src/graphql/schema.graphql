@@ -920,7 +920,7 @@ const typeDefs = gql`
     has_rule_book_struct_state: RuleBookStructureStateByLanguage
     has_rule_book_struct_child: [CustomRuleBookStructure]
     rule_book_struct_parent_id: String
-    rule_book: CustomRuleBook
+     has_rule_book_child: [CustomRuleBook]
     label: [String]
     language_preference_settings: languagePreferencesettings
   }

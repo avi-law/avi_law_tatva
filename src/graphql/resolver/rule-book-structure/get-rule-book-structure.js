@@ -77,8 +77,10 @@ const generateTreeStructure = (ruleBookStructureList) => {
   ruleBookStructureList.forEach((el) => {
     const stateData = _.cloneDeep(el.res_desc_lang);
     delete el.res_desc_lang;
-    el.rule_book =
-      el.rbs_res.length > 0 ? generateRuleBookTreeStructure(el.rbs_res) : [];
+    el.has_rule_book_child =
+      el.rbs_res.length > 0
+        ? [generateRuleBookTreeStructure(el.rbs_res)]
+        : null;
     el.has_rule_book_struct_state = {};
     stateData.forEach((stateElement) => {
       if (stateElement.language) {
@@ -142,6 +144,7 @@ module.exports = async (object, params, ctx) => {
       }
     }
     // const finalTree = generateTreeStructure(ruleBookStructureList);
+    // console.log(JSON.stringify(generateTreeStructure(ruleBookStructureList)));
     return {
       ...generateTreeStructure(ruleBookStructureList),
       language_preference_settings: settings,
