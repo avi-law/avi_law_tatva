@@ -1,3 +1,5 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable no-unused-vars */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
@@ -9,6 +11,31 @@ const { getUser } = require("../../../neo4j/query");
 const { getRuleBooksStructure } = require("../../../neo4j/tree-query");
 const { frontendURL } = require("../../../config/application");
 
+const getNestedChildren = (array) => {
+  array = array.filter((element) => {
+    if (element.has_rule_book_child) {
+      element.has_rule_book_child = getNestedChildren(
+        element.has_rule_book_child
+      );
+      if (element.has_rule_book_child.length === 0) {
+        element.has_rule_book_child = null;
+      }
+      if (
+        element.has_rule_book_issue_state.en ||
+        element.has_rule_book_issue_state.de
+      ) {
+        return element;
+      }
+    } else if (
+      element.has_rule_book_issue_state.en ||
+      element.has_rule_book_issue_state.de
+    ) {
+      return element;
+    }
+  });
+  return array;
+};
+
 const generateRuleBookTreeStructure = (ruleBookList) => {
   const { treeStructure } = ruleBookList.reduce(
     (acc, curr) => {
@@ -19,6 +46,10 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
         if (stateElement.language) {
           curr.has_rule_book_issue_state[stateElement.language] = {
             ...stateElement,
+            title_long_html: stateElement.title_long,
+            title_long: stateElement.title_long
+              ? stateElement.title_long.replace(/(<([^>]+)>)/gi, "")
+              : null,
             rule_book_language_is: [
               {
                 iso_639_1: stateElement.language,
@@ -35,8 +66,8 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
           curr.has_rule_book_issue_state.de = _.cloneDeep(
             curr.has_rule_book_issue_state.en
           );
-          if (curr.has_rule_book_issue_state.de.title_short) {
-            curr.has_rule_book_issue_state.de.title_short = `<img src="${frontendURL}assets/images/EN.jpg" alt="EN"> ${curr.has_rule_book_issue_state.de.title_short}`;
+          if (curr.has_rule_book_issue_state.de.title_long) {
+            curr.has_rule_book_issue_state.de.title_long = `<img src="${frontendURL}assets/images/EN.jpg" alt="EN"> ${curr.has_rule_book_issue_state.de.title_long}`;
           }
         } else if (
           !curr.has_rule_book_issue_state.en &&
@@ -45,8 +76,8 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
           curr.has_rule_book_issue_state.en = _.cloneDeep(
             curr.has_rule_book_issue_state.de
           );
-          if (curr.has_rule_book_issue_state.en.title_short) {
-            curr.has_rule_book_issue_state.en.title_short = `<img src="${frontendURL}assets/images/GER.jpg" alt="GER"> ${curr.has_rule_book_issue_state.en.title_short}`;
+          if (curr.has_rule_book_issue_state.en.title_long) {
+            curr.has_rule_book_issue_state.en.title_long = `<img src="${frontendURL}assets/images/GER.jpg" alt="GER"> ${curr.has_rule_book_issue_state.en.title_long}`;
           }
         }
       }
@@ -78,6 +109,12 @@ const generateTreeStructure = (ruleBookStructureList) => {
         rbsData.length > 0
           ? generateRuleBookTreeStructure(_.cloneDeep(rbsData))
           : null;
+      if (curr.has_rule_book_child) {
+        curr.has_rule_book_child =
+          getNestedChildren(curr.has_rule_book_child).length > 0
+            ? getNestedChildren(curr.has_rule_book_child)
+            : null;
+      }
       curr.has_rule_book_struct_state = {};
       stateData.forEach((stateElement) => {
         if (stateElement.language) {
