@@ -889,8 +889,8 @@ exports.solQuery = (queryParams) => {
     WITH sl, slt, cou
     CALL {
       WITH sl
-      MATCH (sl)-[r1:SOL_STEMS_FROM_COUNTRY]->()
-      MATCH (sl)-[r2:HAS_SOL_TYPE]->()
+      OPTIONAL MATCH (sl)-[r1:SOL_STEMS_FROM_COUNTRY]->()
+      OPTIONAL MATCH (sl)-[r2:HAS_SOL_TYPE]->()
       DETACH DELETE r1, r2
       RETURN r1, r2
     }
