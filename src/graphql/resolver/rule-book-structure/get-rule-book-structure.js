@@ -4,9 +4,9 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const _ = require("lodash");
-// const fs = require("fs");
+const fs = require("fs");
 const driver = require("../../../config/db");
-const { common } = require("../../../utils");
+const { common, constants } = require("../../../utils");
 const { getUser } = require("../../../neo4j/query");
 const { getRuleBooksStructure } = require("../../../neo4j/tree-query");
 const { frontendURL } = require("../../../config/application");
@@ -42,9 +42,22 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
       const stateData = _.cloneDeep(curr.res_rbi);
       delete curr.res_rbi;
       curr.has_rule_book_issue_state = {};
+      curr.has_rule_book_issue_child = {};
       stateData.forEach((stateElement) => {
         if (stateElement.language) {
           curr.has_rule_book_issue_state[stateElement.language] = {
+            ...stateElement,
+            title_long_html: stateElement.title_long,
+            title_long: stateElement.title_long
+              ? common.removeTag(stateElement.title_long)
+              : null,
+            rule_book_language_is: [
+              {
+                iso_639_1: stateElement.language,
+              },
+            ],
+          };
+          curr.has_rule_book_issue_child[stateElement.language] = {
             ...stateElement,
             title_long_html: stateElement.title_long,
             title_long: stateElement.title_long
@@ -58,6 +71,10 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
           };
         }
       });
+      if (curr.has_rule_book_issue_child) {
+        curr.has_rule_book_issue_child.label = ["Rule_Book_Issue"];
+        curr.has_rule_book_issue_child = [curr.has_rule_book_issue_child];
+      }
       if (curr.has_rule_book_issue_state) {
         if (
           curr.has_rule_book_issue_state.en &&
@@ -67,7 +84,7 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
             curr.has_rule_book_issue_state.en
           );
           if (curr.has_rule_book_issue_state.de.title_long) {
-            curr.has_rule_book_issue_state.de.title_long = `<img src="${frontendURL}assets/images/EN.jpg" alt="EN"> ${curr.has_rule_book_issue_state.de.title_long}`;
+            curr.has_rule_book_issue_state.de.title_long = `<img src="${frontendURL}assets/images/EN.jpg" alt="EN"  title="${constants.PROVISION_IMAGE_TITLE_EN}"> ${curr.has_rule_book_issue_state.de.title_long}`;
           }
         } else if (
           !curr.has_rule_book_issue_state.en &&
@@ -77,7 +94,7 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
             curr.has_rule_book_issue_state.de
           );
           if (curr.has_rule_book_issue_state.en.title_long) {
-            curr.has_rule_book_issue_state.en.title_long = `<img src="${frontendURL}assets/images/GER.jpg" alt="GER"> ${curr.has_rule_book_issue_state.en.title_long}`;
+            curr.has_rule_book_issue_state.en.title_long = `<img src="${frontendURL}assets/images/GER.jpg" alt="GER"  title="${constants.PROVISION_IMAGE_TITLE_GER}"> ${curr.has_rule_book_issue_state.en.title_long}`;
           }
         }
       }

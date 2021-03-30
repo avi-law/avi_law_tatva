@@ -251,6 +251,13 @@ const nqTransform = (value) => {
   }
 };
 
+const removeTag = (html) => {
+  html = html.replace("<br />", "||br||");
+  html = html.replace(/(<([^>]+)>)/gi, "");
+  html = html.replace("||br||", "<br />");
+  return html;
+};
+
 module.exports = {
   getMessage,
   asyncForEach,
@@ -268,4 +275,5 @@ module.exports = {
   transformNLOrderNumber,
   nlContentTransformLink,
   nqTransform,
+  removeTag,
 };
