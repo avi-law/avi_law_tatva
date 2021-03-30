@@ -309,7 +309,7 @@ const typeDefs = gql`
 
   type Rule_Book_Issue  {
     rule_book_issue_eea: Boolean
-    rule_book_issue_no: String
+    rule_book_issue_no: Int
     rule_book_issue_sol_only: Boolean
     rule_book_issue_wip_status: Int
   }
@@ -908,7 +908,7 @@ const typeDefs = gql`
   }
 
   type RuleBookStateCustom {
-    rule_book_issue_no: String
+    rule_book_issue_no: Int
     title_long: String
     language: String
     title_short: String
@@ -919,13 +919,24 @@ const typeDefs = gql`
     en: RuleBookStateCustom
     de: RuleBookStateCustom
   }
+
+  type CustomRuleBookIssueChild {
+    rule_book_issue_no: Int
+    label: [String]
+    type: String
+    en: RuleBookStateCustom
+    de: RuleBookStateCustom
+  }
+
   type CustomRuleBook {
     rule_book_active: Boolean
     rule_book_id: String
     rule_book_parent_id: String
     has_rule_book_child: [CustomRuleBook]
     has_rule_book_issue_state: CustomRuleBookIssue
+    has_rule_book_issue_child: [CustomRuleBookIssueChild]
     label: [String]
+    type: String
   }
 
   type CustomRuleBookStructure {
@@ -934,8 +945,9 @@ const typeDefs = gql`
     has_rule_book_struct_state: RuleBookStructureStateByLanguage
     has_rule_book_struct_child: [CustomRuleBookStructure]
     rule_book_struct_parent_id: String
-     has_rule_book_child: [CustomRuleBook]
+    has_rule_book_child: [CustomRuleBook]
     label: [String]
+    type: String
     language_preference_settings: languagePreferencesettings
   }
 
@@ -1025,7 +1037,7 @@ const typeDefs = gql`
 
   input RuleBookIssueInput  {
     rule_book_issue_eea: Boolean
-    rule_book_issue_no: String
+    rule_book_issue_no: Int
     rule_book_issue_sol_only: Boolean
     rule_book_issue_wip_status: Int
   }

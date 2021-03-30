@@ -11,6 +11,19 @@ const { getUser } = require("../../../neo4j/query");
 const { getRuleBooksStructure } = require("../../../neo4j/tree-query");
 const { frontendURL } = require("../../../config/application");
 
+const languageImageAndTitle = {
+  de: {
+    image: `${frontendURL}assets/images/GER.jpg`,
+    title: `Available in German only`,
+    lang: "en",
+  },
+  en: {
+    image: `${frontendURL}assets/images/EN.jpg`,
+    title: "Nur auf Englisch verfügbar",
+    lang: "de",
+  },
+};
+
 const getNestedChildren = (array) => {
   array = array.filter((element) => {
     if (element.has_rule_book_child) {
@@ -40,9 +53,10 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
   const { treeStructure } = ruleBookList.reduce(
     (acc, curr) => {
       const stateData = _.cloneDeep(curr.res_rbi);
+      const ruleBookIssues = _.cloneDeep(curr.res_rbi);
       delete curr.res_rbi;
       curr.has_rule_book_issue_state = {};
-      curr.has_rule_book_issue_child = {};
+      curr.has_rule_book_issue_child = [];
       stateData.forEach((stateElement) => {
         if (stateElement.language) {
           curr.has_rule_book_issue_state[stateElement.language] = {
@@ -57,24 +71,84 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
               },
             ],
           };
-          curr.has_rule_book_issue_child[stateElement.language] = {
-            ...stateElement,
-            title_long_html: stateElement.title_long,
-            title_long: stateElement.title_long
-              ? stateElement.title_long.replace(/(<([^>]+)>)/gi, "")
-              : null,
-            rule_book_language_is: [
-              {
-                iso_639_1: stateElement.language,
-              },
-            ],
-          };
         }
       });
-      if (curr.has_rule_book_issue_child) {
-        curr.has_rule_book_issue_child.label = ["Rule_Book_Issue"];
-        curr.has_rule_book_issue_child = [curr.has_rule_book_issue_child];
-      }
+      ruleBookIssues.forEach((issue) => {
+        if (issue.language) {
+          if (curr.has_rule_book_issue_child.length > 0) {
+            const exists = curr.has_rule_book_issue_child.find(
+              (x) => x.rule_book_issue_no === issue.rule_book_issue_no
+            );
+            const child = {
+              ...issue,
+              title_long: issue.title_long
+                ? common.removeTag(issue.title_long)
+                : null,
+              rule_book_language_is: [
+                {
+                  iso_639_1: issue.language,
+                },
+              ],
+            };
+            if (exists) {
+              exists[issue.language] = child;
+            } else {
+              child.rule_book_issue_no = issue.rule_book_issue_no;
+              child.label = ["Rule_Book_Issue"];
+              child[languageImageAndTitle[issue.language].lang] = {
+                ...issue,
+                language: languageImageAndTitle[issue.language].lang,
+                title_long: issue.title_long
+                  ? `<img src="${
+                      languageImageAndTitle[issue.language].image
+                    }" title="${
+                      languageImageAndTitle[issue.language].title
+                    }"> ${common.removeTag(issue.title_long)}`
+                  : null,
+                rule_book_language_is: [
+                  {
+                    iso_639_1: languageImageAndTitle[issue.language].lang,
+                  },
+                ],
+              };
+              curr.has_rule_book_issue_child.push(child);
+            }
+          } else {
+            const child = {
+              rule_book_issue_no: issue.rule_book_issue_no,
+              label: ["Rule_Book_Issue"],
+              [issue.language]: {
+                ...issue,
+                title_long: issue.title_long
+                  ? common.removeTag(issue.title_long)
+                  : null,
+                rule_book_language_is: [
+                  {
+                    iso_639_1: issue.language,
+                  },
+                ],
+              },
+              [languageImageAndTitle[issue.language].lang]: {
+                ...issue,
+                language: languageImageAndTitle[issue.language].lang,
+                title_long: issue.title_long
+                  ? `<img src="${
+                      languageImageAndTitle[issue.language].image
+                    }" title="${
+                      languageImageAndTitle[issue.language].title
+                    }"> ${common.removeTag(issue.title_long)}`
+                  : null,
+                rule_book_language_is: [
+                  {
+                    iso_639_1: languageImageAndTitle[issue.language].lang,
+                  },
+                ],
+              },
+            };
+            curr.has_rule_book_issue_child.push(child);
+          }
+        }
+      });
       if (curr.has_rule_book_issue_state) {
         if (
           curr.has_rule_book_issue_state.en &&
