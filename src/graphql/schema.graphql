@@ -303,9 +303,23 @@ const typeDefs = gql`
   }
 
   type Rule_Book {
-    from: Float
     rule_book_id: String
-    rule_book_qa_order: Int
+    rule_book_active: Int
+  }
+
+  type Rule_Book_Issue  {
+    rule_book_issue_eea: Boolean
+    rule_book_issue_no: String
+    rule_book_issue_sol_only: Boolean
+    rule_book_issue_wip_status: Int
+  }
+
+  type Rule_Book_Issue_State  {
+    rule_book_issue_name: String
+    rule_book_issue_popular_title: String
+    rule_book_issue_rmk: String
+    rule_book_issue_title_long: String
+    rule_book_issue_title_short: String
   }
 
   type Rule_Book_Struct {
@@ -894,7 +908,7 @@ const typeDefs = gql`
   }
 
   type RuleBookStateCustom {
-    rule_book_issue_no: Int
+    rule_book_issue_no: String
     title_long: String
     language: String
     title_short: String
@@ -976,6 +990,67 @@ const typeDefs = gql`
     language_preference_settings: languagePreferencesettings
   }
 
+  #Tree type state
+  input Rule_Book_Struct {
+    rule_book_struct_active: Boolean!
+    rule_book_struct_id: String!
+  }
+  input Rule_Book_Struct_State {
+    rule_book_struct_desc: String!
+  }
+  input CustomRuleBookStructState {
+    en: Rule_Book_Struct_State!
+    de: Rule_Book_Struct_State!
+  }
+
+  input CustomAddRookBookStructInput {
+    rbs: Rule_Book_Struct!
+    rbss: CustomRuleBookStructState!
+    rule_book_struct_parent_id: String!
+    rule_book_struct_order: Int
+  }
+
+  input RuleBookInputCustom {
+    rule_book_id: String
+    rule_book_active: Int
+  }
+
+  input CustomAddRookBookInput {
+    rb: RuleBookInputCustom
+    rule_book_parent_id: String
+    rule_book_child_order: Int
+    rule_book_struct_parent_id: String
+    rule_book_struct_order: String
+  }
+
+  input RuleBookIssueInput  {
+    rule_book_issue_eea: Boolean
+    rule_book_issue_no: String
+    rule_book_issue_sol_only: Boolean
+    rule_book_issue_wip_status: Int
+  }
+
+  input RuleBookIssueStateInput  {
+    rule_book_issue_name: String
+    rule_book_issue_popular_title: String
+    rule_book_issue_rmk: String
+    rule_book_issue_title_long: String
+    rule_book_issue_title_short: String
+  }
+
+  input CustomRuleBookIssueStateInput  {
+    de:RuleBookIssueStateInput
+    en:RuleBookIssueStateInput
+  }
+
+  input CustomAddRookBookIssueInput {
+    rbi:RuleBookIssueStateInput
+    rbis: CustomRuleBookIssueStateInput
+    rule_book_parent_id: String
+  }
+
+  #Tree type end
+
   type Mutation {
     register(data: registerCustomer!): Boolean
     login(user_email: String!, user_pwd: String!): UserCustomLogin
@@ -1022,6 +1097,9 @@ const typeDefs = gql`
     deleteSol(sol_id: Int!): Boolean @isAdmin
     newsletterTransformSolId: String @isAdmin
     tweetBlog(blog_id: Int!): Boolean @isAdmin
+    addRuleBookStruct(data: CustomAddRookBookStructInput): Boolean @isAdmin
+    addRuleBook(data: CustomAddRookBookInput): Boolean @isAdmin
+    addRuleBookIssue(data: CustomAddRookBookIssueInput): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
