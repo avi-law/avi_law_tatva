@@ -252,9 +252,8 @@ const nqTransform = (value) => {
 };
 
 const removeTag = (html) => {
-  html = html.replace("<br />", "||br||");
+  html = html.replace("<br />", " ");
   html = html.replace(/(<([^>]+)>)/gi, "");
-  html = html.replace("||br||", "<br />");
   return html;
 };
 
