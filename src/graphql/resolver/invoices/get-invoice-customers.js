@@ -46,7 +46,7 @@ module.exports = async (object, params) => {
         constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
         ""
       );
-      const invIdString = filterByString.split(" ").join("_");
+      const invIdString = value.split(" ").join("_");
       condition = `${condition} AND ( toLower(cs.cust_name_01) CONTAINS toLower("${value}") OR toLower(inv.inv_id_strg) CONTAINS toLower("${value}") OR toLower(inv.inv_id_strg) CONTAINS toLower("${invIdString}"))`;
     }
     if (queryOrderBy === "") {
