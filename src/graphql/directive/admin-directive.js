@@ -13,6 +13,10 @@ const authorValidRoutes = [
   "updateNewsletter",
   "createNewsletter",
   "deleteNewsletter",
+  "updateSol",
+  "deleteSol",
+  "createSol",
+  "getSols",
 ];
 
 const verifyAndDecodeToken = ({ context }) => {

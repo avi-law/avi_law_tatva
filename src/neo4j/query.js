@@ -756,8 +756,8 @@ exports.newsletterQuery = (queryParams) => {
     WITH nl,cou,u
     CALL {
       WITH nl
-      MATCH (nl)-[r1:NL_REFERS_TO_COUNTRY]->()
-      MATCH (nl)-[r2:NL_HAS_AUTHOR]->()
+      OPTIONAL MATCH (nl)-[r1:NL_REFERS_TO_COUNTRY]->()
+      OPTIONAL MATCH (nl)-[r2:NL_HAS_AUTHOR]->()
       RETURN r1, r2
     }
     DETACH DELETE r1
