@@ -14,12 +14,12 @@ const { frontendURL } = require("../../../config/application");
 const languageImageAndTitle = {
   de: {
     image: `${frontendURL}assets/images/GER.jpg`,
-    title: `Available in German only`,
+    title: constants.PROVISION_IMAGE_TITLE_GER,
     lang: "en",
   },
   en: {
     image: `${frontendURL}assets/images/EN.jpg`,
-    title: "Nur auf Englisch verfügbar",
+    title: constants.PROVISION_IMAGE_TITLE_EN,
     lang: "de",
   },
 };
