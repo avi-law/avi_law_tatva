@@ -951,6 +951,40 @@ const typeDefs = gql`
     language_preference_settings: languagePreferencesettings
   }
 
+
+type RuleBookStateCustomTree {
+    rule_book_issue_no: Int
+    title_long: String
+    language: String
+    title_short: String
+  }
+
+ type CustomRuleBookIssueChildTree {
+    rule_book_issue_no: Int
+    label: String
+    en: RuleBookStateCustomTree
+    de: RuleBookStateCustomTree
+  }
+
+ type CustomRuleBookTree {
+    rule_book_active: Boolean
+    rule_book_id: String
+    rule_book_parent_id: String
+    has_rule_book_child: [CustomRuleBookTree]
+    has_rule_book_issue_child: [CustomRuleBookIssueChildTree]
+    label: String
+  }
+
+  type CustomRuleBookTreeStructure {
+    rule_book_struct_id: String
+    rule_book_struct_active: Boolean
+    rule_book_struct_parent_id: String
+    has_rule_book_struct_state: RuleBookStructureStateByLanguage
+    has_rule_book_struct_child: [CustomRuleBookTreeStructure]
+    has_rule_book_child: [CustomRuleBookTree]
+    label: String
+  }
+
   enum Subscription_Plan {
     SINGLE
     MULTIPLE
@@ -1183,6 +1217,7 @@ const typeDefs = gql`
     getSol(sol_id: Int!): GetCustomSol @isAuthenticated
     getSolType: CustomSolType
     getRuleBookStructure: CustomRuleBookStructure @isUnAuthenticated
+    getRuleBookTreeStructure: CustomRuleBookTreeStructure @isAdmin
     getCustomers(
       first: Int
       offset: Int
