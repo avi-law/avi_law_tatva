@@ -126,6 +126,10 @@ module.exports = {
   original_referer=https%3A%2F%2Favi-law.com%2F&ref_src=twsrc%5Etfw&screen_name=Avi_Law_com&tw_p=followbutton`,
   PROVISION_IMAGE_TITLE_EN: "Nur auf Englisch verfügbar",
   PROVISION_IMAGE_TITLE_GER: "Available in German only",
+  NL_TITLE_NOT_AVAILABLE: {
+    de: "Dieser Newsletter ist auf Deutsch nicht verfügbar.",
+    en: "This Newsletter is not available in English",
+  },
   SUBSCRIPTION_PLAN: {
     SINGLE: {
       cust_single: true,

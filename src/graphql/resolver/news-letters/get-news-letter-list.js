@@ -72,11 +72,17 @@ module.exports = async (object, params, ctx) => {
     );
     if (result && result.records.length > 0) {
       const nls = result.records.map((record) => {
+        const nlState = common.getPropertiesFromRecord(record, "nls");
+        const nlStateLanguage = common.getPropertiesFromRecord(record, "lang");
+        if (nlState && !nlState.nl_title_long) {
+          nlState.nl_title_long =
+            constants.NL_TITLE_NOT_AVAILABLE[nlStateLanguage.iso_639_1];
+        }
         const nlResult = {
           ...common.getPropertiesFromRecord(record, "nl"),
           nl_state: {
-            ...common.getPropertiesFromRecord(record, "nls"),
-            nl_language: common.getPropertiesFromRecord(record, "lang"),
+            ...nlState,
+            nl_language: nlStateLanguage,
           },
           country: common.getPropertiesFromRecord(record, "cou"),
         };

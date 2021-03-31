@@ -122,7 +122,14 @@ module.exports = async (object, params, ctx) => {
               nlState.nls &&
               nlState.lang.properties.iso_639_1
             ) {
-              nls[nlState.lang.properties.iso_639_1] = nlState.nls.properties;
+              const { properties } = nlState.nls;
+              if (properties && !properties.nl_title_long) {
+                properties.nl_title_long =
+                  constants.NL_TITLE_NOT_AVAILABLE[
+                    nlState.lang.properties.iso_639_1
+                  ];
+              }
+              nls[nlState.lang.properties.iso_639_1] = properties;
               solIds.push(
                 ...common.nqTransform(
                   nls[nlState.lang.properties.iso_639_1].nl_text
