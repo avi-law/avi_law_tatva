@@ -97,22 +97,6 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
             } else {
               child.rule_book_issue_no = issue.rule_book_issue_no;
               child.label = "Rule_Book_Issue";
-              child[languageImageAndTitle[issue.language].lang] = {
-                ...issue,
-                language: languageImageAndTitle[issue.language].lang,
-                title_long: issue.title_long
-                  ? `<img src="${
-                      languageImageAndTitle[issue.language].image
-                    }" title="${
-                      languageImageAndTitle[issue.language].title
-                    }"> ${common.removeTag(issue.title_long)}`
-                  : null,
-                rule_book_language_is: [
-                  {
-                    iso_639_1: languageImageAndTitle[issue.language].lang,
-                  },
-                ],
-              };
               curr.has_rule_book_issue_child.push(child);
             }
           } else {
@@ -131,50 +115,11 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
                   },
                 ],
               },
-              [languageImageAndTitle[issue.language].lang]: {
-                ...issue,
-                language: languageImageAndTitle[issue.language].lang,
-                title_long: issue.title_long
-                  ? `<img src="${
-                      languageImageAndTitle[issue.language].image
-                    }" title="${
-                      languageImageAndTitle[issue.language].title
-                    }"> ${common.removeTag(issue.title_long)}`
-                  : null,
-                rule_book_language_is: [
-                  {
-                    iso_639_1: languageImageAndTitle[issue.language].lang,
-                  },
-                ],
-              },
             };
             curr.has_rule_book_issue_child.push(child);
           }
         }
       });
-      if (curr.has_rule_book_issue_state) {
-        if (
-          curr.has_rule_book_issue_state.en &&
-          !curr.has_rule_book_issue_state.de
-        ) {
-          curr.has_rule_book_issue_state.de = _.cloneDeep(
-            curr.has_rule_book_issue_state.en
-          );
-          if (curr.has_rule_book_issue_state.de.title_long) {
-            curr.has_rule_book_issue_state.de.title_long = `<img src="${frontendURL}assets/images/EN.jpg" alt="EN"  title="${constants.PROVISION_IMAGE_TITLE_EN}"> ${curr.has_rule_book_issue_state.de.title_long}`;
-          }
-        } else if (
-          !curr.has_rule_book_issue_state.en &&
-          curr.has_rule_book_issue_state.de
-        ) {
-          curr.has_rule_book_issue_state.en = _.cloneDeep(
-            curr.has_rule_book_issue_state.de
-          );
-          if (curr.has_rule_book_issue_state.en.title_long) {
-            curr.has_rule_book_issue_state.en.title_long = `<img src="${frontendURL}assets/images/GER.jpg" alt="GER"  title="${constants.PROVISION_IMAGE_TITLE_GER}"> ${curr.has_rule_book_issue_state.en.title_long}`;
-          }
-        }
-      }
       if (acc.parentMap[curr.rule_book_parent_id]) {
         (acc.parentMap[curr.rule_book_parent_id].has_rule_book_child =
           acc.parentMap[curr.rule_book_parent_id].has_rule_book_child ||
