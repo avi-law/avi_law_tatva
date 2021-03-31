@@ -1,5 +1,5 @@
 exports.getRuleBooksStructure = `
-MATCH (rbs0:Rule_Book_Struct {rule_book_struct_id:"Rule Root Object"})
+MATCH (rbs0:Rule_Book_Struct {rule_book_struct_id: $rule_book_struct_id})
 CALL {
 	WITH rbs0
 	CALL apoc.path.expandConfig(rbs0, {relationshipFilter: "HAS_RULE_BOOK_STRUCT_CHILD>"})

@@ -242,10 +242,15 @@ module.exports = async (object, params, ctx) => {
   const userEmail = user ? user.user_email : null;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
+  const ruleBookStructId = params.rule_book_struct_id
+    ? params.rule_book_struct_id
+    : "Rule Root Object";
   let ruleBookStructureList = [];
   let settings = null;
   try {
-    const result = await session.run(getRuleBooksStructure);
+    const result = await session.run(getRuleBooksStructure, {
+      rule_book_struct_id: ruleBookStructId,
+    });
     ruleBookStructureList = result.records.map((record) => {
       const bookResult = {
         ...record.get("rbss_res"),

@@ -250,6 +250,9 @@ module.exports = async (object, params, ctx) => {
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
+  const ruleBookStructId = params.rule_book_struct_id
+    ? params.rule_book_struct_id
+    : "Rule Root Object";
   let ruleBookStructureList = [];
   try {
     if (!systemAdmin && !userIsAuthor) {
@@ -258,7 +261,12 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    const result = await session.run(getRuleBooksStructure);
+    const result = await session.run(getRuleBooksStructure, {
+      rule_book_struct_id: ruleBookStructId,
+    });
+    // const result = await session.run(getRuleBooksStructure, {
+    //   rule_book_struct_id: "EU_VO",
+    // });
     ruleBookStructureList = result.records.map((record) => {
       const bookResult = {
         ...record.get("rbss_res"),
