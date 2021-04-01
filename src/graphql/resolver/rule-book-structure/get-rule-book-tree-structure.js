@@ -50,7 +50,7 @@ const getNestedChildren = (array) => {
   return array;
 };
 
-const generateRuleBookTreeStructure = (ruleBookList) => {
+const generateRuleBookTreeStructure = (ruleBookList, structId) => {
   const { treeStructure } = ruleBookList.reduce(
     (acc, curr) => {
       const stateData = _.cloneDeep(curr.res_rbi);
@@ -128,6 +128,7 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
         curr.has_rule_book_child = null;
         acc.treeStructure.push(curr);
       }
+      curr.rule_book_struct_parent_id = structId;
       curr.label = curr.label[0];
       acc.parentMap[curr.rule_book_id] = curr;
       return acc;
@@ -148,7 +149,10 @@ const generateTreeStructure = (ruleBookStructureList) => {
       delete curr.rbs_res;
       curr.has_rule_book_child =
         rbsData.length > 0
-          ? generateRuleBookTreeStructure(_.cloneDeep(rbsData))
+          ? generateRuleBookTreeStructure(
+              _.cloneDeep(rbsData),
+              curr.rule_book_struct_id
+            )
           : null;
       if (curr.has_rule_book_child) {
         curr.has_rule_book_child =
