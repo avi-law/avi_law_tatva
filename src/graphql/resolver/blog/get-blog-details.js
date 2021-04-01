@@ -36,7 +36,14 @@ module.exports = async (object, params, ctx) => {
               blState.bls &&
               blState.lang.properties.iso_639_1
             ) {
-              bls[blState.lang.properties.iso_639_1] = blState.bls.properties;
+              const { properties } = blState.bls;
+              if (properties && !properties.blog_title_long) {
+                properties.blog_title_long =
+                  constants.BLOG_TITLE_NOT_AVAILABLE[
+                    blState.lang.properties.iso_639_1
+                  ];
+              }
+              bls[blState.lang.properties.iso_639_1] = properties;
             }
           });
         }

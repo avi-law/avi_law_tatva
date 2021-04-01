@@ -130,6 +130,10 @@ module.exports = {
     de: "(Dieser Newsletter ist auf Deutsch nicht verfügbar.)",
     en: "(This Newsletter is not available in English)",
   },
+  BLOG_TITLE_NOT_AVAILABLE: {
+    de: "(Dieser Blog ist auf Deutsch nicht verfügbar.)",
+    en: "(This Blog is not available in English)",
+  },
   SUBSCRIPTION_PLAN: {
     SINGLE: {
       cust_single: true,
