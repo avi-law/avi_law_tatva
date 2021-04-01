@@ -304,7 +304,7 @@ const typeDefs = gql`
 
   type Rule_Book {
     rule_book_id: String
-    rule_book_active: Int
+    rule_book_active: Boolean
   }
 
   type Rule_Book_Issue  {
@@ -1059,7 +1059,7 @@ type RuleBookStateCustomTree {
 
   input RuleBookInputCustom {
     rule_book_id: String!
-    rule_book_active: Int!
+    rule_book_active: Boolean!
   }
 
   input CustomAddRuleBookInput {
