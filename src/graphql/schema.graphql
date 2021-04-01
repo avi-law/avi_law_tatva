@@ -1050,7 +1050,7 @@ type RuleBookStateCustomTree {
     de: Rule_Book_Struct_State!
   }
 
-  input CustomAddRookBookStructInput {
+  input CustomAddBookStructInput {
     rbs: Rule_Book_Struct!
     rbss: CustomRuleBookStructState!
     rule_book_struct_parent_id: String!
@@ -1062,7 +1062,7 @@ type RuleBookStateCustomTree {
     rule_book_active: Int!
   }
 
-  input CustomAddRookBookInput {
+  input CustomAddBookInput {
     rb: RuleBookInputCustom
     rule_book_parent_id: String
     rule_book_child_order: Int
@@ -1090,7 +1090,7 @@ type RuleBookStateCustomTree {
     en:RuleBookIssueStateInput
   }
 
-  input CustomAddRookBookIssueInput {
+  input CustomAddBookIssueInput {
     rbi:RuleBookIssueInput
     rbis: CustomRuleBookIssueStateInput
     rule_book_parent_id: String!
@@ -1144,12 +1144,12 @@ type RuleBookStateCustomTree {
     deleteSol(sol_id: Int!): Boolean @isAdmin
     newsletterTransformSolId: String @isAdmin
     tweetBlog(blog_id: Int!): Boolean @isAdmin
-    addRuleBookStruct(data: CustomAddRookBookStructInput): Boolean @isAdmin
-    addRuleBook(data: CustomAddRookBookInput): Boolean @isAdmin
-    addRuleBookIssue(data: CustomAddRookBookIssueInput): Boolean @isAdmin
-    updateRuleBookStruct(rule_book_struct_id: String!, data: CustomAddRookBookStructInput): Boolean @isAdmin
-    updateRuleBook(rule_book_id: String!, data: CustomAddRookBookInput): Boolean @isAdmin
-    updateRuleBookIssue(rule_book_issue_no: Int!, data: CustomAddRookBookIssueInput): Boolean @isAdmin
+    addRuleBookStruct(data: CustomAddBookStructInput): Boolean @isAdmin
+    addRuleBook(data: CustomAddBookInput): Boolean @isAdmin
+    addRuleBookIssue(data: CustomAddBookIssueInput): Boolean @isAdmin
+    updateRuleBookStruct(rule_book_struct_id: String!, data: CustomAddBookStructInput): Boolean @isAdmin
+    updateRuleBook(rule_book_id: String!, data: CustomAddBookInput): Boolean @isAdmin
+    updateRuleBookIssue(rule_book_issue_no: Int!, data: CustomAddBookIssueInput): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
