@@ -60,8 +60,6 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
-    console.log(blogQuery(queryParams));
-    return true;
     const result = await session.run(blogQuery(queryParams), {
       queryParams,
     });

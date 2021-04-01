@@ -1058,8 +1058,8 @@ type RuleBookStateCustomTree {
   }
 
   input RuleBookInputCustom {
-    rule_book_id: String
-    rule_book_active: Int
+    rule_book_id: String!
+    rule_book_active: Int!
   }
 
   input CustomAddRookBookInput {
@@ -1072,9 +1072,9 @@ type RuleBookStateCustomTree {
 
   input RuleBookIssueInput  {
     rule_book_issue_eea: Boolean
-    rule_book_issue_no: Int
+    rule_book_issue_no: Int!
     rule_book_issue_sol_only: Boolean
-    rule_book_issue_wip_status: Int
+    rule_book_issue_wip_status: Int!
   }
 
   input RuleBookIssueStateInput  {
@@ -1091,9 +1091,9 @@ type RuleBookStateCustomTree {
   }
 
   input CustomAddRookBookIssueInput {
-    rbi:RuleBookIssueStateInput
+    rbi:RuleBookIssueInput
     rbis: CustomRuleBookIssueStateInput
-    rule_book_parent_id: String
+    rule_book_parent_id: String!
   }
 
   #Tree type end
@@ -1147,6 +1147,9 @@ type RuleBookStateCustomTree {
     addRuleBookStruct(data: CustomAddRookBookStructInput): Boolean @isAdmin
     addRuleBook(data: CustomAddRookBookInput): Boolean @isAdmin
     addRuleBookIssue(data: CustomAddRookBookIssueInput): Boolean @isAdmin
+    updateRuleBookStruct(rule_book_struct_id: String!, data: CustomAddRookBookStructInput): Boolean @isAdmin
+    updateRuleBook(rule_book_id: String!, data: CustomAddRookBookInput): Boolean @isAdmin
+    updateRuleBookIssue(rule_book_issue_no: Int!, data: CustomAddRookBookIssueInput): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated

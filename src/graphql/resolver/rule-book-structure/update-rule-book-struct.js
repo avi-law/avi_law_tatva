@@ -5,7 +5,7 @@ const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
   getRuleBookStructById,
-  addruleBookIssueQuery,
+  updateRuleBookStructQuery,
   logRulebookStruct,
 } = require("../../../neo4j/rule-book-query");
 
@@ -17,9 +17,10 @@ module.exports = async (object, params, ctx) => {
   const userEmail = user.user_email || null;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
+  const { data } = params;
+  const ruleBookStructId = data.rule_book_struct_id;
   let isValidDE = false;
   let isValidEN = false;
-  const { data } = params;
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
@@ -27,23 +28,40 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    if (data.rbis && data.rbis.de && data.rbis.de.rule_book_issue_title_short) {
+    if (data && ruleBookStructId) {
+      const checkExistRuleBookStruct = await session.run(
+        getRuleBookStructById,
+        {
+          rule_book_struct_id: ruleBookStructId,
+        }
+      );
+      if (
+        checkExistRuleBookStruct &&
+        checkExistRuleBookStruct.records.length === 0
+      ) {
+        console.log("Does not exists rule book struct");
+        throw new APIError({
+          lang: userSurfLang,
+          message: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    }
+    if (data.rbss && data.rbss.de && data.rbss.de.rule_book_struct_desc) {
       isValidDE = true;
     }
-    if (data.rbis && data.rbis.en && data.rbis.en.rule_book_issue_title_short) {
+    if (data.rbss && data.rbss.en && data.rbss.en.rule_book_struct_desc) {
       isValidEN = true;
     }
-
     const queryParams = {
-      rbi: data.rbi,
-      rbis: data.rbis,
-      rule_book_parent_id: data.rule_book_parent_id,
+      ruleBookStructId,
+      rbs: data.rbs,
+      rbss: data.rbss,
       isValidDE,
       isValidEN,
     };
-    console.log(addruleBookIssueQuery(queryParams));
+    console.log(updateRuleBookStructQuery(queryParams));
     return true;
-    // const result = await session.run(addruleBookIssueQuery(queryParams), {
+    // const result = await session.run(updateRuleBookStructQuery(queryParams), {
     //   queryParams,
     // });
     if (result && result.records.length > 0) {
@@ -55,7 +73,7 @@ module.exports = async (object, params, ctx) => {
         return rulebookStructs;
       });
       common.loggingData(logRulebookStruct, {
-        type: constants.LOG_TYPE_ID.CREATE_RULE_BOOK,
+        type: constants.LOG_TYPE_ID.UPDATE_RULE_BOOK,
         current_user_email: userEmail,
         rule_book_struct_id: rulebookStructs[0].rule_book_struct_id || null,
       });

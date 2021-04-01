@@ -83,6 +83,9 @@ const tweetBlog = require("./blog/tweet-blog");
 const addRuleBookStruct = require("./rule-book-structure/add-rule-book-struct");
 const addRuleBook = require("./rule-book-structure/add-rule-book");
 const addRuleBookIssue = require("./rule-book-structure/add-rule-book-issue");
+const updateRuleBookStruct = require("./rule-book-structure/update-rule-book-struct");
+const updateRuleBook = require("./rule-book-structure/update-rule-book");
+const updateRuleBookIssue = require("./rule-book-structure/update-rule-book-issue");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -127,6 +130,9 @@ const resolvers = {
     addRuleBookStruct,
     addRuleBook,
     addRuleBookIssue,
+    updateRuleBookStruct,
+    updateRuleBook,
+    updateRuleBookIssue,
   },
   Query: {
     User,

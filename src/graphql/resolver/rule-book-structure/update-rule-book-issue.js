@@ -4,9 +4,9 @@ const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
-  getRuleBookById,
-  addRuleBookQuery,
-  logRulebook,
+  getRuleBookStructById,
+  updateRuleBookIssueQuery,
+  logRulebookStruct,
 } = require("../../../neo4j/rule-book-query");
 
 module.exports = async (object, params, ctx) => {
@@ -17,7 +17,10 @@ module.exports = async (object, params, ctx) => {
   const userEmail = user.user_email || null;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
+  let isValidDE = false;
+  let isValidEN = false;
   const { data } = params;
+  const ruleBookIssueNo = data.rule_book_issue_no;
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
@@ -25,45 +28,38 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    if (data && data.rule_book_id) {
-      const checkExistRuleBook = await session.run(getRuleBookById, {
-        rule_book_id: data.rule_book_id,
-      });
-      if (checkExistRuleBook && checkExistRuleBook.records.length > 0) {
-        throw new APIError({
-          lang: userSurfLang,
-          message: "RULE_BOOK_ALREADY_EXISTS",
-        });
-      }
+    if (data.rbis && data.rbis.de && data.rbis.de.rule_book_issue_title_short) {
+      isValidDE = true;
     }
+    if (data.rbis && data.rbis.en && data.rbis.en.rule_book_issue_title_short) {
+      isValidEN = true;
+    }
+
     const queryParams = {
-      isUpdate: false,
-      rb: data.rb,
+      ruleBookIssueNo,
+      rbi: data.rbi,
+      rbis: data.rbis,
+      rule_book_parent_id: data.rule_book_parent_id,
+      isValidDE,
+      isValidEN,
     };
-    if (data.rule_book_parent_id) {
-      queryParams.rule_book_parent_id = data.rule_book_parent_id;
-      queryParams.rule_book_child_order = data.rule_book_child_order;
-    } else if (data.rule_book_struct_parent_id) {
-      queryParams.rule_book_struct_parent_id = data.rule_book_struct_parent_id;
-      queryParams.rule_book_struct_order = data.rule_book_struct_order;
-    }
-    console.log(addRuleBookQuery(queryParams));
+    console.log(updateRuleBookIssueQuery(queryParams));
     return true;
-    // const result = await session.run(addRuleBookQuery(queryParams), {
+    // const result = await session.run(updateRuleBookIssueQuery(queryParams), {
     //   queryParams,
     // });
     if (result && result.records.length > 0) {
       /**
-       const rulebooks = result.records.map((record) => {
-        const rulebookResult = {
-          ...common.getPropertiesFromRecord(record, "rb"),
+       const rulebookStructs = result.records.map((record) => {
+        const rulebookStructResult = {
+          ...common.getPropertiesFromRecord(record, "rbs"),
         };
-        return rulebookResult;
+        return rulebookStructs;
       });
-      common.loggingData(logRulebook, {
+      common.loggingData(logRulebookStruct, {
         type: constants.LOG_TYPE_ID.CREATE_RULE_BOOK,
         current_user_email: userEmail,
-        rule_book_id: rulebooks[0].rule_book_id || null,
+        rule_book_struct_id: rulebookStructs[0].rule_book_struct_id || null,
       });
       */
       return true;

@@ -20,8 +20,6 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    console.log(deleteBlog);
-    return true;
     const result = await session.run(deleteBlog, {
       blog_id: Number(blogId),
     });

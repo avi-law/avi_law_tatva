@@ -5,7 +5,7 @@ const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
   getRuleBookById,
-  addRuleBookQuery,
+  updateRuleBookQuery,
   logRulebook,
 } = require("../../../neo4j/rule-book-query");
 
@@ -18,6 +18,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const { data } = params;
+  const ruleBookId = data.rule_book_id;
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
@@ -25,11 +26,12 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    if (data && data.rule_book_id) {
+    if (data && ruleBookId) {
       const checkExistRuleBook = await session.run(getRuleBookById, {
-        rule_book_id: data.rule_book_id,
+        rule_book_id: ruleBookId,
       });
-      if (checkExistRuleBook && checkExistRuleBook.records.length > 0) {
+      if (checkExistRuleBook && checkExistRuleBook.records.length === 0) {
+        console.log("Does not exists rule book");
         throw new APIError({
           lang: userSurfLang,
           message: "RULE_BOOK_ALREADY_EXISTS",
@@ -37,19 +39,12 @@ module.exports = async (object, params, ctx) => {
       }
     }
     const queryParams = {
-      isUpdate: false,
+      ruleBookId,
       rb: data.rb,
     };
-    if (data.rule_book_parent_id) {
-      queryParams.rule_book_parent_id = data.rule_book_parent_id;
-      queryParams.rule_book_child_order = data.rule_book_child_order;
-    } else if (data.rule_book_struct_parent_id) {
-      queryParams.rule_book_struct_parent_id = data.rule_book_struct_parent_id;
-      queryParams.rule_book_struct_order = data.rule_book_struct_order;
-    }
-    console.log(addRuleBookQuery(queryParams));
+    console.log(updateRuleBookQuery(queryParams));
     return true;
-    // const result = await session.run(addRuleBookQuery(queryParams), {
+    // const result = await session.run(updateRuleBookQuery(queryParams), {
     //   queryParams,
     // });
     if (result && result.records.length > 0) {

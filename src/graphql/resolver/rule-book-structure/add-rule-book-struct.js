@@ -5,7 +5,7 @@ const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
   getRuleBookStructById,
-  ruleBookStructQuery,
+  addRuleBookStructQuery,
   logRulebookStruct,
 } = require("../../../neo4j/rule-book-query");
 
@@ -20,6 +20,7 @@ module.exports = async (object, params, ctx) => {
   const { data } = params;
   let isValidDE = false;
   let isValidEN = false;
+  let isExists = false;
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
@@ -36,12 +37,9 @@ module.exports = async (object, params, ctx) => {
       );
       if (
         checkExistRuleBookStruct &&
-        checkExistRuleBookStruct.records.length > 0
+        checkExistRuleBookStruct.records.length !== 0
       ) {
-        throw new APIError({
-          lang: userSurfLang,
-          message: "RULE_BOOK_STRUCT_ALREADY_EXISTS",
-        });
+        isExists = true;
       }
     }
     if (data.rbss && data.rbss.de && data.rbss.de.rule_book_struct_desc) {
@@ -51,7 +49,7 @@ module.exports = async (object, params, ctx) => {
       isValidEN = true;
     }
     const queryParams = {
-      isUpdate: false,
+      isExists,
       rbs: data.rbs,
       rbss: data.rbss,
       rule_book_struct_parent_id: data.rule_book_struct_parent_id,
@@ -59,9 +57,9 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
-    console.log(ruleBookStructQuery(queryParams));
+    console.log(addRuleBookStructQuery(queryParams));
     return true;
-    // const result = await session.run(ruleBookStructQuery(queryParams), {
+    // const result = await session.run(addRuleBookStructQuery(queryParams), {
     //   queryParams,
     // });
     if (result && result.records.length > 0) {
