@@ -620,6 +620,21 @@ const typeDefs = gql`
     total: Int
   }
 
+  type CustomNLs {
+    nl_id: ID
+    nl_active: Boolean
+    nl_implemented: Boolean
+    nl_date: _Neo4jDate
+    nl_ord: String
+    nl_tweeted: Boolean
+    nl_state: CustomNLState
+    country: Country
+  }
+  type GetNLs {
+    nls: [CustomNLs]
+    total: Int
+  }
+
   type CustomBlogList {
     bls: [Blog]
     total: Int
@@ -1210,6 +1225,14 @@ type RuleBookStateCustomTree {
       orderBy: [_NLOrdering]
       filterByCountry: [_CountryFilter]
     ): CustomNLList @isAdmin
+     getNewsLetters(
+      filterByString: String
+      lang: LanguageForUser
+      first: Int
+      offset: Int
+      orderBy: [_NLOrdering]
+      filterByCountry: [_CountryFilter]
+    ): GetNLs @isAdmin
     getNewsLetterEmailList(
       first: Int
       offset: Int

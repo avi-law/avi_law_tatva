@@ -44,6 +44,7 @@ const getPreparedNewInvoiceDetails = require("./invoices/get-prepared-new-invoic
 const getInvoiceCustomers = require("./invoices/get-invoice-customers");
 const invoiceCancel = require("./invoices/invoice-cancel");
 const getNewsLetterList = require("./news-letters/get-news-letter-list");
+const getNewsLetters = require("./news-letters/get-news-letters");
 const deleteNewsletter = require("./news-letters/delete-news-letter");
 const createNewsletter = require("./news-letters/create-news-letter");
 const updateNewsletter = require("./news-letters/update-news-letter");
@@ -158,6 +159,7 @@ const resolvers = {
     verifyInvitation,
     verifyEmail,
     getNewsLetterList,
+    getNewsLetters,
     getUsersNotConnectedByCustomer,
     getNewsLetterYearList,
     getNewsLetterEmailList,
