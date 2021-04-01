@@ -1082,7 +1082,7 @@ type RuleBookStateCustomTree {
     rule_book_parent_id: String
     rule_book_child_order: Int
     rule_book_struct_parent_id: String
-    rule_book_struct_order: String
+    rule_book_struct_order: Int
   }
 
   input RuleBookIssueInput  {

@@ -48,7 +48,7 @@ exports.updateRuleBookStructQuery = (queryParams) => {
     SET rbss_de = ${queryParams.rbss.de}`;
   } else {
     query = `${query}
-    WITH rbs, rbsp, lang1, lang2
+    WITH rbs, lang1, lang2
     OPTIONAL MATCH (rbs)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss_de:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang1)
     DETACH DELETE rbss_de`;
   }
@@ -76,53 +76,20 @@ exports.addRuleBookQuery = (queryParams) => {
   } else if (queryParams.rule_book_parent_id) {
     query = `OPTIONAL MATCH (rbp:Rule_Book { rule_book_id: "${queryParams.rule_book_parent_id}" })`;
   }
+  query = `
+  ${query}
+  MERGE (rb:Rule_Book { rule_book_id: ${queryParams.rb.rule_book_id} })
+  SET rb.rule_book_active = ${queryParams.rb.rule_book_active}`;
 
-  if (!queryParams.isUpdate) {
-    query = `
-    ${query}
-    MERGE (rb:Rule_Book { rule_book_id: ${queryParams.rb.rule_book_id} })
-    SET rb.rule_book_active = ${queryParams.rb.rule_book_active}`;
-  } else {
-    query = `
-    ${query}
-    MATCH (rb:Rule_Book { rule_book_id: ${queryParams.rule_book_id} })
-    SET rb.rule_book_id = ${queryParams.rb.rule_book_id}`;
-  }
-
-  if (queryParams.isUpdate) {
-    if (queryParams.rule_book_parent_struct_id) {
-      query = `${query}
-    WITH rb, rbsp
-    CALL {
-      WITH rb
-      OPTIONAL MATCH (rb)-[r1:RULE_BOOK_BELONGS_TO_STRUCT]->()
-      DETACH DELETE r1
-      RETURN r1
-    }
-    MERGE (rb)-[:RULE_BOOK_BELONGS_TO_STRUCT {order_rule_book_in_struct: ${queryParams.rule_book_struct_order}}]->(rbsp)
-    RETURN rb`;
-    } else if (queryParams.rule_book_parent_id) {
-      query = `${query}
-      WITH rb, rbp
-      CALL {
-        WITH rb
-        OPTIONAL MATCH (rb)-[r1:RULE_BOOK_CHILD]->()
-        DETACH DELETE r1, r2
-        RETURN r1
-      }
-      MERGE (rb)-[:RULE_BOOK_CHILD {order_rule_book_child: ${queryParams.rule_book_child_order}}]->(rbp)
-      RETURN rb`;
-    }
-  } else if (queryParams.rule_book_parent_struct_id) {
+  if (queryParams.rule_book_parent_struct_id) {
     query = `${query}
-    MERGE (rb)-[:RULE_BOOK_BELONGS_TO_STRUCT{order_rule_book_in_struct: ${queryParams.rule_book_struct_order}}]->(rbs)
+    MERGE (rb)-[:RULE_BOOK_BELONGS_TO_STRUCT{order_rule_book_in_struct: ${queryParams.rule_book_struct_order}}]->(rbsp)
     RETURN rb`;
   } else if (queryParams.rule_book_parent_id) {
     query = `${query}
     MERGE (rb)-[:RULE_BOOK_CHILD {order_rule_book_child: ${queryParams.rule_book_child_order}}]->(rbp)
     RETURN rb`;
   }
-
   return query;
 };
 
@@ -161,22 +128,9 @@ exports.addruleBookIssueQuery = (queryParams) => {
     DETACH DELETE rbis_en`;
   }
 
-  if (queryParams.isUpdate) {
-    query = `${query}
-    WITH rbi, lang1, lang2, rbp
-    CALL {
-      WITH rbi
-      OPTIONAL MATCH (rbi)-[r1:HAS_RULE_BOOK_ISSUE]->()
-      DETACH DELETE r1
-      RETURN r1
-    }
-    MERGE (rbi)-[:HAS_RULE_BOOK_ISSUE]->(rbp)
-    RETURN rbi`;
-  } else {
-    query = `${query}
-    MERGE (rbi)-[:HAS_RULE_BOOK_ISSUE]->(rbp)
-    RETURN rbi`;
-  }
+  query = `${query}
+  MERGE (rbi)-[:HAS_RULE_BOOK_ISSUE]->(rbp)
+  RETURN rbi`;
   return query;
 };
 
@@ -209,7 +163,6 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
   }
 
   query = `${query}
-    MERGE (rbi)-[:HAS_RULE_BOOK_ISSUE]->(rbp)
     RETURN rbi`;
   return query;
 };

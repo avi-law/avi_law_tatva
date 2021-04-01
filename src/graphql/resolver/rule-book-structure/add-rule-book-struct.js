@@ -37,7 +37,7 @@ module.exports = async (object, params, ctx) => {
       );
       if (
         checkExistRuleBookStruct &&
-        checkExistRuleBookStruct.records.length !== 0
+        checkExistRuleBookStruct.records.length > 0
       ) {
         isExists = true;
       }

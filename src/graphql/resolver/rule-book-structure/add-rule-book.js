@@ -25,19 +25,7 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    if (data && data.rule_book_id) {
-      const checkExistRuleBook = await session.run(getRuleBookById, {
-        rule_book_id: data.rule_book_id,
-      });
-      if (checkExistRuleBook && checkExistRuleBook.records.length > 0) {
-        throw new APIError({
-          lang: userSurfLang,
-          message: "RULE_BOOK_ALREADY_EXISTS",
-        });
-      }
-    }
     const queryParams = {
-      isUpdate: false,
       rb: data.rb,
     };
     if (data.rule_book_parent_id) {
