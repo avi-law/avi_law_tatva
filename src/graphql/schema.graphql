@@ -706,6 +706,7 @@ const typeDefs = gql`
     blog_date: _Neo4jDate
     blog_id: ID
     blog_ord: String
+    blog_tweeted: Boolean
   }
   input BlogStateInput {
     blog_text: String
