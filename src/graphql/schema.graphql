@@ -989,6 +989,7 @@ type RuleBookStateCustomTree {
     has_rule_book_child: [CustomRuleBookTree]
     has_rule_book_issue_child: [CustomRuleBookIssueChildTree]
     label: String
+    rule_book_struct_parent_id: String
   }
 
   type CustomRuleBookTreeStructure {

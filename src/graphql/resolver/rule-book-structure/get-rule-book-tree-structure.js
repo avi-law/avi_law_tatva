@@ -126,9 +126,9 @@ const generateRuleBookTreeStructure = (ruleBookList, structId) => {
           []).push(curr);
       } else {
         curr.has_rule_book_child = null;
+        curr.rule_book_struct_parent_id = structId;
         acc.treeStructure.push(curr);
       }
-      curr.rule_book_struct_parent_id = structId;
       curr.label = curr.label[0];
       acc.parentMap[curr.rule_book_id] = curr;
       return acc;
