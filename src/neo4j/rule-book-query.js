@@ -174,11 +174,23 @@ MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (rb:Rule_Book {rule_book_id: $rule_book_id})
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(rb)`;
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(rb)
+`;
 
 exports.logRulebookStruct = `
 MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (rbs:Rule_Book_Struct {rule_book_struct_id: $rule_book_struct_id})
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(rbs)`;
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(rbs)
+`;
+
+exports.getRuleBookIssue = `
+MATCH (rb:Rule_Book {rule_book_id: $rule_book_parent_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue { rule_book_issue_no: $rule_book_issue_no})
+CALL {
+  WITH rbi
+  MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
+  RETURN collect({ rbis: rbis, lang: lang }) AS rbis
+}
+RETURN rbi, rbis
+`;

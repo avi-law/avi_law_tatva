@@ -944,6 +944,16 @@ const typeDefs = gql`
     de: RuleBookStateCustom
   }
 
+  type GetRuleBookIssueStateCustom {
+    en: Rule_Book_Issue_State
+    de: Rule_Book_Issue_State
+  }
+
+  type GetRuleBookIssueCustom {
+    rbi: Rule_Book_Issue
+    rbis:GetRuleBookIssueStateCustom
+  }
+
   type CustomRuleBook {
     rule_book_active: Boolean
     rule_book_id: String
@@ -1246,6 +1256,7 @@ type RuleBookStateCustomTree {
     getSolType: CustomSolType
     getRuleBookStructure: CustomRuleBookStructure @isUnAuthenticated
     getRuleBookTreeStructure: CustomRuleBookTreeStructure @isAdmin
+    getRuleBookIssue(rule_book_issue_no: Int!, rule_book_parent_id: String!): GetRuleBookIssueCustom @isAuthenticated
     getCustomers(
       first: Int
       offset: Int
