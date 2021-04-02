@@ -79,6 +79,7 @@ const updateBlog = require("./blog/update-blog");
 const deleteBlog = require("./blog/delete-blog");
 const getBlogList = require("./blog/get-blog-list");
 const getBlog = require("./blog/get-blog");
+const getBlogDetails = require("./blog/get-blog-details");
 const getBlogYearList = require("./blog/get-blog-year-list");
 const tweetBlog = require("./blog/tweet-blog");
 const addRuleBookStruct = require("./rule-book-structure/add-rule-book-struct");
@@ -181,6 +182,7 @@ const resolvers = {
     getBlog,
     getBlogYearList,
     getRuleBookIssue,
+    getBlogDetails,
   },
 };
 

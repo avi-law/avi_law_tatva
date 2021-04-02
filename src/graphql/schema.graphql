@@ -808,6 +808,15 @@ const typeDefs = gql`
     country: Country
   }
 
+  type GetCustomBlogPosts {
+    bl: CustomBlog
+    bls: CustomBlogState
+    blog_author: User
+    user: User
+    createdLog: [customLog]
+    updatedLog: [customLog]
+  }
+
   type CustomBlog {
     blog_id: ID
     blog_active: Boolean
@@ -1220,6 +1229,7 @@ type RuleBookStateCustomTree {
     verifyForgotPasswordLink(token: String!): Boolean
     getNewsLettersOnLanding(country: [String!], lang: LanguageForUser!): [NL!]
     getNewsLetterDetails(nl_id: Int!): GetCustomNL @isAuthenticated
+    getBlogDetails(blog_id: Int!): GetCustomBlogPosts @isUnAuthenticated
     getNewsLetter(nl_id: Int!): GetCustomNL @isAdmin
     getNewsLetterEmail(nl_email_ord: String!): GetNLEmailCustom @isAdmin
     getNewsLetterYearList(

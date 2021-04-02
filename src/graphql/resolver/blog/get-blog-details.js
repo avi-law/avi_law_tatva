@@ -7,7 +7,10 @@ const { getBlogDetails, logBlog } = require("../../../neo4j/blog-query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
-  const userEmail = user.user_email || null;
+  let userEmail = null;
+  if (user) {
+    userEmail = user.user_email;
+  }
   const blogId = params.blog_id;
   const session = driver.session();
   try {
@@ -75,7 +78,7 @@ module.exports = async (object, params, ctx) => {
       if (blogResultDetailsArray[0]) {
         if (userEmail) {
           common.loggingData(logBlog, {
-            type: constants.LOG_TYPE_ID.READ_NL,
+            type: constants.LOG_TYPE_ID.READ_BLOG,
             current_user_email: userEmail,
             blog_id: blogResultDetailsArray[0].bl.blog_id || null,
           });
