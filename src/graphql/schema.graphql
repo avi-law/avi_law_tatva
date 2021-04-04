@@ -1303,6 +1303,7 @@ type RuleBookStateCustomTree {
     downloadInvoice(invoice_id: String!): String @isAuthenticated
     downloadNewsletter(nl_id: Int!, lang: LanguageForUser!): String
       @isAuthenticated
+    downloadBlogPosts(blog_id: Int!, lang: LanguageForUser!): String
     userEmailExists(user_email: String!): Boolean @isAuthenticated
     verifyInvitation(token: String!): CustomUser
     verifyEmail(token: String!): Boolean

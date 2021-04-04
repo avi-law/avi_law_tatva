@@ -89,6 +89,7 @@ const updateRuleBookStruct = require("./rule-book-structure/update-rule-book-str
 const updateRuleBook = require("./rule-book-structure/update-rule-book");
 const updateRuleBookIssue = require("./rule-book-structure/update-rule-book-issue");
 const getRuleBookIssue = require("./rule-book-structure/get-rule-book-issue");
+const downloadBlogPosts = require("./blog/download-blog");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -183,6 +184,7 @@ const resolvers = {
     getBlogYearList,
     getRuleBookIssue,
     getBlogDetails,
+    downloadBlogPosts,
   },
 };
 

@@ -113,6 +113,7 @@ module.exports = {
     GDPR_NOT_ACCEPTED: "GDPR_NOT_ACCEPTED",
   },
   NEWSLETTER_SERVICE_PATH: "service/news",
+  BLOG_POSTS_SERVICE_PATH: "blog",
   NEWSLETTER_UNSUBSCRIBE_PATH: "unsubscribe",
   NL_CONTENT_TRANSFORM_LINK_REGEX: /\[\*NL_(.*?)\]/,
   NL_CONTENT_TRANSFORM_REFERENCE_LINK_REGEX: /\[\*L_(.*?)\]/,
@@ -548,6 +549,16 @@ module.exports = {
       BY: "durch",
     },
     NL_INFO_EN: {
+      CREATOR: "created",
+      UPDATER: "last edited",
+      BY: "by",
+    },
+    BLOG_INFO_DE: {
+      CREATOR: "erstellt am",
+      UPDATER: "zuletzt bearbeitet am",
+      BY: "durch",
+    },
+    BLOG_INFO_EN: {
       CREATOR: "created",
       UPDATER: "last edited",
       BY: "by",
