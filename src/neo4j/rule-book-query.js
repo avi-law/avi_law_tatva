@@ -100,6 +100,21 @@ exports.updateRuleBookQuery = (queryParams) => {
   return query;
 };
 
+exports.deleteRuleBookQuery = (queryParams) => {
+  let query = ``;
+
+  if (queryParams.ruleBookStructParentId) {
+    query = `OPTIONAL MATCH (rb:Rule_Book { rule_book_id: ${queryParams.ruleBookId} })-[r1:RULE_BOOK_BELONGS_TO_STRUCT]->(rbsp:Rule_Book_Struct { rule_book_struct_id: "${queryParams.ruleBookStructParentId}" })`;
+  } else if (queryParams.ruleBookParentId) {
+    query = `OPTIONAL MATCH MATCH (rb:Rule_Book { rule_book_id: ${queryParams.ruleBookId} })-[r1:RULE_BOOK_CHILD]->(rbp:Rule_Book { rule_book_id: "${queryParams.ruleBookParentId}" })`;
+  }
+
+  query = `${query}
+  DETACH DELETE r1
+  RETURN rb`;
+  return query;
+};
+
 exports.addruleBookIssueQuery = (queryParams) => {
   let query = `
   MATCH (rbp:Rule_Book { rule_book_id: "${queryParams.rule_book_parent_id}" })
@@ -167,7 +182,6 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
   return query;
 };
 
-// rule_book_struct_id
 
 exports.logRulebook = `
 MATCH (a: Log_Type {log_type_id: $type})

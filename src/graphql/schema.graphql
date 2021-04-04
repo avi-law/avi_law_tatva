@@ -1185,6 +1185,7 @@ type RuleBookStateCustomTree {
     updateRuleBookStruct(rule_book_struct_id: String!, data: CustomAddRuleBookStructInput): Boolean @isAdmin
     updateRuleBook(rule_book_id: String!, data: CustomAddRuleBookInput): Boolean @isAdmin
     updateRuleBookIssue(rule_book_issue_no: Int!, data: CustomAddRuleBookIssueInput): Boolean @isAdmin
+    deleteRuleBook(rule_book_id: String!, rule_book_parent_id: String, rule_book_struct_parent_id: String): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
