@@ -68,9 +68,9 @@ exports.updateRuleBookStructQuery = (queryParams) => {
   return query;
 };
 
-exports.deleteRuleBookStructQuery = (queryParams) => {
+exports.deleteRuleBookStructQuery = () => {
   const query = `
-  OPTIONAL MATCH (rbs:Rule_Book_Struct { rule_book_struct_id: ${queryParams.ruleBookStructId} })-[r1:HAS_RULE_BOOK_STRUCT_CHILD]->(rbsp:Rule_Book_Struct { rule_book_struct_id: "${queryParams.ruleBookStructParentId}" })
+  OPTIONAL MATCH (rbs:Rule_Book_Struct { rule_book_struct_id: $queryParams.ruleBookStructId })-[r1:HAS_RULE_BOOK_STRUCT_CHILD]->(rbsp:Rule_Book_Struct { rule_book_struct_id: "$queryParams.ruleBookStructParentId" })
   DETACH DELETE r1
   RETURN rbs
   `;
@@ -102,10 +102,10 @@ exports.addRuleBookQuery = (queryParams) => {
   return query;
 };
 
-exports.updateRuleBookQuery = (queryParams) => {
+exports.updateRuleBookQuery = () => {
   const query = `
-    MERGE (rb:Rule_Book { rule_book_id: ${queryParams.ruleBookId} })
-    SET rb.rule_book_id = ${queryParams.rb.rule_book_id}, rb.rule_book_active = ${queryParams.rb.rule_book_active}`;
+    MERGE (rb:Rule_Book { rule_book_id: $queryParams.ruleBookId })
+    SET rb.rule_book_id = $queryParams.rb.rule_book_id, rb.rule_book_active = $queryParams.rb.rule_book_active`;
   return query;
 };
 
@@ -113,9 +113,9 @@ exports.deleteRuleBookQuery = (queryParams) => {
   let query = ``;
 
   if (queryParams.ruleBookStructParentId) {
-    query = `OPTIONAL MATCH (rb:Rule_Book { rule_book_id: ${queryParams.ruleBookId} })-[r1:RULE_BOOK_BELONGS_TO_STRUCT]->(rbsp:Rule_Book_Struct { rule_book_struct_id: "${queryParams.ruleBookStructParentId}" })`;
+    query = `OPTIONAL MATCH (rb:Rule_Book { rule_book_id: $queryParams.ruleBookId })-[r1:RULE_BOOK_BELONGS_TO_STRUCT]->(rbsp:Rule_Book_Struct { rule_book_struct_id: $queryParams.ruleBookStructParentId })`;
   } else if (queryParams.ruleBookParentId) {
-    query = `OPTIONAL MATCH MATCH (rb:Rule_Book { rule_book_id: ${queryParams.ruleBookId} })-[r1:RULE_BOOK_CHILD]->(rbp:Rule_Book { rule_book_id: "${queryParams.ruleBookParentId}" })`;
+    query = `OPTIONAL MATCH MATCH (rb:Rule_Book { rule_book_id: $queryParams.ruleBookId })-[r1:RULE_BOOK_CHILD]->(rbp:Rule_Book { rule_book_id: $queryParams.ruleBookParentId })`;
   }
 
   query = `${query}
@@ -191,9 +191,9 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
   return query;
 };
 
-exports.deleteRuleBookIssueQuery = (queryParams) => {
+exports.deleteRuleBookIssueQuery = () => {
   const query = `
-  OPTIONAL MATCH (rb:Rule_Book { rule_book_id: ${queryParams.ruleBookParentId} })-[r1:HAS_RULE_BOOK_STRUCT_CHILD]->(rbi:Rule_Book_Issue { rule_book_issue_no: "${queryParams.ruleBookIssueNo}" })-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)
+  OPTIONAL MATCH (rb:Rule_Book { rule_book_id: $queryParams.ruleBookParentId })-[r1:HAS_RULE_BOOK_STRUCT_CHILD]->(rbi:Rule_Book_Issue { rule_book_issue_no: $queryParams.ruleBookIssueNo })-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)
   DETACH DELETE r1, rbi, rbis
   RETURN rbi
   `;
