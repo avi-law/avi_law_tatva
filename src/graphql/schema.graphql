@@ -1339,6 +1339,7 @@ type RuleBookStateCustomTree {
       year: Int
       blog_id: Int
     ): GetBlogListByYear @isUnAuthenticated
+    getSolTagForRuleBookIssue: GetSolsCustom @isAdmin
   }
 `;
 

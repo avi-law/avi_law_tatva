@@ -230,3 +230,14 @@ CALL {
 }
 RETURN rbi, rbis, sl
 `;
+
+exports.getSolTagForRuleBookIssue = `
+MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)
+CALL {
+  WITH sl
+  MATCH (sl)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
+  RETURN collect({ sls: sls, lang: lang }) AS slState
+}
+RETURN distinct sl, cou, slState as sls
+ORDER BY sl.sol_date DESC
+`;

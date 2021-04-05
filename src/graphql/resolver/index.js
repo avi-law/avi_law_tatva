@@ -93,6 +93,7 @@ const deleteRuleBookIssue = require("./rule-book-structure/delete-rule-book-issu
 const updateRuleBookIssue = require("./rule-book-structure/update-rule-book-issue");
 const getRuleBookIssue = require("./rule-book-structure/get-rule-book-issue");
 const downloadBlogPosts = require("./blog/download-blog");
+const getSolTagForRuleBookIssue = require("./rule-book-structure/get-sol-tag-for-rule-book-issue");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -142,7 +143,7 @@ const resolvers = {
     updateRuleBookIssue,
     deleteRuleBook,
     deleteRuleBookStruct,
-    deleteRuleBookIssue
+    deleteRuleBookIssue,
   },
   Query: {
     User,
@@ -191,6 +192,7 @@ const resolvers = {
     getRuleBookIssue,
     getBlogDetails,
     downloadBlogPosts,
+    getSolTagForRuleBookIssue,
   },
 };
 
