@@ -68,6 +68,15 @@ exports.updateRuleBookStructQuery = (queryParams) => {
   return query;
 };
 
+exports.deleteRuleBookStructQuery = (queryParams) => {
+  const query = `
+  OPTIONAL MATCH (rbs:Rule_Book_Struct { rule_book_struct_id: ${queryParams.ruleBookStructId} })-[r1:HAS_RULE_BOOK_STRUCT_CHILD]->(rbsp:Rule_Book_Struct { rule_book_struct_id: "${queryParams.ruleBookStructParentId}" })
+  DETACH DELETE r1
+  RETURN rbs
+  `;
+  return query;
+};
+
 exports.addRuleBookQuery = (queryParams) => {
   let query = ``;
 
@@ -179,6 +188,15 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
 
   query = `${query}
     RETURN rbi`;
+  return query;
+};
+
+exports.deleteRuleBookIssueQuery = (queryParams) => {
+  const query = `
+  OPTIONAL MATCH (rb:Rule_Book { rule_book_id: ${queryParams.ruleBookParentId} })-[r1:HAS_RULE_BOOK_STRUCT_CHILD]->(rbi:Rule_Book_Issue { rule_book_issue_no: "${queryParams.ruleBookIssueNo}" })-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)
+  DETACH DELETE r1, rbi, rbis
+  RETURN rbi
+  `;
   return query;
 };
 

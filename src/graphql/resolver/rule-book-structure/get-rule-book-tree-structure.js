@@ -201,7 +201,7 @@ module.exports = async (object, params, ctx) => {
   params = JSON.parse(JSON.stringify(params));
   const ruleBookStructId = params.rule_book_struct_id
     ? params.rule_book_struct_id
-    : "Rule Root Object";
+    : constants.RULE_BOOK_STRUCT_ROOT_ID;
   let ruleBookStructureList = [];
   try {
     if (!systemAdmin && !userIsAuthor) {

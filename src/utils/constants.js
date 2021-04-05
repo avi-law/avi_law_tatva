@@ -123,6 +123,7 @@ module.exports = {
   CUSTOMER_VAT_PER_DE: 0.07,
   CUSTOMER_VAT_PER: 0.0,
   NL_LIMIT_ON_LANDING_PAGE: 6,
+  RULE_BOOK_STRUCT_ROOT_ID: "Rule Root Object",
   TWITTER_LINK: `https://twitter.com/intent/follow?
   original_referer=https%3A%2F%2Favi-law.com%2F&ref_src=twsrc%5Etfw&screen_name=Avi_Law_com&tw_p=followbutton`,
   PROVISION_IMAGE_TITLE_EN: "Nur auf Englisch verfügbar",

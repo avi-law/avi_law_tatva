@@ -4,8 +4,7 @@ const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
-  getRuleBookById,
-  deleteRuleBookQuery,
+  deleteRuleBookIssueQuery,
   logRulebook,
 } = require("../../../neo4j/rule-book-query");
 
@@ -17,8 +16,7 @@ module.exports = async (object, params, ctx) => {
   const userEmail = user.user_email || null;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
-  const ruleBookId = params.rule_book_id;
-  const ruleBookStructParentId = params.rule_book_struct_parent_id;
+  const ruleBookIssueNo = params.rule_book_issue_no;
   const ruleBookParentId = params.rule_book_parent_id;
   try {
     if (!systemAdmin && !userIsAuthor) {
@@ -27,44 +25,31 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    if (!ruleBookParentId && !ruleBookStructParentId) {
+    if (!ruleBookParentId && !Number(ruleBookIssueNo) > 0) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    if (ruleBookId && ruleBookStructParentId) {
-      const checkExistRuleBook = await session.run(getRuleBookById, {
-        rule_book_id: ruleBookId,
-      });
-      if (checkExistRuleBook && checkExistRuleBook.records.length === 0) {
-        console.log("Does not exists rule book");
-        throw new APIError({
-          lang: userSurfLang,
-          message: "INTERNAL_SERVER_ERROR",
-        });
-      }
-    }
     const queryParams = {
-      ruleBookId,
-      ruleBookStructParentId,
+      ruleBookIssueNo,
       ruleBookParentId,
     };
-    console.log(deleteRuleBookQuery(queryParams));
+    console.log(deleteRuleBookIssueQuery(queryParams));
     return true;
-    // const result = await session.run(deleteRuleBookQuery(queryParams), {
+    // const result = await session.run(deleteRuleBookIssueQuery(queryParams), {
     //   queryParams,
     // });
     if (result && result.records.length > 0) {
       /**
        const rulebooks = result.records.map((record) => {
         const rulebookResult = {
-          ...common.getPropertiesFromRecord(record, "rb"),
+          ...common.getPropertiesFromRecord(record, "rbs"),
         };
         return rulebookResult;
       });
       common.loggingData(logRulebook, {
-        type: constants.LOG_TYPE_ID.DELETE_RULE_BOOK,
+        type: constants.LOG_TYPE_ID.DELETE_RULE_BOOK_STRUCT,
         current_user_email: userEmail,
         rule_book_id: ruleBookId || null,
       });

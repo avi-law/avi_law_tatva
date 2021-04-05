@@ -88,6 +88,8 @@ const addRuleBookIssue = require("./rule-book-structure/add-rule-book-issue");
 const updateRuleBookStruct = require("./rule-book-structure/update-rule-book-struct");
 const updateRuleBook = require("./rule-book-structure/update-rule-book");
 const deleteRuleBook = require("./rule-book-structure/delete-rule-book");
+const deleteRuleBookStruct = require("./rule-book-structure/delete-rule-book-struct");
+const deleteRuleBookIssue = require("./rule-book-structure/delete-rule-book-issue");
 const updateRuleBookIssue = require("./rule-book-structure/update-rule-book-issue");
 const getRuleBookIssue = require("./rule-book-structure/get-rule-book-issue");
 const downloadBlogPosts = require("./blog/download-blog");
@@ -139,6 +141,8 @@ const resolvers = {
     updateRuleBook,
     updateRuleBookIssue,
     deleteRuleBook,
+    deleteRuleBookStruct,
+    deleteRuleBookIssue
   },
   Query: {
     User,
