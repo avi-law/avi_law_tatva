@@ -14,6 +14,7 @@ module.exports = async (object, params) => {
     });
     if (result && result.records.length > 0) {
       const ruleBookIssue = result.records.map((record) => {
+        const sl = [];
         const rbis = {
           de: {
             rule_book_issue_name: null,
@@ -42,11 +43,18 @@ module.exports = async (object, params) => {
             }
           });
         }
+        if (record.get("sl") && record.get("sl").length > 0) {
+          record.get("sl").forEach((slNode) => {
+            if (slNode) {
+              sl.push(slNode.properties);
+            }
+          });
+        }
         const rbiResult = {
           rbi: common.getPropertiesFromRecord(record, "rbi"),
           rbis,
+          sl,
         };
-        console.log(rbiResult);
         return rbiResult;
       });
       return ruleBookIssue[0];

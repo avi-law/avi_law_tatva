@@ -182,7 +182,6 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
   return query;
 };
 
-
 exports.logRulebook = `
 MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
@@ -206,5 +205,10 @@ CALL {
   MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
   RETURN collect({ rbis: rbis, lang: lang }) AS rbis
 }
-RETURN rbi, rbis
+CALL {
+  WITH rbi
+  MATCH (rbi)-[:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS]->(sl:Sol)
+  RETURN collect(sl) AS sl
+}
+RETURN rbi, rbis, sl
 `;

@@ -961,6 +961,7 @@ const typeDefs = gql`
   type GetRuleBookIssueCustom {
     rbi: Rule_Book_Issue
     rbis:GetRuleBookIssueStateCustom
+    sl: [CustomSol]
   }
 
   type CustomRuleBook {
