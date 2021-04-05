@@ -43,6 +43,9 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
+    if (data.sl_tags && data.sl_tags.length > 0) {
+      queryParams.sl_tags = data.sl_tags;
+    }
     console.log(updateRuleBookIssueQuery(queryParams));
     return true;
     // const result = await session.run(updateRuleBookIssueQuery(queryParams), {

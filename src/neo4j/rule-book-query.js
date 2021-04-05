@@ -125,6 +125,15 @@ exports.deleteRuleBookQuery = (queryParams) => {
 };
 
 exports.addruleBookIssueQuery = (queryParams) => {
+  let slTags = "";
+  let i = 0;
+  if (queryParams.sl_tags.length > 0) {
+    queryParams.sl_tags.forEach((slId) => {
+      slTags = `${slTags}, { order: ${(i += 1)}, sol_id: ${slId} }`;
+    });
+  }
+  slTags = slTags.replace(/^,|,$/g, "");
+
   let query = `
   MATCH (rbp:Rule_Book { rule_book_id: "${queryParams.rule_book_parent_id}" })
   MATCH (lang1:Language {iso_639_1: "de"})
@@ -154,11 +163,23 @@ exports.addruleBookIssueQuery = (queryParams) => {
 
   query = `${query}
   MERGE (rbi)-[:HAS_RULE_BOOK_ISSUE]->(rbp)
+  UNWIND [${slTags}] as slTags
+  MATCH (sl:Sol {sol_id: slTags.sol_id})
+  MERGE (rbi)-[:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS {sol_ord: slTags.order}]->(sl)
   RETURN rbi`;
   return query;
 };
 
 exports.updateRuleBookIssueQuery = (queryParams) => {
+  let slTags = "";
+  let i = 0;
+  if (queryParams.sl_tags.length > 0) {
+    queryParams.sl_tags.forEach((slId) => {
+      slTags = `${slTags}, { order: ${(i += 1)}, sol_id: ${slId} }`;
+    });
+  }
+  slTags = slTags.replace(/^,|,$/g, "");
+
   let query = `
   OPTIONAL MATCH (rbp:Rule_Book { rule_book_id: "${queryParams.rule_book_parent_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue { rule_book_issue_no : ${queryParams.ruleBookIssueNo}})
   MATCH (lang1:Language {iso_639_1: "de"})
@@ -187,6 +208,11 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
   }
 
   query = `${query}
+    OPTIONAL MATCH (rbi)-[r2:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS]->()
+    DETACH DELETE r2
+    UNWIND [${slTags}] as slTags
+    MATCH (sl:Sol {sol_id: slTags.sol_id})
+    MERGE (rbi)-[:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS {sol_ord: slTags.order}]->(sl)
     RETURN rbi`;
   return query;
 };
@@ -225,8 +251,8 @@ CALL {
 }
 CALL {
   WITH rbi
-  MATCH (rbi)-[:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS]->(sl:Sol)
-  RETURN collect(sl) AS sl
+  MATCH (rbi)-[r1:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS]->(sl:Sol)
+  RETURN collect({sol_id:sl.sol_id, order: r1.sol_ord}) AS sl
 }
 RETURN rbi, rbis, sl
 `;

@@ -961,7 +961,7 @@ const typeDefs = gql`
   type GetRuleBookIssueCustom {
     rbi: Rule_Book_Issue
     rbis:GetRuleBookIssueStateCustom
-    sl: [CustomSol]
+    sl_tags: [Int]
   }
 
   type CustomRuleBook {
@@ -1130,6 +1130,7 @@ type RuleBookStateCustomTree {
     rbi:RuleBookIssueInput
     rbis: CustomRuleBookIssueStateInput
     rule_book_parent_id: String!
+    sl_tags:[Int]
   }
 
   #Tree type end

@@ -1,4 +1,5 @@
 /* eslint-disable consistent-return */
+const _ = require("lodash");
 const driver = require("../../../config/db");
 const { common } = require("../../../utils");
 const { getRuleBookIssue } = require("../../../neo4j/rule-book-query");
@@ -7,6 +8,7 @@ module.exports = async (object, params) => {
   const ruleBookIssueNo = params.rule_book_issue_no;
   const ruleBookParentId = params.rule_book_parent_id;
   const session = driver.session();
+  let solIds = null;
   try {
     const result = await session.run(getRuleBookIssue, {
       rule_book_issue_no: ruleBookIssueNo,
@@ -50,10 +52,14 @@ module.exports = async (object, params) => {
             }
           });
         }
+        const slList = _.orderBy(record.get("sl"), ["order"], ["asc"]);
+        if (slList) {
+          solIds = _.map(slList, "sol_id");
+        }
         const rbiResult = {
           rbi: common.getPropertiesFromRecord(record, "rbi"),
           rbis,
-          sl,
+          sl_tags: solIds,
         };
         return rbiResult;
       });
