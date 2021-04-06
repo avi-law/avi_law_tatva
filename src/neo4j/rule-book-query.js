@@ -21,15 +21,15 @@ exports.addRuleBookStructQuery = (queryParams) => {
     if (queryParams.isValidDE) {
       query = `${query}
       MERGE (rbs)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss_de:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang1)
-      SET rbss_de = ${queryParams.rbss.de}`;
+      SET rbss_de = $queryParams.rbss.de`;
     }
     if (queryParams.isValidEN) {
       query = `${query}
       MERGE (rbs)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss_en:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang2)
-      SET rbss_en = ${queryParams.rbss.en}`;
+      SET rbss_en = $queryParams.rbss.en`;
     }
     query = `${query}
-      MERGE (rbs)-[:HAS_RULE_BOOK_STRUCT_CHILD {order_rule_book_in_struct: ${queryParams.rule_book_struct_order}}]->(rbsp)
+      MERGE (rbs)<-[:HAS_RULE_BOOK_STRUCT_CHILD {order_rule_book_in_struct: ${queryParams.rule_book_struct_order}}]-(rbsp)
       RETURN rbs`;
   }
   return query;
@@ -40,12 +40,12 @@ exports.updateRuleBookStructQuery = (queryParams) => {
   MATCH (lang1:Language {iso_639_1: "de"})
   MATCH (lang2:Language {iso_639_1: "en"})
   MERGE (rbs:Rule_Book_Struct { rule_book_struct_id: "${queryParams.ruleBookStructId}" })
-  SET rbs.rule_book_struct_id = ${queryParams.rbs.rule_book_struct_id}, rbs.rule_book_struct_active = ${queryParams.rbs.rule_book_struct_active}`;
+  SET rbs.rule_book_struct_id = $queryParams.rbs.rule_book_struct_id, rbs.rule_book_struct_active = $queryParams.rbs.rule_book_struct_active`;
 
   if (queryParams.isValidDE) {
     query = `${query}
     MERGE (rbs)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss_de:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang1)
-    SET rbss_de = ${queryParams.rbss.de}`;
+    SET rbss_de = $queryParams.rbss.de`;
   } else {
     query = `${query}
     WITH rbs, lang1, lang2
@@ -55,10 +55,10 @@ exports.updateRuleBookStructQuery = (queryParams) => {
   if (queryParams.isValidEN) {
     query = `${query}
     MERGE (rbs)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss_en:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang2)
-    SET rbss_en = ${queryParams.rbss.en}`;
+    SET rbss_en = $queryParams.rbss.en`;
   } else {
     query = `${query}
-    WITH rbs, rbsp, lang1, lang2
+    WITH rbs, lang1, lang2
     OPTIONAL MATCH (rbs)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss_en:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang2)
     DETACH DELETE rbss_en`;
   }
@@ -70,7 +70,7 @@ exports.updateRuleBookStructQuery = (queryParams) => {
 
 exports.deleteRuleBookStructQuery = () => {
   const query = `
-  OPTIONAL MATCH (rbs:Rule_Book_Struct { rule_book_struct_id: $queryParams.ruleBookStructId })-[r1:HAS_RULE_BOOK_STRUCT_CHILD]->(rbsp:Rule_Book_Struct { rule_book_struct_id: "$queryParams.ruleBookStructParentId" })
+  OPTIONAL MATCH (rbs:Rule_Book_Struct { rule_book_struct_id: $queryParams.ruleBookStructId })<-[r1:HAS_RULE_BOOK_STRUCT_CHILD]-(rbsp:Rule_Book_Struct { rule_book_struct_id: "$queryParams.ruleBookStructParentId" })
   DETACH DELETE r1
   RETURN rbs
   `;
@@ -219,7 +219,7 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
 
 exports.deleteRuleBookIssueQuery = () => {
   const query = `
-  OPTIONAL MATCH (rb:Rule_Book { rule_book_id: $queryParams.ruleBookParentId })-[r1:HAS_RULE_BOOK_STRUCT_CHILD]->(rbi:Rule_Book_Issue { rule_book_issue_no: $queryParams.ruleBookIssueNo })-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)
+  OPTIONAL MATCH (rb:Rule_Book { rule_book_id: $queryParams.ruleBookParentId })-[r1:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue { rule_book_issue_no: $queryParams.ruleBookIssueNo })-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)
   DETACH DELETE r1, rbi, rbis
   RETURN rbi
   `;

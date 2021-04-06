@@ -18,7 +18,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const { data } = params;
-  const ruleBookStructId = data.rule_book_struct_id;
+  const ruleBookStructId = params.rule_book_struct_id;
   let isValidDE = false;
   let isValidEN = false;
   try {
