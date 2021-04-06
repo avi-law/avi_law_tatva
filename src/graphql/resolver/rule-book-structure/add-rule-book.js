@@ -35,11 +35,12 @@ module.exports = async (object, params, ctx) => {
       queryParams.rule_book_struct_parent_id = data.rule_book_struct_parent_id;
       queryParams.rule_book_struct_order = data.rule_book_struct_order;
     }
+    console.log(queryParams);
     console.log(addRuleBookQuery(queryParams));
-    return true;
-    // const result = await session.run(addRuleBookQuery(queryParams), {
-    //   queryParams,
-    // });
+    return false;
+    const result = await session.run(addRuleBookQuery(queryParams), {
+      queryParams,
+    });
     if (result && result.records.length > 0) {
       /**
        const rulebooks = result.records.map((record) => {

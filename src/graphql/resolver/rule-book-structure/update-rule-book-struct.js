@@ -59,11 +59,12 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       isValidEN,
     };
+    console.log(queryParams);
     console.log(updateRuleBookStructQuery(queryParams));
-    return true;
-    // const result = await session.run(updateRuleBookStructQuery(queryParams), {
-    //   queryParams,
-    // });
+    return false;
+    const result = await session.run(updateRuleBookStructQuery(queryParams), {
+      queryParams,
+    });
     if (result && result.records.length > 0) {
       /**
        const rulebookStructs = result.records.map((record) => {

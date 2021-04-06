@@ -1132,6 +1132,39 @@ type RuleBookStateCustomTree {
     rule_book_parent_id: String!
     sl_tags:[Int]
   }
+  enum DragAndDropType {
+    Rule_Book
+    Rule_Book_Struct
+    Rule_Book_Issue
+  }
+
+  input RuleBookStructOrderArray {
+    rule_book_struct_parent_id: String!
+    rule_book_struct_id: String!
+    rule_book_struct_order: Int!
+  }
+
+  input RuleBookOrderArray {
+    rule_book_struct_parent_id: String
+    rule_book_parent_id: String
+    rule_book_id: String!
+    rule_book_order: Int!
+  }
+
+  input ChangeOrderInput {
+    drag_type: DragAndDropType!
+    drop_type: DragAndDropType!
+    current_rule_book_parent_id: String
+    current_rule_book_struct_parent_id: String
+    drop_rule_book_parent_id: String
+    drop_rule_book_struct_parent_id: String
+    drag_rule_book_id: String
+    drag_rule_book_struct_id: String
+    drop_rule_book_struct_order: [RuleBookStructOrderArray]
+    drag_rule_book_struct_order: [RuleBookStructOrderArray]
+    drop_rule_book_order: [RuleBookOrderArray]
+    drag_rule_book_order: [RuleBookOrderArray]
+  }
 
   #Tree type end
 
@@ -1190,6 +1223,7 @@ type RuleBookStateCustomTree {
     deleteRuleBook(rule_book_id: String!, rule_book_parent_id: String, rule_book_struct_parent_id: String): Boolean @isAdmin
     deleteRuleBookStruct(rule_book_struct_id: String!, rule_book_struct_parent_id: String!): Boolean @isAdmin
     deleteRuleBookIssue(rule_book_issue_no: Int!,rule_book_parent_id: String!): Boolean @isAdmin
+    changeOrder(change_order: ChangeOrderInput ): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated

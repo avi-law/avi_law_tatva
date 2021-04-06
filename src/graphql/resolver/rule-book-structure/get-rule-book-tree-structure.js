@@ -154,11 +154,14 @@ const generateTreeStructure = (ruleBookStructureList) => {
               curr.rule_book_struct_id
             )
           : null;
-      if (curr.has_rule_book_child) {
-        curr.has_rule_book_child =
-          getNestedChildren(curr.has_rule_book_child).length > 0
-            ? getNestedChildren(curr.has_rule_book_child)
-            : null;
+      // if (curr.has_rule_book_child) {
+      //   curr.has_rule_book_child =
+      //     getNestedChildren(curr.has_rule_book_child).length > 0
+      //       ? getNestedChildren(curr.has_rule_book_child)
+      //       : null;
+      // }
+      if (curr.has_rule_book_child && curr.has_rule_book_child.length > 1) {
+        curr.has_rule_book_child = getNestedChildren(curr.has_rule_book_child);
       }
       curr.has_rule_book_struct_state = {};
       stateData.forEach((stateElement) => {
