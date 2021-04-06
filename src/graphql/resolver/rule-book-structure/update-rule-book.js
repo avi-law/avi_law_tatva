@@ -18,7 +18,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const { data } = params;
-  const ruleBookId = data.rule_book_id;
+  const ruleBookId = params.rule_book_id;
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
@@ -26,27 +26,16 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    if (data && ruleBookId) {
-      const checkExistRuleBook = await session.run(getRuleBookById, {
-        rule_book_id: ruleBookId,
-      });
-      if (checkExistRuleBook && checkExistRuleBook.records.length === 0) {
-        console.log("Does not exists rule book");
-        throw new APIError({
-          lang: userSurfLang,
-          message: "RULE_BOOK_ALREADY_EXISTS",
-        });
-      }
-    }
     const queryParams = {
       ruleBookId,
       rb: data.rb,
     };
+    console.log(queryParams);
     console.log(updateRuleBookQuery(queryParams));
-    return true;
-    // const result = await session.run(updateRuleBookQuery(queryParams), {
-    //   queryParams,
-    // });
+    return false;
+    const result = await session.run(updateRuleBookQuery(queryParams), {
+      queryParams,
+    });
     if (result && result.records.length > 0) {
       /**
        const rulebooks = result.records.map((record) => {
@@ -56,7 +45,7 @@ module.exports = async (object, params, ctx) => {
         return rulebookResult;
       });
       common.loggingData(logRulebook, {
-        type: constants.LOG_TYPE_ID.CREATE_RULE_BOOK,
+        type: constants.LOG_TYPE_ID.UPDATE_RULE_BOOK,
         current_user_email: userEmail,
         rule_book_id: rulebooks[0].rule_book_id || null,
       });

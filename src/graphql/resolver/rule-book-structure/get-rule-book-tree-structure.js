@@ -74,6 +74,7 @@ const generateRuleBookTreeStructure = (ruleBookList, structId) => {
           };
         }
       });
+      // Create rule book issue child object to array
       ruleBookIssues.forEach((issue) => {
         if (issue.language) {
           delete issue.label;
@@ -160,9 +161,6 @@ const generateTreeStructure = (ruleBookStructureList) => {
       //       ? getNestedChildren(curr.has_rule_book_child)
       //       : null;
       // }
-      if (curr.has_rule_book_child && curr.has_rule_book_child.length > 1) {
-        curr.has_rule_book_child = getNestedChildren(curr.has_rule_book_child);
-      }
       curr.has_rule_book_struct_state = {};
       stateData.forEach((stateElement) => {
         if (stateElement.language) {

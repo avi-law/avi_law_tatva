@@ -197,7 +197,7 @@ const generateTreeStructure = (ruleBookStructureList) => {
       delete curr.res_desc_lang;
       delete curr.rbs_res;
       curr.has_rule_book_child =
-        rbsData.length > 0
+        rbsData && rbsData.length > 0
           ? generateRuleBookTreeStructure(_.cloneDeep(rbsData))
           : null;
       if (curr.has_rule_book_child) {
