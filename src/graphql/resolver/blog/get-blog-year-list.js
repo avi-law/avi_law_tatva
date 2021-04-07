@@ -29,22 +29,17 @@ module.exports = async (object, params, ctx) => {
 
   const session = driver.session();
   try {
-    const result = await session.run(
-      getBlogYearList({
-        lang,
-      })
-    );
+    const result = await session.run(getBlogYearList({}));
     if (result && result.records.length > 0) {
       const blogYears = result.records.map((record) => record.get("year"));
       response.years = blogYears;
     }
-    if (!year && response.years.length > 0) {
+    if (!currentYear && response.years.length > 0) {
       // eslint-disable-next-line prefer-destructuring
       currentYear = response.years[0];
     }
     const blogResult = await session.run(
       getBlogListByYear({
-        lang,
         currentYear,
         userEmail,
       })
@@ -53,13 +48,13 @@ module.exports = async (object, params, ctx) => {
       const blogs = blogResult.records.map((record) => {
         const bls = {
           de: {
-            blog_text: null,
-            blog_title_long: null,
+            blog_text: constants.BLOG_TITLE_NOT_AVAILABLE.en,
+            blog_title_long: constants.BLOG_TITLE_NOT_AVAILABLE.en,
             blog_title_short: null,
           },
           en: {
-            blog_text: null,
-            blog_title_long: null,
+            blog_text: constants.BLOG_TITLE_NOT_AVAILABLE.en,
+            blog_title_long: constants.BLOG_TITLE_NOT_AVAILABLE.en,
             blog_title_short: null,
           },
         };
