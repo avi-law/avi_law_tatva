@@ -48,13 +48,13 @@ module.exports = async (object, params, ctx) => {
       const blogs = blogResult.records.map((record) => {
         const bls = {
           de: {
-            blog_text: constants.BLOG_TITLE_NOT_AVAILABLE.en,
-            blog_title_long: constants.BLOG_TITLE_NOT_AVAILABLE.en,
+            blog_text: null,
+            blog_title_long: null,
             blog_title_short: null,
           },
           en: {
-            blog_text: constants.BLOG_TITLE_NOT_AVAILABLE.en,
-            blog_title_long: constants.BLOG_TITLE_NOT_AVAILABLE.en,
+            blog_text: null,
+            blog_title_long: null,
             blog_title_short: null,
           },
         };
