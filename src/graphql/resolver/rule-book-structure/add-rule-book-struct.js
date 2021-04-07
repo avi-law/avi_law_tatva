@@ -39,7 +39,10 @@ module.exports = async (object, params, ctx) => {
         checkExistRuleBookStruct &&
         checkExistRuleBookStruct.records.length > 0
       ) {
-        isExists = true;
+        throw new APIError({
+          lang: userSurfLang,
+          message: "RULE_BOOK_STRUCT_ALREADY_EXISTS",
+        });
       }
     }
     if (data.rbss && data.rbss.de && data.rbss.de.rule_book_struct_desc) {

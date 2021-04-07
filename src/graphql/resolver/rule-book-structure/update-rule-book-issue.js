@@ -4,7 +4,6 @@ const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
-  getRuleBookStructById,
   updateRuleBookIssueQuery,
   logRulebookStruct,
 } = require("../../../neo4j/rule-book-query");
@@ -20,7 +19,7 @@ module.exports = async (object, params, ctx) => {
   let isValidDE = false;
   let isValidEN = false;
   const { data } = params;
-  const ruleBookIssueNo = data.rule_book_issue_no;
+  const ruleBookIssueNo = params.rule_book_issue_no;
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
@@ -46,11 +45,12 @@ module.exports = async (object, params, ctx) => {
     if (data.sl_tags && data.sl_tags.length > 0) {
       queryParams.sl_tags = data.sl_tags;
     }
+    console.log(queryParams);
     console.log(updateRuleBookIssueQuery(queryParams));
-    return true;
-    // const result = await session.run(updateRuleBookIssueQuery(queryParams), {
-    //   queryParams,
-    // });
+    return false;
+    const result = await session.run(updateRuleBookIssueQuery(queryParams), {
+      queryParams,
+    });
     if (result && result.records.length > 0) {
       /**
        const rulebookStructs = result.records.map((record) => {

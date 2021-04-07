@@ -50,11 +50,12 @@ module.exports = async (object, params, ctx) => {
       ruleBookStructParentId,
       ruleBookParentId,
     };
+    console.log(queryParams);
     console.log(deleteRuleBookQuery(queryParams));
-    return true;
-    // const result = await session.run(deleteRuleBookQuery(queryParams), {
-    //   queryParams,
-    // });
+    return false;
+    const result = await session.run(deleteRuleBookQuery(queryParams), {
+      queryParams,
+    });
     if (result && result.records.length > 0) {
       /**
        const rulebooks = result.records.map((record) => {

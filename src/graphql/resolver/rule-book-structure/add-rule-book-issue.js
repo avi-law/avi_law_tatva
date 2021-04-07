@@ -40,11 +40,12 @@ module.exports = async (object, params, ctx) => {
     if (data.sl_tags && data.sl_tags.length > 0) {
       queryParams.sl_tags = data.sl_tags;
     }
+    console.log(queryParams);
     console.log(addruleBookIssueQuery(queryParams));
-    return true;
-    // const result = await session.run(addruleBookIssueQuery(queryParams), {
-    //   queryParams,
-    // });
+    return false;
+    const result = await session.run(addruleBookIssueQuery(queryParams), {
+      queryParams,
+    });
     if (result && result.records.length > 0) {
       return true;
     }

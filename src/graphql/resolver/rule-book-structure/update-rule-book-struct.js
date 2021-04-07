@@ -46,6 +46,28 @@ module.exports = async (object, params, ctx) => {
         });
       }
     }
+    if (
+      data &&
+      data.rbs &&
+      data.rbs.rule_book_struct_id &&
+      ruleBookStructId !== data.rbs.rule_book_struct_id
+    ) {
+      const checkExistRuleBookStruct = await session.run(
+        getRuleBookStructById,
+        {
+          rule_book_struct_id: data.rbs.rule_book_struct_id,
+        }
+      );
+      if (
+        checkExistRuleBookStruct &&
+        checkExistRuleBookStruct.records.length > 0
+      ) {
+        throw new APIError({
+          lang: userSurfLang,
+          message: "RULE_BOOK_STRUCT_ALREADY_EXISTS",
+        });
+      }
+    }
     if (data.rbss && data.rbss.de && data.rbss.de.rule_book_struct_desc) {
       isValidDE = true;
     }
