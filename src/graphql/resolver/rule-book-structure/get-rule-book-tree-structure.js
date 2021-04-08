@@ -126,7 +126,6 @@ const generateRuleBookTreeStructure = (ruleBookList, structId) => {
           }
         }
       });
-      console.log(curr);
       if (acc.parentMap[curr.rule_book_parent_id]) {
         (acc.parentMap[curr.rule_book_parent_id].has_rule_book_child =
           acc.parentMap[curr.rule_book_parent_id].has_rule_book_child ||
