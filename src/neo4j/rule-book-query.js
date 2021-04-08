@@ -284,7 +284,7 @@ RETURN distinct sl, cou, slState as sls
 ORDER BY sl.sol_date DESC
 `;
 
-const dropQuery = (queryParams) => {
+const dropChangeOrderQuery = (queryParams) => {
   let query = ``;
   if (
     queryParams.drop_rule_book_order &&
@@ -321,7 +321,7 @@ const dropQuery = (queryParams) => {
   }
   return query;
 };
-const dragQuery = (queryParams) => {
+const dragChangeOrderQuery = (queryParams) => {
   let query = ``;
   if (
     queryParams.drag_rule_book_order &&
@@ -364,40 +364,56 @@ exports.changeOrderQuery = (queryParams) => {
   if (queryParams.isInternalChangeOrder) {
     query = `
     ${query}
-    ${dropQuery(queryParams)}
+    ${dropChangeOrderQuery(queryParams)}
     `;
   } else if (
     queryParams.drag_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK_ISSUE
   ) {
-    // change issue rule book parent
+    // Create relation between drag rule book issue node and drop rule book node
+    console.log(
+      "Create relation between drag rule book issue node and drop rule book node"
+    );
   } else {
+    // Remove relation between drag node and drag parent node
     if (
-      queryParams.drag_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK &&
-      queryParams.drop_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK
+      queryParams.drag_parent_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK
     ) {
-      if (
-        queryParams.drag_parent_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK
-      ) {
-        query = `
-        ${query}
-        MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_CHILD]->(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })
-        // REMOVE r1_drag
-        `;
-      } else if (
-        queryParams.drag_parent_type ===
-        constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT
-      ) {
-        query = `
-        ${query}
-        MATCH(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })-[:RULE_BOOK_BELONGS_TO_STRUCT]->(rbs_drag:Rule_Book_Struct { rule_book_struct_id: "${queryParams.drag_rule_book_struct_parent_id} })
-        // REMOVE r1_drag
-        `;
-      }
+      query = `
+      ${query}
+      MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_CHILD]->(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })
+      // REMOVE r1_drag
+      `;
+    } else if (
+      queryParams.drag_parent_type ===
+      constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT
+    ) {
+      query = `
+      ${query}
+      MATCH(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })-[:RULE_BOOK_BELONGS_TO_STRUCT]->(rbs_drag:Rule_Book_Struct { rule_book_struct_id: "${queryParams.drag_rule_book_struct_parent_id} })
+      // REMOVE r1_drag
+      `;
+    }
+    // Create relation between drag node and drop parent node
+    if (
+      queryParams.drop_parent_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK
+    ) {
+      query = `
+      ${query}
+      // MERGE(rbp_drop:Rule_Book { rule_book_id: "${queryParams.drop_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_CHILD]->(rb_drop:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })
+      `;
+    } else if (
+      queryParams.drop_parent_type ===
+      constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT
+    ) {
+      query = `
+      ${query}
+      // MERGE(rb_drop:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })-[:RULE_BOOK_BELONGS_TO_STRUCT]->(rbs_drop:Rule_Book_Struct { rule_book_struct_id: "${queryParams.drop_rule_book_struct_parent_id} })
+      `;
     }
     query = `
     ${query}
-    ${dragQuery(queryParams)}
-    ${dropQuery(queryParams)}
+    ${dragChangeOrderQuery(queryParams)}
+    ${dropChangeOrderQuery(queryParams)}
     `;
   }
   return query;
