@@ -4,7 +4,7 @@
   "description": "Aviation law",
   "main": "src/app.js",
   "scripts": {
-    "start:dev": "nodemon node .",
+    "start:dev": "nodemon node . -e * ",
     "start": "node .",
     "lint": "eslint --ignore-path .gitignore ."
   },
