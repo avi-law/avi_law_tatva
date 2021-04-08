@@ -130,6 +130,11 @@ module.exports = {
   original_referer=https%3A%2F%2Favi-law.com%2F&ref_src=twsrc%5Etfw&screen_name=Avi_Law_com&tw_p=followbutton`,
   PROVISION_IMAGE_TITLE_EN: "Nur auf Englisch verfügbar",
   PROVISION_IMAGE_TITLE_GER: "Available in German only",
+  DRAG_AND_DROP_TYPE: {
+    RULE_BOOK: "Rule_Book",
+    RULE_BOOK_ISSUE: "Rule_Book_Issue",
+    RULE_BOOK_STRUCT: "Rule_Book_Struct",
+  },
   CHANGE_RULE_BOOK_ORDER_PERMISSION: {
     Rule_Book_Struct: {
       Rule_Book_Struct: true,

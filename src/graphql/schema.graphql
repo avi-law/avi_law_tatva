@@ -1154,8 +1154,11 @@ type RuleBookStateCustomTree {
   input ChangeOrderInput {
     drag_type: DragAndDropType!
     drop_type: DragAndDropType!
-    current_rule_book_parent_id: String
-    current_rule_book_struct_parent_id: String
+    drag_parent_type: DragAndDropType!
+    drop_parent_type: DragAndDropType!
+    drag_rule_book_issue_no: Int
+    drag_rule_book_parent_id: String
+    drag_rule_book_struct_parent_id: String
     drop_rule_book_parent_id: String
     drop_rule_book_struct_parent_id: String
     drag_rule_book_id: String
