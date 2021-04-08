@@ -53,6 +53,30 @@ module.exports = async (object, params, ctx) => {
     ) {
       isInternalChangeOrder = true;
     }
+    if (
+      changeOrderData.drag_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK_ISSUE
+    ) {
+      if (
+        !changeOrderData.drag_rule_book_parent_id ||
+        !changeOrderData.drop_rule_book_parent_id
+      ) {
+        console.log("Required rule book parent id");
+        throw new APIError({
+          lang: userSurfLang,
+          message: "INVALID_DROP_NODE",
+        });
+      } else if (
+        changeOrderData.drag_rule_book_parent_id ===
+        changeOrderData.drop_rule_book_parent_id
+      ) {
+        console.log("Internal rule book issue not dropable");
+        throw new APIError({
+          lang: userSurfLang,
+          message: "INVALID_DROP_NODE",
+        });
+      }
+    }
+
     const queryParams = {
       ...changeOrderData,
       isInternalChangeOrder,

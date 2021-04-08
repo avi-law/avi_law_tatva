@@ -1133,6 +1133,7 @@ type RuleBookStateCustomTree {
     sl_tags:[Int]
   }
   enum DragAndDropType {
+    ROOT
     Rule_Book
     Rule_Book_Struct
     Rule_Book_Issue

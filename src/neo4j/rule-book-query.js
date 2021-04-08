@@ -373,48 +373,55 @@ exports.changeOrderQuery = (queryParams) => {
     console.log(
       "Create relation between drag rule book issue node and drop rule book node"
     );
+    query = `
+        ${query}
+        MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: ${queryParams.drag_rule_book_issue_no} })
+        // MERGE(rbp_drop:Rule_Book { rule_book_id: "${queryParams.drop_rule_book_parent_id}" })-[r1_drop:HAS_RULE_BOOK_ISSUE]->(rbi)
+        // REMOVE r1_drag
+        RETURN rbp_drag as rb
+      `;
   } else {
     // Remove relation between drag node and drag parent node
     if (
       queryParams.drag_parent_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK
     ) {
       query = `
-      ${query}
-      MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_CHILD]->(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })
-      // REMOVE r1_drag
-      `;
+        ${query}
+        MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_CHILD]->(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })
+        // REMOVE r1_drag
+        `;
     } else if (
       queryParams.drag_parent_type ===
       constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT
     ) {
       query = `
-      ${query}
-      MATCH(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })-[:RULE_BOOK_BELONGS_TO_STRUCT]->(rbs_drag:Rule_Book_Struct { rule_book_struct_id: "${queryParams.drag_rule_book_struct_parent_id} })
-      // REMOVE r1_drag
-      `;
+        ${query}
+        MATCH(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })-[:RULE_BOOK_BELONGS_TO_STRUCT]->(rbs_drag:Rule_Book_Struct { rule_book_struct_id: "${queryParams.drag_rule_book_struct_parent_id} })
+        // REMOVE r1_drag
+        `;
     }
     // Create relation between drag node and drop parent node
     if (
       queryParams.drop_parent_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK
     ) {
       query = `
-      ${query}
-      // MERGE(rbp_drop:Rule_Book { rule_book_id: "${queryParams.drop_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_CHILD]->(rb_drop:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })
-      `;
+        ${query}
+        // MERGE(rbp_drop:Rule_Book { rule_book_id: "${queryParams.drop_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_CHILD]->(rb_drop:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })
+        `;
     } else if (
       queryParams.drop_parent_type ===
       constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT
     ) {
       query = `
-      ${query}
-      // MERGE(rb_drop:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })-[:RULE_BOOK_BELONGS_TO_STRUCT]->(rbs_drop:Rule_Book_Struct { rule_book_struct_id: "${queryParams.drop_rule_book_struct_parent_id} })
-      `;
+        ${query}
+        // MERGE(rb_drop:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })-[:RULE_BOOK_BELONGS_TO_STRUCT]->(rbs_drop:Rule_Book_Struct { rule_book_struct_id: "${queryParams.drop_rule_book_struct_parent_id} })
+        `;
     }
     query = `
-    ${query}
-    ${dragChangeOrderQuery(queryParams)}
-    ${dropChangeOrderQuery(queryParams)}
-    `;
+      ${query}
+      ${dragChangeOrderQuery(queryParams)}
+      ${dropChangeOrderQuery(queryParams)}
+      `;
   }
   return query;
 };
