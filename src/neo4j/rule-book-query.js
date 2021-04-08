@@ -1,3 +1,5 @@
+const { constants } = require("../utils");
+
 exports.getRuleBookById = `MATCH (rb:Rule_Book {rule_book_id: $rule_book_id}) return rb`;
 
 exports.getRuleBookStructById = `MATCH (rbs:Rule_Book_Struct {rule_book_struct_id: $rule_book_struct_id}) return rbs`;
@@ -359,12 +361,39 @@ const dragQuery = (queryParams) => {
 
 exports.changeOrderQuery = (queryParams) => {
   let query = ``;
-  if (queryParams.isInternalDrop) {
+  if (queryParams.isInternalChangeOrder) {
     query = `
     ${query}
     ${dropQuery(queryParams)}
     `;
+  } else if (
+    queryParams.drag_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK_ISSUE
+  ) {
+    // change issue rule book parent
   } else {
+    if (
+      queryParams.drag_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK &&
+      queryParams.drop_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK
+    ) {
+      if (
+        queryParams.drag_parent_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK
+      ) {
+        query = `
+        ${query}
+        MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_CHILD]->(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })
+        // REMOVE r1_drag
+        `;
+      } else if (
+        queryParams.drag_parent_type ===
+        constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT
+      ) {
+        query = `
+        ${query}
+        MATCH(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })-[:RULE_BOOK_BELONGS_TO_STRUCT]->(rbs_drag:Rule_Book_Struct { rule_book_struct_id: "${queryParams.drag_rule_book_struct_parent_id} })
+        // REMOVE r1_drag
+        `;
+      }
+    }
     query = `
     ${query}
     ${dragQuery(queryParams)}

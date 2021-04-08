@@ -16,7 +16,7 @@ module.exports = async (object, params, ctx) => {
   const userEmail = user.user_email || null;
   const session = driver.session();
   const dragAndDropPermission = constants.CHANGE_RULE_BOOK_ORDER_PERMISSION;
-  let isInternalDrop = false;
+  let isInternalChangeOrder = false;
   params = JSON.parse(JSON.stringify(params));
   const changeOrderData = params.change_order;
   try {
@@ -38,24 +38,24 @@ module.exports = async (object, params, ctx) => {
       });
     }
     if (
-      changeOrderData.current_rule_book_struct_parent_id &&
+      changeOrderData.drag_rule_book_struct_parent_id &&
       changeOrderData.drop_rule_book_struct_parent_id &&
       changeOrderData.drop_rule_book_struct_parent_id ===
-        changeOrderData.current_rule_book_struct_parent_id
+        changeOrderData.drag_rule_book_struct_parent_id
     ) {
-      isInternalDrop = true;
+      isInternalChangeOrder = true;
     }
     if (
-      changeOrderData.current_rule_book_parent_id &&
+      changeOrderData.drag_rule_book_parent_id &&
       changeOrderData.drop_rule_book_parent_id &&
       changeOrderData.drop_rule_book_parent_id ===
-        changeOrderData.current_rule_book_parent_id
+        changeOrderData.drag_rule_book_parent_id
     ) {
-      isInternalDrop = true;
+      isInternalChangeOrder = true;
     }
     const queryParams = {
       ...changeOrderData,
-      isInternalDrop,
+      isInternalChangeOrder,
     };
     console.log(queryParams);
     console.log(changeOrderQuery(queryParams));
