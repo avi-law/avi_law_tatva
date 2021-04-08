@@ -36,6 +36,7 @@ module.exports = {
         "Your email address is not verified, Please verify your email address or resend verification click <a> here </a>",
       NL_EMAIL_ALREADY_SENT: "This Newsletter Email already sent to user",
       RULE_BOOK_STRUCT_ALREADY_EXISTS: "The rule book struct already exist",
+      INVALID_DROP_NODE: "The drop node is invalid",
     },
     DE: {
       INVALID_LOGIN_EMAIL: "Die eingegebene eMail-Adresse ist nicht korrekt!",
@@ -73,6 +74,7 @@ module.exports = {
         "The link to verify your email is invalid - please request a email verification again!.",
       NL_EMAIL_ALREADY_SENT: "This Newsletter Email already sent to user",
       RULE_BOOK_STRUCT_ALREADY_EXISTS: "The rule book struct already exist",
+      INVALID_DROP_NODE: "The drop node is invalid",
     },
   },
   LOG_TYPE_ID: {
@@ -128,6 +130,23 @@ module.exports = {
   original_referer=https%3A%2F%2Favi-law.com%2F&ref_src=twsrc%5Etfw&screen_name=Avi_Law_com&tw_p=followbutton`,
   PROVISION_IMAGE_TITLE_EN: "Nur auf Englisch verfügbar",
   PROVISION_IMAGE_TITLE_GER: "Available in German only",
+  CHANGE_RULE_BOOK_ORDER_PERMISSION: {
+    Rule_Book_Struct: {
+      Rule_Book_Struct: true,
+      Rule_Book: false,
+      Rule_Book_Issue: false,
+    },
+    Rule_Book: {
+      Rule_Book_Struct: true,
+      Rule_Book: true,
+      Rule_Book_Issue: false,
+    },
+    Rule_Book_Issue: {
+      Rule_Book_Struct: false,
+      Rule_Book: true,
+      Rule_Book_Issue: false,
+    },
+  },
   NL_TITLE_NOT_AVAILABLE: {
     de: "(Dieser Newsletter ist auf Deutsch nicht verfügbar.)",
     en: "(This Newsletter is not available in English)",

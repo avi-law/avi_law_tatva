@@ -281,3 +281,95 @@ CALL {
 RETURN distinct sl, cou, slState as sls
 ORDER BY sl.sol_date DESC
 `;
+
+const dropQuery = (queryParams) => {
+  let query = ``;
+  if (
+    queryParams.drop_rule_book_order &&
+    queryParams.drop_rule_book_order.length > 0
+  ) {
+    if (queryParams.drop_rule_book_struct_parent_id) {
+      query = `
+        ${query}
+        UNWIND $queryParams.drop_rule_book_order as ruleBook
+        OPTIONAL MATCH (rbDrop:Rule_Book { rule_book_id: ruleBook.rule_book_id})-[r1:RULE_BOOK_BELONGS_TO_STRUCT]->(rbsDrop:Rule_Book_Struct { rule_book_struct_id: ruleBook.rule_book_struct_parent_id })
+        // FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order_rule_book_in_struct = ruleBook.rule_book_order )
+        RETURN rbDrop as rb
+        `;
+    } else if (queryParams.drop_rule_book_parent_id) {
+      query = `
+        ${query}
+        UNWIND $queryParams.drop_rule_book_order as ruleBook
+        OPTIONAL MATCH (rbpDrop:Rule_Book { rule_book_id: ruleBook.rule_book_parent_id})-[r1:HAS_RULE_BOOK_CHILD]->(rbDrop:Rule_Book { rule_book_id: ruleBook.rule_book_id })
+        // FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order_rule_book_child = ruleBook.rule_book_order )
+        RETURN rbpDrop as rb
+        `;
+    }
+  } else if (
+    queryParams.drop_rule_book_struct_order &&
+    queryParams.drop_rule_book_struct_order.length > 0
+  ) {
+    query = `
+        ${query}
+        UNWIND $queryParams.drop_rule_book_struct_order as ruleBookStruct
+        OPTIONAL MATCH (rbspDrop:Rule_Book_Struct { rule_book_struct_id: ruleBookStruct.rule_book_struct_parent_id})-[r2:HAS_RULE_BOOK_STRUCT_CHILD]->(rbsDrop:Rule_Book_Struct { rule_book_struct_id: ruleBookStruct.rule_book_struct_id})
+        // FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | SET r2.order_rule_book_struct = ruleBookStruct.rule_book_struct_order )
+        RETURN rbspDrop as rb
+      `;
+  }
+  return query;
+};
+const dragQuery = (queryParams) => {
+  let query = ``;
+  if (
+    queryParams.drag_rule_book_order &&
+    queryParams.drag_rule_book_order.length > 0
+  ) {
+    if (queryParams.drag_rule_book_struct_id) {
+      query = `
+        ${query}
+        UNWIND $queryParams.drag_rule_book_order as ruleBook
+        OPTIONAL MATCH (rbDrag:Rule_Book { rule_book_id: ruleBook.rule_book_id})-[r3:RULE_BOOK_BELONGS_TO_STRUCT]->(rbsDrag:Rule_Book_Struct { rule_book_struct_id: ruleBook.rule_book_struct_parent_id })
+        // FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | SET r3.order_rule_book_in_struct = ruleBook.rule_book_order )
+        WITH rbDrag
+      `;
+    } else if (queryParams.drag_rule_book_id) {
+      query = `
+        ${query}
+        UNWIND $queryParams.drag_rule_book_order as ruleBook
+        OPTIONAL MATCH (rbpDrag:Rule_Book { rule_book_id: ruleBook.rule_book_parent_id})-[r3:HAS_RULE_BOOK_CHILD]->(rbDrag:Rule_Book { rule_book_id: ruleBook.rule_book_id })
+        // FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | SET r3.order_rule_book_child = ruleBook.rule_book_order )
+        WITH rbpDrag
+        `;
+    }
+  } else if (
+    queryParams.drag_rule_book_struct_order &&
+    queryParams.drag_rule_book_struct_order.length > 0
+  ) {
+    query = `
+        ${query}
+        UNWIND $queryParams.drag_rule_book_struct_order as ruleBookStruct
+        OPTIONAL MATCH (rbspDrag:Rule_Book_Struct { rule_book_struct_id: ruleBookStruct.rule_book_struct_parent_id})-[r4:HAS_RULE_BOOK_STRUCT_CHILD]->(rbsDrag:Rule_Book_Struct { rule_book_struct_id: ruleBookStruct.rule_book_struct_id})
+        // FOREACH (_ IN CASE WHEN r4 IS NOT NULL THEN [1] END | SET r4.order_rule_book_struct = ruleBookStruct.rule_book_struct_order )
+        WITH rbspDrag
+      `;
+  }
+  return query;
+};
+
+exports.changeOrderQuery = (queryParams) => {
+  let query = ``;
+  if (queryParams.isInternalDrop) {
+    query = `
+    ${query}
+    ${dropQuery(queryParams)}
+    `;
+  } else {
+    query = `
+    ${query}
+    ${dragQuery(queryParams)}
+    ${dropQuery(queryParams)}
+    `;
+  }
+  return query;
+};
