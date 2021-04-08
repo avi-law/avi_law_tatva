@@ -83,15 +83,20 @@ const generateRuleBookTreeStructure = (ruleBookList, structId) => {
               (x) => x.rule_book_issue_no === issue.rule_book_issue_no
             );
             const child = {
-              ...issue,
-              title_long: issue.title_long
-                ? common.removeTag(issue.title_long)
-                : null,
-              rule_book_language_is: [
-                {
-                  iso_639_1: issue.language,
-                },
-              ],
+              rule_book_issue_no: issue.rule_book_issue_no,
+              label: "Rule_Book_Issue",
+              [issue.language]: {
+                ...issue,
+
+                title_long: issue.title_long
+                  ? common.removeTag(issue.title_long)
+                  : null,
+                rule_book_language_is: [
+                  {
+                    iso_639_1: issue.language,
+                  },
+                ],
+              },
             };
             if (exists) {
               exists[issue.language] = child;
@@ -121,6 +126,7 @@ const generateRuleBookTreeStructure = (ruleBookList, structId) => {
           }
         }
       });
+      console.log(curr);
       if (acc.parentMap[curr.rule_book_parent_id]) {
         (acc.parentMap[curr.rule_book_parent_id].has_rule_book_child =
           acc.parentMap[curr.rule_book_parent_id].has_rule_book_child ||
