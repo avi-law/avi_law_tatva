@@ -5,6 +5,7 @@ const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
   getRuleBookStructById,
+  getRuleBookStructParentByCondition,
   updateRuleBookStructQuery,
   logRulebookStruct,
 } = require("../../../neo4j/rule-book-query");
@@ -19,6 +20,7 @@ module.exports = async (object, params, ctx) => {
   params = JSON.parse(JSON.stringify(params));
   const { data } = params;
   const ruleBookStructId = params.rule_book_struct_id;
+  const ruleBookStructParentId = params.rule_book_struct_parent_id;
   let isValidDE = false;
   let isValidEN = false;
   try {
@@ -52,20 +54,26 @@ module.exports = async (object, params, ctx) => {
       data.rbs.rule_book_struct_id &&
       ruleBookStructId !== data.rbs.rule_book_struct_id
     ) {
-      const checkExistRuleBookStruct = await session.run(
-        getRuleBookStructById,
-        {
-          rule_book_struct_id: data.rbs.rule_book_struct_id,
+      if (data && data.rbs.rule_book_struct_id) {
+        const checkParnetExistRuleBookStruct = await session.run(
+          getRuleBookStructParentByCondition({
+            rule_book_struct_id: data.rbs.rule_book_struct_id,
+            where: `WHERE rbsp.rule_book_struct_id <> "${data.rule_book_struct_parent_id}"`,
+          }),
+          {
+            rule_book_struct_id: data.rbs.rule_book_struct_id,
+            rule_book_struct_parent_id: data.rule_book_struct_parent_id,
+          }
+        );
+        if (
+          checkParnetExistRuleBookStruct &&
+          checkParnetExistRuleBookStruct.records.length > 0
+        ) {
+          throw new APIError({
+            lang: userSurfLang,
+            message: "RULE_BOOK_STRUCT_ALREADY_ASSIGNED",
+          });
         }
-      );
-      if (
-        checkExistRuleBookStruct &&
-        checkExistRuleBookStruct.records.length > 0
-      ) {
-        throw new APIError({
-          lang: userSurfLang,
-          message: "RULE_BOOK_STRUCT_ALREADY_EXISTS",
-        });
       }
     }
     if (data.rbss && data.rbss.de && data.rbss.de.rule_book_struct_desc) {

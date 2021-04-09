@@ -4,6 +4,24 @@ exports.getRuleBookById = `MATCH (rb:Rule_Book {rule_book_id: $rule_book_id}) re
 
 exports.getRuleBookStructById = `MATCH (rbs:Rule_Book_Struct {rule_book_struct_id: $rule_book_struct_id}) return rbs`;
 
+exports.getRuleBookStructParentById = `
+MATCH (rbs:Rule_Book_Struct {rule_book_struct_id: $rule_book_struct_id})<-[:HAS_RULE_BOOK_STRUCT_CHILD]-(rbsp:Rule_Book_Struct)
+RETURN rbsp`;
+
+exports.getRuleBookStructParentByCondition = (queryParams) => {
+  let query = `
+  MATCH (rbs:Rule_Book_Struct {rule_book_struct_id: $rule_book_struct_id})<-[:HAS_RULE_BOOK_STRUCT_CHILD]-(rbsp:Rule_Book_Struct)`;
+  if (queryParams.where) {
+    query = `
+      ${query}
+      ${queryParams.where}`;
+  }
+  query = `
+    ${query}
+    RETURN rbsp`;
+  return query;
+};
+
 exports.addRuleBookStructQuery = (queryParams) => {
   let query = `
   MATCH (rbsp:Rule_Book_Struct {rule_book_struct_id: "${queryParams.rule_book_struct_parent_id}"})`;
@@ -40,7 +58,7 @@ exports.updateRuleBookStructQuery = (queryParams) => {
   let query = `
   MATCH (lang1:Language {iso_639_1: "de"})
   MATCH (lang2:Language {iso_639_1: "en"})
-  MERGE (rbs:Rule_Book_Struct { rule_book_struct_id: "${queryParams.ruleBookStructId}" })
+  MERGE (rbs:Rule_Book_Struct { rule_book_struct_id: "${queryParams.rbs.rule_book_struct_id}" })
   SET rbs.rule_book_struct_id = $queryParams.rbs.rule_book_struct_id, rbs.rule_book_struct_active = $queryParams.rbs.rule_book_struct_active`;
 
   if (queryParams.isValidDE) {
@@ -69,12 +87,11 @@ exports.updateRuleBookStructQuery = (queryParams) => {
   return query;
 };
 
-exports.deleteRuleBookStructQuery = () => {
+exports.deleteRuleBookStructQuery = (queryParams) => {
   const query = `
-  OPTIONAL MATCH (rbs1:Rule_Book_Struct { rule_book_struct_id: $queryParams.ruleBookStructId })-[:HAS_RULE_BOOK_STRUCT_CHILD*0..]->(rbs2:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss:Rule_Book_Struct_State)
-  DETACH DELETE rbs2,rbss
-  RETURN rbs1,rbs2,rbss
-  `;
+  OPTIONAL MATCH (rbs:Rule_Book_Struct { rule_book_struct_id: "${queryParams.ruleBookStructId}" })<-[r1:HAS_RULE_BOOK_STRUCT_CHILD]-(rbsp:Rule_Book_Struct { rule_book_struct_id: "${queryParams.ruleBookStructParentId}" })
+  DELETE r1
+  RETURN rbs, rbsp`;
   return query;
 };
 
@@ -280,20 +297,22 @@ const dropChangeOrderQuery = (queryParams) => {
     queryParams.drop_rule_book_order &&
     queryParams.drop_rule_book_order.length > 0
   ) {
+    // Tested
     if (queryParams.drop_rule_book_struct_parent_id) {
       query = `
         ${query}
-        UNWIND $queryParams.drop_rule_book_order as ruleBook
-        OPTIONAL MATCH (rbDrop:Rule_Book { rule_book_id: ruleBook.rule_book_id})-[r1:RULE_BOOK_BELONGS_TO_STRUCT]->(rbsDrop:Rule_Book_Struct { rule_book_struct_id: ruleBook.rule_book_struct_parent_id })
-        // FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order_rule_book_in_struct = ruleBook.rule_book_order )
+        UNWIND $queryParams.drop_rule_book_order as ruleBookDrop
+        OPTIONAL MATCH (rbDrop:Rule_Book { rule_book_id: ruleBookDrop.rule_book_id})-[r1:RULE_BOOK_BELONGS_TO_STRUCT]->(rbsDrop:Rule_Book_Struct { rule_book_struct_id: ruleBookDrop.rule_book_struct_parent_id })
+        FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order_rule_book_in_struct = ruleBookDrop.rule_book_order )
         RETURN rbDrop as rb
         `;
     } else if (queryParams.drop_rule_book_parent_id) {
+      // Tested
       query = `
         ${query}
-        UNWIND $queryParams.drop_rule_book_order as ruleBook
-        OPTIONAL MATCH (rbpDrop:Rule_Book { rule_book_id: ruleBook.rule_book_parent_id})-[r1:HAS_RULE_BOOK_CHILD]->(rbDrop:Rule_Book { rule_book_id: ruleBook.rule_book_id })
-        // FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order_rule_book_child = ruleBook.rule_book_order )
+        UNWIND $queryParams.drop_rule_book_order as ruleBookDrop
+        OPTIONAL MATCH (rbpDrop:Rule_Book { rule_book_id: ruleBookDrop.rule_book_parent_id})-[r1:HAS_RULE_BOOK_CHILD]->(rbDrop:Rule_Book { rule_book_id: ruleBookDrop.rule_book_id })
+        FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order_rule_book_child = ruleBookDrop.rule_book_order )
         RETURN rbpDrop as rb
         `;
     }
@@ -301,36 +320,43 @@ const dropChangeOrderQuery = (queryParams) => {
     queryParams.drop_rule_book_struct_order &&
     queryParams.drop_rule_book_struct_order.length > 0
   ) {
+    // Tested
     query = `
         ${query}
-        UNWIND $queryParams.drop_rule_book_struct_order as ruleBookStruct
-        OPTIONAL MATCH (rbspDrop:Rule_Book_Struct { rule_book_struct_id: ruleBookStruct.rule_book_struct_parent_id})-[r2:HAS_RULE_BOOK_STRUCT_CHILD]->(rbsDrop:Rule_Book_Struct { rule_book_struct_id: ruleBookStruct.rule_book_struct_id})
-        // FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | SET r2.order_rule_book_struct = ruleBookStruct.rule_book_struct_order )
+        UNWIND $queryParams.drop_rule_book_struct_order as ruleBookStructDrop
+        OPTIONAL MATCH (rbspDrop:Rule_Book_Struct { rule_book_struct_id: ruleBookStructDrop.rule_book_struct_parent_id})-[r2:HAS_RULE_BOOK_STRUCT_CHILD]->(rbsDrop:Rule_Book_Struct { rule_book_struct_id: ruleBookStructDrop.rule_book_struct_id})
+        FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | SET r2.order_rule_book_struct = ruleBookStructDrop.rule_book_struct_order )
         RETURN rbspDrop as rb
       `;
   }
   return query;
 };
+
 const dragChangeOrderQuery = (queryParams) => {
   let query = ``;
   if (
     queryParams.drag_rule_book_order &&
     queryParams.drag_rule_book_order.length > 0
   ) {
-    if (queryParams.drag_rule_book_struct_id) {
+    if (
+      queryParams.drag_parent_type ===
+      constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT
+    ) {
       query = `
         ${query}
-        UNWIND $queryParams.drag_rule_book_order as ruleBook
-        OPTIONAL MATCH (rbDrag:Rule_Book { rule_book_id: ruleBook.rule_book_id})-[r3:RULE_BOOK_BELONGS_TO_STRUCT]->(rbsDrag:Rule_Book_Struct { rule_book_struct_id: ruleBook.rule_book_struct_parent_id })
-        // FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | SET r3.order_rule_book_in_struct = ruleBook.rule_book_order )
+        UNWIND $queryParams.drag_rule_book_order as ruleBookDrag
+        OPTIONAL MATCH (rbDrag:Rule_Book { rule_book_id: ruleBookDrag.rule_book_id})-[r3:RULE_BOOK_BELONGS_TO_STRUCT]->(rbsDrag:Rule_Book_Struct { rule_book_struct_id: ruleBookDrag.rule_book_struct_parent_id })
+        FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | SET r3.order_rule_book_in_struct = ruleBookDrag.rule_book_order )
         WITH rbDrag
       `;
-    } else if (queryParams.drag_rule_book_id) {
+    } else if (
+      queryParams.drag_parent_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK
+    ) {
       query = `
         ${query}
-        UNWIND $queryParams.drag_rule_book_order as ruleBook
-        OPTIONAL MATCH (rbpDrag:Rule_Book { rule_book_id: ruleBook.rule_book_parent_id})-[r3:HAS_RULE_BOOK_CHILD]->(rbDrag:Rule_Book { rule_book_id: ruleBook.rule_book_id })
-        // FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | SET r3.order_rule_book_child = ruleBook.rule_book_order )
+        UNWIND $queryParams.drag_rule_book_order as ruleBookDrag
+        OPTIONAL MATCH (rbpDrag:Rule_Book { rule_book_id: ruleBookDrag.rule_book_parent_id})-[r3:HAS_RULE_BOOK_CHILD]->(rbDrag:Rule_Book { rule_book_id: ruleBookDrag.rule_book_id })
+        FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | SET r3.order_rule_book_child = ruleBookDrag.rule_book_order )
         WITH rbpDrag
         `;
     }
@@ -340,9 +366,9 @@ const dragChangeOrderQuery = (queryParams) => {
   ) {
     query = `
         ${query}
-        UNWIND $queryParams.drag_rule_book_struct_order as ruleBookStruct
-        OPTIONAL MATCH (rbspDrag:Rule_Book_Struct { rule_book_struct_id: ruleBookStruct.rule_book_struct_parent_id})-[r4:HAS_RULE_BOOK_STRUCT_CHILD]->(rbsDrag:Rule_Book_Struct { rule_book_struct_id: ruleBookStruct.rule_book_struct_id})
-        // FOREACH (_ IN CASE WHEN r4 IS NOT NULL THEN [1] END | SET r4.order_rule_book_struct = ruleBookStruct.rule_book_struct_order )
+        UNWIND $queryParams.drag_rule_book_struct_order as ruleBookStructDrag
+        OPTIONAL MATCH (rbspDrag:Rule_Book_Struct { rule_book_struct_id: ruleBookStructDrag.rule_book_struct_parent_id})-[r4:HAS_RULE_BOOK_STRUCT_CHILD]->(rbsDrag:Rule_Book_Struct { rule_book_struct_id: ruleBookStructDrag.rule_book_struct_id})
+        FOREACH (_ IN CASE WHEN r4 IS NOT NULL THEN [1] END | SET r4.order_rule_book_struct = ruleBookStructDrag.rule_book_struct_order )
         WITH rbspDrag
       `;
   }
@@ -363,7 +389,7 @@ exports.changeOrderQuery = (queryParams) => {
     query = `
         OPTIONAL MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: ${queryParams.drag_rule_book_issue_no} })
         FOREACH (_ IN CASE WHEN rbi IS NOT NULL THEN [1] END | MERGE(rbp_drop:Rule_Book { rule_book_id: "${queryParams.drop_rule_book_parent_id}" })-[r1_drop:HAS_RULE_BOOK_ISSUE]->(rbi))
-        // REMOVE r1_drag
+        FOREACH (_ IN CASE WHEN r1_drag IS NOT NULL THEN [1] END | DELETE r1_drag )
         RETURN rbp_drag as rb
       `;
   } else {
@@ -373,8 +399,8 @@ exports.changeOrderQuery = (queryParams) => {
     ) {
       query = `
         ${query}
-        MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_CHILD]->(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })
-        // REMOVE r1_drag
+        OPTIONAL MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_CHILD]->(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })
+        FOREACH (_ IN CASE WHEN r1_drag IS NOT NULL THEN [1] END | DELETE r1_drag )
         `;
     } else if (
       queryParams.drag_parent_type ===
@@ -382,8 +408,8 @@ exports.changeOrderQuery = (queryParams) => {
     ) {
       query = `
         ${query}
-        MATCH(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })-[:RULE_BOOK_BELONGS_TO_STRUCT]->(rbs_drag:Rule_Book_Struct { rule_book_struct_id: "${queryParams.drag_rule_book_struct_parent_id} })
-        // REMOVE r1_drag
+        MATCH(rb_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })-[r1_drag:RULE_BOOK_BELONGS_TO_STRUCT]->(rbs_drag:Rule_Book_Struct { rule_book_struct_id: "${queryParams.drag_rule_book_struct_parent_id}" })
+        FOREACH (_ IN CASE WHEN r1_drag IS NOT NULL THEN [1] END | DELETE r1_drag )
         `;
     }
     // Create relation between drag node and drop parent node
@@ -392,7 +418,7 @@ exports.changeOrderQuery = (queryParams) => {
     ) {
       query = `
         ${query}
-        // MERGE(rbp_drop:Rule_Book { rule_book_id: "${queryParams.drop_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_CHILD]->(rb_drop:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })
+        MERGE(rbp_drop:Rule_Book { rule_book_id: "${queryParams.drop_rule_book_parent_id}" })-[:HAS_RULE_BOOK_CHILD]->(rb_drop:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })
         `;
     } else if (
       queryParams.drop_parent_type ===
@@ -400,7 +426,7 @@ exports.changeOrderQuery = (queryParams) => {
     ) {
       query = `
         ${query}
-        // MERGE(rb_drop:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })-[:RULE_BOOK_BELONGS_TO_STRUCT]->(rbs_drop:Rule_Book_Struct { rule_book_struct_id: "${queryParams.drop_rule_book_struct_parent_id} })
+        MERGE(rb_drop:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_id}" })-[:RULE_BOOK_BELONGS_TO_STRUCT]->(rbs_drop:Rule_Book_Struct { rule_book_struct_id: "${queryParams.drop_rule_book_struct_parent_id}" })
         `;
     }
     query = `

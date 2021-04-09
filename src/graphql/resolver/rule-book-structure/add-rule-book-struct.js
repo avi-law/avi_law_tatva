@@ -4,7 +4,7 @@ const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
-  getRuleBookStructById,
+  getRuleBookStructParentById,
   addRuleBookStructQuery,
   logRulebookStruct,
 } = require("../../../neo4j/rule-book-query");
@@ -20,7 +20,7 @@ module.exports = async (object, params, ctx) => {
   const { data } = params;
   let isValidDE = false;
   let isValidEN = false;
-  let isExists = false;
+  const isExists = false;
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
@@ -29,19 +29,19 @@ module.exports = async (object, params, ctx) => {
       });
     }
     if (data && data.rbs.rule_book_struct_id) {
-      const checkExistRuleBookStruct = await session.run(
-        getRuleBookStructById,
+      const checkParnetExistRuleBookStruct = await session.run(
+        getRuleBookStructParentById,
         {
           rule_book_struct_id: data.rbs.rule_book_struct_id,
         }
       );
       if (
-        checkExistRuleBookStruct &&
-        checkExistRuleBookStruct.records.length > 0
+        checkParnetExistRuleBookStruct &&
+        checkParnetExistRuleBookStruct.records.length > 0
       ) {
         throw new APIError({
           lang: userSurfLang,
-          message: "RULE_BOOK_STRUCT_ALREADY_EXISTS",
+          message: "RULE_BOOK_STRUCT_ALREADY_ASSIGNED",
         });
       }
     }
