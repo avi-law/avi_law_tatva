@@ -1154,19 +1154,19 @@ type RuleBookStateCustomTree {
 
   input ChangeOrderInput {
     drag_type: DragAndDropType!
-    drop_type: DragAndDropType!
     drag_parent_type: DragAndDropType!
     drop_parent_type: DragAndDropType!
     drag_rule_book_issue_no: Int
     drag_rule_book_parent_id: String
-    drag_rule_book_struct_parent_id: String
     drop_rule_book_parent_id: String
+
+    drag_rule_book_struct_parent_id: String
     drop_rule_book_struct_parent_id: String
     drag_rule_book_id: String
     drag_rule_book_struct_id: String
     drop_rule_book_struct_order: [RuleBookStructOrderArray]
-    drag_rule_book_struct_order: [RuleBookStructOrderArray]
     drop_rule_book_order: [RuleBookOrderArray]
+    drag_rule_book_struct_order: [RuleBookStructOrderArray]
     drag_rule_book_order: [RuleBookOrderArray]
   }
 

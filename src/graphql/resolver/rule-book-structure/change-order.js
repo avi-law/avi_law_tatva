@@ -27,9 +27,9 @@ module.exports = async (object, params, ctx) => {
       });
     }
     const dragType = changeOrderData.drag_type;
-    const dropType = changeOrderData.drop_type;
-    const isAllow = dragAndDropPermission[dragType][dropType]
-      ? dragAndDropPermission[dragType][dropType]
+    const dropParentType = changeOrderData.drop_parent_type;
+    const isAllow = dragAndDropPermission[dragType][dropParentType]
+      ? dragAndDropPermission[dragType][dropParentType]
       : false;
     if (!isAllow) {
       throw new APIError({

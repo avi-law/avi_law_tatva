@@ -352,10 +352,7 @@ const dragChangeOrderQuery = (queryParams) => {
 exports.changeOrderQuery = (queryParams) => {
   let query = ``;
   if (queryParams.isInternalChangeOrder) {
-    query = `
-    ${query}
-    ${dropChangeOrderQuery(queryParams)}
-    `;
+    query = `${dropChangeOrderQuery(queryParams)}`;
   } else if (
     queryParams.drag_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK_ISSUE
   ) {
@@ -364,9 +361,8 @@ exports.changeOrderQuery = (queryParams) => {
       "Create relation between drag rule book issue node and drop rule book node"
     );
     query = `
-        ${query}
-        MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: ${queryParams.drag_rule_book_issue_no} })
-        // MERGE(rbp_drop:Rule_Book { rule_book_id: "${queryParams.drop_rule_book_parent_id}" })-[r1_drop:HAS_RULE_BOOK_ISSUE]->(rbi)
+        OPTIONAL MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: ${queryParams.drag_rule_book_issue_no} })
+        FOREACH (_ IN CASE WHEN rbi IS NOT NULL THEN [1] END | MERGE(rbp_drop:Rule_Book { rule_book_id: "${queryParams.drop_rule_book_parent_id}" })-[r1_drop:HAS_RULE_BOOK_ISSUE]->(rbi))
         // REMOVE r1_drag
         RETURN rbp_drag as rb
       `;
