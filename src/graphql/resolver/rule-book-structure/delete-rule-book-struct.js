@@ -60,7 +60,6 @@ module.exports = async (object, params, ctx) => {
     };
     console.log(queryParams);
     console.log(deleteRuleBookStructQuery(queryParams));
-    return false;
     const result = await session.run(deleteRuleBookStructQuery(queryParams), {
       queryParams,
     });

@@ -35,7 +35,8 @@ module.exports = {
       EMAIL_VERIFICATION_FAILED:
         "Your email address is not verified, Please verify your email address or resend verification click <a> here </a>",
       NL_EMAIL_ALREADY_SENT: "This Newsletter Email already sent to user",
-      RULE_BOOK_STRUCT_ALREADY_EXISTS: "The rule book struct already exist",
+      RULE_BOOK_STRUCT_ALREADY_ASSIGNED:
+        "The rule book struct already assigned",
       INVALID_DROP_NODE: "The drop node is invalid",
     },
     DE: {
@@ -73,7 +74,8 @@ module.exports = {
       INVALID_EMAIL_VERIFICATION_LINK:
         "The link to verify your email is invalid - please request a email verification again!.",
       NL_EMAIL_ALREADY_SENT: "This Newsletter Email already sent to user",
-      RULE_BOOK_STRUCT_ALREADY_EXISTS: "The rule book struct already exist",
+      RULE_BOOK_STRUCT_ALREADY_ASSIGNED:
+        "The rule book struct already assigned",
       INVALID_DROP_NODE: "The drop node is invalid",
     },
   },

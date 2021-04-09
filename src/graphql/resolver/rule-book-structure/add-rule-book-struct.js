@@ -62,7 +62,6 @@ module.exports = async (object, params, ctx) => {
     };
     console.log(queryParams);
     console.log(addRuleBookStructQuery(queryParams));
-    return false;
     const result = await session.run(addRuleBookStructQuery(queryParams), {
       queryParams,
     });

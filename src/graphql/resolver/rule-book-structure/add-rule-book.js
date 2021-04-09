@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 const driver = require("../../../config/db");
+const _ = require("lodash");
 const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
@@ -30,14 +31,16 @@ module.exports = async (object, params, ctx) => {
     };
     if (data.rule_book_parent_id) {
       queryParams.rule_book_parent_id = data.rule_book_parent_id;
-      queryParams.rule_book_child_order = data.rule_book_child_order;
     } else if (data.rule_book_struct_parent_id) {
       queryParams.rule_book_struct_parent_id = data.rule_book_struct_parent_id;
-      queryParams.rule_book_struct_order = data.rule_book_struct_order;
     }
+    queryParams.rule_book_child_order = _.get(
+      data,
+      "rule_book_child_order",
+      10
+    );
     console.log(queryParams);
     console.log(addRuleBookQuery(queryParams));
-    return false;
     const result = await session.run(addRuleBookQuery(queryParams), {
       queryParams,
     });

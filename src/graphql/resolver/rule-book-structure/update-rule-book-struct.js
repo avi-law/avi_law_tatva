@@ -20,7 +20,7 @@ module.exports = async (object, params, ctx) => {
   params = JSON.parse(JSON.stringify(params));
   const { data } = params;
   const ruleBookStructId = params.rule_book_struct_id;
-  const ruleBookStructParentId = params.rule_book_struct_parent_id;
+  const ruleBookStructParentId = params.data.rule_book_struct_parent_id;
   let isValidDE = false;
   let isValidEN = false;
   try {
@@ -69,10 +69,20 @@ module.exports = async (object, params, ctx) => {
           checkParnetExistRuleBookStruct &&
           checkParnetExistRuleBookStruct.records.length > 0
         ) {
-          throw new APIError({
-            lang: userSurfLang,
-            message: "RULE_BOOK_STRUCT_ALREADY_ASSIGNED",
-          });
+          if (checkParnetExistRuleBookStruct.records) {
+            const rulebookStructResult = {
+              ...common.getPropertiesFromRecord(
+                checkParnetExistRuleBookStruct.records[0],
+                "rbs1"
+              ),
+            };
+            if (Object.keys(rulebookStructResult).length > 0) {
+              throw new APIError({
+                lang: userSurfLang,
+                message: "RULE_BOOK_STRUCT_ALREADY_ASSIGNED",
+              });
+            }
+          }
         }
       }
     }
@@ -91,7 +101,6 @@ module.exports = async (object, params, ctx) => {
     };
     console.log(queryParams);
     console.log(updateRuleBookStructQuery(queryParams));
-    return false;
     const result = await session.run(updateRuleBookStructQuery(queryParams), {
       queryParams,
     });

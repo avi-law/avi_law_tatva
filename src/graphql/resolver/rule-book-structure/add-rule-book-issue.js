@@ -42,7 +42,6 @@ module.exports = async (object, params, ctx) => {
     }
     console.log(queryParams);
     console.log(addruleBookIssueQuery(queryParams));
-    return false;
     const result = await session.run(addruleBookIssueQuery(queryParams), {
       queryParams,
     });

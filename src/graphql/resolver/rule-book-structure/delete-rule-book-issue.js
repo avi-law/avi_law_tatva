@@ -37,7 +37,6 @@ module.exports = async (object, params, ctx) => {
     };
     console.log(queryParams);
     console.log(deleteRuleBookIssueQuery(queryParams));
-    return false;
     const result = await session.run(deleteRuleBookIssueQuery(queryParams), {
       queryParams,
     });

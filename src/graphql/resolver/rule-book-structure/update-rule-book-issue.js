@@ -47,7 +47,6 @@ module.exports = async (object, params, ctx) => {
     }
     console.log(queryParams);
     console.log(updateRuleBookIssueQuery(queryParams));
-    return false;
     const result = await session.run(updateRuleBookIssueQuery(queryParams), {
       queryParams,
     });

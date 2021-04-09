@@ -52,7 +52,6 @@ module.exports = async (object, params, ctx) => {
     };
     console.log(queryParams);
     console.log(deleteRuleBookQuery(queryParams));
-    return false;
     const result = await session.run(deleteRuleBookQuery(queryParams), {
       queryParams,
     });

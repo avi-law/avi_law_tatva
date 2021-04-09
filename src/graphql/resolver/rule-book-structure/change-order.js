@@ -83,7 +83,6 @@ module.exports = async (object, params, ctx) => {
     };
     console.log(queryParams);
     console.log(changeOrderQuery(queryParams));
-    return false;
     const result = await session.run(changeOrderQuery(queryParams), {
       queryParams,
     });

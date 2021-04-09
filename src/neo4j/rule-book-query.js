@@ -10,15 +10,10 @@ RETURN rbsp`;
 
 exports.getRuleBookStructParentByCondition = (queryParams) => {
   let query = `
-  MATCH (rbs:Rule_Book_Struct {rule_book_struct_id: $rule_book_struct_id})<-[:HAS_RULE_BOOK_STRUCT_CHILD]-(rbsp:Rule_Book_Struct)`;
-  if (queryParams.where) {
-    query = `
-      ${query}
-      ${queryParams.where}`;
-  }
+  OPTIONAL MATCH (rbs1:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_CHILD*1..]->(rbs2:Rule_Book_Struct { rule_book_struct_id: "${queryParams.rule_book_struct_id}" })`;
   query = `
     ${query}
-    RETURN rbsp`;
+    RETURN rbs1`;
   return query;
 };
 
@@ -110,7 +105,7 @@ exports.addRuleBookQuery = (queryParams) => {
 
   if (queryParams.rule_book_struct_parent_id) {
     query = `${query}
-    MERGE (rb)-[:RULE_BOOK_BELONGS_TO_STRUCT{order_rule_book_in_struct: ${queryParams.rule_book_struct_order}}]->(rbsp)
+    MERGE (rb)-[:RULE_BOOK_BELONGS_TO_STRUCT{order_rule_book_in_struct: ${queryParams.rule_book_child_order}}]->(rbsp)
     RETURN rb`;
   } else if (queryParams.rule_book_parent_id) {
     query = `${query}
@@ -136,7 +131,7 @@ exports.deleteRuleBookQuery = (queryParams) => {
     query = `OPTIONAL MATCH (rb:Rule_Book { rule_book_id: "${queryParams.ruleBookId}" })<-[r1:HAS_RULE_BOOK_CHILD]-(rbp:Rule_Book { rule_book_id: "${queryParams.ruleBookParentId}" })`;
   }
   query = `${query}
-  DETACH DELETE r1
+  DELETE r1
   RETURN rb`;
   return query;
 };
