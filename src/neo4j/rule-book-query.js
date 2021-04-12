@@ -222,7 +222,7 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
     DETACH DELETE r2
     WITH rbi
     UNWIND [${slTags}] as slTags
-    MATCH (sl:Sol {sol_id: slTags.sol_id})
+    OPTIONAL MATCH (sl:Sol {sol_id: slTags.sol_id})
     FOREACH (_ IN CASE WHEN sl IS NOT NULL THEN [1] END | MERGE (rbi)-[:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS {sol_ord: slTags.order}]->(sl) )
     RETURN rbi`;
   } else {
@@ -387,6 +387,25 @@ exports.changeOrderQuery = (queryParams) => {
         FOREACH (_ IN CASE WHEN r1_drag IS NOT NULL THEN [1] END | DELETE r1_drag )
         RETURN rbp_drag as rb
       `;
+  } else if (
+    queryParams.drag_type === constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT
+  ) {
+    query = `
+    ${query}
+    OPTIONAL MATCH(rbsp_drag:Rule_Book_Struct { rule_book_struct_id: "${
+      queryParams.drag_rule_book_struct_parent_id
+    }" })-[r1_drag:HAS_RULE_BOOK_STRUCT_CHILD]->(rbs_drag:Rule_Book_Struct { rule_book_struct_id: "${
+      queryParams.drag_rule_book_struct_id
+    }" })
+    FOREACH (_ IN CASE WHEN r1_drag IS NOT NULL THEN [1] END | DELETE r1_drag )
+    MERGE(rbsp_drop:Rule_Book_Struct { rule_book_struct_id: "${
+      queryParams.drop_rule_book_struct_parent_id
+    }" })-[:HAS_RULE_BOOK_STRUCT_CHILD]->(rbs_drop:Rule_Book_Struct { rule_book_struct_id: "${
+      queryParams.drag_rule_book_struct_id
+    }" })
+    ${dragChangeOrderQuery(queryParams)}
+    ${dropChangeOrderQuery(queryParams)}
+    `;
   } else {
     // Remove relation between drag node and drag parent node
     if (
