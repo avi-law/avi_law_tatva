@@ -24,7 +24,7 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    data.nl.nl_id = nlID;
+    // data.nl.nl_id = nlID;
     if (!data.nl.nl_implemented) {
       data.nl.nl_implemented = false;
     }
@@ -32,6 +32,7 @@ module.exports = async (object, params, ctx) => {
       data.nl.nl_active = false;
     }
     const queryParams = {
+      nlID,
       isUpdate: true,
       user_email: userEmail,
       nl: data.nl,

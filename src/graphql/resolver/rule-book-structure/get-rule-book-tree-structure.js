@@ -84,6 +84,7 @@ const generateRuleBookTreeStructure = (ruleBookList, structId) => {
             );
             const child = {
               rule_book_issue_no: issue.rule_book_issue_no,
+              rule_book_parent_id: curr.rule_book_id,
               label: "Rule_Book_Issue",
               [issue.language]: {
                 ...issue,
@@ -108,6 +109,7 @@ const generateRuleBookTreeStructure = (ruleBookList, structId) => {
           } else {
             const child = {
               rule_book_issue_no: issue.rule_book_issue_no,
+              rule_book_parent_id: curr.rule_book_id,
               label: "Rule_Book_Issue",
               [issue.language]: {
                 ...issue,

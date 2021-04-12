@@ -997,6 +997,7 @@ type RuleBookStateCustomTree {
 
  type CustomRuleBookIssueChildTree {
     rule_book_issue_no: Int
+    rule_book_parent_id: String
     label: String
     en: RuleBookStateCustomTree
     de: RuleBookStateCustomTree
