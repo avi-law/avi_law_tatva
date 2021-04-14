@@ -733,8 +733,8 @@ exports.newsletterQuery = (queryParams) => {
   } else {
     query = `
     ${query}
-    MATCH (nl:Nl {nl_id: ${queryParams.nlID} })
-    SET nl.nl_id= ${queryParams.nl.nl_id}, nl.nl_ord = "${queryParams.nl.nl_ord}", nl.nl_date = Date({ year: ${queryParams.nl.nl_date.year}, month: ${queryParams.nl.nl_date.month} , day: ${queryParams.nl.nl_date.day}}) , nl.nl_active = ${queryParams.nl.nl_active}, nl.nl_implemented = ${queryParams.nl.nl_implemented}`;
+    MATCH (nl:Nl {nl_id: ${queryParams.nl.nl_id} })
+    SET nl.nl_ord = "${queryParams.nl.nl_ord}", nl.nl_date = Date({ year: ${queryParams.nl.nl_date.year}, month: ${queryParams.nl.nl_date.month} , day: ${queryParams.nl.nl_date.day}}) , nl.nl_active = ${queryParams.nl.nl_active}, nl.nl_implemented = ${queryParams.nl.nl_implemented}`;
   }
 
   // Set the properties for the German version of the (Nl_State) - please do it only in case when the data-fields for the German version are filled
