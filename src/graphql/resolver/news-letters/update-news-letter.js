@@ -24,7 +24,7 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    // data.nl.nl_id = nlID;
+    data.nl.nl_id = nlID;
     if (!data.nl.nl_implemented) {
       data.nl.nl_implemented = false;
     }
