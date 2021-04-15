@@ -975,6 +975,25 @@ const typeDefs = gql`
     type: String
   }
 
+  type  Breadcrumbs {
+    ID: String!
+    type: DragAndDropType
+    title: String
+    children: [BreadcrumbsList]
+  }
+  type BreadcrumbsList {
+    en: Breadcrumbs
+    de: Breadcrumbs
+  }
+
+  type GetRuleBookCustom {
+   rbi: Rule_Book_Issue
+   rbis:GetRuleBookIssueStateCustom
+   sol_list: [GetCustomSol]
+   breadcrumbs: [BreadcrumbsList]
+   isSingle: Boolean
+  }
+
   type CustomRuleBookStructure {
     rule_book_struct_id: String
     rule_book_struct_active: Boolean
@@ -1311,6 +1330,7 @@ type RuleBookStateCustomTree {
     getRuleBookStructure: CustomRuleBookStructure @isUnAuthenticated
     getRuleBookTreeStructure: CustomRuleBookTreeStructure @isAdmin
     getRuleBookIssue(rule_book_issue_no: Int!, rule_book_parent_id: String!): GetRuleBookIssueCustom @isAuthenticated
+    getRuleBook(rule_book_id: String!): GetRuleBookCustom @isAuthenticated
     getCustomers(
       first: Int
       offset: Int

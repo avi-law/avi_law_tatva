@@ -451,3 +451,44 @@ exports.changeOrderQuery = (queryParams) => {
   }
   return query;
 };
+
+exports.getRuleBookBreadcrumbs = `
+MATCH (rbs:Rule_Book_Struct),(rb:Rule_Book),
+p = shortestPath((rbs)-[*..15]-(rb))
+WHERE rbs.rule_book_struct_id = $rule_book_struct_id AND rb.rule_book_id = $rule_book_id
+RETURN p`;
+
+exports.getRuleBookStructChildNode = `
+MATCH(rbs1:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_CHILD]->(rbs2:Rule_Book_Struct)
+WHERE rbs1.rule_book_struct_id = $rule_book_struct_id
+with rbs2
+CALL {
+with rbs2
+	MATCH (rbs2)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang:Language)
+    RETURN collect({ rbss: rbss, lang: lang }) AS rbsState
+}
+RETURN rbs2, rbsState`;
+
+exports.getRuleBook = `
+MATCH (rb:Rule_Book {rule_book_id: $rule_book_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)
+CALL {
+  WITH rbi
+  MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
+  RETURN collect({ rbis: rbis, lang: lang }) AS rbis
+}
+CALL {
+  WITH rbi
+  MATCH (rbi)-[r1:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS]->(sl:Sol)
+  CALL {
+    WITH sl,r1
+    MATCH (sl)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
+    RETURN collect({sls:sls, lang: lang}) AS slState
+  }
+  WITH sl, slState, r1 order by r1.sol_ord
+  RETURN collect({sol:sl, order: r1.sol_ord, sls: slState}) AS sl
+
+}
+RETURN MAX(rbi.rule_book_issue_no) as issue_no,  rbi, rbis, sl
+ORDER BY issue_no DESC
+LIMIT 1
+`;
