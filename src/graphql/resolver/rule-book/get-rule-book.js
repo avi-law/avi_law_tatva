@@ -20,6 +20,7 @@ module.exports = async (object, params, ctx) => {
     : constants.RULE_BOOK_STRUCT_ROOT_ID;
   const ruleBookId = params.rule_book_id;
   const breadcrumbs = [];
+  const rootNodeChild = [];
   let response = {
     isSingle: true,
   };
@@ -31,16 +32,50 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    // const getRootStructureChild = await session.run(
-    //   getRuleBookStructChildNode,
-    //   {
-    //     rule_book_struct_id: ruleBookStructId,
-    //   }
-    // );
-    // const breadcrumbsResult = await session.run(getRuleBookBreadcrumbs, {
-    //   rule_book_struct_id: ruleBookStructId,
-    //   rule_book_id: ruleBookId,
-    // });
+    const getRootStructureChildResult = await session.run(
+      getRuleBookStructChildNode,
+      {
+        rule_book_struct_id: ruleBookStructId,
+      }
+    );
+    if (
+      getRootStructureChildResult &&
+      getRootStructureChildResult.records.length > 0
+    ) {
+      getRootStructureChildResult.records.forEach((record) => {
+        const rbss = record.get("rbsState");
+        const nodeChildObject = {
+          title_en: null,
+          title_de: null,
+        };
+        nodeChildObject.ID = common.getPropertiesFromRecord(
+          record,
+          "rbs2"
+        ).rule_book_struct_id;
+        if (rbss && rbss.length > 0) {
+          rbss.forEach((rbsState) => {
+            if (
+              rbsState.lang &&
+              rbsState.rbss &&
+              rbsState.lang.properties.iso_639_1
+            ) {
+              nodeChildObject[`title_${rbsState.lang.properties.iso_639_1}`] =
+                rbsState.rbss.properties.rule_book_struct_desc;
+            }
+          });
+        }
+        rootNodeChild.push(nodeChildObject);
+      });
+    }
+    const breadcrumbsResult = await session.run(getRuleBookBreadcrumbs, {
+      rule_book_struct_id: ruleBookStructId,
+      rule_book_id: ruleBookId,
+    });
+    // if (breadcrumbsResult && breadcrumbsResult.records.length > 0) {
+    //   const breadCrumbs = breadcrumbsResult.records.map((record) => {
+    //     console.log(record.get('p'));
+    //   });
+    // }
     // console.log(breadcrumbsResult);
     const getRuleBookResult = await session.run(getRuleBook, {
       rule_book_id: ruleBookId,
@@ -116,6 +151,7 @@ module.exports = async (object, params, ctx) => {
     }
     return response;
   } catch (error) {
+    console.log(error);
     session.close();
     throw error;
   }

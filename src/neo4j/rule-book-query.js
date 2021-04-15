@@ -459,14 +459,15 @@ WHERE rbs.rule_book_struct_id = $rule_book_struct_id AND rb.rule_book_id = $rule
 RETURN p`;
 
 exports.getRuleBookStructChildNode = `
-MATCH(rbs1:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_CHILD]->(rbs2:Rule_Book_Struct)
+MATCH(rbs1:Rule_Book_Struct)-[r1:HAS_RULE_BOOK_STRUCT_CHILD]->(rbs2:Rule_Book_Struct)
 WHERE rbs1.rule_book_struct_id = $rule_book_struct_id
-with rbs2
+WITH rbs2, r1
 CALL {
 with rbs2
 	MATCH (rbs2)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang:Language)
     RETURN collect({ rbss: rbss, lang: lang }) AS rbsState
 }
+WITH rbs2, rbsState order by r1.order
 RETURN rbs2, rbsState`;
 
 exports.getRuleBook = `

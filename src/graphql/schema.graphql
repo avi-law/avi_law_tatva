@@ -978,19 +978,16 @@ const typeDefs = gql`
   type  Breadcrumbs {
     ID: String!
     type: DragAndDropType
-    title: String
-    children: [BreadcrumbsList]
-  }
-  type BreadcrumbsList {
-    en: Breadcrumbs
-    de: Breadcrumbs
+    title_en: String
+    title_de: String
+    children: [Breadcrumbs]
   }
 
   type GetRuleBookCustom {
    rbi: Rule_Book_Issue
    rbis:GetRuleBookIssueStateCustom
    sol_list: [GetCustomSol]
-   breadcrumbs: [BreadcrumbsList]
+   breadcrumbs: [Breadcrumbs]
    isSingle: Boolean
   }
 
