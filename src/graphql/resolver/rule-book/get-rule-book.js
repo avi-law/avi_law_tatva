@@ -1,7 +1,10 @@
+/* eslint-disable prefer-destructuring */
+/* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const _ = require("lodash");
 const driver = require("../../../config/db");
 const { common, APIError, constants } = require("../../../utils");
+const { getUser } = require("../../../neo4j/query");
 const {
   getRuleBookIssue,
   getRuleBookBreadcrumbs,
@@ -9,6 +12,7 @@ const {
   getRuleBook,
 } = require("../../../neo4j/rule-book-query");
 const { defaultLanguage } = require("../../../config/application");
+const getRulebookStructure = require("../rule-book-structure/get-rule-book-structure");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
@@ -21,6 +25,8 @@ module.exports = async (object, params, ctx) => {
   const ruleBookId = params.rule_book_id;
   const breadcrumbs = [];
   const rootNodeChild = [];
+  const secondeNodeChild = [];
+  let settings = null;
   let response = {
     isSingle: true,
   };
@@ -66,17 +72,55 @@ module.exports = async (object, params, ctx) => {
         }
         rootNodeChild.push(nodeChildObject);
       });
+      breadcrumbs.push(rootNodeChild);
     }
+
     const breadcrumbsResult = await session.run(getRuleBookBreadcrumbs, {
       rule_book_struct_id: ruleBookStructId,
       rule_book_id: ruleBookId,
     });
-    // if (breadcrumbsResult && breadcrumbsResult.records.length > 0) {
-    //   const breadCrumbs = breadcrumbsResult.records.map((record) => {
-    //     console.log(record.get('p'));
-    //   });
-    // }
-    // console.log(breadcrumbsResult);
+    if (breadcrumbsResult && breadcrumbsResult.records.length > 0) {
+      breadcrumbsResult.records.forEach((record) => {
+        const data = record.get("p");
+        if (data && data.length > 2) {
+          const label = _.get(data, "segments[1].start.labels[0]", null);
+          if (label) {
+            if (label === constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT) {
+              params.rule_book_struct_id = _.get(
+                data,
+                "segments[1].start.properties.rule_book_struct_id",
+                null
+              );
+            }
+          }
+        }
+      });
+    }
+    if (params.rule_book_struct_id) {
+      const treeStructure = await getRulebookStructure(object, params, ctx);
+      if (
+        treeStructure &&
+        treeStructure.has_rule_book_struct_child &&
+        treeStructure.has_rule_book_struct_child.length > 0
+      ) {
+        treeStructure.has_rule_book_struct_child.forEach((child) => {
+          const nodeChildObject = {};
+          nodeChildObject.ID = _.get(child, "rule_book_struct_id", null);
+          nodeChildObject.title_en = _.get(
+            child,
+            "has_rule_book_struct_state.en.rule_book_struct_desc",
+            null
+          );
+          nodeChildObject.title_de = _.get(
+            child,
+            "has_rule_book_struct_state.de.rule_book_struct_desc",
+            null
+          );
+          secondeNodeChild.push(nodeChildObject);
+        });
+        breadcrumbs.push(secondeNodeChild);
+      }
+    }
     const getRuleBookResult = await session.run(getRuleBook, {
       rule_book_id: ruleBookId,
     });
@@ -149,6 +193,24 @@ module.exports = async (object, params, ctx) => {
         ...ruleBooks[0],
       };
     }
+    if (userEmail) {
+      const settingResult = await session.run(getUser, {
+        user_email: userEmail,
+      });
+      if (settingResult && settingResult.records.length > 0) {
+        const userData = settingResult.records.map((record) => {
+          const userResult = {
+            left: common.getPropertiesFromRecord(record, "lang2").iso_639_1,
+            right: common.getPropertiesFromRecord(record, "lang3").iso_639_1,
+          };
+          return userResult;
+        });
+        settings = userData[0];
+      }
+    }
+    response.language_preference_settings = settings;
+    response.breadcrumbs = breadcrumbs;
+    console.log(response);
     return response;
   } catch (error) {
     console.log(error);
