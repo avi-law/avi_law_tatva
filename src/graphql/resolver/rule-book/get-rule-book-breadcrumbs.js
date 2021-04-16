@@ -116,8 +116,8 @@ const getBreadcrumbs = (child, segments, breadcrumbs) => {
         } else if (labelEnd === constants.DRAG_AND_DROP_TYPE.RULE_BOOK) {
           id = _.get(data, "end.properties.rule_book_id", null);
         }
-        if (breadcrumbs[index].length > 0) {
-          const findObject = _.find(breadcrumbs[index], { ID: id });
+        if (_.get(breadcrumbs, `${index}.node`).length > 0) {
+          const findObject = _.find(breadcrumbs[index].node, { ID: id });
           findObject.isView = true;
         }
       }
