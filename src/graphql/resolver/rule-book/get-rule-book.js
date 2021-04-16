@@ -14,6 +14,120 @@ const {
 const { defaultLanguage } = require("../../../config/application");
 const getRulebookStructure = require("../rule-book-structure/get-rule-book-structure");
 
+const getBreadcrumbs = (child, segments, breadcrumbs) => {
+  const original = _.cloneDeep(segments);
+  const remainingSegment = _.cloneDeep(segments.splice(2, segments.length - 1));
+  if (remainingSegment) {
+    remainingSegment.forEach((data) => {
+      const array = [];
+      const labelStart = _.get(data, "start.labels[0]", null);
+      const labelEnd = _.get(data, "end.labels[0]", null);
+      if (labelStart) {
+        if (labelStart === constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT) {
+          const structId = _.get(
+            data,
+            "start.properties.rule_book_struct_id",
+            null
+          );
+          const structchild = _.find(child, { rule_book_struct_id: structId })
+            .has_rule_book_struct_child;
+          if (structchild && structchild.length > 0) {
+            structchild.forEach((rbs) => {
+              const nodeChildObject = {};
+              nodeChildObject.type =
+                constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT;
+              nodeChildObject.ID = _.get(rbs, "rule_book_struct_id", null);
+              nodeChildObject.title_en = _.get(
+                rbs,
+                "has_rule_book_struct_state.en.rule_book_struct_desc",
+                null
+              );
+              nodeChildObject.title_de = _.get(
+                rbs,
+                "has_rule_book_struct_state.de.rule_book_struct_desc",
+                null
+              );
+              array.push(nodeChildObject);
+            });
+          }
+          const bookChild = _.find(child, { rule_book_struct_id: structId })
+            .has_rule_book_child;
+          if (bookChild && bookChild.length > 0) {
+            bookChild.forEach((structChild) => {
+              const nodeChildObject = {};
+              nodeChildObject.type = constants.DRAG_AND_DROP_TYPE.RULE_BOOK;
+              nodeChildObject.ID = _.get(structChild, "rule_book_id", null);
+              nodeChildObject.title_en = _.get(
+                structChild,
+                "has_rule_book_issue_state.en.title_short",
+                null
+              );
+              nodeChildObject.title_de = _.get(
+                structChild,
+                "has_rule_book_issue_state.de.title_short",
+                null
+              );
+              array.push(nodeChildObject);
+            });
+          }
+          if (labelEnd === constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT) {
+            child = structchild;
+          }
+          if (labelEnd === constants.DRAG_AND_DROP_TYPE.RULE_BOOK) {
+            child = bookChild;
+          }
+        } else if (labelStart === constants.DRAG_AND_DROP_TYPE.RULE_BOOK) {
+          const bookId = _.get(data, "start.properties.rule_book_id", null);
+          const findChild = _.find(child, { rule_book_id: bookId });
+          if (findChild && findChild.has_rule_book_child) {
+            child = findChild.has_rule_book_child;
+            if (child && child.length > 0) {
+              child.forEach((bookChild) => {
+                const nodeChildObject = {};
+                nodeChildObject.type = constants.DRAG_AND_DROP_TYPE.RULE_BOOK;
+                nodeChildObject.ID = _.get(bookChild, "rule_book_id", null);
+                nodeChildObject.title_en = _.get(
+                  bookChild,
+                  "has_rule_book_issue_state.en.title_short",
+                  null
+                );
+                nodeChildObject.title_de = _.get(
+                  bookChild,
+                  "has_rule_book_issue_state.de.title_short",
+                  null
+                );
+                array.push(nodeChildObject);
+              });
+            }
+          }
+        }
+      }
+      if (array.length) {
+        breadcrumbs.push({ node: array });
+      }
+    });
+  }
+
+  if (original.length > 0) {
+    original.forEach((data, index) => {
+      let id = null;
+      const labelEnd = _.get(data, "end.labels[0]", null);
+      if (labelEnd) {
+        if (labelEnd === constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT) {
+          id = _.get(data, "end.properties.rule_book_struct_id", null);
+        } else if (labelEnd === constants.DRAG_AND_DROP_TYPE.RULE_BOOK) {
+          id = _.get(data, "end.properties.rule_book_id", null);
+        }
+        if (breadcrumbs[index].length > 0) {
+          const findObject = _.find(breadcrumbs[index], { ID: id });
+          findObject.isView = true;
+        }
+      }
+    });
+  }
+  return breadcrumbs;
+};
+
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
@@ -23,9 +137,10 @@ module.exports = async (object, params, ctx) => {
     ? params.rule_book_struct_id
     : constants.RULE_BOOK_STRUCT_ROOT_ID;
   const ruleBookId = params.rule_book_id;
-  const breadcrumbs = [];
+  let breadcrumbs = [];
   const rootNodeChild = [];
   const secondeNodeChild = [];
+  let segment = [];
   let settings = null;
   let response = {
     isSingle: true,
@@ -54,6 +169,7 @@ module.exports = async (object, params, ctx) => {
           title_en: null,
           title_de: null,
         };
+        nodeChildObject.type = constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT;
         nodeChildObject.ID = common.getPropertiesFromRecord(
           record,
           "rbs2"
@@ -72,7 +188,7 @@ module.exports = async (object, params, ctx) => {
         }
         rootNodeChild.push(nodeChildObject);
       });
-      breadcrumbs.push(rootNodeChild);
+      breadcrumbs.push({ node: rootNodeChild });
     }
 
     const breadcrumbsResult = await session.run(getRuleBookBreadcrumbs, {
@@ -95,6 +211,7 @@ module.exports = async (object, params, ctx) => {
           }
         }
       });
+      segment = breadcrumbsResult.records[0].get("p").segments;
     }
     if (params.rule_book_struct_id) {
       const treeStructure = await getRulebookStructure(object, params, ctx);
@@ -105,6 +222,7 @@ module.exports = async (object, params, ctx) => {
       ) {
         treeStructure.has_rule_book_struct_child.forEach((child) => {
           const nodeChildObject = {};
+          nodeChildObject.type = constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT;
           nodeChildObject.ID = _.get(child, "rule_book_struct_id", null);
           nodeChildObject.title_en = _.get(
             child,
@@ -118,7 +236,13 @@ module.exports = async (object, params, ctx) => {
           );
           secondeNodeChild.push(nodeChildObject);
         });
-        breadcrumbs.push(secondeNodeChild);
+        breadcrumbs.push({ node: secondeNodeChild });
+        // console.log(JSON.stringify(treeStructure));
+        breadcrumbs = await getBreadcrumbs(
+          treeStructure.has_rule_book_struct_child,
+          segment,
+          breadcrumbs
+        );
       }
     }
     const getRuleBookResult = await session.run(getRuleBook, {
@@ -210,7 +334,7 @@ module.exports = async (object, params, ctx) => {
     }
     response.language_preference_settings = settings;
     response.breadcrumbs = breadcrumbs;
-    console.log(response);
+    // console.log(response);
     return response;
   } catch (error) {
     console.log(error);

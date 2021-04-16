@@ -981,14 +981,17 @@ const typeDefs = gql`
     title_en: String
     title_de: String
     isView: Boolean
-    children: [Breadcrumbs]
+  }
+
+  type nodeType {
+    node: [Breadcrumbs]
   }
 
   type GetRuleBookCustom {
    rbi: Rule_Book_Issue
    rbis:GetRuleBookIssueStateCustom
    sol_list: [GetCustomSol]
-   breadcrumbs: [Breadcrumbs]
+   breadcrumbs: [nodeType]
    isSingle: Boolean
    language_preference_settings: languagePreferencesettings
   }

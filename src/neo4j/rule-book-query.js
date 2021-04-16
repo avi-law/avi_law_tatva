@@ -454,9 +454,10 @@ exports.changeOrderQuery = (queryParams) => {
 
 exports.getRuleBookBreadcrumbs = `
 MATCH (rbs:Rule_Book_Struct),(rb:Rule_Book),
-p = shortestPath((rbs)-[*..15]-(rb))
+p = shortestPath((rbs)-[:HAS_RULE_BOOK_STRUCT_CHILD|RULE_BOOK_BELONGS_TO_STRUCT|HAS_RULE_BOOK_CHILD*..15]-(rb))
 WHERE rbs.rule_book_struct_id = $rule_book_struct_id AND rb.rule_book_id = $rule_book_id
-RETURN p`;
+RETURN p
+`;
 
 exports.getRuleBookStructChildNode = `
 MATCH(rbs1:Rule_Book_Struct)-[r1:HAS_RULE_BOOK_STRUCT_CHILD]->(rbs2:Rule_Book_Struct)
