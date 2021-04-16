@@ -274,7 +274,7 @@ module.exports = async (object, params, ctx) => {
     if (getRuleBookResult && getRuleBookResult.records.length > 0) {
       const ruleBooks = getRuleBookResult.records.map((record) => {
         const solList = [];
-        const rbis = {};
+        const rbis = null;
         if (record.get("rbis") && record.get("rbis").length > 0) {
           if (record.get("rbis").length > 1) {
             response.isSingle = false;
