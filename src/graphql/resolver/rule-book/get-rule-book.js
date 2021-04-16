@@ -274,7 +274,7 @@ module.exports = async (object, params, ctx) => {
     if (getRuleBookResult && getRuleBookResult.records.length > 0) {
       const ruleBooks = getRuleBookResult.records.map((record) => {
         const solList = [];
-        const rbis = null;
+        const rbis = {};
         if (record.get("rbis") && record.get("rbis").length > 0) {
           if (record.get("rbis").length > 1) {
             response.isSingle = false;
@@ -330,7 +330,7 @@ module.exports = async (object, params, ctx) => {
         }
         const rbiResult = {
           rbi: common.getPropertiesFromRecord(record, "rbi"),
-          rbis,
+          rbis: Object.keys(rbis).length > 0 ? rbis : null,
           sol_list: solList,
         };
         return rbiResult;
