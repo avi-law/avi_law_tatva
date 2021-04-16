@@ -981,6 +981,7 @@ const typeDefs = gql`
     title_en: String
     title_de: String
     isView: Boolean
+    isActive: Boolean
   }
 
   type nodeType {

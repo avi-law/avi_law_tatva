@@ -37,6 +37,11 @@ const getBreadcrumbs = (child, segments, breadcrumbs) => {
               nodeChildObject.type =
                 constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT;
               nodeChildObject.ID = _.get(rbs, "rule_book_struct_id", null);
+              nodeChildObject.isActive = _.get(
+                rbs,
+                "rule_book_struct_active",
+                false
+              );
               nodeChildObject.title_en = _.get(
                 rbs,
                 "has_rule_book_struct_state.en.rule_book_struct_desc",
@@ -57,6 +62,11 @@ const getBreadcrumbs = (child, segments, breadcrumbs) => {
               const nodeChildObject = {};
               nodeChildObject.type = constants.DRAG_AND_DROP_TYPE.RULE_BOOK;
               nodeChildObject.ID = _.get(structChild, "rule_book_id", null);
+              nodeChildObject.isActive = _.get(
+                structChild,
+                "rule_book_active",
+                false
+              );
               nodeChildObject.title_en = _.get(
                 structChild,
                 "has_rule_book_issue_state.en.title_short",
@@ -86,6 +96,11 @@ const getBreadcrumbs = (child, segments, breadcrumbs) => {
                 const nodeChildObject = {};
                 nodeChildObject.type = constants.DRAG_AND_DROP_TYPE.RULE_BOOK;
                 nodeChildObject.ID = _.get(bookChild, "rule_book_id", null);
+                nodeChildObject.isActive = _.get(
+                  bookChild,
+                  "rule_book_active",
+                  false
+                );
                 nodeChildObject.title_en = _.get(
                   bookChild,
                   "has_rule_book_issue_state.en.title_short",
@@ -117,7 +132,7 @@ const getBreadcrumbs = (child, segments, breadcrumbs) => {
         } else if (labelEnd === constants.DRAG_AND_DROP_TYPE.RULE_BOOK) {
           id = _.get(data, "end.properties.rule_book_id", null);
         }
-        if (_.get(breadcrumbs, `${index}.node`).length > 0) {
+        if (_.get(breadcrumbs, `${index}.node`, []).length > 0) {
           const findObject = _.find(breadcrumbs[index].node, { ID: id });
           findObject.isView = true;
         }
@@ -173,6 +188,10 @@ module.exports = async (object, params, ctx) => {
           record,
           "rbs2"
         ).rule_book_struct_id;
+        nodeChildObject.isActive = common.getPropertiesFromRecord(
+          record,
+          "rbs2"
+        ).rule_book_struct_active;
         if (rbss && rbss.length > 0) {
           rbss.forEach((rbsState) => {
             if (
@@ -223,6 +242,11 @@ module.exports = async (object, params, ctx) => {
           const nodeChildObject = {};
           nodeChildObject.type = constants.DRAG_AND_DROP_TYPE.RULE_BOOK_STRUCT;
           nodeChildObject.ID = _.get(child, "rule_book_struct_id", null);
+          nodeChildObject.isActive = _.get(
+            child,
+            "rule_book_struct_active",
+            null
+          );
           nodeChildObject.title_en = _.get(
             child,
             "has_rule_book_struct_state.en.rule_book_struct_desc",
