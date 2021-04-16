@@ -996,6 +996,11 @@ const typeDefs = gql`
    language_preference_settings: languagePreferencesettings
   }
 
+  type GetRuleBookBreadcrumbs {
+    breadcrumbs: [nodeType]
+    language_preference_settings: languagePreferencesettings
+  }
+
   type CustomRuleBookStructure {
     rule_book_struct_id: String
     rule_book_struct_active: Boolean
@@ -1333,6 +1338,7 @@ type RuleBookStateCustomTree {
     getRuleBookTreeStructure: CustomRuleBookTreeStructure @isAdmin
     getRuleBookIssue(rule_book_issue_no: Int!, rule_book_parent_id: String!): GetRuleBookIssueCustom @isAuthenticated
     getRuleBook(rule_book_id: String!): GetRuleBookCustom @isAuthenticated
+    getRuleBookBreadcrumbs(rule_book_id: String!): GetRuleBookBreadcrumbs @isAuthenticated
     getCustomers(
       first: Int
       offset: Int
