@@ -123,7 +123,10 @@ module.exports = async (object, params, ctx) => {
       };
     }
     session.close();
-    return [];
+    return {
+      sols: [],
+      total,
+    };
   } catch (error) {
     session.close();
     throw error;
