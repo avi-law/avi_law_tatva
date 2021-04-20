@@ -130,9 +130,15 @@ module.exports = async (object, params, ctx) => {
               sls[slState.lang.properties.iso_639_1] = slState.sls.properties;
               sls[slState.lang.properties.iso_639_1].lang =
                 slState.lang.properties;
-              languages.push(
-                `<a href="">${slState.lang.properties.iso_639_1}</a>`
-              );
+              if (slState.sls.properties.sol_link) {
+                languages.push(
+                  `<a target="_blank" href="${slState.sls.properties.sol_link}">${slState.lang.properties.iso_639_1}</a>`
+                );
+              } else {
+                languages.push(
+                  `<span>${slState.lang.properties.iso_639_1}</span>`
+                );
+              }
             }
           });
         }
