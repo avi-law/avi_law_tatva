@@ -97,6 +97,7 @@ const getSolTagForRuleBookIssue = require("./rule-book-structure/get-sol-tag-for
 const changeOrder = require("./rule-book-structure/change-order");
 const getRuleBook = require("./rule-book/get-rule-book");
 const getRuleBookBreadcrumbs = require("./rule-book/get-rule-book-breadcrumbs");
+const searchRuleBook = require("./rule-book/search-rule-book");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -199,6 +200,7 @@ const resolvers = {
     getSolTagForRuleBookIssue,
     getRuleBook,
     getRuleBookBreadcrumbs,
+    searchRuleBook,
   },
 };
 

@@ -494,3 +494,22 @@ RETURN MAX(rbi.rule_book_issue_no) as issue_no,  rbi, rbis, sl
 ORDER BY issue_no DESC
 LIMIT 1
 `;
+
+exports.searchRuleBook = `
+Match (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)
+WHERE rb.rule_book_id CONTAINS $rule_book_id
+CALL {
+  WITH rbi
+  MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
+  RETURN collect({ rbis: rbis, lang: lang }) AS rbis
+}
+RETURN rb, rbi, rbis
+ORDER BY rb.rule_book_id DESC
+SKIP toInteger($skip)
+LIMIT toInteger($limit)
+`;
+exports.searchRuleBookCount = `
+Match (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)
+WHERE rb.rule_book_id CONTAINS $rule_book_id
+RETURN count (rb) as count
+`;

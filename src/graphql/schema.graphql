@@ -353,6 +353,31 @@ const typeDefs = gql`
     blog_title_short: String
     blog_language: Language @relation(name: "BLOG_LANG_IS", direction: OUT)
   }
+  type Rule_Element {
+    rule_element_doc_id: String
+    rule_element_header_lvl: Int
+    rule_element_id: Int
+    rule_element_is_rule_book: Boolean
+    rule_element_parent_doc_id: String
+  }
+
+  type Rule_Element_State {
+    rule_element_applies_from: _Neo4jDate
+    rule_element_applies_optout: _Neo4jDate
+    rule_element_applies_until: _Neo4jDate
+    rule_element_article: String
+    rule_element_doc_id: String
+    rule_element_hitech: Boolean
+    rule_element_id: Int
+    rule_element_in_force_from: _Neo4jDate
+    rule_element_in_force_until: _Neo4jDate
+    rule_element_rmk: String
+    rule_element_show_anyway: Boolean
+    rule_element_status: Int
+    rule_element_text: String
+    rule_element_title: String
+    rule_element_work_completed: Boolean
+   }
 
   type UserCustom {
     user_id: ID
@@ -997,6 +1022,17 @@ const typeDefs = gql`
    language_preference_settings: languagePreferencesettings
   }
 
+  type SearchRuleBookWithIssue {
+    rb: Rule_Book
+    rbi: Rule_Book_Issue
+    rbis: GetRuleBookIssueStateCustom
+  }
+
+  type SearchRuleBookCustom {
+    rule_book:[SearchRuleBookWithIssue]
+    total: Int
+  }
+
   type GetRuleBookBreadcrumbs {
     breadcrumbs: [nodeType]
     language_preference_settings: languagePreferencesettings
@@ -1339,6 +1375,11 @@ type RuleBookStateCustomTree {
     getRuleBookTreeStructure: CustomRuleBookTreeStructure @isAdmin
     getRuleBookIssue(rule_book_issue_no: Int!, rule_book_parent_id: String!): GetRuleBookIssueCustom @isAuthenticated
     getRuleBook(rule_book_id: String!): GetRuleBookCustom @isAuthenticated
+    searchRuleBook(
+     filterByString: String!,
+     first: Int
+     offset: Int
+    ): SearchRuleBookCustom @isAdmin
     getRuleBookBreadcrumbs(rule_book_id: String!): GetRuleBookBreadcrumbs @isAuthenticated
     getCustomers(
       first: Int
