@@ -70,6 +70,7 @@ const deleteSol = require("./provisions/delete-sol");
 const getSolType = require("./provisions/get-sol-type");
 const getRuleBookStructure = require("./rule-book-structure/get-rule-book-structure");
 const getRuleBookTreeStructure = require("./rule-book-structure/get-rule-book-tree-structure");
+const getRuleElementTreeStructure = require("./rules-element-structure/get-rule-element-tree-structure");
 const searchNL = require("./search/search-nl");
 const searchSol = require("./search/search-sol");
 const solIdExists = require("./provisions/sol-id-exists");
@@ -187,6 +188,7 @@ const resolvers = {
     getSolType,
     getRuleBookStructure,
     getRuleBookTreeStructure,
+    getRuleElementTreeStructure,
     getSols,
     searchNL,
     searchSol,

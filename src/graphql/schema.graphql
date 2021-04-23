@@ -1086,6 +1086,15 @@ type RuleBookStateCustomTree {
     label: String
   }
 
+  # Extent rule element type for tree structure
+  extend type Rule_Element {
+    has_rule_element_child:[Rule_Element]
+  }
+  # Extent rule book issue type for rule element type tree structure
+  extend type Rule_Book_Issue {
+    rule_element: [Rule_Element]
+  }
+
   enum Subscription_Plan {
     SINGLE
     MULTIPLE
@@ -1373,6 +1382,7 @@ type RuleBookStateCustomTree {
     getSolType: CustomSolType
     getRuleBookStructure: CustomRuleBookStructure @isUnAuthenticated
     getRuleBookTreeStructure: CustomRuleBookTreeStructure @isAdmin
+    getRuleElementTreeStructure(rule_book_issue_no: Int!, rule_book_id: String!): Rule_Book_Issue @isAdmin
     getRuleBookIssue(rule_book_issue_no: Int!, rule_book_parent_id: String!): GetRuleBookIssueCustom @isAuthenticated
     getRuleBook(rule_book_id: String!): GetRuleBookCustom @isAuthenticated
     searchRuleBook(

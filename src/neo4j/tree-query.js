@@ -88,3 +88,17 @@ RETURN rbis, lang
 }
 RETURN collect(rbi {.rule_book_issue_no, title_short: rbis.rule_book_issue_title_short, title_long: rbis.rule_book_issue_title_long, language: lang.iso_639_1, label: labels(rbi)}) AS res_rbi
 `;
+
+exports.getRulesElementTreeStructure = `
+  MATCH (rb:Rule_Book {rule_book_id: $rule_book_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue
+  {rule_book_issue_no: $rule_book_issue_no })
+  WITH rbi
+  CALL apoc.path.expandConfig(rbi, {relationshipFilter: "HAS_RULE_ELEMENT>"})
+   YIELD path
+
+  WITH path, nodes(path) AS n, apoc.text.rpad(reduce(a = "", r in relationships(path) | a +
+  apoc.text.lpad(toString(COALESCE(r.order,0)),6,"0")),120,"0") AS orders
+  WITH n[-1] AS element_node ORDER BY orders
+  WITH collect(element_node) AS element_nodes
+  RETURN element_nodes[0] as rule_book_issue, element_nodes[1..] as rule_element
+`;
