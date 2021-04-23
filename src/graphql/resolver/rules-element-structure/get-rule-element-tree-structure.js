@@ -31,7 +31,7 @@ const languageImageAndTitle = {
 const generateRuleBookTreeStructure = (ruleElementList) => {
   const { treeStructure } = ruleElementList.reduce(
     (acc, curr) => {
-      curr.has_rule_element_child = [];
+      curr.has_rule_element_child = null;
       // Create rule book issue child object to array
       if (acc.parentMap[curr.rule_element_parent_doc_id]) {
         (acc.parentMap[curr.rule_element_parent_doc_id].has_rule_element_child =
