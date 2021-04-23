@@ -32,6 +32,7 @@ const authorValidRoutes = [
   "addRuleBookIssue",
   "addRuleBook",
   "addRuleBookStruct",
+  "getRuleElementTreeStructure",
 ];
 
 const verifyAndDecodeToken = ({ context }) => {
