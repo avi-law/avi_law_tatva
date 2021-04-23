@@ -4,7 +4,10 @@
 const _ = require("lodash");
 const driver = require("../../../config/db");
 const { common, APIError } = require("../../../utils");
-const { searchRuleBook, searchRuleBookCount } = require("../../../neo4j/rule-book-query");
+const {
+  searchRuleBook,
+  searchRuleBookCount,
+} = require("../../../neo4j/rule-book-query");
 const { defaultLanguage } = require("../../../config/application");
 
 module.exports = async (object, params, ctx) => {
@@ -15,8 +18,10 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   const offset = params.offset || 0;
   const limit = params.first || 10;
+  const defaultOrderBy = "rb.rule_book_id ASC";
+  let queryOrderBy = "";
   let total = 0;
-  const { filterByString } = params;
+  const { orderBy, filterByString } = params;
   const response = {
     rule_book: [],
     total,
@@ -28,6 +33,20 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
+    if (orderBy && orderBy.length > 0) {
+      orderBy.forEach((rulebook) => {
+        const field = rulebook.slice(0, rulebook.lastIndexOf("_"));
+        const last = rulebook.split("_").pop().toUpperCase();
+        if (queryOrderBy === "") {
+          queryOrderBy = `rb.${field} ${last}`;
+        } else {
+          queryOrderBy = `${queryOrderBy}, rb.${field} ${last}`;
+        }
+      });
+    }
+    if (queryOrderBy === "") {
+      queryOrderBy = defaultOrderBy;
+    }
     const countResult = await session.run(searchRuleBookCount, {
       rule_book_id: filterByString,
     });
@@ -35,11 +54,13 @@ module.exports = async (object, params, ctx) => {
       const singleRecord = countResult.records[0];
       total = singleRecord.get("count");
     }
-    const searchRuleBookResult = await session.run(searchRuleBook, {
+    const queryParams = {
       rule_book_id: filterByString,
       skip: offset,
       limit,
-    });
+      queryOrderBy,
+    };
+    const searchRuleBookResult = await session.run(searchRuleBook, queryParams);
     if (searchRuleBookResult && searchRuleBookResult.records.length > 0) {
       const ruleBooks = searchRuleBookResult.records.map((record) => {
         const rbis = {

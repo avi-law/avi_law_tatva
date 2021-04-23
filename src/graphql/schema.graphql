@@ -1379,6 +1379,7 @@ type RuleBookStateCustomTree {
      filterByString: String!,
      first: Int
      offset: Int
+     orderBy:[_CustomRuleBookOrdering]
     ): SearchRuleBookCustom @isAdmin
     getRuleBookBreadcrumbs(rule_book_id: String!): GetRuleBookBreadcrumbs @isAuthenticated
     getCustomers(
