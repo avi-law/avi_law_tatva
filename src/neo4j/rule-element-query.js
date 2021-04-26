@@ -39,3 +39,20 @@ MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(re)
 `;
+
+exports.ruleElementStateList = `
+MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
+CALL {
+WITH re
+  MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-	[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
+  WITH res, lang order by res.rule_element_id
+  RETURN collect({ res: res, lang: lang }) as res
+}
+RETURN re, res;
+`;
+
+exports.deleteRuleElement = `
+MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)
+// DETACH DELETE re, res
+RETURN re, res;
+`;
