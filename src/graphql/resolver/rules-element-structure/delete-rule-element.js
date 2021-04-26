@@ -22,7 +22,7 @@ module.exports = async (object, params, ctx) => {
   const ruleBookIssueNo = _.get(params, "rule_book_issue_no", null);
   const ruleElementDocParentId = _.get(
     params,
-    "rule_element_doc_parent_id",
+    "rule_element_parent_doc_id",
     null
   );
   try {
@@ -45,7 +45,7 @@ module.exports = async (object, params, ctx) => {
       ruleElementDocParentId,
     };
     console.log(queryParams);
-    console.log(deleteRuleElement);
+    console.log(deleteRuleElement(queryParams));
     return true;
     const result = await session.run(deleteRuleElement(queryParams), {
       queryParams,
