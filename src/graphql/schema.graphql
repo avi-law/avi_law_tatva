@@ -1246,6 +1246,22 @@ type RuleBookStateCustomTree {
     drag_rule_book_order: [RuleBookOrderArray]
   }
 
+  input RuleElementInput {
+    rule_element_doc_id: String
+    rule_element_header_lvl: Int
+    rule_element_id: Int
+    rule_element_is_rule_book: Boolean
+    rule_element_parent_doc_id: String
+  }
+
+  input RuleElementCustomInput {
+    re: RuleElementInput
+    rule_book_id: String
+    rule_book_issue_no: Int
+    rule_element_doc_id: String
+    rule_element_order: Int
+  }
+
   #Tree type end
 
   type Mutation {
@@ -1304,6 +1320,8 @@ type RuleBookStateCustomTree {
     deleteRuleBookStruct(rule_book_struct_id: String!, rule_book_struct_parent_id: String!): Boolean @isAdmin
     deleteRuleBookIssue(rule_book_issue_no: Int!,rule_book_parent_id: String!): Boolean @isAdmin
     changeOrder(change_order: ChangeOrderInput ): Boolean @isAdmin
+    addRuleElement(data: RuleElementCustomInput ): Boolean @isAdmin
+    updateRuleElement(rule_element_doc_id: String!, data: RuleElementCustomInput ): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated

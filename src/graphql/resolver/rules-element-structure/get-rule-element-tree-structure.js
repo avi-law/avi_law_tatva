@@ -77,13 +77,11 @@ module.exports = async (object, params, ctx) => {
         const ruleBookResponse = {
           rule_book_active: ruleBook.rule_book_active,
           rule_book_id: ruleBook.rule_book_id,
-          rule_book_issue: ruleBook.has_rule_book_issue[0],
+          rule_book_issue: _.get(ruleBook, "has_rule_book_issue[0]", null),
         };
         return ruleBookResponse;
       });
-      if (ruleElementStructureList[0]) {
-        return ruleElementStructureList[0];
-      }
+      return _.get(ruleElementStructureList, "[0]", null);
     }
     return null;
   } catch (error) {
