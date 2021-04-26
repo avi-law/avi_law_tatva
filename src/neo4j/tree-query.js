@@ -89,7 +89,7 @@ RETURN rbis, lang
 RETURN collect(rbi {.rule_book_issue_no, title_short: rbis.rule_book_issue_title_short, title_long: rbis.rule_book_issue_title_long, language: lang.iso_639_1, label: labels(rbi)}) AS res_rbi
 `;
 
-exports.getRulesElementTreeStructure = `
+exports.getRulesElementTreeStructure1 = `
   MATCH (rb:Rule_Book {rule_book_id: $rule_book_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue
   {rule_book_issue_no: $rule_book_issue_no })
   WITH rbi
@@ -101,4 +101,12 @@ exports.getRulesElementTreeStructure = `
   WITH n[-1] AS element_node ORDER BY orders
   WITH collect(element_node) AS element_nodes
   RETURN element_nodes[0] as rule_book_issue, element_nodes[1..] as rule_element
+`;
+exports.getRulesElementTreeStructure = `
+MATCH path = (rb:Rule_Book {rule_book_id: $rule_book_id})-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: $rule_book_issue_no})-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)
+WITH path, nodes(path) AS n, apoc.text.rpad(reduce(a = "", r in relationships(path) | a + apoc.text.lpad(toString(COALESCE(r.order,0)),6,"0")),120,"0") AS orders
+WITH path AS path_ordered order by orders
+WITH Collect(path_ordered) AS path_elements
+CALL apoc.convert.toTree(path_elements) yield value
+RETURN value as rule_book;
 `;

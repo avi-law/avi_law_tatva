@@ -73,30 +73,13 @@ module.exports = async (object, params, ctx) => {
     });
     if (result.records && result.records.length > 0) {
       ruleElementStructureList = result.records.map((record) => {
-        const elements = record.get("rule_element");
-        const ruleBookIssue = record.get("rule_book_issue");
-        const ruleBook = {
-          rule_element_header_lvl: null,
-          rule_element_parent_doc_id: null,
-          rule_element_doc_id: ruleBookId,
+        const ruleBook = record.get("rule_book");
+        const ruleBookResponse = {
+          rule_book_active: ruleBook.rule_book_active,
+          rule_book_id: ruleBook.rule_book_id,
+          rule_book_issue: ruleBook.has_rule_book_issue[0],
         };
-        let bookResult = {};
-        if (ruleBookIssue) {
-          bookResult = ruleBookIssue.properties;
-          bookResult = {
-            ...bookResult,
-            rule_element: [ruleBook],
-          };
-          if (elements.length > 0) {
-            elements.forEach((el) => {
-              bookResult.rule_element.push(el.properties);
-            });
-          }
-          bookResult.rule_element = generateRuleBookTreeStructure(
-            bookResult.rule_element
-          );
-          return bookResult;
-        }
+        return ruleBookResponse;
       });
       if (ruleElementStructureList[0]) {
         return ruleElementStructureList[0];
