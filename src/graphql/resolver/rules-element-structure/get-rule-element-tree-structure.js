@@ -67,6 +67,19 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
+    const query = `
+    MATCH (rb:Rule_Book {rule_book_id: "${ruleBookId}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue { rule_book_issue_no: ${ruleBookIssueNo}})
+    RETURN rb;`;
+    if (ruleBookId) {
+      const checkExistRuleBook = await session.run(query);
+      if (checkExistRuleBook && checkExistRuleBook.records.length === 0) {
+        console.log("Does not exists rule book");
+        throw new APIError({
+          lang: userSurfLang,
+          message: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    }
     const result = await session.run(getRulesElementTreeStructure, {
       rule_book_id: ruleBookId,
       rule_book_issue_no: ruleBookIssueNo,
