@@ -1258,7 +1258,7 @@ type RuleBookStateCustomTree {
     re: RuleElementInput
     rule_book_id: String
     rule_book_issue_no: Int
-    rule_element_doc_id: String
+    rule_element_parent_doc_id: String
     rule_element_order: Int
   }
 

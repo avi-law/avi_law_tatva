@@ -28,8 +28,8 @@ module.exports = async (object, params, ctx) => {
     const queryParams = {
       re: data.re,
     };
-    if (data.rule_element_doc_id) {
-      queryParams.rule_element_doc_id = data.rule_element_doc_id;
+    if (data.rule_element_parent_doc_id) {
+      queryParams.rule_element_parent_doc_id = data.rule_element_parent_doc_id;
     } else if (data.rule_book_issue_no && data.rule_book_id) {
       queryParams.rule_book_issue_no = data.rule_book_issue_no;
       queryParams.rule_book_id = data.rule_book_id;
@@ -37,7 +37,7 @@ module.exports = async (object, params, ctx) => {
     queryParams.rule_element_order = _.get(data, "rule_element_order", 10);
     console.log(queryParams);
     console.log(addRuleElementQuery(queryParams));
-    return false;
+    return true;
     const result = await session.run(addRuleElementQuery(queryParams), {
       queryParams,
     });
