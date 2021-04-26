@@ -20,6 +20,11 @@ module.exports = async (object, params, ctx) => {
   const ruleElementDocId = params.rule_element_doc_id;
   const ruleBookId = _.get(params, "rule_book_id", null);
   const ruleBookIssueNo = _.get(params, "rule_book_issue_no", null);
+  const ruleElementDocParentId = _.get(
+    params,
+    "rule_element_doc_parent_id",
+    null
+  );
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
@@ -37,6 +42,7 @@ module.exports = async (object, params, ctx) => {
       rule_element_doc_id: ruleElementDocId,
       ruleBookId,
       ruleBookIssueNo,
+      ruleElementDocParentId,
     };
     console.log(queryParams);
     console.log(deleteRuleElement);
