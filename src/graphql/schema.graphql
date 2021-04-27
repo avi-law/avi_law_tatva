@@ -1144,6 +1144,16 @@ type RuleBookStateCustomTree {
     total: Int
   }
 
+  type RuleElementStateCustom {
+    en: Rule_Element_State
+    de: Rule_Element_State
+  }
+
+  type GetRuleElementCustom {
+    re: Rule_Element
+    res: [RuleElementStateCustom]
+  }
+
   type CustomRuleBookStructureNew {
     treeStructure: String
     language_preference_settings: languagePreferencesettings
@@ -1483,6 +1493,7 @@ type RuleBookStateCustomTree {
       blog_id: Int
     ): GetBlogListByYear @isUnAuthenticated
     getSolTagForRuleBookIssue: GetSolsCustom @isAdmin
+    getRuleElement(rule_element_doc_id: String!): GetRuleElementCustom @isAdmin
   }
 `;
 

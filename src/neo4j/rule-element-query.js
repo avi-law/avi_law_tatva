@@ -40,7 +40,7 @@ MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(re)
 `;
 
-exports.ruleElementStateList = `
+exports.getRuleElementStateList = `
 MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
 CALL {
 WITH re

@@ -36,6 +36,7 @@ const authorValidRoutes = [
   "updateRuleElement",
   "addRuleElement",
   "deleteRuleElement",
+  "getRuleElement",
 ];
 
 const verifyAndDecodeToken = ({ context }) => {
