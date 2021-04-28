@@ -1224,6 +1224,10 @@ type RuleBookStateCustomTree {
     Rule_Book_Struct
     Rule_Book_Issue
   }
+  enum DragAndDropRuleElementType {
+    Rule_Element
+    Rule_Book_Issue
+  }
 
   input RuleBookStructOrderArray {
     rule_book_struct_parent_id: String!
@@ -1236,6 +1240,12 @@ type RuleBookStateCustomTree {
     rule_book_parent_id: String
     rule_book_id: String!
     rule_book_order: Int!
+  }
+
+  input RuleElementOrderArray {
+    rule_element_doc_id: String!
+    rule_element_order: Int!
+    rule_element_parent_doc_id: String
   }
 
   input ChangeOrderInput {
@@ -1254,6 +1264,19 @@ type RuleBookStateCustomTree {
     drop_rule_book_order: [RuleBookOrderArray]
     drag_rule_book_struct_order: [RuleBookStructOrderArray]
     drag_rule_book_order: [RuleBookOrderArray]
+  }
+
+  input ChangeRuleElementOrderInput {
+    drag_type: DragAndDropRuleElementType!
+    drag_parent_type: DragAndDropRuleElementType!
+    drop_parent_type: DragAndDropRuleElementType!
+    drag_rule_element_doc_id: String!
+    drag_rule_element_parent_doc_id: String
+    drop_rule_element_parent_doc_id: String
+    drag_rule_element_order: [RuleElementOrderArray]
+    drop_rule_element_order: [RuleElementOrderArray]
+    rule_book_id: String
+    rule_book_issue_no: Int
   }
 
   input RuleElementInput {
@@ -1333,6 +1356,7 @@ type RuleBookStateCustomTree {
     addRuleElement(data: RuleElementCustomInput ): Boolean @isAdmin
     updateRuleElement(rule_element_doc_id: String!, data: RuleElementCustomInput ): Boolean @isAdmin
     deleteRuleElement(rule_element_doc_id: String!, rule_element_parent_doc_id: String, rule_book_id: String, rule_book_issue_no: Int): Boolean @isAdmin
+    changeRuleElementOrder(change_order: ChangeRuleElementOrderInput! ): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated

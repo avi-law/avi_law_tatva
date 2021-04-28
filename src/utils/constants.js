@@ -136,6 +136,7 @@ module.exports = {
     RULE_BOOK: "Rule_Book",
     RULE_BOOK_ISSUE: "Rule_Book_Issue",
     RULE_BOOK_STRUCT: "Rule_Book_Struct",
+    RULE_ELEMENT: "Rule_Element",
   },
   CHANGE_RULE_BOOK_ORDER_PERMISSION: {
     Rule_Book_Struct: {
@@ -152,6 +153,16 @@ module.exports = {
       Rule_Book_Struct: false,
       Rule_Book: true,
       Rule_Book_Issue: false,
+    },
+    Rule_Element: {
+      Rule_Element: true,
+      Rule_Book_Issue: true,
+    },
+  },
+  CHANGE_RULE_ELEMENT_ORDER_PERMISSION: {
+    Rule_Element: {
+      Rule_Element: true,
+      Rule_Book_Issue: true,
     },
   },
   NL_TITLE_NOT_AVAILABLE: {

@@ -1,3 +1,5 @@
+const { constants } = require("../utils");
+
 exports.addRuleElementQuery = (queryParams) => {
   let query = ``;
 
@@ -63,6 +65,111 @@ exports.deleteRuleElement = (queryParams) => {
     DELETE r1
     RETURN re;
     `;
+  }
+  return query;
+};
+
+exports.getRuleElementStateListNew = `
+MATCH (res1:Rule_Element_State {rule_element_doc_id: $rule_element_doc_id })-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(reslang:Language)
+WHERE NOT (res1)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(:Rule_Element_State)
+MATCH path = (res1)-[:HAS_RULE_ELEMENT_SUCCESSOR*]->(res2:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
+WITH Collect(path)as path_elements, reslang
+CALL apoc.convert.toTree(path_elements) yield value
+RETURN value, reslang;
+`;
+
+const dropChangeOrderQuery = (queryParams) => {
+  let query = ``;
+  if (
+    queryParams.drop_rule_element_order &&
+    queryParams.drop_rule_element_order.length > 0
+  ) {
+    if (
+      queryParams.drop_parent_type ===
+      constants.DRAG_AND_DROP_TYPE.RULE_BOOK_ISSUE
+    ) {
+      query = `
+      ${query}
+      UNWIND $queryParams.drop_rule_element_order as ruleElementDrop
+      OPTIONAL MATCH (rbDrop:Rule_Book {rule_book_id: "${queryParams.rule_book_id}"})-[:HAS_RULE_BOOK_ISSUE]->(rbiDrop:Rule_Book_Issue {rule_book_issue_no: ${queryParams.rule_book_issue_no} })-[r1:HAS_RULE_ELEMENT]->(reDrop:Rule_Element {rule_element_doc_id: ruleElementDrop.rule_element_doc_id })
+      FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order = ruleElementDrop.rule_element_order )
+      RETURN reDrop as re`;
+    } else {
+      query = `
+      ${query}
+      UNWIND $queryParams.drop_rule_element_order as ruleElementDrop
+      OPTIONAL MATCH (repDrop:Rule_Element { element_doc_id: ruleElementDrop.rule_element_parent_doc_id})-[r1:HAS_RULE_ELEMENT]->(reDrop:Rule_Element { rule_element_doc_id: ruleElementDrop.rule_element_doc_id })
+      FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order = ruleElementDrop.rule_element_order )
+      RETURN reDrop as re
+      `;
+    }
+  }
+  return query;
+};
+
+const dragChangeOrderQuery = (queryParams) => {
+  let query = ``;
+  if (
+    queryParams.drag_rule_element_order &&
+    queryParams.drag_rule_element_order.length > 0
+  ) {
+    query = `
+    ${query}
+    UNWIND $queryParams.drag_rule_element_order as ruleElementDrag
+    OPTIONAL MATCH (repDrop:Rule_Element { element_doc_id: ruleElementDrag.rule_element_parent_doc_id})-[r1:HAS_RULE_ELEMENT]->(reDrop:Rule_Element { rule_element_doc_id: ruleElementDrag.rule_element_doc_id })
+    FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order = ruleElementDrag.rule_element_order )
+    RETURN repDrop as re
+    `;
+  }
+  return query;
+};
+
+exports.changeRuleElementOrderQuery = (queryParams) => {
+  let query = ``;
+  if (queryParams.isInternalChangeOrder) {
+    query = `${dropChangeOrderQuery(queryParams)}`;
+  } else {
+    // Remove relation between drag node and drag parent node
+    if (
+      queryParams.drag_parent_type === constants.DRAG_AND_DROP_TYPE.RULE_ELEMENT
+    ) {
+      query = `
+        ${query}
+        OPTIONAL MATCH(rep_drag:Rule_Element { rule_element_doc_id: "${queryParams.drag_rule_element_parent_doc_id}" })-[r1_drag:HAS_RULE_ELEMENT]->(re_drag:Rule_Element { rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" })
+        FOREACH (_ IN CASE WHEN r1_drag IS NOT NULL THEN [1] END | DELETE r1_drag )
+        `;
+    } else if (
+      queryParams.drag_parent_type ===
+      constants.DRAG_AND_DROP_TYPE.RULE_BOOK_ISSUE
+    ) {
+      query = `
+        ${query}
+        OPTIONAL MATCH(rb_drag:Rule_Book { rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi_drag:Rule_Book_Issue { rule_book_issue_no: ${queryParams.rule_book_issue_no} })-[r1_drag:HAS_RULE_ELEMENT]->(reDrop:Rule_Element {rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" })
+        FOREACH (_ IN CASE WHEN r1_drag IS NOT NULL THEN [1] END | DELETE r1_drag )
+        `;
+    }
+    // Create relation between drag node and drop parent node
+    if (
+      queryParams.drop_parent_type === constants.DRAG_AND_DROP_TYPE.RULE_ELEMENT
+    ) {
+      query = `
+        ${query}
+        MERGE(rep_drop:Rule_Element { rule_element_doc_id: "${queryParams.drop_rule_element_parent_doc_id}" })-[:HAS_RULE_ELEMENT]->(re_drop:Rule_Element { rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" })
+        `;
+    } else if (
+      queryParams.drop_parent_type ===
+      constants.DRAG_AND_DROP_TYPE.RULE_BOOK_ISSUE
+    ) {
+      query = `
+        ${query}
+        MERGE(rb_drag:Rule_Book { rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi_drag:Rule_Book_Issue { rule_book_issue_no: ${queryParams.rule_book_issue_no} })-[:HAS_RULE_ELEMENT]->(re_drop:Rule_Element {rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" })
+        `;
+    }
+    query = `
+      ${query}
+      ${dragChangeOrderQuery(queryParams)}
+      ${dropChangeOrderQuery(queryParams)}
+      `;
   }
   return query;
 };
