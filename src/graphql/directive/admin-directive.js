@@ -3,9 +3,12 @@
 /* eslint-disable func-names */
 const { SchemaDirectiveVisitor } = require("apollo-server-express");
 const { DirectiveLocation, GraphQLDirective } = require("graphql");
+const _ = require("lodash");
 const jwt = require("jsonwebtoken");
 const { jwtSecret, defaultLanguage } = require("../../config/application");
-const { APIError } = require("../../utils");
+const driver = require("../../config/db");
+const { common, APIError } = require("../../utils");
+const { loginQuery } = require("../../neo4j/query");
 
 const authorValidRoutes = [
   "getNewsLetterList",
@@ -85,28 +88,51 @@ const verifyAndDecodeToken = ({ context }) => {
   }
 };
 
-const checkValidRequest = (ctx, payload) => {
+const checkValidRequest = async (ctx, payload) => {
+  const userEmail = payload.user_email;
   const userSurfLang = payload.user_surf_lang;
-  const systemAdmin = payload.user_is_sys_admin;
-  const isAuthor = payload.user_is_author;
   let valid = true;
-  // Validate encrypt password request
-  if (!systemAdmin) {
-    valid = false;
-  }
-  if (
-    isAuthor &&
-    authorValidRoutes.indexOf(ctx.req.body.operationName) !== -1
-  ) {
-    valid = true;
-  }
-  if (!valid) {
+  const session = driver.session();
+  try {
+    const result = await session.run(loginQuery, { user_email: userEmail });
+    if (result && result.records.length > 0) {
+      const userData = result.records.map((record) => {
+        const userResult = {
+          user: common.getPropertiesFromRecord(record, "u"),
+          user_state: common.getPropertiesFromRecord(record, "us"),
+        };
+        return userResult;
+      });
+      const systemAdmin = _.get(userData, "[0]user.user_is_sys_admin", null);
+      const isAuthor = _.get(userData, "[0]user.user_is_author", null);
+      // Validate encrypt password request
+      if (!systemAdmin) {
+        valid = false;
+      }
+      if (
+        isAuthor &&
+        authorValidRoutes.indexOf(ctx.req.body.operationName) !== -1
+      ) {
+        valid = true;
+      }
+      if (!valid) {
+        throw new APIError({
+          lang: userSurfLang,
+          message: "INVALID_AUTHORIZATION_TOKEN",
+        });
+      }
+      return valid;
+    }
+    throw new APIError({
+      lang: userSurfLang,
+      message: "INVALID_AUTHORIZATION_TOKEN",
+    });
+  } catch (error) {
     throw new APIError({
       lang: userSurfLang,
       message: "INVALID_AUTHORIZATION_TOKEN",
     });
   }
-  return valid;
 };
 
 class IsAdminDirective extends SchemaDirectiveVisitor {
@@ -124,9 +150,9 @@ class IsAdminDirective extends SchemaDirectiveVisitor {
       const field = fields[fieldName];
       const next = field.resolve;
 
-      field.resolve = function (result, args, context, info) {
+      field.resolve = async (result, args, context, info) => {
         const decoded = verifyAndDecodeToken({ context }); // will throw error if not valid signed jwt
-        checkValidRequest(context, decoded);
+        await checkValidRequest(context, decoded);
         return next(result, args, { ...context, user: decoded }, info);
       };
     });
@@ -135,9 +161,9 @@ class IsAdminDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field) {
     const next = field.resolve;
 
-    field.resolve = function (result, args, context, info) {
+    field.resolve = async (result, args, context, info) => {
       const decoded = verifyAndDecodeToken({ context });
-      checkValidRequest(context, decoded);
+      await checkValidRequest(context, decoded);
       return next(result, args, { ...context, user: decoded }, info);
     };
   }
