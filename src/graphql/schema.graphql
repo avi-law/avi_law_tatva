@@ -1518,6 +1518,7 @@ type RuleBookStateCustomTree {
     ): GetBlogListByYear @isUnAuthenticated
     getSolTagForRuleBookIssue: GetSolsCustom @isAdmin
     getRuleElement(rule_element_doc_id: String!): GetRuleElementCustom @isAdmin
+    getRuleElementState(rule_element_doc_id: String!): GetRuleElementCustom @isAdmin
   }
 `;
 

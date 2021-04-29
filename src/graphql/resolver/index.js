@@ -104,6 +104,7 @@ const updateRuleElement = require("./rules-element-structure/update-rule-element
 const deleteRuleElement = require("./rules-element-structure/delete-rule-element");
 const getRuleElement = require("./rules-element-structure/get-rule-element");
 const changeRuleElementOrder = require("./rules-element-structure/change-rule-element-order");
+const getRuleElementState = require("./rules-element-structure/get-rule-element-state");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -213,6 +214,7 @@ const resolvers = {
     getRuleBookBreadcrumbs,
     searchRuleBook,
     getRuleElement,
+    getRuleElementState,
   },
 };
 
