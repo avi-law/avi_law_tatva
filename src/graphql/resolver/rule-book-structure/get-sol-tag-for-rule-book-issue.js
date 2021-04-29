@@ -4,10 +4,12 @@ const driver = require("../../../config/db");
 const { common } = require("../../../utils");
 const { getSolTagForRuleBookIssue } = require("../../../neo4j/rule-book-query");
 
-module.exports = async () => {
+module.exports = async (object, params) => {
+  params = JSON.parse(JSON.stringify(params));
+  const { isSort } = params;
   const session = driver.session();
   try {
-    const result = await session.run(getSolTagForRuleBookIssue);
+    const result = await session.run(getSolTagForRuleBookIssue(isSort));
     if (result && result.records.length > 0) {
       if (result && result.records.length > 0) {
         const sols = result.records.map((record) => {

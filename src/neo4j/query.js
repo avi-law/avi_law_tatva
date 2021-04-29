@@ -148,8 +148,8 @@ FOREACH (_ IN CASE WHEN $user_is_author IS NOT NULL THEN [1] END | SET u.user_is
 RETURN nus`;
 
 exports.getUserCustomerList = `
-MATCH (u:User)-[:USER_TO_CUSTOMER]->(c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
-WHERE u.user_email = $user_email AND r1.to IS NULL
+MATCH (u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer)-[r2:HAS_CUST_STATE]->(cs:Customer_State)
+WHERE u.user_email = $user_email AND r2.to IS NULL AND r1.user_is_cust_admin = TRUE
 RETURN cs`;
 
 exports.isExistsUserInCustomer = `
