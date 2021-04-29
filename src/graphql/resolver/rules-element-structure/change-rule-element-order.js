@@ -48,6 +48,14 @@ module.exports = async (object, params, ctx) => {
       isInternalChangeOrder = true;
     }
     if (
+      changeOrderData.drag_rule_element_parent_doc_id &&
+      changeOrderData.drop_rule_element_parent_doc_id &&
+      changeOrderData.drag_rule_element_parent_doc_id ===
+        changeOrderData.drop_rule_element_parent_doc_id
+    ) {
+      isInternalChangeOrder = true;
+    }
+    if (
       changeOrderData.drop_parent_type ===
       constants.DRAG_AND_DROP_TYPE.RULE_BOOK_ISSUE
     ) {

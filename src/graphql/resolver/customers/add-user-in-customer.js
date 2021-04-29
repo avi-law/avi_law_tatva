@@ -34,21 +34,22 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    const users = checkEmailresult.records.map((record) => {
-      const connectToCustomer = {
-        user_state: common.getPropertiesFromRecord(record, "us"),
-        customer: common.getPropertiesFromRecord(record, "c"),
-        user_surf_lang: record.get("user_surf_lang"),
-      };
-      return connectToCustomer;
-    });
-    if (users && users[0].customer) {
-      throw new APIError({
-        type: "info",
-        lang: userSurfLang,
-        message: "USER_HAS_ENTITLED_ALREADY",
-      });
-    }
+    // Remove already customer connected to user validation
+    // const users = checkEmailresult.records.map((record) => {
+    //   const connectToCustomer = {
+    //     user_state: common.getPropertiesFromRecord(record, "us"),
+    //     customer: common.getPropertiesFromRecord(record, "c"),
+    //     user_surf_lang: record.get("user_surf_lang"),
+    //   };
+    //   return connectToCustomer;
+    // });
+    // if (!users) {
+    //   throw new APIError({
+    //     type: "info",
+    //     lang: userSurfLang,
+    //     message: "USER_HAS_ENTITLED_ALREADY",
+    //   });
+    // }
     const result = await session.run(addUserToCustomer, {
       cust_id: customerID,
       user_email: userEmail,

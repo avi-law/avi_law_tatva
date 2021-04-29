@@ -121,13 +121,25 @@ const dragChangeOrderQuery = (queryParams) => {
     queryParams.drag_rule_element_order &&
     queryParams.drag_rule_element_order.length > 0
   ) {
-    query = `
-    ${query}
-    UNWIND $queryParams.drag_rule_element_order as ruleElementDrag
-    OPTIONAL MATCH (repDrop:Rule_Element { element_doc_id: ruleElementDrag.rule_element_parent_doc_id})-[r1:HAS_RULE_ELEMENT]->(reDrop:Rule_Element { rule_element_doc_id: ruleElementDrag.rule_element_doc_id })
-    FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order = ruleElementDrag.rule_element_order )
-    RETURN repDrop as re
-    `;
+    if (
+      queryParams.drag_parent_type ===
+      constants.DRAG_AND_DROP_TYPE.RULE_BOOK_ISSUE
+    ) {
+      query = `
+      ${query}
+      UNWIND $queryParams.drag_rule_element_order as ruleElementDrag
+      OPTIONAL MATCH (rbDrop:Rule_Book {rule_book_id: "${queryParams.rule_book_id}"})-[:HAS_RULE_BOOK_ISSUE]->(rbiDrop:Rule_Book_Issue {rule_book_issue_no: ${queryParams.rule_book_issue_no} })-[r2:HAS_RULE_ELEMENT]->(reDrag:Rule_Element {rule_element_doc_id: ruleElementDrag.rule_element_doc_id })
+      FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r2.order = ruleElementDrag.rule_element_order )
+      RETURN reDrag as re`;
+    } else {
+      query = `
+      ${query}
+      UNWIND $queryParams.drag_rule_element_order as ruleElementDrag
+      OPTIONAL MATCH (repDrop:Rule_Element { element_doc_id: ruleElementDrag.rule_element_parent_doc_id})-[r2:HAS_RULE_ELEMENT]->(reDrop:Rule_Element { rule_element_doc_id: ruleElementDrag.rule_element_doc_id })
+      FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r2.order = ruleElementDrag.rule_element_order )
+      RETURN repDrop as re
+      `;
+    }
   }
   return query;
 };

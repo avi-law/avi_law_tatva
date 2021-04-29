@@ -6,7 +6,7 @@ module.exports = (err) => {
   const { code } = err.extensions;
   const lang = err.extensions.exception.lang || "en";
   const type = err.extensions.exception.type || "error";
-  console.log(err);
+  // console.log(err);
   // Don't give the specific errors to the client.
   if (dbErrorCode.indexOf(code) !== -1) {
     return {

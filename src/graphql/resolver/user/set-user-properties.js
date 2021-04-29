@@ -2,6 +2,7 @@ const driver = require("../../../config/db");
 
 module.exports = async (object, params) => {
   const userEmail = params.user_email;
+  const customerId = params.customer_id;
   const { entitled, admin, specCount } = params;
   const session = driver.session();
   try {
@@ -29,7 +30,7 @@ module.exports = async (object, params) => {
     } else {
       return false;
     }
-    const query = `MATCH (u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer) WHERE u.user_email = "${userEmail}" ${set} ${remove} RETURN u`;
+    const query = `MATCH (u:User)-[r1:USER_TO_CUSTOMER]->(c:Customer) WHERE c.cust_id = ${customerId} AND u.user_email = "${userEmail}" ${set} ${remove} RETURN u`;
     const result = await session.run(query);
     if (result && result.records.length > 0) {
       return true;

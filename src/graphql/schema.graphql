@@ -1315,6 +1315,7 @@ type RuleBookStateCustomTree {
       entitled: Boolean
       admin: Boolean
       specCount: Boolean
+      customer_id: Int!
     ): Boolean @isAuthenticated
     createUser(user_email: String!, data: UserCustomInput!): Boolean
       @isAuthenticated
