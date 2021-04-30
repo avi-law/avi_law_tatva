@@ -365,6 +365,8 @@ const typeDefs = gql`
     rule_element_applies_from: _Neo4jDate
     rule_element_applies_optout: _Neo4jDate
     rule_element_applies_until: _Neo4jDate
+    rule_element_visible_until: _Neo4jDate
+    rule_element_visible_from: _Neo4jDate
     rule_element_article: String
     rule_element_doc_id: String
     rule_element_hitech: Boolean
@@ -377,6 +379,7 @@ const typeDefs = gql`
     rule_element_text: String
     rule_element_title: String
     rule_element_work_completed: Boolean
+    sol: Sol @relation(name: "RULE_ELEMENT_STATE_SOL_IS", direction: OUT)
    }
 
   type UserCustom {
@@ -1280,7 +1283,7 @@ type RuleBookStateCustomTree {
   }
 
   input RuleElementInput {
-    rule_element_doc_id: String
+    rule_element_doc_id: String!
     rule_element_header_lvl: Int
     rule_element_id: Int
     rule_element_is_rule_book: Boolean
@@ -1293,6 +1296,37 @@ type RuleBookStateCustomTree {
     rule_book_issue_no: Int
     rule_element_parent_doc_id: String
     rule_element_order: Int
+  }
+
+  input RuleElementStateInput {
+    rule_element_applies_from: _Neo4jDate
+    rule_element_applies_optout: _Neo4jDate
+    rule_element_applies_until: _Neo4jDate
+    rule_element_visible_until: _Neo4jDate
+    rule_element_visible_from: _Neo4jDate
+    rule_element_article: String
+    rule_element_doc_id: String
+    rule_element_hitech: Boolean
+    rule_element_id: Int
+    rule_element_in_force_from: _Neo4jDate
+    rule_element_in_force_until: _Neo4jDate
+    rule_element_rmk: String
+    rule_element_show_anyway: Boolean
+    rule_element_status: Int
+    rule_element_text: String
+    rule_element_title: String
+    rule_element_work_completed: Boolean
+  }
+
+  input RuleElementStateCustomInput {
+    en: RuleElementStateInput
+    de: RuleElementStateInput
+  }
+
+  input CustomAddRuleElementStateInput {
+    res: RuleElementStateCustomInput
+    sol_de: Int
+    sol_en: Int
   }
 
   #Tree type end
@@ -1358,6 +1392,7 @@ type RuleBookStateCustomTree {
     updateRuleElement(rule_element_doc_id: String!, data: RuleElementCustomInput ): Boolean @isAdmin
     deleteRuleElement(rule_element_doc_id: String!, rule_element_parent_doc_id: String, rule_book_id: String, rule_book_issue_no: Int): Boolean @isAdmin
     changeRuleElementOrder(change_order: ChangeRuleElementOrderInput! ): Boolean @isAdmin
+    addRuleElementState(rule_element_doc_id: String!, data: CustomAddRuleElementStateInput ): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated

@@ -51,13 +51,13 @@ module.exports = async (object, params, ctx) => {
           return connectToCustomer;
         });
         userAlreadyExists = true;
-        if (users && users[0].customer) {
-          throw new APIError({
-            type: "info",
-            lang: userSurfLang,
-            message: "USER_HAS_ENTITLED_ALREADY",
-          });
-        }
+        // if (users && users[0].customer) {
+        //   throw new APIError({
+        //     type: "info",
+        //     lang: userSurfLang,
+        //     message: "USER_HAS_ENTITLED_ALREADY",
+        //   });
+        // }
         firstNameExistUser = users[0].user_state.user_first_name;
         lastNameExistUser = users[0].user_state.user_last_name;
         sexExistUser = users[0].user_state.user_sex;
