@@ -183,8 +183,10 @@ exports.changeRuleElementOrderQuery = (queryParams) => {
     ) {
       query = `
         ${query}
-        MERGE(rb_drag:Rule_Book { rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi_drag:Rule_Book_Issue { rule_book_issue_no: ${queryParams.rule_book_issue_no} })-[:HAS_RULE_ELEMENT]->(re_drop:Rule_Element {rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" })
-        WITH re_drop
+        OPTIONAL MATCH(rb_drag:Rule_Book { rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi_drag:Rule_Book_Issue { rule_book_issue_no: ${queryParams.rule_book_issue_no} })
+        WITH rbi_drag
+        FOREACH (_ IN CASE WHEN rbi_drag IS NOT NULL THEN [1] END | MERGE(rbi_drag)-[:HAS_RULE_ELEMENT]->(re_drag_el:Rule_Element {rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" }))
+        WITH re_drag_el
         `;
     }
     query = `
@@ -219,5 +221,27 @@ exports.addRuleElementStateQuery = (queryParams) => {
     MERGE (res_de)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res_en)
     `;
   }
+  return query;
+};
+
+exports.updateRuleElementStateQuery = (queryParams) => {
+  let query = `
+  MATCH (lang1:Language {iso_639_1: "de"})
+  MATCH (lang2:Language {iso_639_1: "en"})`;
+
+  if (queryParams.isValidDE) {
+    query = `${query}
+    MATCH (res_de:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1)
+    WHERE id(res_de) = $queryParams.res.de.identity
+    SET res_de = $queryParams.res.de`;
+  }
+
+  if (queryParams.isValidEN) {
+    query = `${query}
+    MATCH (res_en:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
+    WHERE id(res_en) = $queryParams.res.en.identity
+    SET res_en = $queryParams.res.en`;
+  }
+
   return query;
 };
