@@ -77,7 +77,7 @@ module.exports = async (object, params, ctx) => {
     };
     console.log(queryParams);
     console.log(changeRuleElementOrderQuery(queryParams));
-    // return true;
+    return true;
     const result = await session.run(changeRuleElementOrderQuery(queryParams), {
       queryParams,
     });
