@@ -362,6 +362,7 @@ const typeDefs = gql`
   }
 
   type Rule_Element_State {
+    identity: Int
     rule_element_applies_from: _Neo4jDate
     rule_element_applies_optout: _Neo4jDate
     rule_element_applies_until: _Neo4jDate
@@ -378,6 +379,7 @@ const typeDefs = gql`
     rule_element_status: Int
     rule_element_text: String
     rule_element_title: String
+    rule_element_title_display: String
     rule_element_work_completed: Boolean
     sol: Sol @relation(name: "RULE_ELEMENT_STATE_SOL_IS", direction: OUT)
    }
@@ -1324,6 +1326,7 @@ type RuleBookStateCustomTree {
   }
 
   input CustomAddRuleElementStateInput {
+    identity: Int!
     res: RuleElementStateCustomInput
     sol_de: Int
     sol_en: Int
