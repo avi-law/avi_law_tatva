@@ -1301,6 +1301,7 @@ type RuleBookStateCustomTree {
   }
 
   input RuleElementStateInput {
+    identity: Int
     rule_element_applies_from: _Neo4jDate
     rule_element_applies_optout: _Neo4jDate
     rule_element_applies_until: _Neo4jDate
@@ -1326,7 +1327,6 @@ type RuleBookStateCustomTree {
   }
 
   input CustomAddRuleElementStateInput {
-    identity: Int!
     res: RuleElementStateCustomInput
     sol_de: Int
     sol_en: Int
