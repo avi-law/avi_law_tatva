@@ -215,11 +215,47 @@ exports.addRuleElementStateQuery = (queryParams) => {
     MERGE (re)-[:HAS_RULE_ELEMENT_STATE]->(res_en:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
     SET res_en = $queryParams.res.en`;
   }
+
+  if (queryParams.rule_element_successor_en) {
+    if (queryParams.isValidEN) {
+      query = `${query}
+      MATCH (res_s_en1:Rule_Element_State) WHERE id(res_s_en1) = ${queryParams.rule_element_successor_en}
+      MERGE (res_s_en1)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(res_en)`;
+    }
+    if (queryParams.isValidDE) {
+      query = `${query}
+      MATCH (res_s_de1:Rule_Element_State) WHERE id(res_s_de1) = ${queryParams.rule_element_successor_en}
+      MERGE (res_s_de1)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(res_de)`;
+    }
+  }
+
+  if (queryParams.rule_element_successor_de) {
+    if (queryParams.isValidEN) {
+      query = `${query}
+      MATCH (res_s_en2:Rule_Element_State) WHERE id(res_s_en2) = ${queryParams.rule_element_successor_de}
+      MERGE (res_s_en2)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(res_en)`;
+    }
+    if (queryParams.isValidDE) {
+      query = `${query}
+      MATCH (res_s_de2:Rule_Element_State) WHERE id(res_s_de2) = ${queryParams.rule_element_successor_de}
+      MERGE (res_s_de2)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(res_de)`;
+    }
+  }
+
   if (queryParams.isValidEN && queryParams.isValidDE) {
     query = `${query}
     MERGE (res_en)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res_de)
-    MERGE (res_de)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res_en)
-    `;
+    MERGE (res_de)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res_en)`;
+  }
+  if (queryParams.sol_de && queryParams.isValidDE) {
+    query = `${query}
+    MATCH (sol_de:Sol {sol_id: ${queryParams.sol_de}})
+    MERGE (res_de)-[:RULE_ELEMENT_STATE_SOL_IS]->(sol_de)`;
+  }
+  if (queryParams.sol_en && queryParams.isValidEN) {
+    query = `${query}
+    MATCH (sol_en:Sol {sol_id: ${queryParams.sol_en}})
+    MERGE (res_en)-[:RULE_ELEMENT_STATE_SOL_IS]->(sol_en)`;
   }
   return query;
 };
@@ -234,6 +270,11 @@ exports.updateRuleElementStateQuery = (queryParams) => {
     MATCH (res_de:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1)
     WHERE id(res_de) = $queryParams.res.de.identity
     SET res_de = $queryParams.res.de`;
+    if (queryParams.sol_de) {
+      query = `${query}
+      MATCH (sol_de:Sol {sol_id: ${queryParams.sol_de}})
+      MERGE (res_de)-[:RULE_ELEMENT_STATE_SOL_IS]->(sol_de)`;
+    }
   }
 
   if (queryParams.isValidEN) {
@@ -241,8 +282,12 @@ exports.updateRuleElementStateQuery = (queryParams) => {
     MATCH (res_en:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
     WHERE id(res_en) = $queryParams.res.en.identity
     SET res_en = $queryParams.res.en`;
+    if (queryParams.sol_en) {
+      query = `${query}
+      MATCH (sol_en:Sol {sol_id: ${queryParams.sol_en}})
+      MERGE (res_en)-[:RULE_ELEMENT_STATE_SOL_IS]->(sol_en)`;
+    }
   }
-
   return query;
 };
 

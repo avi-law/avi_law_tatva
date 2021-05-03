@@ -30,6 +30,16 @@ module.exports = async (object, params, ctx) => {
       res: data.res,
       sol_de: _.get(data, "sol_de", null),
       sol_en: _.get(data, "sol_en", null),
+      rule_element_successor_de: _.get(
+        data,
+        "res.de.rule_element_successor_identity",
+        null
+      ),
+      rule_element_successor_en: _.get(
+        data,
+        "res.en.rule_element_successor_identity",
+        null
+      ),
     };
 
     console.log(queryParams);
