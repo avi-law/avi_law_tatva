@@ -245,3 +245,9 @@ exports.updateRuleElementStateQuery = (queryParams) => {
 
   return query;
 };
+
+exports.getRuleElementStateDetails = `
+MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})-[:HAS_RULE_ELEMENT_STATE]-(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
+WHERE id(res) IN $array_of_identity
+OPTIONAL MATCH (res)-[:RULE_ELEMENT_STATE_SOL_IS]->(sl:Sol)
+RETURN res, lang, sl`;

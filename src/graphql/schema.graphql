@@ -1159,6 +1159,10 @@ type RuleBookStateCustomTree {
     res: [RuleElementStateCustom]
   }
 
+  type GetRuleElementDetails {
+    res: [RuleElementStateCustom]
+  }
+
   type CustomRuleBookStructureNew {
     treeStructure: String
     language_preference_settings: languagePreferencesettings
@@ -1559,6 +1563,7 @@ type RuleBookStateCustomTree {
     getSolTagForRuleBookIssue(isSort: Boolean): GetSolsCustom @isAdmin
     getRuleElement(rule_element_doc_id: String!): GetRuleElementCustom @isAdmin
     getRuleElementState(rule_element_doc_id: String!): GetRuleElementCustom @isAdmin
+    getRuleElementStateDetails(rule_element_doc_id: String!, identity: [Int!]!): GetRuleElementDetails @isAdmin
   }
 `;
 
