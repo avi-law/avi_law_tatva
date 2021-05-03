@@ -81,8 +81,10 @@ exports.getRuleElementStateListNew = `
 MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})-[:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(reslang:Language)
 WHERE NOT (res1)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(:Rule_Element_State)
 OPTIONAL MATCH path = (res1)-[:HAS_RULE_ELEMENT_SUCCESSOR*]->(res2:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
-WITH Collect(path)as path_elements, reslang, re, collect({res1: res1, lang: reslang}) as res
-CALL apoc.convert.toTree(path_elements) yield value
+WITH Collect(path)as path_elements, re, collect({res1: res1, lang: reslang}) as res
+CALL apoc.convert.toTree(path_elements, true, {
+  nodes: {Rule_Element_State: ['rule_element_title', 'rule_element_article', 'rule_element_applies_from', 'rule_element_in_force_from'], Language: ['iso_639_1']}
+}) yield value
 RETURN re, res, value
 `;
 
