@@ -77,18 +77,18 @@ module.exports = async (object, params, ctx) => {
     };
     console.log(queryParams);
     console.log(changeRuleElementOrderQuery(queryParams));
-    return true;
+    // return true;
     const result = await session.run(changeRuleElementOrderQuery(queryParams), {
       queryParams,
     });
     if (result && result.records.length > 0) {
-      const rulebooks = result.records.map((record) => {
+      const ruleElement = result.records.map((record) => {
         const rulebookResult = {
-          ...common.getPropertiesFromRecord(record, "rb"),
+          ...common.getPropertiesFromRecord(record, "re"),
         };
         return rulebookResult;
       });
-      console.log(rulebooks);
+      // console.log(ruleElement);
       /**
        const rulebooks = result.records.map((record) => {
         const rulebookResult = {

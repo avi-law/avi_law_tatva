@@ -33,7 +33,10 @@ module.exports = async (object, params, ctx) => {
     );
     if (ruleStatResultDetails && ruleStatResultDetails.records.length > 0) {
       const resResult = ruleStatResultDetails.records.map((record) => {
-        const stateObject = {};
+        const stateObject = {
+          en: null,
+          de: null,
+        };
         const stateIdentity = record.get("res").identity || null;
         const res = common.getPropertiesFromRecord(record, "res");
         const lang = common.getPropertiesFromRecord(record, "lang");
@@ -51,5 +54,7 @@ module.exports = async (object, params, ctx) => {
   } catch (error) {
     session.close();
     throw error;
+  } finally {
+    session.close();
   }
 };
