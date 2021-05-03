@@ -1160,7 +1160,7 @@ type RuleBookStateCustomTree {
   }
 
   type GetRuleElementDetails {
-    res: [RuleElementStateCustom]
+    res: RuleElementStateCustom
   }
 
   type CustomRuleBookStructureNew {

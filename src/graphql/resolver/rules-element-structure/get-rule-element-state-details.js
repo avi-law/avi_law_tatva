@@ -31,12 +31,12 @@ module.exports = async (object, params, ctx) => {
         array_of_identity: identity,
       }
     );
+    const stateObject = {
+      en: null,
+      de: null,
+    };
     if (ruleStatResultDetails && ruleStatResultDetails.records.length > 0) {
-      const resResult = ruleStatResultDetails.records.map((record) => {
-        const stateObject = {
-          en: null,
-          de: null,
-        };
+      ruleStatResultDetails.records.forEach((record) => {
         const stateIdentity = record.get("res").identity || null;
         const res = common.getPropertiesFromRecord(record, "res");
         const lang = common.getPropertiesFromRecord(record, "lang");
@@ -48,9 +48,8 @@ module.exports = async (object, params, ctx) => {
         }
         return stateObject;
       });
-      return { res: resResult };
     }
-    return null;
+    return { res: stateObject };
   } catch (error) {
     session.close();
     throw error;
