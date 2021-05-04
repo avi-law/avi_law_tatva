@@ -1401,7 +1401,7 @@ type RuleBookStateCustomTree {
     deleteRuleElement(rule_element_doc_id: String!, rule_element_parent_doc_id: String, rule_book_id: String, rule_book_issue_no: Int): Boolean @isAdmin
     changeRuleElementOrder(change_order: ChangeRuleElementOrderInput! ): Boolean @isAdmin
     addRuleElementState(rule_element_doc_id: String!, data: CustomAddRuleElementStateInput ): Boolean @isAdmin
-    updateRuleElementState(data: CustomAddRuleElementStateInput ): Boolean @isAdmin
+    updateRuleElementState(rule_element_doc_id: String!, data: CustomAddRuleElementStateInput ): Boolean @isAdmin
     deleteRuleElementState(rule_element_doc_id: String!, identities: [Int!]!): Boolean @isAdmin
   }
   type Query {

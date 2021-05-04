@@ -18,6 +18,8 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const { data } = params;
+  let isValidDE = false;
+  let isValidEN = false;
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
@@ -25,7 +27,46 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
+
+    if (
+      data.res &&
+      data.res.de &&
+      data.res.de.rule_element_title &&
+      data.res.de.rule_element_article
+    ) {
+      isValidDE = true;
+    }
+    if (
+      data.res &&
+      data.res.en &&
+      data.res.en.rule_element_title &&
+      data.res.en.rule_element_article
+    ) {
+      isValidEN = true;
+    }
+    const convertDateToNeo4jFields = [
+      "rule_element_applies_from",
+      "rule_element_in_force_until",
+      "rule_element_applies_until",
+      "rule_element_in_force_from",
+      "rule_element_visible_until",
+      "rule_element_visible_from",
+    ];
+    convertDateToNeo4jFields.forEach((element) => {
+      if (data.res.en && data.res.en[element]) {
+        data.res.en[element] = common.convertToTemporalDate(
+          data.res.en[element]
+        );
+      }
+      if (data.res.de && data.res.de[element]) {
+        data.res.de[element] = common.convertToTemporalDate(
+          data.res.de[element]
+        );
+      }
+    });
     const queryParams = {
+      isValidEN,
+      isValidDE,
       rule_element_doc_id: _.get(params, "rule_element_doc_id", null),
       res: data.res,
       sol_de: _.get(data, "sol_de", null),
@@ -48,6 +89,7 @@ module.exports = async (object, params, ctx) => {
     const result = await session.run(addRuleElementStateQuery(queryParams), {
       queryParams,
     });
+    // console.log(result);
     if (result && result.records.length > 0) {
       /**
        const rulebooks = result.records.map((record) => {
