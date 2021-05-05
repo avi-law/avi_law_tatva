@@ -190,6 +190,12 @@ module.exports = {
       cust_disc_perc: 0,
     },
   },
+  RULE_ELEMENT_STATE_STATUS: {
+    RED: 0,
+    GREEN: 1,
+    BLUE: 2,
+    GREEN_BLUE: 3,
+  },
   EMAIL: {
     EN: {
       SALUTATION: {

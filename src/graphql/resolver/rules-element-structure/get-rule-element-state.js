@@ -6,6 +6,7 @@ const { APIError, common, constants } = require("../../../utils");
 const {
   getRuleElementStateListNew,
 } = require("../../../neo4j/rule-element-query");
+const getRuleElementStateStatus = require("./get-rule-element-state-status");
 const { defaultLanguage } = require("../../../config/application");
 
 const getSuccessorRuleElement = (array, list) => {
@@ -107,7 +108,23 @@ const getStatelist = async (params, ctx) => {
         successorArray,
         ruleElementStateList
       );
-      console.log(otherRuleElementList);
+      if (otherRuleElementList.length > 0) {
+        otherRuleElementList.forEach((element) => {
+          const object = _.get(element, "de", _.get(element, "en", null));
+          if (object) {
+            const status = getRuleElementStateStatus(object);
+            object.rule_element_status = status;
+            const objectOther = _.get(
+              element,
+              "en",
+              _.get(element, "de", null)
+            );
+            if (objectOther) {
+              objectOther.rule_element_status = status;
+            }
+          }
+        });
+      }
       return { re, res: otherRuleElementList };
     }
     return null;

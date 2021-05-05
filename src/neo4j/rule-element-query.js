@@ -86,7 +86,7 @@ OPTIONAL MATCH path = (res1)-[:HAS_RULE_ELEMENT_SUCCESSOR*]->(res2:Rule_Element_
 WITH Collect(path)as path_elements, re, res
 
 CALL apoc.convert.toTree(path_elements, true, {
-  nodes: {Rule_Element_State: ['rule_element_title', 'rule_element_article', 'rule_element_applies_from', 'rule_element_in_force_from'], Language: ['iso_639_1']}
+  nodes: {Rule_Element_State: ['rule_element_show_anyway','rule_element_applies_from','rule_element_in_force_until','rule_element_applies_until','rule_element_in_force_from','rule_element_visible_until','rule_element_visible_from','rule_element_title', 'rule_element_article'], Language: ['iso_639_1']}
 }) yield value
 
 RETURN re, res, value
@@ -468,8 +468,11 @@ RETURN res, lang, sl
 `;
 
 exports.deleteRuleElementState = `
-MATCH (re:Rule_Element)-[r1:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)<-[r2:HAS_RULE_ELEMENT_SUCCESSOR]-(res2:Rule_Element_State)
+MATCH (re:Rule_Element)-[r1:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)
 WHERE re.rule_element_doc_id = $rule_element_doc_id AND id(res1) IN $identities AND NOT (res1)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(:Rule_Element_State)
-// DELETE r1, r2
-RETURN DISTINCT res1, res2
+OPTIONAL MATCH(res1)<-[r2:HAS_RULE_ELEMENT_SUCCESSOR]-(res2:Rule_Element_State)
+WITH res1, r1, r2, res2
+// FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | DELETE r1)
+// FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | DELETE r2)
+RETURN DISTINCT res1,res2
 `;
