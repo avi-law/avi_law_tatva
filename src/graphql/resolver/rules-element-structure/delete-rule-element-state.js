@@ -37,10 +37,7 @@ module.exports = async (object, params, ctx) => {
     };
     console.log(queryParams);
     console.log(deleteRuleElementState);
-    return true;
-    const result = await session.run(deleteRuleElementState, {
-      queryParams,
-    });
+    const result = await session.run(deleteRuleElementState, queryParams);
     if (result && result.records.length > 0) {
       /**
        const rulebooks = result.records.map((record) => {

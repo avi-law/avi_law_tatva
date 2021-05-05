@@ -471,8 +471,12 @@ exports.deleteRuleElementState = `
 MATCH (re:Rule_Element)-[r1:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)
 WHERE re.rule_element_doc_id = $rule_element_doc_id AND id(res1) IN $identities AND NOT (res1)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(:Rule_Element_State)
 OPTIONAL MATCH(res1)<-[r2:HAS_RULE_ELEMENT_SUCCESSOR]-(res2:Rule_Element_State)
-WITH res1, r1, r2, res2
-// FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | DELETE r1)
-// FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | DELETE r2)
+OPTIONAL MATCH(res1)-[r3:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(:Rule_Element_State)
+OPTIONAL MATCH(res1)<-[r4:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]-(:Rule_Element_State)
+WITH res1, r1, r2, res2, r3, r4
+FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | DELETE r1)
+FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | DELETE r2)
+FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | DELETE r3)
+FOREACH (_ IN CASE WHEN r4 IS NOT NULL THEN [1] END | DELETE r4)
 RETURN DISTINCT res1,res2
 `;
