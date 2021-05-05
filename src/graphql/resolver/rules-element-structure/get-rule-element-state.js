@@ -31,14 +31,12 @@ const getSuccessorRuleElement = (array, list) => {
         }
         object[language] = state;
         object[language].identity = _.get(element, "_id", null);
-        const lastState = _.get(
-          ruleElementStateList,
-          `${ruleElementStateList.length - 1}.${language}`,
-          null
-        );
-        if (lastState) {
-          successor = true;
-        }
+        ruleElementStateList.forEach((stateElement) => {
+          const lastState = _.get(stateElement, `${language}`, null);
+          if (lastState) {
+            successor = true;
+          }
+        });
         object[language].has_rule_element_successor = successor;
         if (!successorArray.length) {
           successorArray = _.cloneDeep(
@@ -109,6 +107,7 @@ const getStatelist = async (params, ctx) => {
         successorArray,
         ruleElementStateList
       );
+      console.log(otherRuleElementList);
       return { re, res: otherRuleElementList };
     }
     return null;
