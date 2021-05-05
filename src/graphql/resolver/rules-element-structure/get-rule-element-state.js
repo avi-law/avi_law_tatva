@@ -12,8 +12,9 @@ const getSuccessorRuleElement = (array, list) => {
   let ruleElementStateList = list;
   const object = {};
   let successorArray = [];
-  if (array.length > 0) {
-    array.forEach((element) => {
+  if (array.length > 0 && ruleElementStateList.length > 0) {
+    array.forEach((element, index) => {
+      let successor = false;
       const language = _.get(
         element,
         "rule_element_state_language_is[0].iso_639_1",
@@ -30,6 +31,15 @@ const getSuccessorRuleElement = (array, list) => {
         }
         object[language] = state;
         object[language].identity = _.get(element, "_id", null);
+        const lastState = _.get(
+          ruleElementStateList,
+          `${ruleElementStateList.length - 1}.${language}`,
+          null
+        );
+        if (lastState) {
+          successor = true;
+        }
+        object[language].has_rule_element_successor = successor;
         if (!successorArray.length) {
           successorArray = _.cloneDeep(
             _.get(element, "has_rule_element_successor", [])
@@ -87,6 +97,7 @@ const getStatelist = async (params, ctx) => {
             }
             res[language] = res1Properties;
             res[language].identity = _.get(element, "res1.identity", null);
+            res[language].has_rule_element_successor = false;
             if (!successorArray.length && Object.keys(value).length > 0) {
               successorArray = _.cloneDeep(value.has_rule_element_successor);
             }

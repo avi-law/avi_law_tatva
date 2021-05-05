@@ -381,6 +381,7 @@ const typeDefs = gql`
     rule_element_title: String
     rule_element_title_display: String
     rule_element_work_completed: Boolean
+    has_rule_element_successor: Int
     sol: Sol @relation(name: "RULE_ELEMENT_STATE_SOL_IS", direction: OUT)
    }
 
