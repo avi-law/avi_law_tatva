@@ -25,7 +25,7 @@ const showAnyway = (ruleElementShowAnyway) => {
 };
 
 const setRuleElementInForceUntil = (ruleElementState) => {
-  const nowDate = common.formatDate();
+  const nowDate = common.getTimestamp();
 
   const ruleElementAppliesFrom = _.get(
     ruleElementState,
@@ -69,8 +69,7 @@ const setRuleElementInForceUntil = (ruleElementState) => {
 };
 
 const notSetRuleElementVisibleFrom = (ruleElementState) => {
-  const nowDate = common.formatDate();
-  console.log(ruleElementState);
+  const nowDate = common.getTimestamp();
   const ruleElementInForceFrom = _.get(
     ruleElementState,
     "rule_element_in_force_from",
@@ -113,10 +112,12 @@ const notSetRuleElementVisibleFrom = (ruleElementState) => {
 };
 
 module.exports = (ruleElementState) => {
-  const nowDate = common.formatDate();
+  const nowDate = common.getTimestamp();
   convertDateToNeo4jFields.forEach((element) => {
     if (ruleElementState[element]) {
-      ruleElementState[element] = common.formatDate(ruleElementState[element]);
+      ruleElementState[element] = common.getTimestamp(
+        ruleElementState[element]
+      );
     }
   });
   const ruleElementVisibleFrom = _.get(

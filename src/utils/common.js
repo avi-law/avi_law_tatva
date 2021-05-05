@@ -258,6 +258,20 @@ const removeTag = (html) => {
   return html;
 };
 
+const getTimestamp = (date) => {
+  let d;
+  if (typeof date === "object") {
+    const { day, month, year } = date;
+    d = new Date(`${year}/${month}/${day}`);
+  } else {
+    d = new Date();
+    if (date) {
+      d = new Date(date);
+    }
+  }
+  return d.getTime();
+};
+
 module.exports = {
   getMessage,
   asyncForEach,
@@ -276,4 +290,5 @@ module.exports = {
   nlContentTransformLink,
   nqTransform,
   removeTag,
+  getTimestamp,
 };
