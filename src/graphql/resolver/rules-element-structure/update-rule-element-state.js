@@ -80,7 +80,6 @@ module.exports = async (object, params, ctx) => {
 
     console.log(queryParams);
     console.log(updateRuleElementStateQuery(queryParams));
-    return true;
     const result = await session.run(updateRuleElementStateQuery(queryParams), {
       queryParams,
     });
