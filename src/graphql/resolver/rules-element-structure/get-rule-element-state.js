@@ -112,7 +112,7 @@ const getStatelist = async (params, ctx) => {
         otherRuleElementList.forEach((element) => {
           const object = _.get(element, "de", _.get(element, "en", null));
           if (object) {
-            const status = getRuleElementStateStatus(object);
+            const status = getRuleElementStateStatus(_.cloneDeep(object));
             object.rule_element_status = status;
             const objectOther = _.get(
               element,
