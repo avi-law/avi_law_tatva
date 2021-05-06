@@ -24,9 +24,7 @@ const showAnyway = (ruleElementShowAnyway) => {
   return status;
 };
 
-const setRuleElementInForceUntil = (ruleElementState) => {
-  const nowDate = common.getTimestamp();
-
+const setRuleElementInForceUntil = (ruleElementState, nowDate) => {
   const ruleElementAppliesFrom = _.get(
     ruleElementState,
     "rule_element_applies_from",
@@ -68,8 +66,7 @@ const setRuleElementInForceUntil = (ruleElementState) => {
   return constants.RULE_ELEMENT_STATE_STATUS.BLUE;
 };
 
-const notSetRuleElementVisibleFrom = (ruleElementState) => {
-  const nowDate = common.getTimestamp();
+const notSetRuleElementVisibleFrom = (ruleElementState, nowDate) => {
   const ruleElementInForceFrom = _.get(
     ruleElementState,
     "rule_element_in_force_from",
@@ -105,14 +102,13 @@ const notSetRuleElementVisibleFrom = (ruleElementState) => {
     }
     // in_force_until <= Now
     if (ruleElementInForceUntil <= nowDate) {
-      return setRuleElementInForceUntil(ruleElementState);
+      return setRuleElementInForceUntil(ruleElementState, nowDate);
     }
   }
   return constants.RULE_ELEMENT_STATE_STATUS.BLUE;
 };
 
-module.exports = (ruleElementState) => {
-  const nowDate = common.getTimestamp();
+module.exports = (ruleElementState, nowDate) => {
   convertDateToNeo4jFields.forEach((element) => {
     if (ruleElementState[element]) {
       ruleElementState[element] = common.getTimestamp(
@@ -132,7 +128,7 @@ module.exports = (ruleElementState) => {
   );
   // visible_from = NULL
   if (!ruleElementVisibleFrom) {
-    return notSetRuleElementVisibleFrom(ruleElementState);
+    return notSetRuleElementVisibleFrom(ruleElementState, nowDate);
   }
   // visible_from <= NOW
   if (ruleElementVisibleFrom <= nowDate) {
@@ -140,6 +136,7 @@ module.exports = (ruleElementState) => {
     if (!ruleElementVisibleUntil || ruleElementVisibleUntil > nowDate) {
       return constants.RULE_ELEMENT_STATE_STATUS.GREEN;
     }
+    // Optional case
     return constants.RULE_ELEMENT_STATE_STATUS.GREEN;
   }
   // visible_from > NOW

@@ -66,6 +66,11 @@ const getStatelist = async (params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const ruleElementDocId = params.rule_element_doc_id;
+  const currentDate = _.get(params, "current_date", null);
+  let nowDate = common.getTimestamp();
+  if (currentDate) {
+    nowDate = common.getTimestamp(currentDate);
+  }
   const ruleElementStateList = [];
   let successorArray = [];
   let re = null;
@@ -112,7 +117,10 @@ const getStatelist = async (params, ctx) => {
         otherRuleElementList.forEach((element) => {
           const object = _.get(element, "de", _.get(element, "en", null));
           if (object) {
-            const status = getRuleElementStateStatus(_.cloneDeep(object));
+            const status = getRuleElementStateStatus(
+              _.cloneDeep(object),
+              nowDate
+            );
             object.rule_element_status = status;
             const objectOther = _.get(
               element,

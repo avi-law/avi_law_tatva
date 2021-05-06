@@ -6,48 +6,13 @@
 const _ = require("lodash");
 const fs = require("fs");
 const driver = require("../../../config/db");
-const { APIError, common, constants } = require("../../../utils");
+const { APIError } = require("../../../utils");
 const { getUser } = require("../../../neo4j/query");
 const {
   getRuleBooksStructure,
   getRulesElementTreeStructure,
 } = require("../../../neo4j/tree-query");
-const { frontendURL } = require("../../../config/application");
 const { defaultLanguage } = require("../../../config/application");
-
-const languageImageAndTitle = {
-  de: {
-    image: `${frontendURL}assets/images/GER.jpg`,
-    title: constants.PROVISION_IMAGE_TITLE_GER,
-    lang: "en",
-  },
-  en: {
-    image: `${frontendURL}assets/images/EN.jpg`,
-    title: constants.PROVISION_IMAGE_TITLE_EN,
-    lang: "de",
-  },
-};
-
-const generateRuleBookTreeStructure = (ruleElementList) => {
-  const { treeStructure } = ruleElementList.reduce(
-    (acc, curr) => {
-      curr.has_rule_element_child = null;
-      // Create rule book issue child object to array
-      if (acc.parentMap[curr.rule_element_parent_doc_id]) {
-        (acc.parentMap[curr.rule_element_parent_doc_id].has_rule_element_child =
-          acc.parentMap[curr.rule_element_parent_doc_id]
-            .has_rule_element_child || []).push(curr);
-      } else {
-        curr.has_rule_element_child = null;
-        acc.treeStructure.push(curr);
-      }
-      acc.parentMap[curr.rule_element_doc_id] = curr;
-      return acc;
-    },
-    { parentMap: {}, treeStructure: [] }
-  );
-  return treeStructure;
-};
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
