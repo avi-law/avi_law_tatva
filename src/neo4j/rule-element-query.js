@@ -78,15 +78,25 @@ exports.getRuleElementStateListNew = `
 // CALL apoc.convert.toTree(path_elements) yield value
 // RETURN value, reslang, re;
 
+// MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})-[:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(reslang:Language)
+// WHERE NOT (res1)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(:Rule_Element_State)
+// WITH DISTINCT res1, re, collect({res1: {}, lang: reslang}) as res
+
+// OPTIONAL MATCH path = (res1)-[:HAS_RULE_ELEMENT_SUCCESSOR*]->(res2:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
+// WITH Collect(path)as path_elements, re, res
+
+// CALL apoc.convert.toTree(path_elements, true, {
+//   nodes: {Rule_Element_State: ['rule_element_show_anyway','rule_element_applies_from','rule_element_in_force_until','rule_element_applies_until','rule_element_in_force_from','rule_element_visible_until','rule_element_visible_from','rule_element_title', 'rule_element_article'], Language: ['iso_639_1']}
+// }) yield value
+
 MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})-[:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(reslang:Language)
 WHERE NOT (res1)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(:Rule_Element_State)
-WITH DISTINCT res1, re, collect({res1: res1, lang: reslang}) as res
-
-OPTIONAL MATCH path = (res1)-[:HAS_RULE_ELEMENT_SUCCESSOR*]->(res2:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
-WITH Collect(path)as path_elements, re, res
+WITH res1, collect({ res1: { identity: id(res1), rule_elemnet_title: res1.rule_elemnet_title, rule_element_show_anyway: res1.rule_element_show_anyway,rule_element_applies_from: res1.rule_element_applies_from,rule_element_in_force_until: res1.rule_element_in_force_until,rule_element_applies_until: res1.rule_element_applies_until,rule_element_in_force_from: res1.rule_element_in_force_from,rule_element_visible_until: res1.rule_element_visible_until,rule_element_visible_from: res1.rule_element_visible_from,rule_element_title: res1.rule_element_title, rule_element_article: res1. rule_element_article}, lang: {iso_639_1: reslang.iso_639_1 } }) as res, re
+OPTIONAL MATCH path =(res1)-[:HAS_RULE_ELEMENT_SUCCESSOR*]->(res2:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
+WITH Collect(path) as path_elements, res, re
 
 CALL apoc.convert.toTree(path_elements, true, {
-  nodes: {Rule_Element_State: ['rule_element_show_anyway','rule_element_applies_from','rule_element_in_force_until','rule_element_applies_until','rule_element_in_force_from','rule_element_visible_until','rule_element_visible_from','rule_element_title', 'rule_element_article'], Language: ['iso_639_1']}
+  nodes: {Rule_Element_State: ['rule_element_id', 'rule_elemnet_title', 'rule_element_show_anyway','rule_element_applies_from','rule_element_in_force_until','rule_element_applies_until','rule_element_in_force_from','rule_element_visible_until','rule_element_visible_from','rule_element_title', 'rule_element_article'], Language: ['iso_639_1']}
 }) yield value
 
 RETURN re, res, value
@@ -99,6 +109,30 @@ RETURN re, res, value
 //   nodes: {Rule_Element_State: ['rule_element_title', 'rule_element_article', 'rule_element_applies_from', 'rule_element_in_force_from'], Language: ['iso_639_1']}
 // }) yield value
 // RETURN re, res, value
+`;
+exports.getRuleElementStateListLatest = `
+MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]-(lang:Language)
+OPTIONAL MATCH (res2:Rule_Element_State)-[r:HAS_RULE_ELEMENT_SUCCESSOR]->(res)
+MATCH (lang)<-[:SOL_STATE_LANGUAGE_IS]-(sls:Sol_State)<-[:HAS_SOL_STATE]-(:Sol)<-[:RULE_ELEMENT_STATE_SOL_IS]-(res)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res3)
+RETURN collect(
+  {
+  	identity: id(res),
+    rule_elemnet_title: res.rule_elemnet_title,
+	rule_element_show_anyway: res.rule_element_show_anyway,
+	rule_element_applies_from: res.rule_element_applies_from,
+	rule_element_in_force_until: res.rule_element_in_force_until,
+	rule_element_applies_until: res.rule_element_applies_until,
+	rule_element_in_force_from: res.rule_element_in_force_from,
+	rule_element_visible_until: res.rule_element_visible_until,
+	rule_element_visible_from: res.rule_element_visible_from,
+	rule_element_title: res.rule_element_title,
+	rule_element_article: res.rule_element_article,
+  	rule_element_id: res.rule_element_id,
+    rule_element_successor_identity: id(res2),
+    rule_element_state_language_version_identity: id(res3),
+    rule_element_state_langauge: lang.iso_639_1,
+    sol_name: sls.sol_name_01
+  }) as res
 `;
 
 const dropChangeOrderQuery = (queryParams) => {
@@ -233,15 +267,6 @@ exports.addRuleElementStateQuery = (queryParams) => {
         RETURN sol_de
       }`;
     }
-    if (queryParams.rule_element_successor_en) {
-      query = `${query}
-        CALL {
-          WITH res_de, re, lang1, lang2
-          MATCH (res_s_de1:Rule_Element_State) WHERE id(res_s_de1) = ${queryParams.rule_element_successor_en} AND NOT (res_s_de1)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(:Rule_Element_State)
-          FOREACH (_ IN CASE WHEN res_s_de1 IS NOT NULL THEN [1] END | MERGE (res_s_de1)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(res_de))
-          RETURN res_s_de1
-        }`;
-    }
     if (queryParams.rule_element_successor_de) {
       query = `${query}
       CALL {
@@ -303,25 +328,6 @@ exports.addRuleElementStateQuery = (queryParams) => {
       query = `${query}
       WITH res_en, re, lang1, lang2`;
     }
-    if (queryParams.rule_element_successor_de) {
-      if (queryParams.isValidDE) {
-        query = `${query}
-        CALL {
-          WITH res_en, re, res_de, lang1, lang2
-          MATCH (res_s_en2:Rule_Element_State) WHERE id(res_s_en2) = ${queryParams.rule_element_successor_de}
-          FOREACH (_ IN CASE WHEN res_s_en2 IS NOT NULL THEN [1] END | MERGE (res_s_en2)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(res_en))
-          RETURN res_s_en2
-        }`;
-      } else {
-        query = `${query}
-        CALL {
-          WITH res_en, re, lang1, lang2
-          MATCH (res_s_en2:Rule_Element_State) WHERE id(res_s_en2) = ${queryParams.rule_element_successor_de} AND NOT (res_s_en2)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(:Rule_Element_State)
-          FOREACH (_ IN CASE WHEN res_s_en2 IS NOT NULL THEN [1] END | MERGE (res_s_en2)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(res_en))
-          RETURN res_s_en2
-        }`;
-      }
-    }
   }
 
   if (queryParams.isValidEN && queryParams.isValidDE) {
@@ -349,20 +355,20 @@ exports.updateRuleElementStateQuery = (queryParams) => {
       WHERE id(res_de) = $queryParams.res.de.identity
       FOREACH (_ IN CASE WHEN res_de IS NOT NULL THEN [1] END | SET res_de = $queryParams.res.de )
       WITH res_de, lang1, lang2, re`;
-    } else if (queryParams.identity) {
+    } else {
       query = `${query}
+      OPTIONAL MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(resDe:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1)
+      WHERE NOT (resDe)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(:Rule_Element_State)
+      WITH res_de, lang1, lang2, re, resDe
       CREATE (re)-[:HAS_RULE_ELEMENT_STATE]->(res_de:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1)
       FOREACH (_ IN CASE WHEN res_de IS NOT NULL THEN [1] END | SET res_de = $queryParams.res.de )
-      WITH res_de, lang1, lang2, re
-      MATCH (resDe:Rule_Element_State) WHERE id(resDe) = ${queryParams.identity}
+      WITH res_de, lang1, lang2, re, resDe
       CALL {
         WITH resDe, res_de, lang1, lang2, re
-        OPTIONAL MATCH (resDe)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(res_successor:Rule_Element_State)
-        WITH COLLECT (res_successor) AS res_successor, res_de
-        FOREACH (_ IN CASE WHEN size(res_successor) > 0 THEN [1] END | FOREACH (successor IN res_successor | MERGE (res_de)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(successor)) )
-        RETURN res_successor
+        FOREACH (_ IN CASE WHEN resDe IS NOT NULL THEN [1] END | MERGE (res_de)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(resDe) )
+        RETURN resDe
       }
-      WITH res_de, lang1, lang2, re, res_successor`;
+      WITH res_de, lang1, lang2, re, resDe`;
     }
     if (queryParams.sol_de) {
       query = `${query}
@@ -384,38 +390,34 @@ exports.updateRuleElementStateQuery = (queryParams) => {
       MATCH (res_en:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
       WHERE id(res_en) = $queryParams.res.en.identity
       FOREACH (_ IN CASE WHEN res_en IS NOT NULL THEN [1] END | SET res_en = $queryParams.res.en )`;
-    } else if (queryParams.identity) {
+    } else {
+      if (queryParams.isValidDE) {
+        query = `${query}
+        WITH res_en, re, res_de, lang1, lang2`;
+      } else {
+        query = `${query}
+        WITH res_en, re, lang1, lang2`;
+      }
+
       query = `${query}
+      OPTIONAL MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(resEn:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
+      WHERE NOT (resEn)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(:Rule_Element_State)
       CREATE (re)-[:HAS_RULE_ELEMENT_STATE]->(res_en:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
       FOREACH (_ IN CASE WHEN res_en IS NOT NULL THEN [1] END | SET res_en = $queryParams.res.en )`;
 
       if (queryParams.isValidDE) {
         query = `${query}
-        WITH res_en, re, res_de, lang1, lang2
-        MATCH (resEn:Rule_Element_State) WHERE id(resEn) = ${queryParams.identity}`;
+        WITH res_en, re, res_de, lang1, lang2, resEn
+        FOREACH (_ IN CASE WHEN resEn IS NOT NULL THEN [1] END | MERGE (res_en)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(resEn))
+        WITH res_en, re, res_de, lang1, lang2`;
       } else {
         query = `${query}
-        WITH res_en, re, lang1, lang2
-        MATCH (resEn:Rule_Element_State) WHERE id(resEn) = ${queryParams.identity}`;
+        WITH res_en, re, lang1, lang2, resEn
+        FOREACH (_ IN CASE WHEN resEn IS NOT NULL THEN [1] END | MERGE (res_en)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(resEn))
+        WITH res_en, re, lang1, lang2`;
       }
-
-      query = `${query}
-      CALL {
-        WITH resEn
-        OPTIONAL MATCH (resEn)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(res_successor:Rule_Element_State)
-        WITH COLLECT (res_successor) AS res_successor
-        FOREACH (_ IN CASE WHEN size(res_successor) > 0 THEN [1] END | FOREACH (successor IN res_successor | MERGE (res_en)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(successor)) )
-        RETURN res_successor
-      }`;
     }
 
-    if (queryParams.isValidDE) {
-      query = `${query}
-      WITH res_en, re, res_de, lang1, lang2`;
-    } else {
-      query = `${query}
-      WITH res_en, re, lang1, lang2`;
-    }
     if (queryParams.sol_en) {
       query = `${query}
       OPTIONAL MATCH (res_en)-[r2:RULE_ELEMENT_STATE_SOL_IS]->()
@@ -474,9 +476,9 @@ OPTIONAL MATCH(res1)<-[r2:HAS_RULE_ELEMENT_SUCCESSOR]-(res2:Rule_Element_State)
 OPTIONAL MATCH(res1)-[r3:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(:Rule_Element_State)
 OPTIONAL MATCH(res1)<-[r4:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]-(:Rule_Element_State)
 WITH res1, r1, r2, res2, r3, r4
-FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | DELETE r1)
-FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | DELETE r2)
-FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | DELETE r3)
-FOREACH (_ IN CASE WHEN r4 IS NOT NULL THEN [1] END | DELETE r4)
+// FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | DELETE r2)
+// FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | DELETE r3)
+// FOREACH (_ IN CASE WHEN r4 IS NOT NULL THEN [1] END | DELETE r4)
+RETURN DISTINCT res1,res2
 RETURN DISTINCT res1,res2
 `;
