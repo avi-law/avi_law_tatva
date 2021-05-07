@@ -43,6 +43,10 @@ const getSuccessorRuleElement = (array, list) => {
             "rule_element_state_language_version_identity",
             null
           );
+          deObject.has_rule_element_successor = false;
+          if (_.get(deObject, "rule_element_successor_identity", null)) {
+            deObject.has_rule_element_successor = true;
+          }
           if (versionOf) {
             enObject = _.find(stateListEN, {
               identity: versionOf,
@@ -54,6 +58,10 @@ const getSuccessorRuleElement = (array, list) => {
               enObject.rule_element_title_display = common.removeTag(
                 enObject.rule_element_title
               );
+            }
+            enObject.has_rule_element_successor = false;
+            if (_.get(enObject, "rule_element_successor_identity", null)) {
+              enObject.has_rule_element_successor = true;
             }
             object.en = enObject;
           }
@@ -77,6 +85,10 @@ const getSuccessorRuleElement = (array, list) => {
               deObject.rule_element_title
             );
           }
+          deObject.has_rule_element_successor = false;
+          if (_.get(deObject, "rule_element_successor_identity", null)) {
+            deObject.has_rule_element_successor = true;
+          }
           const versionOf = _.get(
             deObject,
             "rule_element_state_language_version_identity",
@@ -93,6 +105,10 @@ const getSuccessorRuleElement = (array, list) => {
               enObject.rule_element_title_display = common.removeTag(
                 enObject.rule_element_title
               );
+            }
+            enObject.has_rule_element_successor = false;
+            if (_.get(enObject, "rule_element_successor_identity", null)) {
+              enObject.has_rule_element_successor = true;
             }
             object.en = enObject;
           }
@@ -127,12 +143,20 @@ const getSuccessorRuleElement = (array, list) => {
             });
           }
 
+          enObject.has_rule_element_successor = false;
+          if (_.get(enObject, "rule_element_successor_identity", null)) {
+            enObject.has_rule_element_successor = true;
+          }
           object.en = enObject;
           if (deObject) {
             if (deObject.rule_elemnet_title !== "") {
               deObject.rule_element_title_display = common.removeTag(
                 deObject.rule_element_title
               );
+            }
+            deObject.has_rule_element_successor = false;
+            if (_.get(deObject, "rule_element_successor_identity", null)) {
+              deObject.has_rule_element_successor = true;
             }
             object.de = deObject;
           }
@@ -199,6 +223,7 @@ const getStatelist = async (params, ctx) => {
               "rule_element_state_language_version_identity",
               null
             );
+            deObject.has_rule_element_successor = false;
             res.en = enObject;
           }
           if (deObject) {
@@ -212,6 +237,7 @@ const getStatelist = async (params, ctx) => {
               "rule_element_state_language_version_identity",
               null
             );
+            deObject.has_rule_element_successor = false;
             res.de = deObject;
           }
           if (versionOfDE !== versionOfEN) {
