@@ -217,11 +217,15 @@ const getStatelist = async (params, ctx) => {
           if (versionOfDE !== versionOfEN) {
             const successorDE = _.get(deObject, "has_successor_identity", null);
             const successorEN = _.get(enObject, "has_successor_identity", null);
-            if (!successorEN) {
-              delete res.en;
+            if (enObject && versionOfDE !== enObject.identity) {
+              if (!successorEN) {
+                delete res.en;
+              }
             }
-            if (!successorDE) {
-              delete res.de;
+            if (deObject && versionOfEN !== deObject.identity) {
+              if (!successorDE) {
+                delete res.en;
+              }
             }
           }
           if (Object.keys(res).length > 0) {

@@ -133,7 +133,11 @@ RETURN collect(
     rule_element_state_language_version_identity: id(res3),
     rule_element_state_langauge: lang.iso_639_1,
     has_successor_identity: id(res4),
-    sol_name: sls.sol_name_01
+    sol: {
+      sol_state: {
+        sol_name_01: sls.sol_name_01
+      }
+    }
   }) as res
 `;
 
