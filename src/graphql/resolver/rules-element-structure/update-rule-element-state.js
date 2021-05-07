@@ -30,16 +30,16 @@ module.exports = async (object, params, ctx) => {
     if (
       data.res &&
       data.res.de &&
-      data.res.de.rule_element_title &&
-      data.res.de.rule_element_article
+      (data.res.de.rule_element_title || data.res.de.rule_element_article) &&
+      data.res.de.identity // If you want to create new now at a time of update please remove this but need to change query
     ) {
       isValidDE = true;
     }
     if (
       data.res &&
       data.res.en &&
-      data.res.en.rule_element_title &&
-      data.res.en.rule_element_article
+      (data.res.en.rule_element_title || data.res.en.rule_element_article) &&
+      data.res.en.identity // If you want to create new now at a time of update please remove this but need to change query
     ) {
       isValidEN = true;
     }
@@ -84,7 +84,7 @@ module.exports = async (object, params, ctx) => {
     const result = await session.run(updateRuleElementStateQuery(queryParams), {
       queryParams,
     });
-    console.log(result);
+    // console.log(result);
     if (result && result.records.length > 0) {
       /**
        const rulebooks = result.records.map((record) => {

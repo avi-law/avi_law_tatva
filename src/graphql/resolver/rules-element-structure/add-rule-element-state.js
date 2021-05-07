@@ -31,16 +31,14 @@ module.exports = async (object, params, ctx) => {
     if (
       data.res &&
       data.res.de &&
-      data.res.de.rule_element_title &&
-      data.res.de.rule_element_article
+      (data.res.de.rule_element_title || data.res.de.rule_element_article)
     ) {
       isValidDE = true;
     }
     if (
       data.res &&
       data.res.en &&
-      data.res.en.rule_element_title &&
-      data.res.en.rule_element_article
+      (data.res.en.rule_element_title || data.res.en.rule_element_article)
     ) {
       isValidEN = true;
     }
