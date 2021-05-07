@@ -223,7 +223,7 @@ const getStatelist = async (params, ctx) => {
               "rule_element_state_language_version_identity",
               null
             );
-            deObject.has_rule_element_successor = false;
+            enObject.has_rule_element_successor = false;
             res.en = enObject;
           }
           if (deObject) {
