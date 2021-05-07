@@ -1,58 +1,148 @@
-/* eslint-disable no-undef */
 /* eslint-disable no-param-reassign */
 const _ = require("lodash");
 const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
 const {
-  getRuleElementStateListNew,
+  getRuleElementStateListLatest,
 } = require("../../../neo4j/rule-element-query");
 const getRuleElementStateStatus = require("./get-rule-element-state-status");
 const { defaultLanguage } = require("../../../config/application");
 
 const getSuccessorRuleElement = (array, list) => {
-  let ruleElementStateList = list;
-  const object = {};
-  let successorArray = [];
-  if (array.length > 0 && ruleElementStateList.length > 0) {
-    array.forEach((element, index) => {
-      let successor = false;
-      const language = _.get(
-        element,
-        "rule_element_state_language_is[0].iso_639_1",
-        null
-      );
-      if (language) {
-        const state = _.cloneDeep(element);
-        delete state.has_rule_element_successor;
-        delete state.rule_element_state_language_is;
-        if (state.rule_elemnet_title !== "") {
-          state.rule_element_title_display = common.removeTag(
-            state.rule_element_title
+  const ruleElementStateList = list;
+  let successorEN = _.get(
+    ruleElementStateList,
+    "[0]en.has_successor_identity",
+    null
+  );
+  let successorDE = _.get(
+    ruleElementStateList,
+    "[0]de.has_successor_identity",
+    null
+  );
+  let rootIdentityDE = _.get(ruleElementStateList, "[0]de.identity", null);
+  let rootIdentityEN = _.get(ruleElementStateList, "[0]en.identity", null);
+  const stateListDE = _.filter(array, { rule_element_state_langauge: "de" });
+  const stateListEN = _.filter(array, { rule_element_state_langauge: "en" });
+  // console.log("stateListDE.length", stateListDE.length);
+  // console.log("stateListEN.length", stateListEN.length);
+  if (stateListDE.length === stateListEN.length) {
+    stateListDE.forEach((el) => {
+      const object = {};
+      let enObject = null;
+      if (el.rule_element_successor_identity) {
+        const deObject = _.find(stateListDE, { identity: successorDE });
+        if (deObject.rule_elemnet_title !== "") {
+          deObject.rule_element_title_display = common.removeTag(
+            deObject.rule_element_title
           );
         }
-        object[language] = state;
-        object[language].identity = _.get(element, "_id", null);
-        ruleElementStateList.forEach((stateElement) => {
-          const lastState = _.get(stateElement, `${language}`, null);
-          if (lastState) {
-            successor = true;
-          }
-        });
-        object[language].has_rule_element_successor = successor;
-        if (!successorArray.length) {
-          successorArray = _.cloneDeep(
-            _.get(element, "has_rule_element_successor", [])
+        if (deObject) {
+          const versionOf = _.get(
+            deObject,
+            "rule_element_state_language_version_identity",
+            null
           );
+          if (versionOf) {
+            enObject = _.find(stateListEN, {
+              identity: versionOf,
+            });
+          }
+          object.de = deObject;
+          if (enObject) {
+            if (enObject.rule_elemnet_title !== "") {
+              enObject.rule_element_title_display = common.removeTag(
+                enObject.rule_element_title
+              );
+            }
+            object.en = enObject;
+          }
+          successorDE = _.get(deObject, "has_successor_identity", null);
+        }
+        if (Object.keys(object).length > 0) {
+          ruleElementStateList.push(object);
         }
       }
     });
-    ruleElementStateList.push(object);
-    if (successorArray.length > 0) {
-      ruleElementStateList = getSuccessorRuleElement(
-        successorArray,
-        ruleElementStateList
-      );
-    }
+  }
+  if (stateListDE.length > stateListEN.length) {
+    stateListDE.forEach((el) => {
+      const object = {};
+      let enObject = null;
+      if (el.rule_element_successor_identity) {
+        const deObject = _.find(stateListDE, { identity: successorDE });
+        if (deObject) {
+          if (deObject.rule_elemnet_title !== "") {
+            deObject.rule_element_title_display = common.removeTag(
+              deObject.rule_element_title
+            );
+          }
+          const versionOf = _.get(
+            deObject,
+            "rule_element_state_language_version_identity",
+            null
+          );
+          if (versionOf) {
+            enObject = _.find(stateListEN, {
+              identity: versionOf,
+            });
+          }
+          object.de = deObject;
+          if (enObject) {
+            if (enObject.rule_elemnet_title !== "") {
+              enObject.rule_element_title_display = common.removeTag(
+                enObject.rule_element_title
+              );
+            }
+            object.en = enObject;
+          }
+          successorDE = _.get(deObject, "has_successor_identity", null);
+        }
+        if (Object.keys(object).length > 0) {
+          ruleElementStateList.push(object);
+        }
+      }
+    });
+  }
+  if (stateListDE.length < stateListEN.length) {
+    stateListEN.forEach((el) => {
+      const object = {};
+      let deObject = null;
+      if (el.rule_element_successor_identity) {
+        const enObject = _.find(stateListEN, { identity: successorEN });
+        if (enObject) {
+          if (enObject.rule_elemnet_title !== "") {
+            enObject.rule_element_title_display = common.removeTag(
+              enObject.rule_element_title
+            );
+          }
+          const versionOf = _.get(
+            enObject,
+            "rule_element_state_language_version_identity",
+            null
+          );
+          if (versionOf) {
+            deObject = _.find(stateListDE, {
+              identity: versionOf,
+            });
+          }
+
+          object.en = enObject;
+          if (deObject) {
+            if (deObject.rule_elemnet_title !== "") {
+              deObject.rule_element_title_display = common.removeTag(
+                deObject.rule_element_title
+              );
+            }
+            object.de = deObject;
+          }
+          successorEN = _.get(enObject, "has_successor_identity", null);
+        }
+        if (Object.keys(object).length > 0) {
+          ruleElementStateList.push(object);
+        }
+      }
+    });
   }
   return ruleElementStateList;
 };
@@ -72,8 +162,8 @@ const getStatelist = async (params, ctx) => {
     nowDate = common.getTimestamp(currentDate);
   }
   const ruleElementStateList = [];
-  let successorArray = [];
-  let re = null;
+  let otherRuleElementList = [];
+  const res = {};
   try {
     if ((!systemAdmin && !userIsAuthor) || !ruleElementDocId) {
       throw new APIError({
@@ -81,38 +171,70 @@ const getStatelist = async (params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    const result = await session.run(getRuleElementStateListNew, {
+    const result = await session.run(getRuleElementStateListLatest, {
       rule_element_doc_id: ruleElementDocId,
     });
     if (result && result.records.length > 0) {
-      const res = {};
       result.records.forEach((record) => {
         const resState = record.get("res");
-        const value = record.get("value");
-        re = common.getPropertiesFromRecord(record, "re");
+        let versionOfDE = null;
+        let versionOfEN = null;
         if (resState.length > 0) {
-          resState.forEach((element) => {
-            const res1Properties = _.get(element, "res1.properties", null);
-            const language = _.get(element, "lang.properties.iso_639_1", null);
-            if (res1Properties.rule_elemnet_title !== "") {
-              res1Properties.rule_element_title_display = common.removeTag(
-                res1Properties.rule_element_title
+          const enObject = _.find(resState, {
+            rule_element_successor_identity: null,
+            rule_element_state_langauge: "en",
+          });
+          const deObject = _.find(resState, {
+            rule_element_successor_identity: null,
+            rule_element_state_langauge: "de",
+          });
+          if (enObject) {
+            if (enObject.rule_elemnet_title !== "") {
+              enObject.rule_element_title_display = common.removeTag(
+                enObject.rule_element_title
               );
             }
-            res[language] = res1Properties;
-            res[language].identity = _.get(element, "res1.identity", null);
-            res[language].has_rule_element_successor = false;
-            if (!successorArray.length && Object.keys(value).length > 0) {
-              successorArray = _.cloneDeep(value.has_rule_element_successor);
+            versionOfEN = _.get(
+              enObject,
+              "rule_element_state_language_version_identity",
+              null
+            );
+            res.en = enObject;
+          }
+          if (deObject) {
+            if (deObject.rule_elemnet_title !== "") {
+              deObject.rule_element_title_display = common.removeTag(
+                deObject.rule_element_title
+              );
             }
-          });
+            versionOfDE = _.get(
+              deObject,
+              "rule_element_state_language_version_identity",
+              null
+            );
+            res.de = deObject;
+          }
+          if (versionOfDE !== versionOfEN) {
+            const successorDE = _.get(deObject, "has_successor_identity", null);
+            const successorEN = _.get(enObject, "has_successor_identity", null);
+            if (!successorEN) {
+              delete res.en;
+            }
+            if (!successorDE) {
+              delete res.de;
+            }
+          }
+          if (Object.keys(res).length > 0) {
+            ruleElementStateList.push(res);
+            otherRuleElementList = getSuccessorRuleElement(
+              resState,
+              ruleElementStateList
+            );
+          }
         }
       });
-      ruleElementStateList.push(res);
-      const otherRuleElementList = getSuccessorRuleElement(
-        successorArray,
-        ruleElementStateList
-      );
+      // console.lo
+      // Update element state status
       if (otherRuleElementList.length > 0) {
         otherRuleElementList.forEach((element) => {
           const object = _.get(element, "de", _.get(element, "en", null));
@@ -133,7 +255,7 @@ const getStatelist = async (params, ctx) => {
           }
         });
       }
-      return { re, res: otherRuleElementList };
+      return { res: otherRuleElementList };
     }
     return null;
   } catch (error) {

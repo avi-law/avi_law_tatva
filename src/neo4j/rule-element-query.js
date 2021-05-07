@@ -113,24 +113,26 @@ RETURN re, res, value
 exports.getRuleElementStateListLatest = `
 MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]-(lang:Language)
 OPTIONAL MATCH (res2:Rule_Element_State)-[r:HAS_RULE_ELEMENT_SUCCESSOR]->(res)
-MATCH (lang)<-[:SOL_STATE_LANGUAGE_IS]-(sls:Sol_State)<-[:HAS_SOL_STATE]-(:Sol)<-[:RULE_ELEMENT_STATE_SOL_IS]-(res)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res3)
+OPTIONAL MATCH (res4:Rule_Element_State)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(res)
+OPTIONAL MATCH (lang)<-[:SOL_STATE_LANGUAGE_IS]-(sls:Sol_State)<-[:HAS_SOL_STATE]-(:Sol)<-[:RULE_ELEMENT_STATE_SOL_IS]-(res)
+OPTIONAL MATCH (res)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res3)
 RETURN collect(
   {
-  	identity: id(res),
-    rule_elemnet_title: res.rule_elemnet_title,
-	rule_element_show_anyway: res.rule_element_show_anyway,
-	rule_element_applies_from: res.rule_element_applies_from,
-	rule_element_in_force_until: res.rule_element_in_force_until,
-	rule_element_applies_until: res.rule_element_applies_until,
-	rule_element_in_force_from: res.rule_element_in_force_from,
-	rule_element_visible_until: res.rule_element_visible_until,
-	rule_element_visible_from: res.rule_element_visible_from,
-	rule_element_title: res.rule_element_title,
-	rule_element_article: res.rule_element_article,
-  	rule_element_id: res.rule_element_id,
+    identity: id(res),
+    rule_element_show_anyway: res.rule_element_show_anyway,
+    rule_element_applies_from: res.rule_element_applies_from,
+    rule_element_in_force_until: res.rule_element_in_force_until,
+    rule_element_applies_until: res.rule_element_applies_until,
+    rule_element_in_force_from: res.rule_element_in_force_from,
+    rule_element_visible_until: res.rule_element_visible_until,
+    rule_element_visible_from: res.rule_element_visible_from,
+    rule_element_title: res.rule_element_title,
+    rule_element_article: res.rule_element_article,
+    rule_element_id: res.rule_element_id,
     rule_element_successor_identity: id(res2),
     rule_element_state_language_version_identity: id(res3),
     rule_element_state_langauge: lang.iso_639_1,
+    has_successor_identity: id(res4),
     sol_name: sls.sol_name_01
   }) as res
 `;
