@@ -277,19 +277,19 @@ RETURN rbi, rbis, sl
 
 exports.getSolTagForRuleBookIssue = (isSort) => {
   let query = `
-  MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)
+  MATCH (sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)
   CALL {
     WITH sl
     MATCH (sl)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
     RETURN collect({ sls: sls, lang: lang }) AS slState
   }
-  RETURN distinct sl, cou, slState as sls
-  ORDER BY sl.sol_date DESC
+  WITH sl, lang, sls order by sls.sol_date DESC
+  RETURN distinct sl.sol_id as sol_id, collect({ sls: {sol_name_01: sls.sol_name_01}, lang: { iso_639_1: lang.iso_639_1}}) as sls
   `;
   if (isSort) {
-    query = `MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
-    WITH sl, cou, lang, sls order by toLower(sls.sol_name_01) ASC
-    RETURN distinct sl, cou, collect({ sls: sls, lang: lang }) as sls`;
+    query = `MATCH (sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
+    WITH sl, lang, sls order by toLower(sls.sol_name_01) ASC
+    RETURN distinct sl.sol_id as sol_id, collect({ sls: {sol_name_01: sls.sol_name_01}, lang: { iso_639_1: lang.iso_639_1}}) as sls`;
   }
   return query;
 };
