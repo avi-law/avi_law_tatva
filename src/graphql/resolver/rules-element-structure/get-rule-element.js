@@ -40,7 +40,7 @@ module.exports = async (object, params, ctx) => {
             ) {
               const properties = _.get(reState, "res.properties", null);
               if (properties) {
-                if (properties.rule_elemnet_title !== "") {
+                if (properties.rule_element_title !== "") {
                   properties.rule_element_title = common.removeTag(
                     properties.rule_element_title
                   );

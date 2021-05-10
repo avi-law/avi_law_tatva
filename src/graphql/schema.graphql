@@ -1095,6 +1095,7 @@ type RuleBookStateCustomTree {
   # Extent rule element type for tree structure
   extend type Rule_Element {
     has_rule_element:[Rule_Element]
+    has_rule_element_state:[RuleElementStateCustom]
   }
   # Extent rule book issue type for rule element type tree structure
   extend type Rule_Book_Issue {
@@ -1567,7 +1568,7 @@ type RuleBookStateCustomTree {
     getRuleElement(rule_element_doc_id: String!): GetRuleElementCustom @isAdmin
     getRuleElementState(rule_element_doc_id: String!, current_date: _Neo4jDate): GetRuleElementCustom @isAdmin
     getRuleElementStateDetails(rule_element_doc_id: String!, identity: [Int!]!): GetRuleElementDetails @isAdmin
-    getAllRuleElementState(rule_book_id: String!, rule_element_doc_id: String, current_date: _Neo4jDate): String @isAuthenticated
+    getAllRuleElementState(rule_book_id: String!, rule_element_doc_id: String, current_date: _Neo4jDate): Rule_Book @isAuthenticated
     getSolTagForRuleElement(isSort: Boolean): GetSolsCustom
   }
 `;

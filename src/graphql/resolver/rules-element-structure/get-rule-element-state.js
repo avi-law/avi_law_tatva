@@ -32,7 +32,7 @@ const getSuccessorRuleElement = (array, list) => {
       let enObject = null;
       if (el.rule_element_successor_identity) {
         const deObject = _.find(stateListDE, { identity: successorDE });
-        if (deObject.rule_elemnet_title !== "") {
+        if (deObject.rule_element_title !== "") {
           deObject.rule_element_title_display = common.removeTag(
             deObject.rule_element_title
           );
@@ -54,7 +54,7 @@ const getSuccessorRuleElement = (array, list) => {
           }
           object.de = deObject;
           if (enObject) {
-            if (enObject.rule_elemnet_title !== "") {
+            if (enObject.rule_element_title !== "") {
               enObject.rule_element_title_display = common.removeTag(
                 enObject.rule_element_title
               );
@@ -80,7 +80,7 @@ const getSuccessorRuleElement = (array, list) => {
       if (el.rule_element_successor_identity) {
         const deObject = _.find(stateListDE, { identity: successorDE });
         if (deObject) {
-          if (deObject.rule_elemnet_title !== "") {
+          if (deObject.rule_element_title !== "") {
             deObject.rule_element_title_display = common.removeTag(
               deObject.rule_element_title
             );
@@ -101,7 +101,7 @@ const getSuccessorRuleElement = (array, list) => {
           }
           object.de = deObject;
           if (enObject) {
-            if (enObject.rule_elemnet_title !== "") {
+            if (enObject.rule_element_title !== "") {
               enObject.rule_element_title_display = common.removeTag(
                 enObject.rule_element_title
               );
@@ -127,7 +127,7 @@ const getSuccessorRuleElement = (array, list) => {
       if (el.rule_element_successor_identity) {
         const enObject = _.find(stateListEN, { identity: successorEN });
         if (enObject) {
-          if (enObject.rule_elemnet_title !== "") {
+          if (enObject.rule_element_title !== "") {
             enObject.rule_element_title_display = common.removeTag(
               enObject.rule_element_title
             );
@@ -149,7 +149,7 @@ const getSuccessorRuleElement = (array, list) => {
           }
           object.en = enObject;
           if (deObject) {
-            if (deObject.rule_elemnet_title !== "") {
+            if (deObject.rule_element_title !== "") {
               deObject.rule_element_title_display = common.removeTag(
                 deObject.rule_element_title
               );
@@ -213,7 +213,7 @@ const getStatelist = async (params, ctx) => {
             rule_element_state_langauge: "de",
           });
           if (enObject) {
-            if (enObject.rule_elemnet_title !== "") {
+            if (enObject.rule_element_title !== "") {
               enObject.rule_element_title_display = common.removeTag(
                 enObject.rule_element_title
               );
@@ -227,7 +227,7 @@ const getStatelist = async (params, ctx) => {
             res.en = enObject;
           }
           if (deObject) {
-            if (deObject.rule_elemnet_title !== "") {
+            if (deObject.rule_element_title !== "") {
               deObject.rule_element_title_display = common.removeTag(
                 deObject.rule_element_title
               );
