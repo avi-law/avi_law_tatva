@@ -140,7 +140,6 @@ module.exports = async (object, params, ctx) => {
         );
         getStatesAndUpdateStatus(ruleElementState, nowDate);
       }
-      return JSON.stringify(ruleElementStructureList);
       return _.get(ruleElementStructureList, "[0]", null);
     }
     return null;
