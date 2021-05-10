@@ -108,19 +108,27 @@ CALL apoc.convert.toTree(path_elements) yield value
 RETURN value as rule_book;
 `;
 
-exports.getRuleElementStateTreeStructure = `
-MATCH path = (rb:Rule_Book {rule_book_id: $rule_book_id})-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
-WITH path, nodes(path) AS n, apoc.text.rpad(reduce(a = "", r in relationships(path) | a + apoc.text.lpad(toString(COALESCE(r.order,0)),6,"0")),120,"0") AS orders
-WITH path AS path_ordered order by orders
-WITH Collect(path_ordered) AS path_elements
-CALL apoc.convert.toTree(path_elements, true, {
-  nodes: {
-  Language: ['iso_639_1'],
-  Rule_Element: ['rule_element_id','rule_element_is_rule_book','rule_element_header_lvl','rule_element_doc_id'],
-  Rule_Element_State: ['rule_element_show_anyway','rule_element_applies_from','rule_element_in_force_until','rule_element_applies_until','rule_element_in_force_from','rule_element_visible_until','rule_element_visible_from','rule_element_title', 'rule_element_article']
+exports.getRuleElementStateTreeStructure = (queryParams) => {
+  let query = "";
+  if (queryParams.rule_element_doc_id) {
+    query = `MATCH path = (rb:Rule_Book {rule_book_id: $rule_book_id})-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_ELEMENT]->(re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})-[:HAS_RULE_ELEMENT*0..]->(:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)`;
+  } else {
+    query = `MATCH path = (rb:Rule_Book {rule_book_id: $rule_book_id})-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)`;
   }
-}) yield value
-RETURN value as rule_book
-ORDER BY rbi.rule_book_issue_no DESC
-LIMIT 1
-`;
+  query = `${query}
+  WITH rbi, path, nodes(path) AS n, apoc.text.rpad(reduce(a = "", r in relationships(path) | a + apoc.text.lpad(toString(COALESCE(r.order,0)),6,"0")),120,"0") AS orders
+  WITH path AS path_ordered, rbi order by orders
+  WITH Collect(path_ordered) AS path_elements, rbi
+  CALL apoc.convert.toTree(path_elements, true, {
+    nodes: {
+    Language: ['iso_639_1'],
+    Rule_Element: ['rule_element_id','rule_element_is_rule_book','rule_element_header_lvl','rule_element_doc_id'],
+    Rule_Element_State: ['rule_element_show_anyway','rule_element_applies_from','rule_element_in_force_until','rule_element_applies_until','rule_element_in_force_from','rule_element_visible_until','rule_element_visible_from','rule_element_title', 'rule_element_article']
+    }
+  }) yield value
+  RETURN value as rule_book
+  ORDER BY rbi.rule_book_issue_no DESC
+  LIMIT 1
+  `;
+  return query;
+};

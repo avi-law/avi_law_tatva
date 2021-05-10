@@ -109,6 +109,8 @@ const addRuleElementState = require("./rules-element-structure/add-rule-element-
 const updateRuleElementState = require("./rules-element-structure/update-rule-element-state");
 const getRuleElementStateDetails = require("./rules-element-structure/get-rule-element-state-details");
 const deleteRuleElementState = require("./rules-element-structure/delete-rule-element-state");
+const getAllRuleElementState = require("./rules-element-structure/get-all-rule-element-state");
+const getSolTagForRuleElement = require("./rules-element-structure/get-sol-tag-for-rule-element");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -223,6 +225,8 @@ const resolvers = {
     getRuleElement,
     getRuleElementState,
     getRuleElementStateDetails,
+    getAllRuleElementState,
+    getSolTagForRuleElement,
   },
 };
 

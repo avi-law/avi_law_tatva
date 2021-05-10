@@ -420,3 +420,8 @@ FOREACH (_ IN CASE WHEN r4 IS NOT NULL THEN [1] END | DELETE r4)
 RETURN DISTINCT res1,res2
 RETURN DISTINCT res1,res2
 `;
+
+exports.getSolTagForRuleElement = `
+MATCH (sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
+WITH sl, lang, sls order by toLower(sls.sol_name_01) ASC
+RETURN distinct sl.sol_id as sol_id, collect({ sls: {sol_name_01: sls.sol_name_01}, lang: { iso_639_1: lang.iso_639_1}}) as sls`;
