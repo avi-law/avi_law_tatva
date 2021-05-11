@@ -64,7 +64,7 @@ const schema = makeAugmentedSchema({
     isUnAuthenticated,
     isAdmin: isAdminDirective,
   },
-  logger: { log: (e) => console.error(e.message) },
+  logger: { log: (e) => console.error(e) },
   allowUndefinedInResolve: true,
   config: {
     query: {
@@ -76,6 +76,21 @@ const schema = makeAugmentedSchema({
   },
 });
 
+const responseTime = () => {
+  const start = Date.now();
+  return {
+    willSendResponse(ctx) {
+      const stop = Date.now();
+      const size = JSON.stringify(ctx.response).length * 2;
+      ctx.context.req.res.setHeader("X-Response-Time", stop - start);
+      ctx.context.req.res.setHeader("X-Response-Context-size", size);
+      // console.log(
+      //   `Operation ${op} completed in ${elapsed} ms and returned ${size} bytes`
+      // );
+    },
+  };
+};
+
 module.exports = new ApolloServer({
   context: ({ req }) => ({
     driver,
@@ -85,4 +100,11 @@ module.exports = new ApolloServer({
   formatError,
   introspection: true,
   playground: true,
+  plugins: [
+    {
+      requestDidStart() {
+        return responseTime();
+      },
+    },
+  ],
 });
