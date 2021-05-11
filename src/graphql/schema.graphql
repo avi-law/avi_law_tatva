@@ -445,6 +445,12 @@ const typeDefs = gql`
     total: Int
   }
 
+  type GetSolTags {
+    sol_id: Int
+    title_en: String
+    title_de: String
+  }
+
   type InvoiceCustom {
     invoices: [Invoice]
     total: Int
@@ -1571,7 +1577,7 @@ type RuleBookStateCustomTree {
     getRuleElementState(rule_element_doc_id: String!, current_date: _Neo4jDate): GetRuleElementCustom @isAdmin
     getRuleElementStateDetails(rule_element_doc_id: String!, identity: [Int!]!): GetRuleElementDetails @isAdmin
     getAllRuleElementState(rule_book_id: String!, rule_element_doc_id: String, current_date: _Neo4jDate): Rule_Book @isAuthenticated
-    getSolTagForRuleElement(isSort: Boolean): GetSolsCustom
+    getSolTagForRuleElement(isSort: Boolean): [GetSolTags]
   }
 `;
 

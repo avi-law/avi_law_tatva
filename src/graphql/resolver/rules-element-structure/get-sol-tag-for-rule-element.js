@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
+const _ = require("lodash");
 const driver = require("../../../config/db");
 const { common } = require("../../../utils");
 const {
@@ -12,45 +13,24 @@ module.exports = async (object, params) => {
     const result = await session.run(getSolTagForRuleElement);
     if (result && result.records.length > 0) {
       if (result && result.records.length > 0) {
-        const sols = result.records.map((record) => {
-          const languages = [];
-          const sls = {
-            de: {
-              sol_link: null,
-              sol_name_01: null,
-              sol_name_02: null,
-              sol_name_03: null,
-              sol_page: null,
-              lang: null,
-            },
-            en: {
-              sol_link: null,
-              sol_name_01: null,
-              sol_name_02: null,
-              sol_name_03: null,
-              sol_page: null,
-              lang: null,
-            },
+        const sols = [];
+        result.records.forEach((record) => {
+          const obj = {
+            sol_id: record.get("sol_id"),
           };
-
           if (record.get("sls") && record.get("sls").length > 0) {
             record.get("sls").forEach((slState) => {
               if (slState.lang && slState.sls && slState.lang.iso_639_1) {
-                sls[slState.lang.iso_639_1] = slState.sls;
-                sls[slState.lang.iso_639_1].lang = slState.lang;
-                languages.push(slState.lang.iso_639_1);
+                obj[`title_${slState.lang.iso_639_1}`] =
+                  slState.sls.sol_name_01;
               }
             });
           }
-          const slResult = {
-            sol_id: record.get("sol_id"),
-            sol_state: sls,
-          };
-          return slResult;
+          obj.title_en = _.get(obj, `title_en`, _.get(obj, `title_de`, null));
+          obj.title_de = _.get(obj, `title_de`, _.get(obj, `title_en`, null));
+          sols.push(obj);
         });
-        return {
-          sols,
-        };
+        return sols;
       }
     }
     session.close();
