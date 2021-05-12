@@ -8,6 +8,21 @@ const {
 const getRuleElementStateStatus = require("./get-rule-element-state-status");
 const { defaultLanguage } = require("../../../config/application");
 
+const setSolName = (object) => {
+  const sol = _.cloneDeep(_.get(object, "sol", null));
+  if (sol) {
+    let solObject = _.find(sol, {
+      lang: object.rule_element_state_langauge,
+    });
+    if (!solObject) {
+      solObject = _.find(sol, {
+        lang: object.rule_element_state_langauge === "de" ? "en" : "de",
+      });
+    }
+    _.set(object, "sol", { sol_state: solObject });
+  }
+};
+
 const getSuccessorRuleElement = (array, list) => {
   const ruleElementStateList = list;
   let successorEN = _.get(
@@ -52,6 +67,7 @@ const getSuccessorRuleElement = (array, list) => {
               identity: versionOf,
             });
           }
+          setSolName(deObject);
           object.de = deObject;
           if (enObject) {
             if (enObject.rule_element_title !== "") {
@@ -63,6 +79,7 @@ const getSuccessorRuleElement = (array, list) => {
             if (_.get(enObject, "rule_element_successor_identity", null)) {
               enObject.has_rule_element_successor = true;
             }
+            setSolName(enObject);
             object.en = enObject;
           }
           successorDE = _.get(deObject, "has_successor_identity", null);
@@ -99,6 +116,7 @@ const getSuccessorRuleElement = (array, list) => {
               identity: versionOf,
             });
           }
+          setSolName(deObject);
           object.de = deObject;
           if (enObject) {
             if (enObject.rule_element_title !== "") {
@@ -110,6 +128,7 @@ const getSuccessorRuleElement = (array, list) => {
             if (_.get(enObject, "rule_element_successor_identity", null)) {
               enObject.has_rule_element_successor = true;
             }
+            setSolName(enObject);
             object.en = enObject;
           }
           successorDE = _.get(deObject, "has_successor_identity", null);
@@ -147,6 +166,7 @@ const getSuccessorRuleElement = (array, list) => {
           if (_.get(enObject, "rule_element_successor_identity", null)) {
             enObject.has_rule_element_successor = true;
           }
+          setSolName(enObject);
           object.en = enObject;
           if (deObject) {
             if (deObject.rule_element_title !== "") {
@@ -158,6 +178,7 @@ const getSuccessorRuleElement = (array, list) => {
             if (_.get(deObject, "rule_element_successor_identity", null)) {
               deObject.has_rule_element_successor = true;
             }
+            setSolName(deObject);
             object.de = deObject;
           }
           successorEN = _.get(enObject, "has_successor_identity", null);
@@ -224,6 +245,7 @@ const getStatelist = async (params, ctx) => {
               null
             );
             enObject.has_rule_element_successor = false;
+            setSolName(enObject);
             res.en = enObject;
           }
           if (deObject) {
@@ -238,6 +260,7 @@ const getStatelist = async (params, ctx) => {
               null
             );
             deObject.has_rule_element_successor = false;
+            setSolName(deObject);
             res.de = deObject;
           }
           if (versionOfDE !== versionOfEN) {
