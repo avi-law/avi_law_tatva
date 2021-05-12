@@ -16,8 +16,64 @@ const getRuleElementStateStatus = require("./get-rule-element-state-status");
 
 const getStatesAndUpdateStatus = (ruleElementState, nowDate) => {
   ruleElementState.forEach((element) => {
-    if (element.has_rule_element) {
-      if (
+    if (!element.rule_element_is_rule_book) {
+      if (element.has_rule_element) {
+        if (
+          element.has_rule_element_state &&
+          element.has_rule_element_state.length > 0
+        ) {
+          const stateData = _.cloneDeep(element.has_rule_element_state);
+          const stateObject = [];
+          element.has_rule_element_state = [];
+          stateData.forEach((stateElement) => {
+            const obj = { en: null, de: null };
+            if (stateElement.rule_element_state_language_is.length > 0) {
+              const lang =
+                stateElement.rule_element_state_language_is[0].iso_639_1;
+              obj[lang] = {
+                ...stateElement,
+              };
+
+              if (obj[lang].rule_element_title !== "") {
+                obj[lang].rule_element_title_display = common.removeTag(
+                  obj[lang].rule_element_title
+                );
+              }
+              const status = getRuleElementStateStatus(
+                _.cloneDeep(obj[lang]),
+                nowDate
+              );
+              if (status === constants.RULE_ELEMENT_STATE_STATUS.GREEN) {
+                obj[lang].rule_element_status = status;
+                obj[lang].identity = stateElement["_id"];
+                delete obj[lang].rule_element_state_language_is;
+                stateObject.push(obj);
+              }
+            }
+          });
+          const deList = [];
+          const enList = [];
+          stateObject.forEach((el) => {
+            if (el.de) {
+              deList.push(el.de);
+            }
+            if (el.en) {
+              enList.push(el.en);
+            }
+          });
+          const activeState = { en: null, de: null };
+          if (enList.length > 0) {
+            activeState.en = enList[enList.length - 1];
+          }
+          if (deList.length > 0) {
+            activeState.de = deList[deList.length - 1];
+          }
+          if (activeState.en || activeState.de) {
+            element.has_rule_element_state.push(activeState);
+          }
+        }
+        getStatesAndUpdateStatus(element.has_rule_element, nowDate);
+      } else if (
         element.has_rule_element_state &&
         element.has_rule_element_state.length > 0
       ) {
@@ -26,30 +82,28 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate) => {
         element.has_rule_element_state = [];
         stateData.forEach((stateElement) => {
           const obj = { en: null, de: null };
-          if (stateElement.rule_element_state_language_is.length > 0) {
-            const lang =
-              stateElement.rule_element_state_language_is[0].iso_639_1;
-            obj[lang] = {
-              ...stateElement,
-            };
+          const lang = stateElement.rule_element_state_language_is[0].iso_639_1;
+          obj[lang] = {
+            ...stateElement,
+          };
 
-            if (obj[lang].rule_element_title !== "") {
-              obj[lang].rule_element_title_display = common.removeTag(
-                obj[lang].rule_element_title
-              );
-            }
-            const status = getRuleElementStateStatus(
-              _.cloneDeep(obj[lang]),
-              nowDate
+          if (obj[lang].rule_element_title !== "") {
+            obj[lang].rule_element_title_display = common.removeTag(
+              obj[lang].rule_element_title
             );
-            if (status === constants.RULE_ELEMENT_STATE_STATUS.GREEN) {
-              obj[lang].rule_element_status = status;
-              obj[lang].identity = stateElement["_id"];
-              delete obj[lang].rule_element_state_language_is;
-              stateObject.push(obj);
-            }
+          }
+          const status = getRuleElementStateStatus(
+            _.cloneDeep(obj[lang]),
+            nowDate
+          );
+          if (status === constants.RULE_ELEMENT_STATE_STATUS.GREEN) {
+            obj[lang].identity = stateElement["_id"];
+            obj[lang].rule_element_status = status;
+            delete obj[lang].rule_element_state_language_is;
+            stateObject.push(obj);
           }
         });
+
         const deList = [];
         const enList = [];
         stateObject.forEach((el) => {
@@ -71,58 +125,8 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate) => {
           element.has_rule_element_state.push(activeState);
         }
       }
-      getStatesAndUpdateStatus(element.has_rule_element, nowDate);
-    } else if (
-      element.has_rule_element_state &&
-      element.has_rule_element_state.length > 0
-    ) {
-      const stateData = _.cloneDeep(element.has_rule_element_state);
-      const stateObject = [];
-      element.has_rule_element_state = [];
-      stateData.forEach((stateElement) => {
-        const obj = { en: null, de: null };
-        const lang = stateElement.rule_element_state_language_is[0].iso_639_1;
-        obj[lang] = {
-          ...stateElement,
-        };
-
-        if (obj[lang].rule_element_title !== "") {
-          obj[lang].rule_element_title_display = common.removeTag(
-            obj[lang].rule_element_title
-          );
-        }
-        const status = getRuleElementStateStatus(
-          _.cloneDeep(obj[lang]),
-          nowDate
-        );
-        if (status === constants.RULE_ELEMENT_STATE_STATUS.GREEN) {
-          obj[lang].identity = stateElement["_id"];
-          obj[lang].rule_element_status = status;
-          delete obj[lang].rule_element_state_language_is;
-          stateObject.push(obj);
-        }
-      });
-
-      const deList = [];
-      const enList = [];
-      stateObject.forEach((el) => {
-        if (el.de) {
-          deList.push(el.de);
-        }
-        if (el.en) {
-          enList.push(el.en);
-        }
-      });
-      const activeState = { en: null, de: null };
-      if (enList.length > 0) {
-        activeState.en = enList[enList.length - 1];
-      }
-      if (deList.length > 0) {
-        activeState.de = deList[deList.length - 1];
-      }
-      if (activeState.en || activeState.de) {
-        element.has_rule_element_state.push(activeState);
-      }
+    } else {
+      element.has_rule_element = [];
     }
   });
 };
