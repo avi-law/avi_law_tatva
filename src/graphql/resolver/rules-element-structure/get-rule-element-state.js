@@ -47,12 +47,12 @@ const getSuccessorRuleElement = (array, list) => {
       let enObject = null;
       if (el.rule_element_successor_identity) {
         const deObject = _.find(stateListDE, { identity: successorDE });
-        if (deObject.rule_element_title !== "") {
-          deObject.rule_element_title_display = common.removeTag(
-            deObject.rule_element_title
-          );
-        }
         if (deObject) {
+          if (deObject.rule_element_title !== "") {
+            deObject.rule_element_title_display = common.removeTag(
+              deObject.rule_element_title
+            );
+          }
           const versionOf = _.get(
             deObject,
             "rule_element_state_language_version_identity",
