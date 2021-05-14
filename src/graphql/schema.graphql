@@ -1113,6 +1113,7 @@ type RuleBookStateCustomTree {
     rule_book_issue: Rule_Book_Issue
     is_exists_rule_element_state_de: Boolean
     is_exists_rule_element_state_en: Boolean
+    language_preference_settings: languagePreferencesettings
   }
 
   enum Subscription_Plan {
