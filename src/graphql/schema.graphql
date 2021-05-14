@@ -1111,6 +1111,7 @@ type RuleBookStateCustomTree {
   }
   extend type Rule_Book {
     rule_book_issue: Rule_Book_Issue
+    isExistsState: Boolean
   }
 
   enum Subscription_Plan {

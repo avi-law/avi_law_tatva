@@ -14,7 +14,7 @@ const {
 const { defaultLanguage } = require("../../../config/application");
 const getRuleElementStateStatus = require("./get-rule-element-state-status");
 
-const getStatesAndUpdateStatus = (ruleElementState, nowDate) => {
+const getStatesAndUpdateStatus = (ruleElementState, nowDate, isExistsState) => {
   ruleElementState.forEach((element) => {
     if (element.has_rule_element) {
       if (
@@ -68,11 +68,16 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate) => {
           activeState.de = deList[deList.length - 1];
         }
         if (activeState.en || activeState.de) {
+          isExistsState = true;
           element.has_rule_element_state.push(activeState);
         }
       }
       if (!element.rule_element_is_rule_book) {
-        getStatesAndUpdateStatus(element.has_rule_element, nowDate);
+        getStatesAndUpdateStatus(
+          element.has_rule_element,
+          nowDate,
+          isExistsState
+        );
       } else {
         _.set(element, "has_rule_element", []);
       }
@@ -125,10 +130,12 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate) => {
         activeState.de = deList[deList.length - 1];
       }
       if (activeState.en || activeState.de) {
+        isExistsState = true;
         element.has_rule_element_state.push(activeState);
       }
     }
   });
+  return isExistsState;
 };
 
 module.exports = async (object, params, ctx) => {
@@ -138,6 +145,7 @@ module.exports = async (object, params, ctx) => {
   const userIsAuthor = user.user_is_author || null;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const session = driver.session();
+  let isExistsState = false;
   params = JSON.parse(JSON.stringify(params));
   const ruleBookId = params.rule_book_id;
   const ruleBookIssueNo = params.rule_book_issue_no;
@@ -185,8 +193,13 @@ module.exports = async (object, params, ctx) => {
           "rule_book_issue.has_rule_element",
           null
         );
-        getStatesAndUpdateStatus(ruleElementState, nowDate);
+        isExistsState = getStatesAndUpdateStatus(
+          ruleElementState,
+          nowDate,
+          isExistsState
+        );
       }
+      _.set(ruleElementStructureList, "[0].isExistsState", isExistsState);
       return _.get(ruleElementStructureList, "[0]", null);
     }
     return null;
