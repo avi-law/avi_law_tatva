@@ -15,12 +15,7 @@ const { defaultLanguage } = require("../../../config/application");
 const getRuleElementStateStatus = require("./get-rule-element-state-status");
 const { getUser } = require("../../../neo4j/query");
 
-const getStatesAndUpdateStatus = (
-  ruleElementState,
-  nowDate,
-  isExistsElementStateEN,
-  isExistsElementStateDE
-) => {
+const getStatesAndUpdateStatus = (ruleElementState, nowDate, existsStatus) => {
   ruleElementState.forEach((element) => {
     if (element.has_rule_element) {
       if (
@@ -68,14 +63,14 @@ const getStatesAndUpdateStatus = (
         });
         const activeState = { en: null, de: null };
         if (enList.length > 0) {
+          existsStatus.isExistsElementStateEN = true;
           activeState.en = enList[enList.length - 1];
         }
         if (deList.length > 0) {
-          isExistsElementStateEN = true;
+          existsStatus.isExistsElementStateDE = true;
           activeState.de = deList[deList.length - 1];
         }
         if (activeState.en || activeState.de) {
-          isExistsElementStateDE = true;
           element.has_rule_element_state.push(activeState);
         }
       }
@@ -83,8 +78,7 @@ const getStatesAndUpdateStatus = (
         getStatesAndUpdateStatus(
           element.has_rule_element,
           nowDate,
-          isExistsElementStateEN,
-          isExistsElementStateDE
+          existsStatus
         );
       } else {
         _.set(element, "has_rule_element", []);
@@ -132,22 +126,18 @@ const getStatesAndUpdateStatus = (
       });
       const activeState = { en: null, de: null };
       if (enList.length > 0) {
+        existsStatus.isExistsElementStateEN = true;
         activeState.en = enList[enList.length - 1];
       }
       if (deList.length > 0) {
-        isExistsElementStateDE = true;
+        existsStatus.isExistsElementStateDE = true;
         activeState.de = deList[deList.length - 1];
       }
       if (activeState.en || activeState.de) {
-        isExistsElementStateEN = true;
         element.has_rule_element_state.push(activeState);
       }
     }
   });
-  return {
-    isExistsElementStateEN,
-    isExistsElementStateDE,
-  };
 };
 
 module.exports = async (object, params, ctx) => {
@@ -205,19 +195,20 @@ module.exports = async (object, params, ctx) => {
           "rule_book_issue.has_rule_element",
           null
         );
-        const {
-          isExistsElementStateEN,
-          isExistsElementStateDE,
-        } = getStatesAndUpdateStatus(ruleElementState, nowDate, false, false);
+        const existsStatus = {
+          isExistsElementStateEN: false,
+          isExistsElementStateDE: false,
+        };
+        getStatesAndUpdateStatus(ruleElementState, nowDate, existsStatus);
         _.set(
           ruleElementStructureList,
           "[0].is_exists_rule_element_state_de",
-          isExistsElementStateDE
+          existsStatus.isExistsElementStateDE
         );
         _.set(
           ruleElementStructureList,
           "[0].is_exists_rule_element_state_en",
-          isExistsElementStateEN
+          existsStatus.isExistsElementStateEN
         );
         if (userEmail) {
           const settingResult = await session.run(getUser, {
