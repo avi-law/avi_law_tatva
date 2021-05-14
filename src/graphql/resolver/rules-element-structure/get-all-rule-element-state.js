@@ -13,8 +13,14 @@ const {
 } = require("../../../neo4j/tree-query");
 const { defaultLanguage } = require("../../../config/application");
 const getRuleElementStateStatus = require("./get-rule-element-state-status");
+const { getUser } = require("../../../neo4j/query");
 
-const getStatesAndUpdateStatus = (ruleElementState, nowDate, isExistsState) => {
+const getStatesAndUpdateStatus = (
+  ruleElementState,
+  nowDate,
+  isExistsElementStateEN,
+  isExistsElementStateDE
+) => {
   ruleElementState.forEach((element) => {
     if (element.has_rule_element) {
       if (
@@ -65,10 +71,11 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate, isExistsState) => {
           activeState.en = enList[enList.length - 1];
         }
         if (deList.length > 0) {
+          isExistsElementStateEN = true;
           activeState.de = deList[deList.length - 1];
         }
         if (activeState.en || activeState.de) {
-          isExistsState = true;
+          isExistsElementStateDE = true;
           element.has_rule_element_state.push(activeState);
         }
       }
@@ -76,7 +83,8 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate, isExistsState) => {
         getStatesAndUpdateStatus(
           element.has_rule_element,
           nowDate,
-          isExistsState
+          isExistsElementStateEN,
+          isExistsElementStateDE
         );
       } else {
         _.set(element, "has_rule_element", []);
@@ -127,15 +135,19 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate, isExistsState) => {
         activeState.en = enList[enList.length - 1];
       }
       if (deList.length > 0) {
+        isExistsElementStateDE = true;
         activeState.de = deList[deList.length - 1];
       }
       if (activeState.en || activeState.de) {
-        isExistsState = true;
+        isExistsElementStateEN = true;
         element.has_rule_element_state.push(activeState);
       }
     }
   });
-  return isExistsState;
+  return {
+    isExistsElementStateEN,
+    isExistsElementStateDE,
+  };
 };
 
 module.exports = async (object, params, ctx) => {
@@ -145,7 +157,7 @@ module.exports = async (object, params, ctx) => {
   const userIsAuthor = user.user_is_author || null;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const session = driver.session();
-  let isExistsState = false;
+  let settings = null;
   params = JSON.parse(JSON.stringify(params));
   const ruleBookId = params.rule_book_id;
   const ruleBookIssueNo = params.rule_book_issue_no;
@@ -193,13 +205,42 @@ module.exports = async (object, params, ctx) => {
           "rule_book_issue.has_rule_element",
           null
         );
-        isExistsState = getStatesAndUpdateStatus(
-          ruleElementState,
-          nowDate,
-          isExistsState
+        const {
+          isExistsElementStateEN,
+          isExistsElementStateDE,
+        } = getStatesAndUpdateStatus(ruleElementState, nowDate, false, false);
+        _.set(
+          ruleElementStructureList,
+          "[0].is_exists_rule_element_state_de",
+          isExistsElementStateDE
+        );
+        _.set(
+          ruleElementStructureList,
+          "[0].is_exists_rule_element_state_en",
+          isExistsElementStateEN
+        );
+        if (userEmail) {
+          const settingResult = await session.run(getUser, {
+            user_email: userEmail,
+          });
+          if (settingResult && settingResult.records.length > 0) {
+            const userData = settingResult.records.map((record) => {
+              const userResult = {
+                left: common.getPropertiesFromRecord(record, "lang2").iso_639_1,
+                right: common.getPropertiesFromRecord(record, "lang3")
+                  .iso_639_1,
+              };
+              return userResult;
+            });
+            settings = userData[0];
+          }
+        }
+        _.set(
+          ruleElementStructureList,
+          "[0].language_preference_settings",
+          settings
         );
       }
-      _.set(ruleElementStructureList, "[0].isExistsState", isExistsState);
       return _.get(ruleElementStructureList, "[0]", null);
     }
     return null;
