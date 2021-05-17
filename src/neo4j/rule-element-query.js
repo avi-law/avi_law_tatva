@@ -42,6 +42,16 @@ MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(re)
 `;
 
+exports.logRuleElementState = `
+MATCH (a: Log_Type {log_type_id: $type})
+MATCH (b:User {user_email: $current_user_email})
+MATCH (res:Rule_Element_State)
+WHERE id(res) IN $identity
+MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
+UNWIND state as res
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(state)
+`;
+
 exports.getRuleElementStateList = `
 MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
 CALL {

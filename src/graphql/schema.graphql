@@ -974,6 +974,7 @@ const typeDefs = gql`
     title_long: String
     language: String
     title_short: String
+    title_popular: String
     label: [String]
   }
 

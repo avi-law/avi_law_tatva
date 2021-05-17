@@ -59,12 +59,17 @@ const generateRuleBookTreeStructure = (ruleBookList) => {
       curr.has_rule_book_issue_child = [];
       stateData.forEach((stateElement) => {
         if (stateElement.language) {
+          let titleLong = stateElement.title_long
+            ? common.removeTag(stateElement.title_long)
+            : null;
+
+          if (stateElement.title_popular && titleLong) {
+            titleLong = `${titleLong} <strong>("${stateElement.title_popular}")</strong>`;
+          }
           curr.has_rule_book_issue_state[stateElement.language] = {
             ...stateElement,
             title_long_html: stateElement.title_long,
-            title_long: stateElement.title_long
-              ? common.removeTag(stateElement.title_long)
-              : null,
+            title_long: titleLong,
             rule_book_language_is: [
               {
                 iso_639_1: stateElement.language,
