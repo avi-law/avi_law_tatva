@@ -52,6 +52,11 @@ UNWIND state as res
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(state)
 `;
 
+exports.logDeleteRuleElementAndState = `
+MATCH (lt: Log_Type {log_type_id: $type})
+MATCH (u:User {user_email: $current_user_email})
+MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)`;
+
 exports.getRuleElementStateList = `
 MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
 CALL {

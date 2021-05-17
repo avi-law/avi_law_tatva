@@ -37,19 +37,17 @@ module.exports = async (object, params, ctx) => {
       queryParams,
     });
     if (result && result.records.length > 0) {
-      /**
-       const rulebooks = result.records.map((record) => {
-        const rulebookResult = {
-          ...common.getPropertiesFromRecord(record, "rb"),
+      const ruleElement = result.records.map((record) => {
+        const ruleElementResult = {
+          ...common.getPropertiesFromRecord(record, "re"),
         };
-        return rulebookResult;
+        return ruleElementResult;
       });
-      common.loggingData(logRulebook, {
-        type: constants.LOG_TYPE_ID.CREATE_RULE_BOOK,
+      common.loggingData(logRuleElement, {
+        type: constants.LOG_TYPE_ID.UPDATE_RULE_ELEMENT_AND_STATE,
         current_user_email: userEmail,
-        rule_book_id: rulebooks[0].rule_book_id || null,
+        rule_element_doc_id: ruleElement[0].rule_element_doc_id || null,
       });
-      */
       return true;
     }
     throw new APIError({

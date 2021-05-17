@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 
-const driver = require("../../../config/db");
 const _ = require("lodash");
+const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
