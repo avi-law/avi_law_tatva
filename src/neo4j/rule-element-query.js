@@ -326,7 +326,7 @@ exports.addRuleElementStateQuery = (queryParams) => {
   } else if (queryParams.isValidEN) {
     query = `${query}
     RETURN res_en, re`;
-  } else if (queryParams.isValidEN) {
+  } else if (queryParams.isValidDE) {
     query = `${query}
     RETURN res_de, re`;
   }
