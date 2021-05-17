@@ -16,11 +16,11 @@ exports.addRuleElementQuery = (queryParams) => {
 
   if (queryParams.rule_element_parent_doc_id) {
     query = `${query}
-    MERGE (re)<-[:HAS_RULE_ELEMENT {order: ${queryParams.rule_element_order}.0 }]-(rep)
+    MERGE (re)<-[:HAS_RULE_ELEMENT {order: toInteger(${queryParams.rule_element_order}) }]-(rep)
     RETURN re`;
   } else if (queryParams.rule_book_issue_no && queryParams.rule_book_id) {
     query = `${query}
-    MERGE (re)<-[:HAS_RULE_ELEMENT {order: ${queryParams.rule_element_order}.0 }]-(rbi)
+    MERGE (re)<-[:HAS_RULE_ELEMENT {order: toInteger(${queryParams.rule_element_order}) }]-(rbi)
     RETURN re`;
   }
   return query;
@@ -163,14 +163,14 @@ const dropChangeOrderQuery = (queryParams) => {
       ${query}
       UNWIND $queryParams.drop_rule_element_order as ruleElementDrop
       OPTIONAL MATCH (rbDrop:Rule_Book {rule_book_id: "${queryParams.rule_book_id}"})-[:HAS_RULE_BOOK_ISSUE]->(rbiDrop:Rule_Book_Issue {rule_book_issue_no: ${queryParams.rule_book_issue_no} })-[r1:HAS_RULE_ELEMENT]->(reDrop:Rule_Element {rule_element_doc_id: ruleElementDrop.rule_element_doc_id })
-      FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order = ruleElementDrop.rule_element_order )
+      FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order = toInteger(ruleElementDrop.rule_element_order) )
       RETURN reDrop as re`;
     } else {
       query = `
       ${query}
       UNWIND $queryParams.drop_rule_element_order as ruleElementDrop
       OPTIONAL MATCH (repDrop:Rule_Element { rule_element_doc_id: ruleElementDrop.rule_element_parent_doc_id})-[r1:HAS_RULE_ELEMENT]->(reDrop:Rule_Element { rule_element_doc_id: ruleElementDrop.rule_element_doc_id })
-      FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order = ruleElementDrop.rule_element_order )
+      FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order = toInteger(ruleElementDrop.rule_element_order) )
       RETURN reDrop as re`;
     }
   }
@@ -191,14 +191,14 @@ const dragChangeOrderQuery = (queryParams) => {
       ${query}
       UNWIND $queryParams.drag_rule_element_order as ruleElementDrag
       OPTIONAL MATCH (rbDrop:Rule_Book {rule_book_id: "${queryParams.rule_book_id}"})-[:HAS_RULE_BOOK_ISSUE]->(rbiDrop:Rule_Book_Issue {rule_book_issue_no: ${queryParams.rule_book_issue_no} })-[r2:HAS_RULE_ELEMENT]->(reDrag:Rule_Element {rule_element_doc_id: ruleElementDrag.rule_element_doc_id })
-      FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | SET r2.order = ruleElementDrag.rule_element_order )
+      FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | SET r2.order = toInteger(ruleElementDrag.rule_element_order) )
       WITH reDrag`;
     } else {
       query = `
       ${query}
       UNWIND $queryParams.drag_rule_element_order as ruleElementDrag
       OPTIONAL MATCH (repDrop:Rule_Element { rule_element_doc_id: ruleElementDrag.rule_element_parent_doc_id})-[r2:HAS_RULE_ELEMENT]->(reDrop:Rule_Element { rule_element_doc_id: ruleElementDrag.rule_element_doc_id })
-      FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | SET r2.order = ruleElementDrag.rule_element_order )
+      FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | SET r2.order = toInteger(ruleElementDrag.rule_element_order) )
       WITH repDrop
       `;
     }
@@ -298,17 +298,38 @@ exports.addRuleElementStateQuery = (queryParams) => {
       FOREACH (_ IN CASE WHEN res_de IS NOT NULL THEN [1] END | MERGE (res_de)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res_en))`;
     }
 
+    if (queryParams.isValidEN && queryParams.isValidDE) {
+      query = `${query}
+      WITH res_de, res_en, re, lang1, lang2`;
+    } else {
+      query = `${query}
+      WITH res_en, re, lang1, lang2`;
+    }
+
     if (queryParams.sol_en) {
       query = `${query}
-      WITH res_en, re
       OPTIONAL MATCH (sol_en:Sol {sol_id: ${queryParams.sol_en}})
-      FOREACH (_ IN CASE WHEN sol_en IS NOT NULL THEN [1] END | MERGE (res_en)-[:RULE_ELEMENT_STATE_SOL_IS]->(sol_en) )
+      FOREACH (_ IN CASE WHEN sol_en IS NOT NULL THEN [1] END | MERGE (res_en)-[:RULE_ELEMENT_STATE_SOL_IS]->(sol_en) )`;
+    }
+    if (queryParams.isValidEN && queryParams.isValidDE) {
+      query = `${query}
+      WITH res_de, res_en, re`;
+    } else {
+      query = `${query}
       WITH res_en, re`;
     }
   }
 
-  query = `${query}
-  RETURN re`;
+  if (queryParams.isValidEN && queryParams.isValidDE) {
+    query = `${query}
+    RETURN res_de, res_en, re`;
+  } else if (queryParams.isValidEN) {
+    query = `${query}
+    RETURN res_en, re`;
+  } else if (queryParams.isValidEN) {
+    query = `${query}
+    RETURN res_de, re`;
+  }
   return query;
 };
 

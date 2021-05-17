@@ -43,7 +43,7 @@ exports.addRuleBookStructQuery = (queryParams) => {
       SET rbss_en = $queryParams.rbss.en`;
     }
     query = `${query}
-      MERGE (rbs)<-[:HAS_RULE_BOOK_STRUCT_CHILD {order_rule_book_struct: ${queryParams.rule_book_struct_order}}]-(rbsp)
+      MERGE (rbs)<-[:HAS_RULE_BOOK_STRUCT_CHILD {order_rule_book_struct: toInteger(${queryParams.rule_book_struct_order})}]-(rbsp)
       RETURN rbs`;
   }
   return query;
@@ -105,11 +105,11 @@ exports.addRuleBookQuery = (queryParams) => {
 
   if (queryParams.rule_book_struct_parent_id) {
     query = `${query}
-    MERGE (rb)-[:RULE_BOOK_BELONGS_TO_STRUCT{order_rule_book_in_struct: ${queryParams.rule_book_child_order}}]->(rbsp)
+    MERGE (rb)-[:RULE_BOOK_BELONGS_TO_STRUCT{order_rule_book_in_struct: toInteger(${queryParams.rule_book_child_order})}]->(rbsp)
     RETURN rb`;
   } else if (queryParams.rule_book_parent_id) {
     query = `${query}
-    MERGE (rb)<-[:HAS_RULE_BOOK_CHILD {order_rule_book_child: ${queryParams.rule_book_child_order}}]-(rbp)
+    MERGE (rb)<-[:HAS_RULE_BOOK_CHILD {order_rule_book_child: toInteger(${queryParams.rule_book_child_order})}]-(rbp)
     RETURN rb`;
   }
   return query;
@@ -169,7 +169,7 @@ exports.addruleBookIssueQuery = (queryParams) => {
     WITH rbi
     UNWIND [${slTags}] as slTags
     OPTIONAL MATCH (sl:Sol {sol_id: slTags.sol_id})
-    FOREACH (_ IN CASE WHEN sl IS NOT NULL THEN [1] END | MERGE (rbi)-[:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS {sol_ord: slTags.order}]->(sl) )
+    FOREACH (_ IN CASE WHEN sl IS NOT NULL THEN [1] END | MERGE (rbi)-[:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS {sol_ord: toInteger(slTags.order)}]->(sl) )
     RETURN rbi`;
   } else {
     query = `${query}
@@ -223,7 +223,7 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
     WITH rbi
     UNWIND [${slTags}] as slTags
     OPTIONAL MATCH (sl:Sol {sol_id: slTags.sol_id})
-    FOREACH (_ IN CASE WHEN sl IS NOT NULL THEN [1] END | MERGE (rbi)-[:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS {sol_ord: slTags.order}]->(sl) )
+    FOREACH (_ IN CASE WHEN sl IS NOT NULL THEN [1] END | MERGE (rbi)-[:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS {sol_ord: toInteger(slTags.order)}]->(sl) )
     RETURN rbi`;
   } else {
     query = `${query}
@@ -306,7 +306,7 @@ const dropChangeOrderQuery = (queryParams) => {
         ${query}
         UNWIND $queryParams.drop_rule_book_order as ruleBookDrop
         OPTIONAL MATCH (rbDrop:Rule_Book { rule_book_id: ruleBookDrop.rule_book_id})-[r1:RULE_BOOK_BELONGS_TO_STRUCT]->(rbsDrop:Rule_Book_Struct { rule_book_struct_id: ruleBookDrop.rule_book_struct_parent_id })
-        FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order_rule_book_in_struct = ruleBookDrop.rule_book_order )
+        FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order_rule_book_in_struct = toInteger(ruleBookDrop.rule_book_order) )
         RETURN rbDrop as rb
         `;
     } else if (queryParams.drop_rule_book_parent_id) {
@@ -315,7 +315,7 @@ const dropChangeOrderQuery = (queryParams) => {
         ${query}
         UNWIND $queryParams.drop_rule_book_order as ruleBookDrop
         OPTIONAL MATCH (rbpDrop:Rule_Book { rule_book_id: ruleBookDrop.rule_book_parent_id})-[r1:HAS_RULE_BOOK_CHILD]->(rbDrop:Rule_Book { rule_book_id: ruleBookDrop.rule_book_id })
-        FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order_rule_book_child = ruleBookDrop.rule_book_order )
+        FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order_rule_book_child = toInteger(ruleBookDrop.rule_book_order) )
         RETURN rbpDrop as rb
         `;
     }
@@ -328,7 +328,7 @@ const dropChangeOrderQuery = (queryParams) => {
         ${query}
         UNWIND $queryParams.drop_rule_book_struct_order as ruleBookStructDrop
         OPTIONAL MATCH (rbspDrop:Rule_Book_Struct { rule_book_struct_id: ruleBookStructDrop.rule_book_struct_parent_id})-[r2:HAS_RULE_BOOK_STRUCT_CHILD]->(rbsDrop:Rule_Book_Struct { rule_book_struct_id: ruleBookStructDrop.rule_book_struct_id})
-        FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | SET r2.order_rule_book_struct = ruleBookStructDrop.rule_book_struct_order )
+        FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | SET r2.order_rule_book_struct = toInteger(ruleBookStructDrop.rule_book_struct_order) )
         RETURN rbspDrop as rb
       `;
   }
@@ -349,7 +349,7 @@ const dragChangeOrderQuery = (queryParams) => {
         ${query}
         UNWIND $queryParams.drag_rule_book_order as ruleBookDrag
         OPTIONAL MATCH (rbDrag:Rule_Book { rule_book_id: ruleBookDrag.rule_book_id})-[r3:RULE_BOOK_BELONGS_TO_STRUCT]->(rbsDrag:Rule_Book_Struct { rule_book_struct_id: ruleBookDrag.rule_book_struct_parent_id })
-        FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | SET r3.order_rule_book_in_struct = ruleBookDrag.rule_book_order )
+        FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | SET r3.order_rule_book_in_struct = toInteger(ruleBookDrag.rule_book_order) )
         WITH rbDrag
       `;
     } else if (
@@ -359,7 +359,7 @@ const dragChangeOrderQuery = (queryParams) => {
         ${query}
         UNWIND $queryParams.drag_rule_book_order as ruleBookDrag
         OPTIONAL MATCH (rbpDrag:Rule_Book { rule_book_id: ruleBookDrag.rule_book_parent_id})-[r3:HAS_RULE_BOOK_CHILD]->(rbDrag:Rule_Book { rule_book_id: ruleBookDrag.rule_book_id })
-        FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | SET r3.order_rule_book_child = ruleBookDrag.rule_book_order )
+        FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | SET r3.order_rule_book_child = toInteger(ruleBookDrag.rule_book_order) )
         WITH rbpDrag
         `;
     }
@@ -371,7 +371,7 @@ const dragChangeOrderQuery = (queryParams) => {
         ${query}
         UNWIND $queryParams.drag_rule_book_struct_order as ruleBookStructDrag
         OPTIONAL MATCH (rbspDrag:Rule_Book_Struct { rule_book_struct_id: ruleBookStructDrag.rule_book_struct_parent_id})-[r4:HAS_RULE_BOOK_STRUCT_CHILD]->(rbsDrag:Rule_Book_Struct { rule_book_struct_id: ruleBookStructDrag.rule_book_struct_id})
-        FOREACH (_ IN CASE WHEN r4 IS NOT NULL THEN [1] END | SET r4.order_rule_book_struct = ruleBookStructDrag.rule_book_struct_order )
+        FOREACH (_ IN CASE WHEN r4 IS NOT NULL THEN [1] END | SET r4.order_rule_book_struct = toInteger(ruleBookStructDrag.rule_book_struct_order) )
         WITH rbspDrag
       `;
   }
