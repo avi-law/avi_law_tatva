@@ -185,11 +185,11 @@ module.exports = async (object, params, ctx) => {
           rule_book_issue: _.get(ruleBook, "has_rule_book_issue[0]", null),
         };
         if (rbis) {
-          ruleBookResponse.has_rule_book_issue_state = {};
+          ruleBookResponse.rule_book_issue.has_rule_book_issue_state = {};
           rbis.forEach((rbiState) => {
-            ruleBookResponse.has_rule_book_issue_state[
+            ruleBookResponse.rule_book_issue.has_rule_book_issue_state[
               rbiState.lang.iso_639_1
-            ] = rbiState.rbis.rule_book_issue_rmk;
+            ] = rbiState.rbis;
           });
         }
         return ruleBookResponse;
