@@ -62,8 +62,9 @@ MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
 CALL {
 WITH re
   MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
-  WITH res, lang order by id(res)
-  RETURN collect({ res: res, lang: lang }) as res
+  OPTIONAL MATCH (lang)<-[:SOL_STATE_LANGUAGE_IS]-(sls:Sol_State)<-[:HAS_SOL_STATE]-(:Sol)<-[:RULE_ELEMENT_STATE_SOL_IS]-(res)
+  WITH res, sls, lang order by res.rule_element_in_force_from DESC
+  RETURN collect({ res: res, lang: lang, sls: sls }) as res
 }
 RETURN re, res;
 `;

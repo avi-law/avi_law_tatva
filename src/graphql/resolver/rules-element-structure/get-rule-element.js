@@ -24,6 +24,7 @@ module.exports = async (object, params, ctx) => {
   let response = {};
   const currentDate = _.get(params, "current_date", null);
   const hist = _.get(params, "hist", null);
+  let isSingle = false;
   let nowDate = common.getTimestamp();
   if (currentDate) {
     nowDate = common.getTimestamp(currentDate);
@@ -77,6 +78,15 @@ module.exports = async (object, params, ctx) => {
                 res[properties.rule_element_id][
                   reState.lang.properties.iso_639_1
                 ].rule_element_status = status;
+                const solState = _.get(reState, "sls.properties", null);
+                if (solState) {
+                  const solObject = {
+                    sol_state: solState,
+                  };
+                  res[properties.rule_element_id][
+                    reState.lang.properties.iso_639_1
+                  ].sol = solObject;
+                }
               }
             }
           });
@@ -101,6 +111,7 @@ module.exports = async (object, params, ctx) => {
                   deActive === constants.RULE_ELEMENT_STATE_STATUS.GREEN
                 ) {
                   viewState = res[e];
+                  isSingle = true;
                 }
               }
             }
@@ -134,6 +145,7 @@ module.exports = async (object, params, ctx) => {
         settings = userData[0];
       }
     }
+    response.isSingle = isSingle;
     response.view = viewState;
     response.language_preference_settings = settings;
 
