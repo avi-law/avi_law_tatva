@@ -1174,6 +1174,15 @@ type RuleBookStateCustomTree {
   }
 
   type GetRuleElementDetails {
+    re: Rule_Element
+    res: [RuleElementStateCustom]
+    view: RuleElementStateCustom
+    breadcrumbs: [nodeType]
+    isSingle: Boolean
+    language_preference_settings: languagePreferencesettings
+  }
+
+  type GetRuleElementStateList {
     res: RuleElementStateCustom
   }
 
@@ -1246,6 +1255,7 @@ type RuleBookStateCustomTree {
     Rule_Book
     Rule_Book_Struct
     Rule_Book_Issue
+    Rule_Element
   }
   enum DragAndDropRuleElementType {
     Rule_Element
@@ -1577,9 +1587,9 @@ type RuleBookStateCustomTree {
       blog_id: Int
     ): GetBlogListByYear @isUnAuthenticated
     getSolTagForRuleBookIssue(isSort: Boolean): GetSolsCustom @isAdmin
-    getRuleElement(rule_element_doc_id: String!): GetRuleElementCustom @isAdmin
+    getRuleElement(rule_element_doc_id: String!): GetRuleElementDetails @isAuthenticated
     getRuleElementState(rule_element_doc_id: String!, current_date: _Neo4jDate): GetRuleElementCustom @isAdmin
-    getRuleElementStateDetails(rule_element_doc_id: String!, identity: [Int!]!): GetRuleElementDetails @isAdmin
+    getRuleElementStateDetails(rule_element_doc_id: String!, identity: [Int!]!): GetRuleElementStateList @isAdmin
     getAllRuleElementState(rule_book_id: String!, rule_element_doc_id: String, current_date: _Neo4jDate): Rule_Book @isAuthenticated
     getSolTagForRuleElement(isSort: Boolean): [GetSolTags]
   }

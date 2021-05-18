@@ -1,25 +1,36 @@
+/* eslint-disable dot-notation */
+/* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const _ = require("lodash");
 const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
+const { getUser } = require("../../../neo4j/query");
 const {
   getRuleElementStateList,
 } = require("../../../neo4j/rule-element-query");
 const { defaultLanguage } = require("../../../config/application");
+const getRuleElementStateStatus = require("./get-rule-element-state-status");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userEmail = user ? user.user_email : null;
-  const systemAdmin = user.user_is_sys_admin || null;
-  const userIsAuthor = user.user_is_author || null;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const ruleElementDocId = params.rule_element_doc_id;
   const ruleElementStateList = [];
+  let settings = null;
+  let response = {};
+  const currentDate = _.get(params, "current_date", null);
+  const hist = _.get(params, "hist", null);
+  let nowDate = common.getTimestamp();
+  if (currentDate) {
+    nowDate = common.getTimestamp(currentDate);
+  }
+  let viewState = null;
   try {
-    if ((!systemAdmin && !userIsAuthor) || !ruleElementDocId) {
+    if (!userEmail || !ruleElementDocId) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
@@ -51,12 +62,48 @@ module.exports = async (object, params, ctx) => {
                 res[properties.rule_element_id][
                   reState.lang.properties.iso_639_1
                 ] = properties;
+                res[properties.rule_element_id][
+                  reState.lang.properties.iso_639_1
+                ].identity = _.get(reState, "res.identity", null);
+
+                const status = getRuleElementStateStatus(
+                  _.cloneDeep(
+                    res[properties.rule_element_id][
+                      reState.lang.properties.iso_639_1
+                    ]
+                  ),
+                  nowDate
+                );
+                res[properties.rule_element_id][
+                  reState.lang.properties.iso_639_1
+                ].rule_element_status = status;
               }
             }
           });
         }
         if (res && Object.keys(res).length > 0) {
           Object.keys(res).forEach((e) => {
+            if (!hist) {
+              if (Object.keys(res[e]).length === 2) {
+                const deActive = _.get(res[e], "de.rule_element_status", null);
+                const enActive = _.get(res[e], "en.rule_element_status", null);
+                if (
+                  enActive === constants.RULE_ELEMENT_STATE_STATUS.GREEN &&
+                  deActive === constants.RULE_ELEMENT_STATE_STATUS.GREEN
+                ) {
+                  viewState = res[e];
+                }
+              } else if (Object.keys(res[e]).length === 1) {
+                const deActive = _.get(res[e], "de.rule_element_status", null);
+                const enActive = _.get(res[e], "en.rule_element_status", null);
+                if (
+                  enActive === constants.RULE_ELEMENT_STATE_STATUS.GREEN ||
+                  deActive === constants.RULE_ELEMENT_STATE_STATUS.GREEN
+                ) {
+                  viewState = res[e];
+                }
+              }
+            }
             ruleElementStateList.push(res[e]);
           });
         }
@@ -66,9 +113,31 @@ module.exports = async (object, params, ctx) => {
         };
         return reResult;
       });
-      return ruleElement[0];
+      response = {
+        ...response,
+        ...ruleElement[0],
+      };
     }
-    return null;
+
+    if (userEmail) {
+      const settingResult = await session.run(getUser, {
+        user_email: userEmail,
+      });
+      if (settingResult && settingResult.records.length > 0) {
+        const userData = settingResult.records.map((record) => {
+          const userResult = {
+            left: common.getPropertiesFromRecord(record, "lang2").iso_639_1,
+            right: common.getPropertiesFromRecord(record, "lang3").iso_639_1,
+          };
+          return userResult;
+        });
+        settings = userData[0];
+      }
+    }
+    response.view = viewState;
+    response.language_preference_settings = settings;
+
+    return response;
   } catch (error) {
     session.close();
     throw error;
