@@ -87,6 +87,18 @@ module.exports = async (object, params, ctx) => {
                     reState.lang.properties.iso_639_1
                   ].sol = solObject;
                 }
+                const createdLog = _.get(reState, "createdLog", null);
+                if (createdLog) {
+                  res[properties.rule_element_id][
+                    reState.lang.properties.iso_639_1
+                  ].createdLog = createdLog;
+                }
+                const updatedLog = _.get(reState, "updatedLog", null);
+                if (updatedLog) {
+                  res[properties.rule_element_id][
+                    reState.lang.properties.iso_639_1
+                  ].updatedLog = updatedLog;
+                }
               }
             }
           });

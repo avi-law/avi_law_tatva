@@ -59,15 +59,22 @@ MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})
 
 exports.getRuleElementStateList = `
 MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
-CALL {
-WITH re
-  MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
-  OPTIONAL MATCH (lang)<-[:SOL_STATE_LANGUAGE_IS]-(sls:Sol_State)<-[:HAS_SOL_STATE]-(:Sol)<-[:RULE_ELEMENT_STATE_SOL_IS]-(res)
-  WITH res, sls, lang order by res.rule_element_in_force_from DESC
-  RETURN collect({ res: res, lang: lang, sls: sls }) as res
-}
-RETURN re, res;
-`;
+  CALL {
+    WITH re
+    MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
+    OPTIONAL MATCH (lang)<-[:SOL_STATE_LANGUAGE_IS]-(sls:Sol_State)<-[:HAS_SOL_STATE]-(:Sol)<-[:RULE_ELEMENT_STATE_SOL_IS]-(res)
+    WITH res, sls, lang order by res.rule_element_in_force_from DESC
+    OPTIONAL MATCH (lt1: Log_Type {log_type_id: 43})
+    OPTIONAL MATCH (res)<-[:LOG_REFERS_TO_OBJECT]-(l1:Log)-[:HAS_LOG_TYPE]->(lt1)
+    OPTIONAL MATCH (l1)-[:LOG_FOR_USER]->(:User)-[r1:HAS_USER_STATE]-(us1:User_State)
+    With res, sls, lang, collect({timestamp: l1.log_timestamp, user_state: {user_first_name: us1.user_first_name, user_middle_name: us1.user_middle_name, user_last_name: us1.user_last_name} }) AS createdLog
+    OPTIONAL MATCH (lt2: Log_Type {log_type_id: 44})
+    OPTIONAL MATCH (res)<-[:LOG_REFERS_TO_OBJECT]-(l2:Log)-[:HAS_LOG_TYPE]->(lt2)
+    OPTIONAL MATCH (l2)-[:LOG_FOR_USER]->(:User)-[r2:HAS_USER_STATE]-(us2:User_State)
+    With res, sls, lang, createdLog, collect({timestamp: l2.log_timestamp, user_state: {user_first_name: us2.user_first_name, user_middle_name: us2.user_middle_name, user_last_name: us2.user_last_name} }) AS updatedLog
+    RETURN collect({ res: res, lang: lang, sls: sls, createdLog: createdLog, updatedLog: updatedLog }) as res
+  }
+RETURN re, res`;
 
 exports.deleteRuleElement = (queryParams) => {
   let query = "";
