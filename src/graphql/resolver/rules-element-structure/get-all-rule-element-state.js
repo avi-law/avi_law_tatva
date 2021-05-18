@@ -178,11 +178,20 @@ module.exports = async (object, params, ctx) => {
     if (result.records && result.records.length > 0) {
       ruleElementStructureList = result.records.map((record) => {
         const ruleBook = record.get("rule_book");
+        const rbis = record.get("rbis");
         const ruleBookResponse = {
           rule_book_active: ruleBook.rule_book_active,
           rule_book_id: ruleBook.rule_book_id,
           rule_book_issue: _.get(ruleBook, "has_rule_book_issue[0]", null),
         };
+        if (rbis) {
+          ruleBookResponse.has_rule_book_issue_state = {};
+          rbis.forEach((rbiState) => {
+            ruleBookResponse.has_rule_book_issue_state[
+              rbiState.lang.iso_639_1
+            ] = rbiState.rbis.rule_book_issue_rmk;
+          });
+        }
         return ruleBookResponse;
       });
       const ruleBookIssue = _.get(ruleElementStructureList, "[0]", null);

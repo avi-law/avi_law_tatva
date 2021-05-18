@@ -1109,6 +1109,7 @@ type RuleBookStateCustomTree {
   # Extent rule book issue type for rule element type tree structure
   extend type Rule_Book_Issue {
     has_rule_element: [Rule_Element]
+    has_rule_book_issue_state:GetRuleBookIssueStateCustom
   }
   extend type Rule_Book {
     rule_book_issue: Rule_Book_Issue

@@ -116,9 +116,10 @@ exports.getRuleElementStateTreeStructure = (queryParams) => {
     query = `MATCH path = (rb:Rule_Book {rule_book_id: $rule_book_id})-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)`;
   }
   query = `${query}
-  WITH rbi, path, nodes(path) AS n, apoc.text.rpad(reduce(a = "", r in relationships(path) | a + apoc.text.lpad(toString(COALESCE(r.order,0)),6,"0")),120,"0") AS orders
-  WITH path AS path_ordered, rbi order by orders
-  WITH Collect(path_ordered) AS path_elements, rbi
+  OPTIONAL MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(rbislang:Language)
+  WITH rbi, Collect({rbis: {rule_book_issue_rmk: rbis.rule_book_issue_rmk }, lang: {iso_639_1: rbislang.iso_639_1}}) as rbis, path, nodes(path) AS n, apoc.text.rpad(reduce(a = "", r in relationships(path) | a + apoc.text.lpad(toString(COALESCE(r.order,0)),6,"0")),120,"0") AS orders
+  WITH rbis, path AS path_ordered, rbi order by orders
+  WITH Collect(path_ordered) AS path_elements, rbi,rbis
   CALL apoc.convert.toTree(path_elements, true, {
     nodes: {
     Language: ['iso_639_1'],
@@ -126,7 +127,7 @@ exports.getRuleElementStateTreeStructure = (queryParams) => {
     Rule_Element_State: ['rule_element_show_anyway','rule_element_applies_from','rule_element_in_force_until','rule_element_applies_until','rule_element_in_force_from','rule_element_visible_until','rule_element_visible_from','rule_element_title', 'rule_element_article']
     }
   }) yield value
-  RETURN value as rule_book
+  RETURN value as rule_book, rbis
   ORDER BY rbi.rule_book_issue_no DESC
   LIMIT 1
   `;
