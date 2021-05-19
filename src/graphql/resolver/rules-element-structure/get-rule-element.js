@@ -157,6 +157,7 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
   const rootNodeChild = [];
   const secondeNodeChild = [];
   let segment = [];
+  const response = {};
   const session = driver.session();
   try {
     const getRootStructureChildResult = await session.run(
@@ -257,9 +258,11 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
           segment,
           breadcrumbs
         );
+        response.settings = treeStructure.language_preference_settings;
+        response.breadcrumbs = breadcrumbs;
       }
     }
-    return breadcrumbs;
+    return response;
   } catch (error) {
     console.log(error);
     session.close();
@@ -407,28 +410,15 @@ module.exports = async (object, params, ctx) => {
       const rbRecord = _.get(rbResult, "records[0]", null);
       ruleBookId = rbRecord.get("rule_book_id");
       if (ruleBookId) {
-        response.breadcrumbs = await getRuleBookBreadcrumbsByRuleElement(
+        const breadcrumbsData = await getRuleBookBreadcrumbsByRuleElement(
           object,
           {
             rule_book_id: ruleBookId,
           },
           ctx
         );
-      }
-    }
-    if (userEmail) {
-      const settingResult = await session.run(getUser, {
-        user_email: userEmail,
-      });
-      if (settingResult && settingResult.records.length > 0) {
-        const userData = settingResult.records.map((record) => {
-          const userResult = {
-            left: common.getPropertiesFromRecord(record, "lang2").iso_639_1,
-            right: common.getPropertiesFromRecord(record, "lang3").iso_639_1,
-          };
-          return userResult;
-        });
-        settings = userData[0];
+        settings = breadcrumbsData.settings;
+        response.breadcrumbs = breadcrumbsData.breadcrumbs;
       }
     }
     response.isSingle = isSingle;

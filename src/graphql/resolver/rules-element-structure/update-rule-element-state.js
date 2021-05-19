@@ -6,7 +6,7 @@ const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
   updateRuleElementStateQuery,
-  logRuleElement,
+  logRuleElementState,
 } = require("../../../neo4j/rule-element-query");
 
 module.exports = async (object, params, ctx) => {
@@ -86,19 +86,28 @@ module.exports = async (object, params, ctx) => {
     });
     // console.log(result);
     if (result && result.records.length > 0) {
-      /**
-       const rulebooks = result.records.map((record) => {
-        const rulebookResult = {
-          ...common.getPropertiesFromRecord(record, "rb"),
-        };
-        return rulebookResult;
+      const identity = [];
+      result.records.forEach((record) => {
+        if (queryParams.isValidEN && queryParams.isValidDE) {
+          const enId = record.get("res_en");
+          const deId = record.get("res_de");
+          identity.push(deId.identity);
+          identity.push(enId.identity);
+        } else if (queryParams.isValidEN) {
+          const enId = record.get("res_en");
+          identity.push(enId.identity);
+        } else if (queryParams.isValidDE) {
+          const deId = record.get("res_de");
+          identity.push(deId.identity);
+        }
       });
-      common.loggingData(logRulebook, {
-        type: constants.LOG_TYPE_ID.CREATE_RULE_BOOK,
-        current_user_email: userEmail,
-        rule_book_id: rulebooks[0].rule_book_id || null,
-      });
-      */
+      if (identity.length > 0) {
+        common.loggingData(logRuleElementState, {
+          type: constants.LOG_TYPE_ID.UPDATE_RULE_ELEMENT_AND_STATE,
+          current_user_email: userEmail,
+          identity,
+        });
+      }
       return true;
     }
     throw new APIError({

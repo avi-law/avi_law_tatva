@@ -5,7 +5,7 @@ const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
   deleteRuleElementState,
-  logRulebook,
+  logRuleElementState,
 } = require("../../../neo4j/rule-element-query");
 
 module.exports = async (object, params, ctx) => {
@@ -39,19 +39,13 @@ module.exports = async (object, params, ctx) => {
     console.log(deleteRuleElementState);
     const result = await session.run(deleteRuleElementState, queryParams);
     if (result && result.records.length > 0) {
-      /**
-       const rulebooks = result.records.map((record) => {
-        const rulebookResult = {
-          ...common.getPropertiesFromRecord(record, "rb"),
-        };
-        return rulebookResult;
-      });
-      common.loggingData(logRulebook, {
-        type: constants.LOG_TYPE_ID.DELETE_RULE_BOOK,
-        current_user_email: userEmail,
-        rule_book_id: ruleBookId || null,
-      });
-      */
+      if (identities.length > 0) {
+        common.loggingData(logRuleElementState, {
+          type: constants.LOG_TYPE_ID.UPDATE_RULE_ELEMENT_AND_STATE,
+          current_user_email: userEmail,
+          identity: identities,
+        });
+      }
       return true;
     }
     throw new APIError({

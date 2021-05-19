@@ -5,7 +5,7 @@ const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
   deleteRuleElement,
-  logDeleteRuleElementAndState,
+  logRuleElement,
 } = require("../../../neo4j/rule-element-query");
 
 module.exports = async (object, params, ctx) => {
@@ -50,15 +50,10 @@ module.exports = async (object, params, ctx) => {
       queryParams,
     });
     if (result && result.records.length > 0) {
-      const ruleElement = result.records.map((record) => {
-        const ruleElementResult = {
-          ...common.getPropertiesFromRecord(record, "re"),
-        };
-        return ruleElementResult;
-      });
-      common.loggingData(logDeleteRuleElementAndState, {
+      common.loggingData(logRuleElement, {
         type: constants.LOG_TYPE_ID.DELETE_RULE_ELEMENT_AND_STATE,
         current_user_email: userEmail,
+        rule_element_doc_id: ruleElementDocId,
       });
       return true;
     }
