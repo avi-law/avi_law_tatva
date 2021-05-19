@@ -74,7 +74,8 @@ MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
     With res, sls, lang, createdLog, collect({timestamp: l2.log_timestamp, user_state: {user_first_name: us2.user_first_name, user_middle_name: us2.user_middle_name, user_last_name: us2.user_last_name} }) AS updatedLog
     RETURN collect({ res: res, lang: lang, sls: sls, createdLog: createdLog, updatedLog: updatedLog }) as res
   }
-RETURN re, res`;
+RETURN re, res
+`;
 
 exports.deleteRuleElement = (queryParams) => {
   let query = "";
@@ -466,4 +467,12 @@ RETURN DISTINCT res1,res2
 exports.getSolTagForRuleElement = `
 MATCH (sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
 WITH sl, lang, sls order by toLower(sls.sol_name_01) ASC
-RETURN distinct sl.sol_id as sol_id, collect({ sls: {sol_name_01: sls.sol_name_01}, lang: { iso_639_1: lang.iso_639_1}}) as sls`;
+RETURN distinct sl.sol_id as sol_id, collect({ sls: {sol_name_01: sls.sol_name_01}, lang: { iso_639_1: lang.iso_639_1}}) as sls
+`;
+
+exports.getRuleBookIDByRuleElement = `
+MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[r1:HAS_RULE_ELEMENT]->(re:Rule_Element {rule_element_doc_id: $rule_element_doc_id })
+RETURN rb.rule_book_id as rule_book_id
+ORDER BY rbi.rule_book_issue_no DESC
+LIMIT 1
+`;
