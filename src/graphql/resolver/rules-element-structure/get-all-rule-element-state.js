@@ -159,7 +159,7 @@ module.exports = async (object, params, ctx) => {
   }
   let ruleElementStructureList = [];
   try {
-    if ((!systemAdmin && !userIsAuthor) || !ruleBookId) {
+    if (!userEmail || !ruleBookId) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
