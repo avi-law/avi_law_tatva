@@ -8,6 +8,8 @@ const { APIError, common, constants } = require("../../../utils");
 const {
   getRuleElementStateList,
   getRuleBookIDByRuleElement,
+  logRuleElementState,
+  logRuleElement,
 } = require("../../../neo4j/rule-element-query");
 const {
   getRuleBookBreadcrumbs,
@@ -282,6 +284,7 @@ module.exports = async (object, params, ctx) => {
   const hist = _.get(params, "hist", null);
   let isSingle = false;
   let nowDate = common.getTimestamp();
+  let identity = [];
   let ruleBookId = null;
   if (currentDate) {
     nowDate = common.getTimestamp(currentDate);
@@ -418,6 +421,27 @@ module.exports = async (object, params, ctx) => {
         );
         settings = breadcrumbsData.settings;
         response.breadcrumbs = breadcrumbsData.breadcrumbs;
+      }
+    }
+
+    if (userEmail && viewState) {
+      const deIdentity = _.get(viewState, "de.identity", null);
+      const enIdentity = _.get(viewState, "en.identity", null);
+      if (deIdentity) identity.push(deIdentity);
+      if (enIdentity) identity.push(enIdentity);
+      if (identity.length > 0) {
+        common.loggingData(logRuleElementState, {
+          type: constants.LOG_TYPE_ID.READ_RULE_ELEMENT_AND_STATE,
+          current_user_email: userEmail,
+          identity,
+        });
+      }
+      if (ruleElementDocId) {
+        common.loggingData(logRuleElement, {
+          type: constants.LOG_TYPE_ID.READ_RULE_ELEMENT_AND_STATE,
+          current_user_email: userEmail,
+          rule_element_doc_id: ruleElementDocId,
+        });
       }
     }
     response.isSingle = isSingle;
