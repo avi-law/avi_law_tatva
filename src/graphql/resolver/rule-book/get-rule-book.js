@@ -260,7 +260,6 @@ module.exports = async (object, params, ctx) => {
           secondeNodeChild.push(nodeChildObject);
         });
         breadcrumbs.push({ node: secondeNodeChild });
-        // console.log(JSON.stringify(treeStructure));
         breadcrumbs = await getBreadcrumbs(
           treeStructure.has_rule_book_struct_child,
           segment,

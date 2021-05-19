@@ -5,16 +5,13 @@
 const _ = require("lodash");
 const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
-const { getUser } = require("../../../neo4j/query");
 const {
   getRuleElementStateList,
   getRuleBookIDByRuleElement,
 } = require("../../../neo4j/rule-element-query");
 const {
-  getRuleBookIssue,
   getRuleBookBreadcrumbs,
   getRuleBookStructChildNode,
-  getRuleBook,
 } = require("../../../neo4j/rule-book-query");
 const { defaultLanguage } = require("../../../config/application");
 const getRuleElementStateStatus = require("./get-rule-element-state-status");
@@ -252,7 +249,6 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
           secondeNodeChild.push(nodeChildObject);
         });
         breadcrumbs.push({ node: secondeNodeChild });
-        // console.log(JSON.stringify(treeStructure));
         breadcrumbs = await getBreadcrumbs(
           treeStructure.has_rule_book_struct_child,
           segment,
@@ -408,7 +404,10 @@ module.exports = async (object, params, ctx) => {
     });
     if (rbResult && rbResult.records.length > 0) {
       const rbRecord = _.get(rbResult, "records[0]", null);
-      ruleBookId = rbRecord.get("rule_book_id");
+      ruleBookId = rbRecord.get("rule_book_id_1");
+      if (!ruleBookId) {
+        ruleBookId = rbRecord.get("rule_book_id_2");
+      }
       if (ruleBookId) {
         const breadcrumbsData = await getRuleBookBreadcrumbsByRuleElement(
           object,
