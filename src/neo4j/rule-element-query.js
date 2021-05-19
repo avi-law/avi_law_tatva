@@ -471,7 +471,8 @@ RETURN distinct sl.sol_id as sol_id, collect({ sls: {sol_name_01: sls.sol_name_0
 `;
 
 exports.getRuleBookIDByRuleElement = `
-MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[r1:HAS_RULE_ELEMENT]->(re:Rule_Element {rule_element_doc_id: $rule_element_doc_id })
+MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[r1:HAS_RULE_ELEMENT]->(re1:Rule_Element)-[:HAS_RULE_ELEMENT*]->(re2:Rule_Element)
+WHERE re2.rule_element_doc_id = $rule_element_doc_id
 RETURN rb.rule_book_id as rule_book_id
 ORDER BY rbi.rule_book_issue_no DESC
 LIMIT 1

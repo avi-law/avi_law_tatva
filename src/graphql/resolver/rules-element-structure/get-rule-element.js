@@ -403,16 +403,18 @@ module.exports = async (object, params, ctx) => {
     const rbResult = await session.run(getRuleBookIDByRuleElement, {
       rule_element_doc_id: ruleElementDocId,
     });
-    const rbRecord = _.get(rbResult, "records[0]", null);
-    ruleBookId = rbRecord.get("rule_book_id");
-    if (ruleBookId) {
-      response.breadcrumbs = await getRuleBookBreadcrumbsByRuleElement(
-        object,
-        {
-          rule_book_id: ruleBookId,
-        },
-        ctx
-      );
+    if (rbResult && rbResult.records.length > 0) {
+      const rbRecord = _.get(rbResult, "records[0]", null);
+      ruleBookId = rbRecord.get("rule_book_id");
+      if (ruleBookId) {
+        response.breadcrumbs = await getRuleBookBreadcrumbsByRuleElement(
+          object,
+          {
+            rule_book_id: ruleBookId,
+          },
+          ctx
+        );
+      }
     }
     if (userEmail) {
       const settingResult = await session.run(getUser, {
@@ -432,7 +434,7 @@ module.exports = async (object, params, ctx) => {
     response.isSingle = isSingle;
     response.view = viewState;
     response.language_preference_settings = settings;
-    console.log(response);
+    // console.log(response);
     return response;
   } catch (error) {
     session.close();
