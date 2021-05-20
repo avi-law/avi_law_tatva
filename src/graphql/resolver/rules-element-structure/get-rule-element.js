@@ -493,14 +493,17 @@ module.exports = async (object, params, ctx) => {
       ) {
         ruleElementLogResultDetails.records.forEach((record) => {
           const logIdentity = record.get("res").identity;
+          const rbis = record.get("rbis");
           const createdLog = record.get("createdLog");
           const updatedLog = record.get("updatedLog");
           const deIdentity = _.get(viewState, "de.identity", null);
           const enIdentity = _.get(viewState, "en.identity", null);
           if (deIdentity === logIdentity) {
+            _.set(viewState, "de.rbis", rbis);
             _.set(viewState, "de.createdLog", createdLog);
             _.set(viewState, "de.updatedLog", updatedLog);
           } else if (enIdentity === logIdentity) {
+            _.set(viewState, "en.rbis", rbis);
             _.set(viewState, "en.createdLog", createdLog);
             _.set(viewState, "en.updatedLog", updatedLog);
           }

@@ -1167,6 +1167,7 @@ type RuleBookStateCustomTree {
   extend type Rule_Element_State {
     createdLog: customLog
     updatedLog: customLog
+    rbis: Rule_Book_Issue_State
   }
 
   type RuleElementStateCustom {

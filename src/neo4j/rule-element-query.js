@@ -492,7 +492,8 @@ LIMIT 1
 
 exports.getRuleElementStateDetailsWithLog = `
 MATCH (res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
-WHERE id(res) IN [55318, 60554]
+WHERE id(res) IN $identity
+OPTIONAL MATCH (res)<-[:HAS_RULE_ELEMENT_STATE]-(re:Rule_Element)<-[r1:HAS_RULE_ELEMENT]-(rbi:Rule_Book_Issue)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang)
 CALL {
   WITH res
   // MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.CREATE_RULE_ELEMENT_AND_STATE}})
@@ -517,5 +518,5 @@ CALL {
   RETURN {timestamp: l2.log_timestamp, user_state: { user_first_name: us1.user_first_name, user_middle_name: us1.user_middle_name, user_last_name: us1.user_last_name  } } AS updatedLog
   LIMIT 1
 }
-RETURN res, updatedLog, createdLog
+RETURN res, updatedLog, createdLog, { rule_book_issue_title_short: rbis.rule_book_issue_title_short } as rbis
 `;
