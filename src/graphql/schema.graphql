@@ -1020,6 +1020,7 @@ const typeDefs = gql`
     title_de: String
     isView: Boolean
     isActive: Boolean
+    isElementIsRuleBook: Boolean
   }
 
   type nodeType {

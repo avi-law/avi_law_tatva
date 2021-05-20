@@ -118,7 +118,9 @@ const getBreadcrumbs = (child, segments, breadcrumbs) => {
         }
         if (_.get(breadcrumbs, `${index}.node`).length > 0) {
           const findObject = _.find(breadcrumbs[index].node, { ID: id });
-          findObject.isView = true;
+          if (findObject) {
+            findObject.isView = true;
+          }
         }
       }
     });

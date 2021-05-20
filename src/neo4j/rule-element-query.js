@@ -520,3 +520,10 @@ CALL {
 }
 RETURN res, updatedLog, createdLog, { rule_book_issue_title_short: rbis.rule_book_issue_title_short } as rbis
 `;
+
+exports.getRuleElementShortestPath = `
+MATCH (rb:Rule_Book),(re:Rule_Element),
+p = shortestPath((rb)-[:HAS_RULE_BOOK_ISSUE|HAS_RULE_ELEMENT*..15]-(re))
+WHERE rb.rule_book_id = $rule_book_id AND re.rule_element_doc_id = $rule_element_doc_id
+RETURN p
+`;

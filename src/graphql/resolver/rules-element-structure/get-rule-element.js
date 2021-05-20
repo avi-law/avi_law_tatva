@@ -11,6 +11,7 @@ const {
   logRuleElementState,
   logRuleElement,
   getRuleElementStateDetailsWithLog,
+  getRuleElementShortestPath,
 } = require("../../../neo4j/rule-element-query");
 const {
   getRuleBookBreadcrumbs,
@@ -54,6 +55,80 @@ const getRuleElementStructure = async (ruleBookId, ruleBookIssueNo) => {
     session.close();
   }
 };
+
+const getStatesAndUpdateStatus = (ruleElementState, nowDate) => {
+  if (ruleElementState && ruleElementState.length > 0) {
+    const stateData = _.cloneDeep(ruleElementState);
+    const stateObject = [];
+    ruleElementState = [];
+    stateData.forEach((stateElement) => {
+      const obj = { en: null, de: null };
+      const lang = stateElement.rule_element_state_language_is[0].iso_639_1;
+      obj[lang] = {
+        ...stateElement,
+      };
+
+      if (obj[lang].rule_element_title !== "") {
+        obj[lang].rule_element_title_display = common.removeTag(
+          obj[lang].rule_element_title
+        );
+      }
+      const status = getRuleElementStateStatus(_.cloneDeep(obj[lang]), nowDate);
+      if (status === constants.RULE_ELEMENT_STATE_STATUS.GREEN) {
+        obj[lang].identity = stateElement["_id"];
+        obj[lang].rule_element_status = status;
+        delete obj[lang].rule_element_state_language_is;
+        stateObject.push(obj);
+      }
+    });
+
+    const deList = [];
+    const enList = [];
+    stateObject.forEach((el) => {
+      if (el.de) {
+        deList.push(el.de);
+      }
+      if (el.en) {
+        enList.push(el.en);
+      }
+    });
+    const activeState = { en: null, de: null };
+    if (enList.length > 0) {
+      activeState.en = enList[enList.length - 1];
+    }
+    if (deList.length > 0) {
+      activeState.de = deList[deList.length - 1];
+    }
+    if (activeState.en || activeState.de) {
+      ruleElementState.push(activeState);
+    }
+    return ruleElementState;
+  }
+  return null;
+};
+
+const ruleElementShortestPath = async (ruleBookId, ruleElementDocId) => {
+  const session = driver.session();
+  let segment = null;
+  try {
+    const breadcrumbsResult = await session.run(getRuleElementShortestPath, {
+      rule_element_doc_id: ruleElementDocId,
+      rule_book_id: ruleBookId,
+    });
+
+    if (breadcrumbsResult && breadcrumbsResult.records.length > 0) {
+      segment = breadcrumbsResult.records[0].get("p").segments;
+    }
+    return segment;
+  } catch (error) {
+    console.log(error);
+    session.close();
+    throw error;
+  } finally {
+    session.close();
+  }
+};
+
 const getBreadcrumbs = (child, segments, breadcrumbs) => {
   const original = _.cloneDeep(segments);
   const remainingSegment = _.cloneDeep(segments.splice(2, segments.length - 1));
@@ -174,7 +249,141 @@ const getBreadcrumbs = (child, segments, breadcrumbs) => {
         }
         if (_.get(breadcrumbs, `${index}.node`, []).length > 0) {
           const findObject = _.find(breadcrumbs[index].node, { ID: id });
-          findObject.isView = true;
+          if (findObject) {
+            findObject.isView = true;
+          }
+        }
+      }
+    });
+  }
+  return breadcrumbs;
+};
+
+const getElementBreadcrumbs = (child, segments, breadcrumbs) => {
+  const original = _.cloneDeep(segments);
+  const remainingSegment = _.cloneDeep(original.splice(1, original.length - 1));
+  // console.log(remainingSegment);
+  if (segments) {
+    segments.forEach((data) => {
+      const array = [];
+      const labelStart = _.get(data, "start.labels[0]", null);
+      // const labelEnd = _.get(data, "end.labels[0]", null);
+      if (labelStart) {
+        if (labelStart === constants.DRAG_AND_DROP_TYPE.RULE_BOOK_ISSUE) {
+          const ruleBookIssueElementchild = _.get(
+            child,
+            "has_rule_element",
+            null
+          );
+          if (
+            ruleBookIssueElementchild &&
+            ruleBookIssueElementchild.length > 0
+          ) {
+            ruleBookIssueElementchild.forEach((rbs) => {
+              const ruleElementStateList = _.get(
+                rbs,
+                "has_rule_element_state",
+                null
+              );
+              if (ruleElementStateList.length > 0) {
+                const stateList = getStatesAndUpdateStatus(
+                  ruleElementStateList,
+                  common.getTimestamp()
+                );
+                const nodeChildObject = {};
+                nodeChildObject.type =
+                  constants.DRAG_AND_DROP_TYPE.RULE_ELEMENT;
+                nodeChildObject.ID = _.get(rbs, "rule_element_doc_id", null);
+                nodeChildObject.isActive = true;
+                nodeChildObject.isElementIsRuleBook = _.get(
+                  rbs,
+                  "rule_element_is_rule_book",
+                  null
+                );
+                nodeChildObject.title_en = _.get(
+                  stateList,
+                  "0.en.rule_element_article",
+                  null
+                );
+                nodeChildObject.title_de = _.get(
+                  stateList,
+                  "0.de.rule_element_article",
+                  null
+                );
+                array.push(nodeChildObject);
+              }
+            });
+            child = ruleBookIssueElementchild;
+          }
+        } else if (labelStart === constants.DRAG_AND_DROP_TYPE.RULE_ELEMENT) {
+          const elementDocId = _.get(
+            data,
+            "start.properties.rule_element_doc_id",
+            null
+          );
+          const ruleElementchild = _.find(child, {
+            rule_element_doc_id: elementDocId,
+          }).has_rule_element;
+          if (ruleElementchild && ruleElementchild.length > 0) {
+            ruleElementchild.forEach((rbs) => {
+              const ruleElementStateList = _.get(
+                rbs,
+                "has_rule_element_state",
+                null
+              );
+              if (ruleElementStateList.length > 0) {
+                const stateList = getStatesAndUpdateStatus(
+                  ruleElementStateList,
+                  common.getTimestamp()
+                );
+                const nodeChildObject = {};
+                nodeChildObject.type =
+                  constants.DRAG_AND_DROP_TYPE.RULE_ELEMENT;
+                nodeChildObject.ID = _.get(rbs, "rule_element_doc_id", null);
+                nodeChildObject.isActive = true;
+                nodeChildObject.isElementIsRuleBook = _.get(
+                  rbs,
+                  "rule_element_is_rule_book",
+                  null
+                );
+                nodeChildObject.title_en = _.get(
+                  stateList,
+                  "0.en.rule_element_article",
+                  null
+                );
+                nodeChildObject.title_de = _.get(
+                  stateList,
+                  "0.de.rule_element_article",
+                  null
+                );
+                array.push(nodeChildObject);
+              }
+            });
+            child = ruleElementchild;
+          }
+        }
+      }
+      if (array.length) {
+        breadcrumbs.push({ node: array });
+      }
+    });
+  }
+  if (remainingSegment.length > 0) {
+    remainingSegment.forEach((data, index) => {
+      // eslint-disable-next-line operator-assignment
+      let id = null;
+      const labelEnd = _.get(data, "end.labels[0]", null);
+      if (labelEnd) {
+        if (labelEnd === constants.DRAG_AND_DROP_TYPE.RULE_ELEMENT) {
+          id = _.get(data, "end.properties.rule_element_doc_id", null);
+        } else if (labelEnd === constants.DRAG_AND_DROP_TYPE.RULE_BOOK) {
+          id = _.get(data, "end.properties.rule_book_id", null);
+        }
+        if (_.get(breadcrumbs, `${index}.node`, []).length > 0) {
+          const findObject = _.find(breadcrumbs[index].node, { ID: id });
+          if (findObject) {
+            findObject.isView = true;
+          }
         }
       }
     });
@@ -188,6 +397,7 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
     : constants.RULE_BOOK_STRUCT_ROOT_ID;
   const ruleBookId = params.rule_book_id;
   const ruleBookIssueNo = params.rule_book_issue_no;
+  const ruleElementDocId = params.rule_element_doc_id;
   let breadcrumbs = [];
   const rootNodeChild = [];
   const secondeNodeChild = [];
@@ -293,17 +503,27 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
           breadcrumbs
         );
         response.settings = treeStructure.language_preference_settings;
-        response.breadcrumbs = breadcrumbs;
       }
     }
 
-    // if (params.rule_book_struct_id) {
-    //   const elementTreeStructure = await getRuleElementStructure(
-    //     ruleBookId,
-    //     ruleBookIssueNo
-    //   );
-    //   console.log(elementTreeStructure);
-    // }
+    if (params.rule_book_struct_id) {
+      const elementTreeStructure = await getRuleElementStructure(
+        ruleBookId,
+        ruleBookIssueNo
+      );
+      const segments = await ruleElementShortestPath(
+        ruleBookId,
+        ruleElementDocId
+      );
+      if (segments) {
+        const ruleElementBreadcrumbs = await getElementBreadcrumbs(
+          _.get(elementTreeStructure, "rule_book_issue", null),
+          segments,
+          []
+        );
+        response.breadcrumbs = _.concat(breadcrumbs, ruleElementBreadcrumbs);
+      }
+    }
     return response;
   } catch (error) {
     console.log(error);
@@ -452,6 +672,7 @@ module.exports = async (object, params, ctx) => {
           {
             rule_book_id: ruleBookId,
             rule_book_issue_no: ruleBookIssueNo,
+            rule_element_doc_id: ruleElementDocId,
           },
           ctx
         );
