@@ -259,6 +259,16 @@ const getBreadcrumbs = (child, segments, breadcrumbs) => {
   return breadcrumbs;
 };
 
+const getRuleElementTitle = (stateList, lang) => {
+  let ruleElementTitle = _.get(stateList, `0.${lang}.rule_element_article`, "");
+  let title = _.get(stateList, `0.${lang}.rule_element_title`, null);
+  if (title !== "") {
+    title = common.removeTag(title);
+    ruleElementTitle = `${ruleElementTitle} (${title})`;
+  }
+  return ruleElementTitle;
+};
+
 const getElementBreadcrumbs = (child, segments, breadcrumbs) => {
   const original = _.cloneDeep(segments);
   const remainingSegment = _.cloneDeep(original.splice(1, original.length - 1));
@@ -300,16 +310,8 @@ const getElementBreadcrumbs = (child, segments, breadcrumbs) => {
                   "rule_element_is_rule_book",
                   null
                 );
-                nodeChildObject.title_en = _.get(
-                  stateList,
-                  "0.en.rule_element_article",
-                  null
-                );
-                nodeChildObject.title_de = _.get(
-                  stateList,
-                  "0.de.rule_element_article",
-                  null
-                );
+                nodeChildObject.title_en = getRuleElementTitle(stateList, "en");
+                nodeChildObject.title_de = getRuleElementTitle(stateList, "de");
                 array.push(nodeChildObject);
               }
             });
@@ -346,16 +348,8 @@ const getElementBreadcrumbs = (child, segments, breadcrumbs) => {
                   "rule_element_is_rule_book",
                   null
                 );
-                nodeChildObject.title_en = _.get(
-                  stateList,
-                  "0.en.rule_element_article",
-                  null
-                );
-                nodeChildObject.title_de = _.get(
-                  stateList,
-                  "0.de.rule_element_article",
-                  null
-                );
+                nodeChildObject.title_en = getRuleElementTitle(stateList, "en");
+                nodeChildObject.title_de = getRuleElementTitle(stateList, "de");
                 array.push(nodeChildObject);
               }
             });
