@@ -262,7 +262,7 @@ const getBreadcrumbs = (child, segments, breadcrumbs) => {
 const getRuleElementTitle = (stateList, lang) => {
   let ruleElementTitle = _.get(stateList, `0.${lang}.rule_element_article`, "");
   let title = _.get(stateList, `0.${lang}.rule_element_title`, null);
-  if (title !== "") {
+  if (title !== "" && title) {
     title = common.removeTag(title);
     ruleElementTitle = `${ruleElementTitle} (${title})`;
   }
