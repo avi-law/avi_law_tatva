@@ -10,15 +10,50 @@ const {
   getRuleBookIDByRuleElement,
   logRuleElementState,
   logRuleElement,
+  getRuleElementStateDetailsWithLog,
 } = require("../../../neo4j/rule-element-query");
 const {
   getRuleBookBreadcrumbs,
   getRuleBookStructChildNode,
 } = require("../../../neo4j/rule-book-query");
+const { getRulesElementStructure } = require("../../../neo4j/tree-query");
 const { defaultLanguage } = require("../../../config/application");
 const getRuleElementStateStatus = require("./get-rule-element-state-status");
 const getRulebookStructure = require("../rule-book-structure/get-rule-book-structure");
 
+const getRuleElementStructure = async (ruleBookId, ruleBookIssueNo) => {
+  const session = driver.session();
+  let ruleElementStructureList = [];
+  try {
+    const result = await session.run(getRulesElementStructure, {
+      rule_book_id: ruleBookId,
+      rule_book_issue_no: ruleBookIssueNo,
+    });
+    if (result.records && result.records.length > 0) {
+      ruleElementStructureList = result.records.map((record) => {
+        const ruleBook = record.get("rule_book");
+        const ruleBookResponse = {
+          rule_book_active: ruleBook.rule_book_active,
+          rule_book_id: ruleBook.rule_book_id,
+          rule_book_issue: _.get(ruleBook, "has_rule_book_issue[0]", null),
+        };
+        return ruleBookResponse;
+      });
+      const ruleElementTreeStructureData = _.get(
+        ruleElementStructureList,
+        "[0]",
+        null
+      );
+      return ruleElementTreeStructureData;
+    }
+  } catch (error) {
+    console.log(error);
+    session.close();
+    throw error;
+  } finally {
+    session.close();
+  }
+};
 const getBreadcrumbs = (child, segments, breadcrumbs) => {
   const original = _.cloneDeep(segments);
   const remainingSegment = _.cloneDeep(segments.splice(2, segments.length - 1));
@@ -152,6 +187,7 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
     ? params.rule_book_struct_id
     : constants.RULE_BOOK_STRUCT_ROOT_ID;
   const ruleBookId = params.rule_book_id;
+  const ruleBookIssueNo = params.rule_book_issue_no;
   let breadcrumbs = [];
   const rootNodeChild = [];
   const secondeNodeChild = [];
@@ -260,6 +296,14 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
         response.breadcrumbs = breadcrumbs;
       }
     }
+
+    // if (params.rule_book_struct_id) {
+    //   const elementTreeStructure = await getRuleElementStructure(
+    //     ruleBookId,
+    //     ruleBookIssueNo
+    //   );
+    //   console.log(elementTreeStructure);
+    // }
     return response;
   } catch (error) {
     console.log(error);
@@ -284,8 +328,9 @@ module.exports = async (object, params, ctx) => {
   const hist = _.get(params, "hist", null);
   let isSingle = false;
   let nowDate = common.getTimestamp();
-  let identity = [];
+  const identity = [];
   let ruleBookId = null;
+  let ruleBookIssueNo = null;
   if (currentDate) {
     nowDate = common.getTimestamp(currentDate);
   }
@@ -347,18 +392,6 @@ module.exports = async (object, params, ctx) => {
                     reState.lang.properties.iso_639_1
                   ].sol = solObject;
                 }
-                const createdLog = _.get(reState, "createdLog", null);
-                if (createdLog) {
-                  res[properties.rule_element_id][
-                    reState.lang.properties.iso_639_1
-                  ].createdLog = createdLog;
-                }
-                const updatedLog = _.get(reState, "updatedLog", null);
-                if (updatedLog) {
-                  res[properties.rule_element_id][
-                    reState.lang.properties.iso_639_1
-                  ].updatedLog = updatedLog;
-                }
               }
             }
           });
@@ -408,14 +441,17 @@ module.exports = async (object, params, ctx) => {
     if (rbResult && rbResult.records.length > 0) {
       const rbRecord = _.get(rbResult, "records[0]", null);
       ruleBookId = rbRecord.get("rule_book_id_1");
+      ruleBookIssueNo = rbRecord.get("rule_book_issue_no_1");
       if (!ruleBookId) {
         ruleBookId = rbRecord.get("rule_book_id_2");
+        ruleBookIssueNo = rbRecord.get("rule_book_issue_no_2");
       }
-      if (ruleBookId) {
+      if (ruleBookId && ruleBookIssueNo) {
         const breadcrumbsData = await getRuleBookBreadcrumbsByRuleElement(
           object,
           {
             rule_book_id: ruleBookId,
+            rule_book_issue_no: ruleBookIssueNo,
           },
           ctx
         );
@@ -441,6 +477,33 @@ module.exports = async (object, params, ctx) => {
           type: constants.LOG_TYPE_ID.READ_RULE_ELEMENT_AND_STATE,
           current_user_email: userEmail,
           rule_element_doc_id: ruleElementDocId,
+        });
+      }
+    }
+    if (identity.length > 0) {
+      const ruleElementLogResultDetails = await session.run(
+        getRuleElementStateDetailsWithLog,
+        {
+          identity,
+        }
+      );
+      if (
+        ruleElementLogResultDetails &&
+        ruleElementLogResultDetails.records.length > 0
+      ) {
+        ruleElementLogResultDetails.records.forEach((record) => {
+          const logIdentity = record.get("res").identity;
+          const createdLog = record.get("createdLog");
+          const updatedLog = record.get("updatedLog");
+          const deIdentity = _.get(viewState, "de.identity", null);
+          const enIdentity = _.get(viewState, "en.identity", null);
+          if (deIdentity === logIdentity) {
+            _.set(viewState, "de.createdLog", createdLog);
+            _.set(viewState, "de.updatedLog", updatedLog);
+          } else if (enIdentity === logIdentity) {
+            _.set(viewState, "en.createdLog", createdLog);
+            _.set(viewState, "en.updatedLog", updatedLog);
+          }
         });
       }
     }

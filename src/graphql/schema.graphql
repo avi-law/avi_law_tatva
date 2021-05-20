@@ -1163,6 +1163,11 @@ type RuleBookStateCustomTree {
     nl_list: [searchCustomNL]
     total: Int
   }
+   # Extent rule element state for created and update log
+  extend type Rule_Element_State {
+    createdLog: customLog
+    updatedLog: customLog
+  }
 
   type RuleElementStateCustom {
     en: Rule_Element_State
@@ -1181,8 +1186,6 @@ type RuleBookStateCustomTree {
     breadcrumbs: [nodeType]
     isSingle: Boolean
     language_preference_settings: languagePreferencesettings
-    createdLog: [customLog]
-    updatedLog: [customLog]
   }
 
   type GetRuleElementStateList {
