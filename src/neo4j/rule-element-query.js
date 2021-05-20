@@ -496,8 +496,7 @@ WHERE id(res) IN $identity
 OPTIONAL MATCH (res)<-[:HAS_RULE_ELEMENT_STATE]-(re:Rule_Element)<-[r1:HAS_RULE_ELEMENT*]-(rbi:Rule_Book_Issue)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang)
 CALL {
   WITH res
-  // MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.CREATE_RULE_ELEMENT_AND_STATE}})
-  MATCH (lt: Log_Type {log_type_id: 46})
+  MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.CREATE_RULE_ELEMENT_AND_STATE}})
   OPTIONAL MATCH (res)<-[:LOG_REFERS_TO_OBJECT]-(l1:Log)-[:HAS_LOG_TYPE]->(lt)
   OPTIONAL MATCH (l1)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]-(us1:User_State)
   WHERE r1.to IS NULL
@@ -508,8 +507,7 @@ CALL {
 }
 CALL {
   WITH res
-  // MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.UPDATE_RULE_ELEMENT_AND_STATE}})
-  MATCH (lt: Log_Type {log_type_id: 46})
+  MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.UPDATE_RULE_ELEMENT_AND_STATE}})
   OPTIONAL MATCH (res)<-[:LOG_REFERS_TO_OBJECT]-(l2:Log)-[:HAS_LOG_TYPE]->(lt)
   OPTIONAL MATCH (l2)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]-(us1:User_State)
   WHERE r1.to IS NULL
