@@ -115,7 +115,7 @@ WITH path AS path_ordered order by orders
 WITH Collect(path_ordered) AS path_elements
 CALL apoc.convert.toTree(path_elements, true, {
   nodes: {
-  Rule_Element: ["rule_element_doc_id"],
+  Rule_Element: ["rule_element_doc_id", "rule_element_is_rule_book", 'rule_element_header_lvl'],
   Rule_Element_State: ['rule_element_id', 'rule_element_title', 'rule_element_show_anyway','rule_element_applies_from','rule_element_in_force_until','rule_element_applies_until','rule_element_in_force_from','rule_element_visible_until','rule_element_visible_from','rule_element_title', 'rule_element_article'], Language: ['iso_639_1']}
 }) yield value
 RETURN value as rule_book;

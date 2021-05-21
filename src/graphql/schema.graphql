@@ -1021,6 +1021,7 @@ const typeDefs = gql`
     isView: Boolean
     isActive: Boolean
     isElementIsRuleBook: Boolean
+    ruleElementHeaderLevel: Int
   }
 
   type nodeType {
@@ -1188,6 +1189,8 @@ type RuleBookStateCustomTree {
     breadcrumbs: [nodeType]
     isSingle: Boolean
     language_preference_settings: languagePreferencesettings
+    nextRuleElement: Rule_Element
+    previousRuleElement: Rule_Element
   }
 
   type GetRuleElementStateList {

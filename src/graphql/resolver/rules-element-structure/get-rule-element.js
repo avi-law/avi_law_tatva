@@ -310,6 +310,11 @@ const getElementBreadcrumbs = (child, segments, breadcrumbs) => {
                   "rule_element_is_rule_book",
                   null
                 );
+                nodeChildObject.ruleElementHeaderLevel = _.get(
+                  rbs,
+                  "rule_element_header_lvl",
+                  null
+                );
                 nodeChildObject.title_en = getRuleElementTitle(stateList, "en");
                 nodeChildObject.title_de = getRuleElementTitle(stateList, "de");
                 array.push(nodeChildObject);
@@ -346,6 +351,11 @@ const getElementBreadcrumbs = (child, segments, breadcrumbs) => {
                 nodeChildObject.isElementIsRuleBook = _.get(
                   rbs,
                   "rule_element_is_rule_book",
+                  null
+                );
+                nodeChildObject.ruleElementHeaderLevel = _.get(
+                  rbs,
+                  "rule_element_header_lvl",
                   null
                 );
                 nodeChildObject.title_en = getRuleElementTitle(stateList, "en");
@@ -660,6 +670,8 @@ module.exports = async (object, params, ctx) => {
         ruleBookId = rbRecord.get("rule_book_id_2");
         ruleBookIssueNo = rbRecord.get("rule_book_issue_no_2");
       }
+      // console.log(rbResult.records);
+      // console.log(ruleBookIssueNo);
       if (ruleBookId && ruleBookIssueNo) {
         const breadcrumbsData = await getRuleBookBreadcrumbsByRuleElement(
           object,
@@ -670,6 +682,7 @@ module.exports = async (object, params, ctx) => {
           },
           ctx
         );
+
         settings = breadcrumbsData.settings;
         response.breadcrumbs = breadcrumbsData.breadcrumbs;
       }
