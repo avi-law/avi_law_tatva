@@ -451,11 +451,14 @@ const getElementBreadcrumbs = (child, segments, breadcrumbs, otherData) => {
           if (findObject) {
             if (ruleElementDocId === id) {
               const getIndex = allElements.findIndex((e) => e.ID === id);
-              otherData.previousRuleElement = _.get(
-                allElements,
-                `[${getIndex - 1}]`,
-                null
-              );
+              const previous = _.get(allElements, `[${getIndex - 1}]`, null);
+              if (previous && !previous.isElementIsRuleBook) {
+                otherData.previousRuleElement = _.get(
+                  allElements,
+                  `[${getIndex - 1}]`,
+                  null
+                );
+              }
               otherData.nextRuleElement = _.get(
                 allElements,
                 `[${getIndex + 1}]`,
