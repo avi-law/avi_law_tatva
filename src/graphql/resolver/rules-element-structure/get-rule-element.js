@@ -269,7 +269,7 @@ const getRuleElementTitle = (stateList, lang) => {
   return ruleElementTitle;
 };
 
-const getElementBreadcrumbs = (child, segments, breadcrumbs) => {
+const getElementBreadcrumbs = (child, segments, breadcrumbs, ruleBookId) => {
   const original = _.cloneDeep(segments);
   const remainingSegment = _.cloneDeep(original.splice(1, original.length - 1));
   // console.log(remainingSegment);
@@ -315,6 +315,7 @@ const getElementBreadcrumbs = (child, segments, breadcrumbs) => {
                   "rule_element_header_lvl",
                   null
                 );
+                nodeChildObject.ruleElementRuleBookId = ruleBookId;
                 nodeChildObject.title_en = getRuleElementTitle(stateList, "en");
                 nodeChildObject.title_de = getRuleElementTitle(stateList, "de");
                 array.push(nodeChildObject);
@@ -333,6 +334,7 @@ const getElementBreadcrumbs = (child, segments, breadcrumbs) => {
           }).has_rule_element;
           if (ruleElementchild && ruleElementchild.length > 0) {
             ruleElementchild.forEach((rbs) => {
+              // console.log(rbs);
               const ruleElementStateList = _.get(
                 rbs,
                 "has_rule_element_state",
@@ -358,6 +360,7 @@ const getElementBreadcrumbs = (child, segments, breadcrumbs) => {
                   "rule_element_header_lvl",
                   null
                 );
+                nodeChildObject.ruleElementRuleBookId = ruleBookId;
                 nodeChildObject.title_en = getRuleElementTitle(stateList, "en");
                 nodeChildObject.title_de = getRuleElementTitle(stateList, "de");
                 array.push(nodeChildObject);
@@ -523,7 +526,8 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
         const ruleElementBreadcrumbs = await getElementBreadcrumbs(
           _.get(elementTreeStructure, "rule_book_issue", null),
           segments,
-          []
+          [],
+          ruleBookId
         );
         response.breadcrumbs = _.concat(breadcrumbs, ruleElementBreadcrumbs);
       }
