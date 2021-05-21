@@ -669,11 +669,11 @@ module.exports = async (object, params, ctx) => {
     });
     if (rbResult && rbResult.records.length > 0) {
       const rbRecord = _.get(rbResult, "records[0]", null);
-      ruleBookId = rbRecord.get("rule_book_id_2");
-      ruleBookIssueNo = rbRecord.get("rule_book_issue_no_2");
+      ruleBookId = rbRecord.get("rule_book_id_1");
+      ruleBookIssueNo = rbRecord.get("rule_book_issue_no_1");
       if (!ruleBookId) {
-        ruleBookId = rbRecord.get("rule_book_id_1");
-        ruleBookIssueNo = rbRecord.get("rule_book_issue_no_1");
+        ruleBookId = rbRecord.get("rule_book_id_2");
+        ruleBookIssueNo = rbRecord.get("rule_book_issue_no_2");
       }
       // console.log(rbResult.records);
       // console.log(ruleBookIssueNo);
