@@ -269,9 +269,63 @@ const getRuleElementTitle = (stateList, lang) => {
   return ruleElementTitle;
 };
 
+const getAllRuleElementList = (elementArray, allElements, ruleBookId) => {
+  if (elementArray.length > 0) {
+    elementArray.forEach((element) => {
+      if (element.rule_element_header_lvl === 0) {
+        const ruleElementStateList = _.get(
+          element,
+          "has_rule_element_state",
+          null
+        );
+        const stateList = getStatesAndUpdateStatus(
+          ruleElementStateList,
+          common.getTimestamp()
+        );
+        const childRuleElementDocId = _.get(
+          element,
+          "rule_element_doc_id",
+          null
+        );
+        const nodeChildObject = {};
+        nodeChildObject.type = constants.DRAG_AND_DROP_TYPE.RULE_ELEMENT;
+        nodeChildObject.ID = childRuleElementDocId;
+        nodeChildObject.isActive = true;
+        nodeChildObject.isElementIsRuleBook = _.get(
+          element,
+          "rule_element_is_rule_book",
+          null
+        );
+        nodeChildObject.ruleElementHeaderLevel = _.get(
+          element,
+          "rule_element_header_lvl",
+          null
+        );
+        nodeChildObject.ruleElementRuleBookId = ruleBookId;
+        nodeChildObject.title_en = getRuleElementTitle(stateList, "en");
+        nodeChildObject.title_de = getRuleElementTitle(stateList, "de");
+        allElements.push(nodeChildObject);
+      }
+      if (element.has_rule_element) {
+        getAllRuleElementList(
+          element.has_rule_element,
+          allElements,
+          ruleBookId
+        );
+      }
+    });
+  }
+};
+
 const getElementBreadcrumbs = (child, segments, breadcrumbs, otherData) => {
-  const original = _.cloneDeep(segments);
+  const allElements = [];
   const { ruleBookId, ruleElementDocId } = otherData;
+  getAllRuleElementList(
+    _.get(child, "has_rule_element", null),
+    allElements,
+    ruleBookId
+  );
+  const original = _.cloneDeep(segments);
   const remainingSegment = _.cloneDeep(original.splice(1, original.length - 1));
   // console.log(remainingSegment);
   if (segments) {
@@ -396,17 +450,15 @@ const getElementBreadcrumbs = (child, segments, breadcrumbs, otherData) => {
           const findObject = _.find(breadcrumbs[index].node, { ID: id });
           if (findObject) {
             if (ruleElementDocId === id) {
-              const getIndex = breadcrumbs[index].node.findIndex(
-                (e) => e.ID === id
-              );
+              const getIndex = allElements.findIndex((e) => e.ID === id);
               otherData.previousRuleElement = _.get(
-                breadcrumbs,
-                `${index}.node[${getIndex - 1}]`,
+                allElements,
+                `[${getIndex - 1}]`,
                 null
               );
               otherData.nextRuleElement = _.get(
-                breadcrumbs,
-                `${index}.node[${getIndex + 1}]`,
+                allElements,
+                `[${getIndex + 1}]`,
                 null
               );
             }
@@ -582,7 +634,7 @@ module.exports = async (object, params, ctx) => {
   let settings = null;
   let response = {};
   const currentDate = _.get(params, "current_date", null);
-  const hist = _.get(params, "hist", null);
+  const hist = _.get(params, "identity", null);
   let isSingle = false;
   let nowDate = common.getTimestamp();
   const identity = [];
@@ -676,6 +728,12 @@ module.exports = async (object, params, ctx) => {
                   isSingle = true;
                 }
               }
+            } else if (hist) {
+              const deActive = _.get(res[e], "de.identity", null);
+              const enActive = _.get(res[e], "en.identity", null);
+              if (enActive === hist || deActive === hist) {
+                viewState = res[e];
+              }
             }
             ruleElementStateList.push(res[e]);
           });
@@ -721,7 +779,6 @@ module.exports = async (object, params, ctx) => {
         response.nextRuleElement = breadcrumbsData.nextRuleElement;
       }
     }
-
     if (userEmail && viewState) {
       const deIdentity = _.get(viewState, "de.identity", null);
       const enIdentity = _.get(viewState, "en.identity", null);
