@@ -637,7 +637,7 @@ module.exports = async (object, params, ctx) => {
   let settings = null;
   let response = {};
   const currentDate = _.get(params, "current_date", null);
-  const hist = _.get(params, "identity", null);
+  let hist = _.get(params, "identity", null);
   let isSingle = false;
   let nowDate = common.getTimestamp();
   const identity = [];
@@ -710,6 +710,15 @@ module.exports = async (object, params, ctx) => {
         }
         if (res && Object.keys(res).length > 0) {
           Object.keys(res).forEach((e) => {
+            if (hist) {
+              const deActive = _.get(res[e], "de.identity", null);
+              const enActive = _.get(res[e], "en.identity", null);
+              if (enActive === hist || deActive === hist) {
+                viewState = res[e];
+              } else {
+                hist = null;
+              }
+            }
             if (!hist) {
               if (Object.keys(res[e]).length === 2) {
                 const deActive = _.get(res[e], "de.rule_element_status", null);
@@ -730,12 +739,6 @@ module.exports = async (object, params, ctx) => {
                   viewState = res[e];
                   isSingle = true;
                 }
-              }
-            } else if (hist) {
-              const deActive = _.get(res[e], "de.identity", null);
-              const enActive = _.get(res[e], "en.identity", null);
-              if (enActive === hist || deActive === hist) {
-                viewState = res[e];
               }
             }
             ruleElementStateList.push(res[e]);
