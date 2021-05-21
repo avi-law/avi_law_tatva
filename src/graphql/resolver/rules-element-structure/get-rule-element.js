@@ -476,6 +476,7 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
       segment = breadcrumbsResult.records[0].get("p").segments;
     }
     if (params.rule_book_struct_id) {
+      // console.log(params);
       const treeStructure = await getRulebookStructure(object, params, ctx);
       if (
         treeStructure &&
@@ -513,7 +514,7 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
       }
     }
 
-    if (params.rule_book_struct_id) {
+    if (ruleBookId && ruleBookIssueNo) {
       const elementTreeStructure = await getRuleElementStructure(
         ruleBookId,
         ruleBookIssueNo
@@ -668,11 +669,11 @@ module.exports = async (object, params, ctx) => {
     });
     if (rbResult && rbResult.records.length > 0) {
       const rbRecord = _.get(rbResult, "records[0]", null);
-      ruleBookId = rbRecord.get("rule_book_id_1");
-      ruleBookIssueNo = rbRecord.get("rule_book_issue_no_1");
+      ruleBookId = rbRecord.get("rule_book_id_2");
+      ruleBookIssueNo = rbRecord.get("rule_book_issue_no_2");
       if (!ruleBookId) {
-        ruleBookId = rbRecord.get("rule_book_id_2");
-        ruleBookIssueNo = rbRecord.get("rule_book_issue_no_2");
+        ruleBookId = rbRecord.get("rule_book_id_1");
+        ruleBookIssueNo = rbRecord.get("rule_book_issue_no_1");
       }
       // console.log(rbResult.records);
       // console.log(ruleBookIssueNo);
