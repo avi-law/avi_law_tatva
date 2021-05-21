@@ -269,8 +269,9 @@ const getRuleElementTitle = (stateList, lang) => {
   return ruleElementTitle;
 };
 
-const getElementBreadcrumbs = (child, segments, breadcrumbs, ruleBookId) => {
+const getElementBreadcrumbs = (child, segments, breadcrumbs, otherData) => {
   const original = _.cloneDeep(segments);
+  const { ruleBookId, ruleElementDocId } = otherData;
   const remainingSegment = _.cloneDeep(original.splice(1, original.length - 1));
   // console.log(remainingSegment);
   if (segments) {
@@ -300,10 +301,15 @@ const getElementBreadcrumbs = (child, segments, breadcrumbs, ruleBookId) => {
                   ruleElementStateList,
                   common.getTimestamp()
                 );
+                const childRuleElementDocId = _.get(
+                  rbs,
+                  "rule_element_doc_id",
+                  null
+                );
                 const nodeChildObject = {};
                 nodeChildObject.type =
                   constants.DRAG_AND_DROP_TYPE.RULE_ELEMENT;
-                nodeChildObject.ID = _.get(rbs, "rule_element_doc_id", null);
+                nodeChildObject.ID = childRuleElementDocId;
                 nodeChildObject.isActive = true;
                 nodeChildObject.isElementIsRuleBook = _.get(
                   rbs,
@@ -389,6 +395,21 @@ const getElementBreadcrumbs = (child, segments, breadcrumbs, ruleBookId) => {
         if (_.get(breadcrumbs, `${index}.node`, []).length > 0) {
           const findObject = _.find(breadcrumbs[index].node, { ID: id });
           if (findObject) {
+            if (ruleElementDocId === id) {
+              const getIndex = breadcrumbs[index].node.findIndex(
+                (e) => e.ID === id
+              );
+              otherData.previousRuleElement = _.get(
+                breadcrumbs,
+                `${index}.node[${getIndex - 1}]`,
+                null
+              );
+              otherData.nextRuleElement = _.get(
+                breadcrumbs,
+                `${index}.node[${getIndex + 1}]`,
+                null
+              );
+            }
             findObject.isView = true;
           }
         }
@@ -409,7 +430,7 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
   const rootNodeChild = [];
   const secondeNodeChild = [];
   let segment = [];
-  const response = {};
+  let response = {};
   const session = driver.session();
   try {
     const getRootStructureChildResult = await session.run(
@@ -523,13 +544,20 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
         ruleBookId,
         ruleElementDocId
       );
+      const otherData = {
+        nextRuleElement: null,
+        previousRuleElement: null,
+        ruleBookId,
+        ruleElementDocId,
+      };
       if (segments) {
         const ruleElementBreadcrumbs = await getElementBreadcrumbs(
           _.get(elementTreeStructure, "rule_book_issue", null),
           segments,
           [],
-          ruleBookId
+          otherData
         );
+        response = { ...response, ...otherData };
         response.breadcrumbs = _.concat(breadcrumbs, ruleElementBreadcrumbs);
       }
     }
@@ -669,11 +697,11 @@ module.exports = async (object, params, ctx) => {
     });
     if (rbResult && rbResult.records.length > 0) {
       const rbRecord = _.get(rbResult, "records[0]", null);
-      ruleBookId = rbRecord.get("rule_book_id_1");
-      ruleBookIssueNo = rbRecord.get("rule_book_issue_no_1");
+      ruleBookId = rbRecord.get("rule_book_id_2");
+      ruleBookIssueNo = rbRecord.get("rule_book_issue_no_2");
       if (!ruleBookId) {
-        ruleBookId = rbRecord.get("rule_book_id_2");
-        ruleBookIssueNo = rbRecord.get("rule_book_issue_no_2");
+        ruleBookId = rbRecord.get("rule_book_id_1");
+        ruleBookIssueNo = rbRecord.get("rule_book_issue_no_1");
       }
       // console.log(rbResult.records);
       // console.log(ruleBookIssueNo);
@@ -687,7 +715,8 @@ module.exports = async (object, params, ctx) => {
           },
           ctx
         );
-
+        console.log(breadcrumbsData.nextRuleElement);
+        console.log(breadcrumbsData.previousRuleElement);
         settings = breadcrumbsData.settings;
         response.breadcrumbs = breadcrumbsData.breadcrumbs;
       }
