@@ -715,10 +715,10 @@ module.exports = async (object, params, ctx) => {
           },
           ctx
         );
-        console.log(breadcrumbsData.nextRuleElement);
-        console.log(breadcrumbsData.previousRuleElement);
         settings = breadcrumbsData.settings;
         response.breadcrumbs = breadcrumbsData.breadcrumbs;
+        response.previousRuleElement = breadcrumbsData.previousRuleElement;
+        response.nextRuleElement = breadcrumbsData.nextRuleElement;
       }
     }
 
