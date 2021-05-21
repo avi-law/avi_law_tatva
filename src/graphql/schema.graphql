@@ -1599,7 +1599,7 @@ type RuleBookStateCustomTree {
       blog_id: Int
     ): GetBlogListByYear @isUnAuthenticated
     getSolTagForRuleBookIssue(isSort: Boolean): GetSolsCustom @isAdmin
-    getRuleElement(rule_element_doc_id: String!): GetRuleElementDetails @isAuthenticated
+    getRuleElement(rule_element_doc_id: String, identity: Int): GetRuleElementDetails @isAuthenticated
     getRuleElementState(rule_element_doc_id: String!, current_date: _Neo4jDate): GetRuleElementCustom @isAdmin
     getRuleElementStateDetails(rule_element_doc_id: String!, identity: [Int!]!): GetRuleElementStateList @isAdmin
     getAllRuleElementState(rule_book_id: String!, rule_element_doc_id: String, current_date: _Neo4jDate): Rule_Book @isAuthenticated
