@@ -661,48 +661,53 @@ module.exports = async (object, params, ctx) => {
       const ruleElement = result.records.map((record) => {
         const res = {};
         if (record.get("res") && record.get("res").length > 0) {
-          record.get("res").forEach((reState) => {
+          record.get("res").forEach((reState, index) => {
             if (
               reState.lang &&
               reState.res &&
               reState.lang.properties.iso_639_1
             ) {
               const properties = _.get(reState, "res.properties", null);
-              if (properties) {
+              const stateIdentity = _.get(reState, "res.identity", null);
+              const versionOfId = _.get(reState, "version_of_id", index);
+              const stateLang = _.get(
+                reState,
+                "lang.properties.iso_639_1",
+                null
+              );
+              let uniqueKey = "";
+              if (properties && stateLang && stateIdentity) {
+                if (versionOfId && stateLang === "de") {
+                  uniqueKey = `${versionOfId}_${stateIdentity}`;
+                } else {
+                  uniqueKey = `${stateIdentity}_${versionOfId}`;
+                }
                 if (properties.rule_element_title !== "") {
                   properties.rule_element_title = common.removeTag(
                     properties.rule_element_title
                   );
                 }
-                if (!res[properties.rule_element_id]) {
-                  res[properties.rule_element_id] = {};
+                if (!res[uniqueKey]) {
+                  res[uniqueKey] = {};
                 }
-                res[properties.rule_element_id][
-                  reState.lang.properties.iso_639_1
-                ] = properties;
-                res[properties.rule_element_id][
-                  reState.lang.properties.iso_639_1
-                ].identity = _.get(reState, "res.identity", null);
+                res[uniqueKey][stateLang] = properties;
+                res[uniqueKey][stateLang].identity = _.get(
+                  reState,
+                  "res.identity",
+                  null
+                );
 
                 const status = getRuleElementStateStatus(
-                  _.cloneDeep(
-                    res[properties.rule_element_id][
-                      reState.lang.properties.iso_639_1
-                    ]
-                  ),
+                  _.cloneDeep(res[uniqueKey][stateLang]),
                   nowDate
                 );
-                res[properties.rule_element_id][
-                  reState.lang.properties.iso_639_1
-                ].rule_element_status = status;
+                res[uniqueKey][stateLang].rule_element_status = status;
                 const solState = _.get(reState, "sls.properties", null);
                 if (solState) {
                   const solObject = {
                     sol_state: solState,
                   };
-                  res[properties.rule_element_id][
-                    reState.lang.properties.iso_639_1
-                  ].sol = solObject;
+                  res[uniqueKey][stateLang].sol = solObject;
                 }
               }
             }
@@ -715,8 +720,6 @@ module.exports = async (object, params, ctx) => {
               const enActive = _.get(res[e], "en.identity", null);
               if (enActive === hist || deActive === hist) {
                 viewState = res[e];
-              } else {
-                hist = null;
               }
             }
             if (!hist) {
