@@ -252,10 +252,14 @@ const nqTransform = (value) => {
 };
 
 const removeTag = (html) => {
-  html = html.replace("<br />", " ");
-  html = html.replace(/<br\s*\/?>/gi, " ");
-  html = html.replace(/(<([^>]+)>)/gi, "");
-  return html;
+  try {
+    html = html.replace("<br />", " ");
+    html = html.replace(/<br\s*\/?>/gi, " ");
+    html = html.replace(/(<([^>]+)>)/gi, "");
+    return html;
+  } catch (error) {
+    return html;
+  }
 };
 
 const getTimestamp = (date) => {
