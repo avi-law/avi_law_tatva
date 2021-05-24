@@ -721,6 +721,9 @@ module.exports = async (object, params, ctx) => {
               if (enActive === hist || deActive === hist) {
                 viewState = res[e];
               }
+              if (!enActive || !deActive) {
+                isSingle = true;
+              }
             }
             if (!hist) {
               if (Object.keys(res[e]).length === 2) {
