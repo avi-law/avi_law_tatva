@@ -53,7 +53,7 @@ exports.updateRuleBookStructQuery = (queryParams) => {
   let query = `
   MATCH (lang1:Language {iso_639_1: "de"})
   MATCH (lang2:Language {iso_639_1: "en"})
-  MERGE (rbs:Rule_Book_Struct { rule_book_struct_id: "${queryParams.rbs.rule_book_struct_id}" })
+  MERGE (rbs:Rule_Book_Struct { rule_book_struct_id: "${queryParams.ruleBookStructId}" })
   SET rbs.rule_book_struct_id = $queryParams.rbs.rule_book_struct_id, rbs.rule_book_struct_active = $queryParams.rbs.rule_book_struct_active`;
 
   if (queryParams.isValidDE) {
@@ -150,7 +150,7 @@ exports.addruleBookIssueQuery = (queryParams) => {
   MATCH (rbp:Rule_Book { rule_book_id: "${queryParams.rule_book_parent_id}" })
   MATCH (lang1:Language {iso_639_1: "de"})
   MATCH (lang2:Language {iso_639_1: "en"})
-  MERGE (rbp)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: $queryParams.rbi.rule_book_issue_no })
+  MERGE (rbp)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger($queryParams.rbi.rule_book_issue_no) })
   ON CREATE
     SET rbi = $queryParams.rbi`;
   if (queryParams.isValidDE) {
@@ -190,7 +190,7 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
   }
 
   let query = `
-  OPTIONAL MATCH (rbp:Rule_Book { rule_book_id: "${queryParams.rule_book_parent_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue { rule_book_issue_no : ${queryParams.ruleBookIssueNo}})
+  OPTIONAL MATCH (rbp:Rule_Book { rule_book_id: "${queryParams.rule_book_parent_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue { rule_book_issue_no : toInteger(${queryParams.ruleBookIssueNo})})
   MATCH (lang1:Language {iso_639_1: "de"})
   MATCH (lang2:Language {iso_639_1: "en"})
   SET rbi = $queryParams.rbi`;
@@ -237,7 +237,7 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
 
 exports.deleteRuleBookIssueQuery = (queryParams) => {
   const query = `
-  OPTIONAL MATCH (rb:Rule_Book { rule_book_id: "${queryParams.ruleBookParentId}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue { rule_book_issue_no: ${queryParams.ruleBookIssueNo} })-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)
+  OPTIONAL MATCH (rb:Rule_Book { rule_book_id: "${queryParams.ruleBookParentId}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue { rule_book_issue_no: toInteger(${queryParams.ruleBookIssueNo}) })-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)
   OPTIONAL MATCH (rbi)-[r1:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS]->()
   DETACH DELETE r1, rbi, rbis
   RETURN rbi`;
@@ -261,7 +261,7 @@ MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(rbs)
 `;
 
 exports.getRuleBookIssue = `
-MATCH (rb:Rule_Book {rule_book_id: $rule_book_parent_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue { rule_book_issue_no: $rule_book_issue_no})
+MATCH (rb:Rule_Book {rule_book_id: $rule_book_parent_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue { rule_book_issue_no: toInteger($rule_book_issue_no)})
 CALL {
   WITH rbi
   MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
@@ -390,7 +390,7 @@ exports.changeOrderQuery = (queryParams) => {
       "Create relation between drag rule book issue node and drop rule book node"
     );
     query = `
-        OPTIONAL MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: ${queryParams.drag_rule_book_issue_no} })
+        OPTIONAL MATCH(rbp_drag:Rule_Book { rule_book_id: "${queryParams.drag_rule_book_parent_id}" })-[r1_drag:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger(${queryParams.drag_rule_book_issue_no}) })
         FOREACH (_ IN CASE WHEN rbi IS NOT NULL THEN [1] END | MERGE(rbp_drop:Rule_Book { rule_book_id: "${queryParams.drop_rule_book_parent_id}" })-[r1_drop:HAS_RULE_BOOK_ISSUE]->(rbi))
         FOREACH (_ IN CASE WHEN r1_drag IS NOT NULL THEN [1] END | DELETE r1_drag )
         RETURN rbp_drag as rb
