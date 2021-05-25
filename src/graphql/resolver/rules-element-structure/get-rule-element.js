@@ -79,6 +79,11 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate) => {
         obj[lang].rule_element_status = status;
         delete obj[lang].rule_element_state_language_is;
         stateObject.push(obj);
+      } else if (status === constants.RULE_ELEMENT_STATE_STATUS.BLUE) {
+        obj[lang].identity = stateElement["_id"];
+        obj[lang].rule_element_status = status;
+        delete obj[lang].rule_element_state_language_is;
+        stateObject.push(obj);
       }
     });
 
@@ -637,7 +642,7 @@ module.exports = async (object, params, ctx) => {
   let settings = null;
   let response = {};
   const currentDate = _.get(params, "current_date", null);
-  let hist = _.get(params, "identity", null);
+  const hist = _.get(params, "identity", null);
   let isSingle = false;
   let nowDate = common.getTimestamp();
   const identity = [];
@@ -741,6 +746,28 @@ module.exports = async (object, params, ctx) => {
                 if (
                   enActive === constants.RULE_ELEMENT_STATE_STATUS.GREEN ||
                   deActive === constants.RULE_ELEMENT_STATE_STATUS.GREEN
+                ) {
+                  viewState = res[e];
+                  isSingle = true;
+                }
+              }
+            }
+            if (!viewState) {
+              if (Object.keys(res[e]).length === 2) {
+                const deActive = _.get(res[e], "de.rule_element_status", null);
+                const enActive = _.get(res[e], "en.rule_element_status", null);
+                if (
+                  enActive === constants.RULE_ELEMENT_STATE_STATUS.BLUE &&
+                  deActive === constants.RULE_ELEMENT_STATE_STATUS.BLUE
+                ) {
+                  viewState = res[e];
+                }
+              } else if (Object.keys(res[e]).length === 1) {
+                const deActive = _.get(res[e], "de.rule_element_status", null);
+                const enActive = _.get(res[e], "en.rule_element_status", null);
+                if (
+                  enActive === constants.RULE_ELEMENT_STATE_STATUS.BLUE ||
+                  deActive === constants.RULE_ELEMENT_STATE_STATUS.BLUE
                 ) {
                   viewState = res[e];
                   isSingle = true;
