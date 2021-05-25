@@ -17,6 +17,8 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const ruleElementDocId = params.rule_element_doc_id;
+  const ruleBookId = _.get(params, "rule_book_id", null);
+  const ruleBookIssueNo = _.get(params, "rule_book_issue_no", null);
   const { identities } = params;
   try {
     if (!systemAdmin && !userIsAuthor) {
@@ -33,6 +35,8 @@ module.exports = async (object, params, ctx) => {
     }
     const queryParams = {
       rule_element_doc_id: ruleElementDocId,
+      rule_book_id: ruleBookId,
+      rule_book_issue_no: ruleBookIssueNo,
       identities,
     };
     console.log(queryParams);

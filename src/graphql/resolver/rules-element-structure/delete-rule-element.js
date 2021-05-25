@@ -45,7 +45,6 @@ module.exports = async (object, params, ctx) => {
     };
     console.log(queryParams);
     console.log(deleteRuleElement(queryParams));
-    // return true;
     const result = await session.run(deleteRuleElement(queryParams), {
       queryParams,
     });

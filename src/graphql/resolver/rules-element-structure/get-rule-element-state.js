@@ -35,8 +35,8 @@ const getSuccessorRuleElement = (array, list) => {
     "[0]de.has_successor_identity",
     null
   );
-  let rootIdentityDE = _.get(ruleElementStateList, "[0]de.identity", null);
-  let rootIdentityEN = _.get(ruleElementStateList, "[0]en.identity", null);
+  // let rootIdentityDE = _.get(ruleElementStateList, "[0]de.identity", null);
+  // let rootIdentityEN = _.get(ruleElementStateList, "[0]en.identity", null);
   const stateListDE = _.filter(array, { rule_element_state_langauge: "de" });
   const stateListEN = _.filter(array, { rule_element_state_langauge: "en" });
   // console.log("stateListDE.length", stateListDE.length);

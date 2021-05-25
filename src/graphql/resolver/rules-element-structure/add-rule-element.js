@@ -27,17 +27,15 @@ module.exports = async (object, params, ctx) => {
     }
     const queryParams = {
       re: data.re,
+      rule_book_issue_no: data.rule_book_issue_no,
+      rule_book_id: data.rule_book_id,
     };
     if (data.rule_element_parent_doc_id) {
       queryParams.rule_element_parent_doc_id = data.rule_element_parent_doc_id;
-    } else if (data.rule_book_issue_no && data.rule_book_id) {
-      queryParams.rule_book_issue_no = data.rule_book_issue_no;
-      queryParams.rule_book_id = data.rule_book_id;
     }
     queryParams.rule_element_order = _.get(data, "rule_element_order", 10);
     console.log(queryParams);
     console.log(addRuleElementQuery(queryParams));
-    // return true;
     const result = await session.run(addRuleElementQuery(queryParams), {
       queryParams,
     });
@@ -51,6 +49,8 @@ module.exports = async (object, params, ctx) => {
       common.loggingData(logRuleElement, {
         type: constants.LOG_TYPE_ID.CREATE_RULE_ELEMENT_AND_STATE,
         current_user_email: userEmail,
+        rule_book_issue_no: data.rule_book_issue_no,
+        rule_book_id: data.rule_book_id,
         rule_element_doc_id: ruleElement[0].rule_element_doc_id || null,
       });
       return true;

@@ -122,6 +122,8 @@ module.exports = {
   },
   NEWSLETTER_SERVICE_PATH: "service/news",
   BLOG_POSTS_SERVICE_PATH: "blog",
+  RULE_ELEMENT_PATH: "rule-element",
+  RULE_BOOK_PATH: "rule-book",
   NEWSLETTER_UNSUBSCRIBE_PATH: "unsubscribe",
   NL_CONTENT_TRANSFORM_LINK_REGEX: /\[\*NL_(.*?)\]/,
   NL_CONTENT_TRANSFORM_REFERENCE_LINK_REGEX: /\[\*L_(.*?)\]/,

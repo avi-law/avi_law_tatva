@@ -1,34 +1,32 @@
 const { constants } = require("../utils");
 
 exports.addRuleElementQuery = (queryParams) => {
-  let query = ``;
+  let query = `
+  MATCH (rb:Rule_Book {rule_book_id: "${queryParams.rule_book_id}"})-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger(${queryParams.rule_book_issue_no}) })`;
 
   if (queryParams.rule_element_parent_doc_id) {
-    query = `MATCH (rep:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_parent_doc_id}" })`;
+    query = `
+    ${query}
+    MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(rep:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_parent_doc_id}" })
+    MERGE (rep)-[r1:HAS_RULE_ELEMENT]->(re:Rule_Element { rule_element_doc_id: "${queryParams.re.rule_element_doc_id}" })`;
   } else if (queryParams.rule_book_issue_no && queryParams.rule_book_id) {
-    query = `MATCH (rb:Rule_Book {rule_book_id: "${queryParams.rule_book_id}"})-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: ${queryParams.rule_book_issue_no} })`;
+    query = `
+    ${query}
+    MERGE (rbi)-[r1:HAS_RULE_ELEMENT]->(re:Rule_Element { rule_element_doc_id: "${queryParams.re.rule_element_doc_id}" })`;
   }
 
-  query = `
-  ${query}
-  MERGE (re:Rule_Element { rule_element_doc_id: "${queryParams.re.rule_element_doc_id}" })
-  SET re.rule_element_header_lvl = ${queryParams.re.rule_element_header_lvl}, re.rule_element_is_rule_book = ${queryParams.re.rule_element_is_rule_book}`;
+  query = `${query}
+  FOREACH (_ IN CASE WHEN re IS NOT NULL THEN [1] END | SET re.rule_element_header_lvl = toInteger(${queryParams.re.rule_element_header_lvl}), re.rule_element_is_rule_book = ${queryParams.re.rule_element_is_rule_book} )
+  FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order = toInteger(${queryParams.rule_element_order}) )
+  RETURN re`;
 
-  if (queryParams.rule_element_parent_doc_id) {
-    query = `${query}
-    MERGE (re)<-[:HAS_RULE_ELEMENT {order: toInteger(${queryParams.rule_element_order}) }]-(rep)
-    RETURN re`;
-  } else if (queryParams.rule_book_issue_no && queryParams.rule_book_id) {
-    query = `${query}
-    MERGE (re)<-[:HAS_RULE_ELEMENT {order: toInteger(${queryParams.rule_element_order}) }]-(rbi)
-    RETURN re`;
-  }
   return query;
 };
 
 exports.updateRuleElementQuery = (queryParams) => {
   const query = `
-  MERGE (re:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_doc_id}" })
+  MATCH (rb:Rule_Book {rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger(${queryParams.rule_book_issue_no}) })
+  MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_doc_id}" })
   SET re = $queryParams.re
   RETURN re`;
   return query;
@@ -37,7 +35,8 @@ exports.updateRuleElementQuery = (queryParams) => {
 exports.logRuleElement = `
 MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
-MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
+MATCH (rb:Rule_Book {rule_book_id: $rule_book_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger($rule_book_issue_no) })
+MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(re)
 `;
@@ -67,14 +66,20 @@ RETURN re, res
 `;
 
 exports.deleteRuleElement = (queryParams) => {
-  let query = "";
+  let query = `
+    MATCH (rb:Rule_Book {rule_book_id: "${queryParams.ruleBookId}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger(${queryParams.ruleBookIssueNo}) })
+  `;
   if (queryParams.ruleElementDocParentId) {
-    query = `MATCH (rep:Rule_Element { rule_element_doc_id: "${queryParams.ruleElementDocParentId}" })-[r1:HAS_RULE_ELEMENT]->(re:Rule_Element {rule_element_doc_id: "${queryParams.rule_element_doc_id}" } )
+    query = `
+    ${query}
+    MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(rep:Rule_Element { rule_element_doc_id: "${queryParams.ruleElementDocParentId}" })-[r1:HAS_RULE_ELEMENT]->(re:Rule_Element {rule_element_doc_id: "${queryParams.rule_element_doc_id}" } )
     DELETE r1
     RETURN re;
     `;
-  } else if (queryParams.ruleBookIssueNo && queryParams.ruleBookId) {
-    query = `MATCH (rb:Rule_Book {rule_book_id: "${queryParams.ruleBookId}"})-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: ${queryParams.ruleBookIssueNo} })-[r1:HAS_RULE_ELEMENT]->(re:Rule_Element {rule_element_doc_id: "${queryParams.rule_element_doc_id}" })
+  } else {
+    query = `
+    ${query}
+    MATCH (rbi)-[r1:HAS_RULE_ELEMENT]->(re:Rule_Element {rule_element_doc_id: "${queryParams.rule_element_doc_id}" })
     DELETE r1
     RETURN re;
     `;
@@ -267,7 +272,8 @@ exports.changeRuleElementOrderQuery = (queryParams) => {
 
 exports.addRuleElementStateQuery = (queryParams) => {
   let query = `
-  MATCH (re:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_doc_id}" })
+  MATCH (rb:Rule_Book {rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger(${queryParams.rule_book_issue_no}) })
+  MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_doc_id}" })
   MATCH (lang1:Language {iso_639_1: "de"})
   MATCH (lang2:Language {iso_639_1: "en"})`;
 
@@ -342,7 +348,8 @@ exports.addRuleElementStateQuery = (queryParams) => {
 
 exports.updateRuleElementStateQuery = (queryParams) => {
   let query = `
-  MATCH (re:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_doc_id}" })
+  MATCH (rb:Rule_Book {rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger(${queryParams.rule_book_issue_no}) })
+  MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_doc_id}" })
   MATCH (lang1:Language {iso_639_1: "de"})
   MATCH (lang2:Language {iso_639_1: "en"})`;
 
@@ -464,7 +471,8 @@ RETURN res, lang, sl
 `;
 
 exports.deleteRuleElementState = `
-MATCH (re:Rule_Element)-[r1:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)
+MATCH (rb:Rule_Book {rule_book_id: $rule_book_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger($rule_book_issue_no) })
+MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[r1:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)
 WHERE re.rule_element_doc_id = $rule_element_doc_id AND id(res1) IN $identities AND NOT (res1)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(:Rule_Element_State)
 OPTIONAL MATCH(res1)<-[r2:HAS_RULE_ELEMENT_SUCCESSOR]-(res2:Rule_Element_State)
 OPTIONAL MATCH(res1)-[r3:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(:Rule_Element_State)

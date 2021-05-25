@@ -220,6 +220,40 @@ const nlContentTransformLink = (
       }
     }
   }
+
+  const patternSL = /\[\*(.*?)\*\]/gm; // ex. [*Rule_Element*]:[*VO_EU_2012_0965_0010*]
+  const pattern1SL = /\[IDX\*(.*?)\*\]/gm; // ex. [IDX*rule_book_id*]:[IDX*CC*]
+  const pattern2SL = /\[SIDX\*(.*?)\*\]/gm; // ex. [SIDX*rule_element*]:[SIDX*AOCV_2008_01*]
+  let matchedArray = [];
+  const linksSL =
+    value && value.toString() ? value.toString().match(patternSL) || [] : "";
+  const links1SL =
+    value && value.toString() ? value.toString().match(pattern1SL) || [] : "";
+  const links2SL =
+    value && value.toString() ? value.toString().match(pattern2SL) || [] : "";
+  matchedArray = linksSL.concat(links1SL, links2SL);
+  if (matchedArray && matchedArray.length > 0) {
+    matchedArray.forEach((data) => {
+      const matchedData = data.toString().match(/\[\*(.*?)\*\]/); // [*Rule_Element*]
+      if (matchedData && matchedData.length > 1) {
+        const ruleBookDocId = matchedData[1];
+        const hrefSL = `${frontendURL}${constants.RULE_ELEMENT_PATH}?shownorm=${ruleBookDocId}`;
+        final = final.toString().replace(data, hrefSL);
+      }
+      const matchedData1 = data.toString().match(/\[IDX\*(.*?)\*\]/); // [IDX*rule_book_id*]
+      if (matchedData1 && matchedData1.length > 1) {
+        const ruleBookId = matchedData1[1];
+        const hrefSL = `${frontendURL}${constants.RULE_BOOK_PATH}?rootnode=${ruleBookId}`;
+        final = final.toString().replace(data, hrefSL);
+      }
+      const matchedData2 = data.toString().match(/\[SIDX\*(.*?)\*\]/); // [SIDX*rule_element*]
+      if (matchedData2 && matchedData2.length > 1) {
+        const ruleBookDocId = matchedData2[1];
+        const hrefSL = `${frontendURL}${constants.RULE_ELEMENT_PATH}?subpart=${ruleBookDocId}`;
+        final = final.toString().replace(data, hrefSL);
+      }
+    });
+  }
   return final;
 };
 

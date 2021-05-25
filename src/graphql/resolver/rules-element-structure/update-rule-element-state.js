@@ -69,6 +69,8 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       rule_element_doc_id: _.get(params, "rule_element_doc_id", null),
       res: data.res,
+      rule_book_id: _.get(data, "rule_book_id", null),
+      rule_book_issue_no: _.get(data, "rule_book_issue_no", null),
       sol_de: _.get(data, "sol_de", null),
       sol_en: _.get(data, "sol_en", null),
       identity: _.get(
