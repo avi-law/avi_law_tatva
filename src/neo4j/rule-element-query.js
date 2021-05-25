@@ -125,9 +125,10 @@ RETURN re, res, value
 `;
 
 exports.getRuleElementStateListLatest = `
-MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]-(lang:Language)
-OPTIONAL MATCH (res2:Rule_Element_State)-[r:HAS_RULE_ELEMENT_SUCCESSOR]->(res)
-OPTIONAL MATCH (res4:Rule_Element_State)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(res)
+MATCH (rb:Rule_Book {rule_book_id: $rule_book_id})-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger($rule_book_issue_no) })
+MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]-(lang:Language)
+OPTIONAL MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(res2:Rule_Element_State)-[r:HAS_RULE_ELEMENT_SUCCESSOR]->(res)
+OPTIONAL MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(res4:Rule_Element_State)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(res)
 OPTIONAL MATCH (solLang:Language)<-[:SOL_STATE_LANGUAGE_IS]-(sls:Sol_State)<-[:HAS_SOL_STATE]-(:Sol)<-[:RULE_ELEMENT_STATE_SOL_IS]-(res)
 OPTIONAL MATCH (res)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res3)
 WITH collect({sol_name_01: sls.sol_name_01, lang: solLang.iso_639_1}) as sol, res, res2, res3, res4, lang

@@ -201,6 +201,8 @@ const getStatelist = async (params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const ruleElementDocId = params.rule_element_doc_id;
+  const ruleBookId = params.rule_book_id;
+  const ruleBookIssueNo = params.rule_book_issue_no;
   const currentDate = _.get(params, "current_date", null);
   let nowDate = common.getTimestamp();
   if (currentDate) {
@@ -218,6 +220,8 @@ const getStatelist = async (params, ctx) => {
     }
     const result = await session.run(getRuleElementStateListLatest, {
       rule_element_doc_id: ruleElementDocId,
+      rule_book_id: ruleBookId,
+      rule_book_issue_no: ruleBookIssueNo,
     });
     if (result && result.records.length > 0) {
       result.records.forEach((record) => {

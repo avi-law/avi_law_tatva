@@ -1320,8 +1320,8 @@ type RuleBookStateCustomTree {
     drop_rule_element_parent_doc_id: String
     drag_rule_element_order: [RuleElementOrderArray]
     drop_rule_element_order: [RuleElementOrderArray]
-    rule_book_id: String
-    rule_book_issue_no: Int
+    rule_book_id: String!
+    rule_book_issue_no: Int!
   }
 
   input RuleElementInput {
@@ -1371,6 +1371,8 @@ type RuleBookStateCustomTree {
     res: RuleElementStateCustomInput
     sol_de: Int
     sol_en: Int
+    rule_book_id: String!
+    rule_book_issue_no: Int!
   }
 
   #Tree type end
@@ -1434,11 +1436,11 @@ type RuleBookStateCustomTree {
     changeOrder(change_order: ChangeOrderInput ): Boolean @isAdmin
     addRuleElement(data: RuleElementCustomInput ): Boolean @isAdmin
     updateRuleElement(rule_element_doc_id: String!, data: RuleElementCustomInput ): Boolean @isAdmin
-    deleteRuleElement(rule_element_doc_id: String!, rule_element_parent_doc_id: String, rule_book_id: String, rule_book_issue_no: Int): Boolean @isAdmin
+    deleteRuleElement(rule_element_doc_id: String!, rule_element_parent_doc_id: String, rule_book_id: String!, rule_book_issue_no: Int!): Boolean @isAdmin
     changeRuleElementOrder(change_order: ChangeRuleElementOrderInput! ): Boolean @isAdmin
     addRuleElementState(rule_element_doc_id: String!, data: CustomAddRuleElementStateInput ): Boolean @isAdmin
     updateRuleElementState(rule_element_doc_id: String!, data: CustomAddRuleElementStateInput ): Boolean @isAdmin
-    deleteRuleElementState(rule_element_doc_id: String!, identities: [Int!]!): Boolean @isAdmin
+    deleteRuleElementState(rule_element_doc_id: String!, rule_book_id: String!, rule_book_issue_no: Int!, identities: [Int!]!): Boolean @isAdmin
   }
   type Query {
     user: User_State @isAuthenticated
@@ -1600,7 +1602,7 @@ type RuleBookStateCustomTree {
     ): GetBlogListByYear @isUnAuthenticated
     getSolTagForRuleBookIssue(isSort: Boolean): GetSolsCustom @isAdmin
     getRuleElement(rule_element_doc_id: String, identity: Int): GetRuleElementDetails @isAuthenticated
-    getRuleElementState(rule_element_doc_id: String!, current_date: _Neo4jDate): GetRuleElementCustom @isAdmin
+    getRuleElementState(rule_element_doc_id: String!, current_date: _Neo4jDate, rule_book_id: String!, rule_book_issue_no: Int!): GetRuleElementCustom @isAdmin
     getRuleElementStateDetails(rule_element_doc_id: String!, identity: [Int!]!): GetRuleElementStateList @isAdmin
     getAllRuleElementState(rule_book_id: String!, rule_element_doc_id: String, current_date: _Neo4jDate): Rule_Book @isAuthenticated
     getSolTagForRuleElement(isSort: Boolean): [GetSolTags]
