@@ -830,11 +830,13 @@ module.exports = async (object, params, ctx) => {
           identity,
         });
       }
-      if (ruleElementDocId) {
+      if (ruleElementDocId && ruleBookId && ruleBookIssueNo) {
         common.loggingData(logRuleElement, {
           type: constants.LOG_TYPE_ID.READ_RULE_ELEMENT_AND_STATE,
           current_user_email: userEmail,
           rule_element_doc_id: ruleElementDocId,
+          rule_book_id: ruleBookId,
+          rule_book_issue_no: ruleBookIssueNo,
         });
       }
     }

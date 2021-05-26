@@ -11,6 +11,9 @@ const {
   getRuleBookStructChildNode,
   getRuleBook,
 } = require("../../../neo4j/rule-book-query");
+const {
+  getRuleBookIDByRuleElement,
+} = require("../../../neo4j/rule-element-query");
 const { defaultLanguage } = require("../../../config/application");
 const getRulebookStructure = require("../rule-book-structure/get-rule-book-structure");
 
@@ -152,7 +155,8 @@ module.exports = async (object, params, ctx) => {
   const ruleBookStructId = params.rule_book_struct_id
     ? params.rule_book_struct_id
     : constants.RULE_BOOK_STRUCT_ROOT_ID;
-  const ruleBookId = params.rule_book_id;
+  let ruleBookId = params.rule_book_id;
+  const ruleElementDocId = params.rule_element_doc_id;
   let breadcrumbs = [];
   const rootNodeChild = [];
   const secondeNodeChild = [];
@@ -162,12 +166,24 @@ module.exports = async (object, params, ctx) => {
     isSingle: true,
   };
   try {
-    if (!userEmail || !ruleBookId) {
+    if (!userEmail || (!ruleBookId && !ruleElementDocId)) {
       session.close();
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
       });
+    }
+    if (!ruleBookId && ruleElementDocId) {
+      const rbResult = await session.run(getRuleBookIDByRuleElement, {
+        rule_element_doc_id: ruleElementDocId,
+      });
+      if (rbResult && rbResult.records.length > 0) {
+        const rbRecord = _.get(rbResult, "records[0]", null);
+        ruleBookId = rbRecord.get("rule_book_id_2");
+        if (!ruleBookId) {
+          ruleBookId = rbRecord.get("rule_book_id_1");
+        }
+      }
     }
     const getRootStructureChildResult = await session.run(
       getRuleBookStructChildNode,

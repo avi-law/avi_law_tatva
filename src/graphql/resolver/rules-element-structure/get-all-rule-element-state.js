@@ -11,6 +11,9 @@ const { APIError, common, constants } = require("../../../utils");
 const {
   getRuleElementStateTreeStructure,
 } = require("../../../neo4j/tree-query");
+const {
+  getRuleBookIDByRuleElement,
+} = require("../../../neo4j/rule-element-query");
 const { defaultLanguage } = require("../../../config/application");
 const getRuleElementStateStatus = require("./get-rule-element-state-status");
 const { getUser } = require("../../../neo4j/query");
@@ -149,7 +152,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   let settings = null;
   params = JSON.parse(JSON.stringify(params));
-  const ruleBookId = params.rule_book_id;
+  let ruleBookId = params.rule_book_id;
   const ruleBookIssueNo = params.rule_book_issue_no;
   const currentDate = _.get(params, "current_date", null);
   const ruleElementDocId = _.get(params, "rule_element_doc_id", null);
@@ -159,11 +162,24 @@ module.exports = async (object, params, ctx) => {
   }
   let ruleElementStructureList = [];
   try {
-    if (!userEmail || !ruleBookId) {
+    if (!userEmail || (!ruleBookId && !ruleElementDocId)) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
       });
+    }
+
+    if (!ruleBookId && ruleElementDocId) {
+      const rbResult = await session.run(getRuleBookIDByRuleElement, {
+        rule_element_doc_id: ruleElementDocId,
+      });
+      if (rbResult && rbResult.records.length > 0) {
+        const rbRecord = _.get(rbResult, "records[0]", null);
+        ruleBookId = rbRecord.get("rule_book_id_2");
+        if (!ruleBookId) {
+          ruleBookId = rbRecord.get("rule_book_id_1");
+        }
+      }
     }
     const queryParams = {
       rule_book_id: ruleBookId,
