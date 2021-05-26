@@ -178,7 +178,7 @@ const dropChangeOrderQuery = (queryParams) => {
       query = `
       ${query}
       UNWIND $queryParams.drop_rule_element_order as ruleElementDrop
-      OPTIONAL MATCH (repDrop:Rule_Element { rule_element_doc_id: ruleElementDrop.rule_element_parent_doc_id})-[r1:HAS_RULE_ELEMENT]->(reDrop:Rule_Element { rule_element_doc_id: ruleElementDrop.rule_element_doc_id })
+      OPTIONAL MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(repDrop:Rule_Element { rule_element_doc_id: ruleElementDrop.rule_element_parent_doc_id})-[r1:HAS_RULE_ELEMENT]->(reDrop:Rule_Element { rule_element_doc_id: ruleElementDrop.rule_element_doc_id })
       FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order = toInteger(ruleElementDrop.rule_element_order) )
       RETURN reDrop as re`;
     }
@@ -201,14 +201,14 @@ const dragChangeOrderQuery = (queryParams) => {
       UNWIND $queryParams.drag_rule_element_order as ruleElementDrag
       OPTIONAL MATCH (rbDrop:Rule_Book {rule_book_id: "${queryParams.rule_book_id}"})-[:HAS_RULE_BOOK_ISSUE]->(rbiDrop:Rule_Book_Issue {rule_book_issue_no: ${queryParams.rule_book_issue_no} })-[r2:HAS_RULE_ELEMENT]->(reDrag:Rule_Element {rule_element_doc_id: ruleElementDrag.rule_element_doc_id })
       FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | SET r2.order = toInteger(ruleElementDrag.rule_element_order) )
-      WITH reDrag`;
+      WITH *`;
     } else {
       query = `
       ${query}
       UNWIND $queryParams.drag_rule_element_order as ruleElementDrag
-      OPTIONAL MATCH (repDrop:Rule_Element { rule_element_doc_id: ruleElementDrag.rule_element_parent_doc_id})-[r2:HAS_RULE_ELEMENT]->(reDrop:Rule_Element { rule_element_doc_id: ruleElementDrag.rule_element_doc_id })
+      OPTIONAL MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(repDrop:Rule_Element { rule_element_doc_id: ruleElementDrag.rule_element_parent_doc_id})-[r2:HAS_RULE_ELEMENT]->(reDrop:Rule_Element { rule_element_doc_id: ruleElementDrag.rule_element_doc_id })
       FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | SET r2.order = toInteger(ruleElementDrag.rule_element_order) )
-      WITH repDrop
+      WITH *
       `;
     }
   }
@@ -216,9 +216,11 @@ const dragChangeOrderQuery = (queryParams) => {
 };
 
 exports.changeRuleElementOrderQuery = (queryParams) => {
-  let query = ``;
+  let query = `MATCH (rb:Rule_Book {rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger(${queryParams.rule_book_issue_no}) })`;
   if (queryParams.isInternalChangeOrder) {
-    query = `${dropChangeOrderQuery(queryParams)}`;
+    query = `
+    ${query}
+    ${dropChangeOrderQuery(queryParams)}`;
   } else {
     // Remove relation between drag node and drag parent node
     if (
@@ -226,9 +228,8 @@ exports.changeRuleElementOrderQuery = (queryParams) => {
     ) {
       query = `
         ${query}
-        OPTIONAL MATCH(rep_drag:Rule_Element { rule_element_doc_id: "${queryParams.drag_rule_element_parent_doc_id}" })-[r1_drag:HAS_RULE_ELEMENT]->(re_drag:Rule_Element { rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" })
-        FOREACH (_ IN CASE WHEN r1_drag IS NOT NULL THEN [1] END | DELETE r1_drag )
-        WITH r1_drag`;
+        OPTIONAL MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(rep_drag:Rule_Element { rule_element_doc_id: "${queryParams.drag_rule_element_parent_doc_id}" })-[r1_drag:HAS_RULE_ELEMENT]->(re_drag:Rule_Element { rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" })
+        WITH *`;
     } else if (
       queryParams.drag_parent_type ===
       constants.DRAG_AND_DROP_TYPE.RULE_BOOK_ISSUE
@@ -236,8 +237,7 @@ exports.changeRuleElementOrderQuery = (queryParams) => {
       query = `
         ${query}
         OPTIONAL MATCH(rb_drag:Rule_Book { rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi_drag:Rule_Book_Issue { rule_book_issue_no: ${queryParams.rule_book_issue_no} })-[r1_drag:HAS_RULE_ELEMENT]->(reDrop:Rule_Element {rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" })
-        FOREACH (_ IN CASE WHEN r1_drag IS NOT NULL THEN [1] END | DELETE r1_drag )
-        WITH r1_drag`;
+        WITH *`;
     }
     // Create relation between drag node and drop parent node
     if (
@@ -245,10 +245,11 @@ exports.changeRuleElementOrderQuery = (queryParams) => {
     ) {
       query = `
         ${query}
-        MATCH(rep_drop:Rule_Element { rule_element_doc_id: "${queryParams.drop_rule_element_parent_doc_id}" })
-        MATCH(re_drop:Rule_Element { rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" })
-        MERGE (rep_drop)-[:HAS_RULE_ELEMENT]->(re_drop)
-        WITH re_drop`;
+        MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(rep_drop:Rule_Element { rule_element_doc_id: "${queryParams.drop_rule_element_parent_doc_id}" })
+        MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re_drop:Rule_Element { rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" })
+        FOREACH (_ IN CASE WHEN re_drop IS NOT NULL AND rep_drop IS NOT NULL THEN [1] END | MERGE (rep_drop)-[:HAS_RULE_ELEMENT]->(re_drop) )
+        FOREACH (_ IN CASE WHEN r1_drag IS NOT NULL THEN [1] END | DELETE r1_drag )
+        WITH *`;
     } else if (
       queryParams.drop_parent_type ===
       constants.DRAG_AND_DROP_TYPE.RULE_BOOK_ISSUE
@@ -256,10 +257,11 @@ exports.changeRuleElementOrderQuery = (queryParams) => {
       query = `
         ${query}
         OPTIONAL MATCH (rb_drag:Rule_Book { rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi_drag:Rule_Book_Issue { rule_book_issue_no: ${queryParams.rule_book_issue_no} })
-        OPTIONAL MATCH (re_drag_el:Rule_Element {rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" })
-        WITH rbi_drag, re_drag_el
-        FOREACH (_ IN CASE WHEN rbi_drag IS NOT NULL THEN [1] END | MERGE (rbi_drag)-[:HAS_RULE_ELEMENT]->(re_drag_el))
-        WITH re_drag_el`;
+        OPTIONAL MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re_drag_el:Rule_Element {rule_element_doc_id: "${queryParams.drag_rule_element_doc_id}" })
+        WITH *
+        FOREACH (_ IN CASE WHEN rbi_drag IS NOT NULL AND re_drag_el IS NOT NULL THEN [1] END | MERGE (rbi_drag)-[:HAS_RULE_ELEMENT]->(re_drag_el))
+        FOREACH (_ IN CASE WHEN r1_drag IS NOT NULL THEN [1] END | DELETE r1_drag )
+        WITH re_drag_el, rbi_drag as rbi`;
     }
     query = `
       ${query}
