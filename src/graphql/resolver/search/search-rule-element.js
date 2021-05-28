@@ -67,12 +67,17 @@ module.exports = async (object, params, ctx) => {
             if (!re) {
               re = _.get(res[e], "de.re", null);
             }
+            let rbis = _.get(res[e], "en.rbis", null);
+            if (!rbis) {
+              rbis = _.get(res[e], "de.rbis", null);
+            }
             let resStatus = _.get(res[e], "en.rule_element_status", null);
             if (!resStatus) {
               resStatus = _.get(res[e], "de.rule_element_status", null);
             }
             if (showAll) {
               ruleElements.push({
+                rbis,
                 re,
                 res: res[e],
               });

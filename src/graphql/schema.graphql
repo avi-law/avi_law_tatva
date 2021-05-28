@@ -1186,6 +1186,7 @@ type RuleBookStateCustomTree {
   }
 
   type GetRuleElementWithStateList {
+    rbis: Rule_Book_Issue_State
     re: Rule_Element
     res: RuleElementStateCustom
   }
@@ -1599,9 +1600,7 @@ type RuleBookStateCustomTree {
       showAll: Boolean
     ): GetSolsCustom @isUnAuthenticated
      searchRuleElement(
-      first: Int
-      offset: Int
-      lang: LanguageForUser!
+      lang: LanguageForUser
       text: String!
       showAll: Boolean
     ): SearchRuleElementCustom @isUnAuthenticated

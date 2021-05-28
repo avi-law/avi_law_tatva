@@ -51,7 +51,9 @@ exports.searchNLQuery = (queryParams) => {
 };
 
 exports.searchRuleElementQuery = (queryParams) => {
-  let query = `MATCH(re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]-(lang:Language)
+  let query = `
+  MATCh (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]-(lang:Language)
+  MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang)
   WHERE res.rule_element_text CONTAINS "${queryParams.text}" `;
 
   if (queryParams.lang) {
@@ -61,10 +63,10 @@ exports.searchRuleElementQuery = (queryParams) => {
 
   query = `${query}
   OPTIONAL MATCH (res)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res3)
-  WITH re, res, res3, lang
   RETURN
     collect({
       re: properties(re),
+      rbis: properties(rbis),
       identity: id(res),
       rule_element_show_anyway: res.rule_element_show_anyway,
       rule_element_applies_from: res.rule_element_applies_from,
