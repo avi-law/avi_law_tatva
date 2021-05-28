@@ -1606,7 +1606,7 @@ type RuleBookStateCustomTree {
     getRuleElementState(rule_element_doc_id: String!, current_date: _Neo4jDate, rule_book_id: String!, rule_book_issue_no: Int!): GetRuleElementCustom @isAdmin
     getRuleElementStateDetails(rule_element_doc_id: String!, identity: [Int!]!): GetRuleElementStateList @isAdmin
     getAllRuleElementState(rule_book_id: String, rule_element_doc_id: String, current_date: _Neo4jDate): Rule_Book @isAuthenticated
-    getSolTagForRuleElement(isSort: Boolean): [GetSolTags]
+    getSolTagForRuleElement(isSort: Boolean,rule_book_id: String!, rule_book_issue_no: Int!): [GetSolTags]
   }
 `;
 

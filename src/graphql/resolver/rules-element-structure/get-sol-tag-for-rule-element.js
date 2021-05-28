@@ -9,8 +9,13 @@ const {
 
 module.exports = async (object, params) => {
   const session = driver.session();
+  const ruleBookIssueNo = params.rule_book_issue_no;
+  const ruleBookId = params.rule_book_id;
   try {
-    const result = await session.run(getSolTagForRuleElement);
+    const result = await session.run(getSolTagForRuleElement, {
+      rule_book_issue_no: ruleBookIssueNo,
+      rule_book_id: ruleBookId,
+    });
     if (result && result.records.length > 0) {
       if (result && result.records.length > 0) {
         const sols = [];
