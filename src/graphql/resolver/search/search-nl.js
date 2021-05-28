@@ -13,7 +13,7 @@ module.exports = async (object, params, ctx) => {
   if (country) {
     country.push("EU");
   }
-  params.text = text.replace(constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX, "");
+  // params.text = text.replace(constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX, "");
   const queryParams = {
     ...params,
     country,

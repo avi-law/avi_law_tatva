@@ -52,9 +52,9 @@ exports.searchNLQuery = (queryParams) => {
 
 exports.searchRuleElementQuery = (queryParams) => {
   let query = `
-  MATCh (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]-(lang:Language)
-  MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang)
-  WHERE res.rule_element_text CONTAINS "${queryParams.text}" `;
+  MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
+  MATCh (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]-(lang)
+  WHERE (toLower(res.rule_element_text) CONTAINS toLower("${queryParams.text}") OR toLower(res.rule_element_title) CONTAINS toLower("${queryParams.text}") OR toLower(res.rule_element_rmk) CONTAINS toLower("${queryParams.text}") ) `;
 
   if (queryParams.lang) {
     query = `${query}
@@ -63,6 +63,7 @@ exports.searchRuleElementQuery = (queryParams) => {
 
   query = `${query}
   OPTIONAL MATCH (res)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res3)
+
   RETURN
     collect({
       re: properties(re),

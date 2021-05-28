@@ -13,7 +13,7 @@ module.exports = async (object, params, ctx) => {
     rule_element_list: [],
     total: 0,
   };
-  params.text = text.replace(constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX, "");
+  // params.text = text.replace(constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX, "");
   const queryParams = {
     ...params,
   };

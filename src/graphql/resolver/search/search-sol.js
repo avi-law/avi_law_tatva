@@ -82,10 +82,7 @@ module.exports = async (object, params, ctx) => {
     }
 
     if (text) {
-      const value = text.replace(
-        constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
-        ""
-      );
+      const value = text;
       condition = `${condition} AND (toLower(sls.sol_name_01) CONTAINS toLower("${value}") OR toLower(sls.sol_name_02) CONTAINS toLower("${value}") OR toLower(sls.sol_name_03) CONTAINS toLower("${value}"))`;
     }
     if (mainInterestCountry && !showAll) {
