@@ -67,7 +67,9 @@ exports.searchRuleElementQuery = (queryParams) => {
   RETURN
     collect({
       re: properties(re),
-      rbis: properties(rbis),
+      rbis: {
+        rule_book_issue_title_short: rbis.rule_book_issue_title_short
+      },
       identity: id(res),
       rule_element_show_anyway: res.rule_element_show_anyway,
       rule_element_applies_from: res.rule_element_applies_from,
