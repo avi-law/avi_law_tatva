@@ -111,6 +111,7 @@ const getRuleElementStateDetails = require("./rules-element-structure/get-rule-e
 const deleteRuleElementState = require("./rules-element-structure/delete-rule-element-state");
 const getAllRuleElementState = require("./rules-element-structure/get-all-rule-element-state");
 const getSolTagForRuleElement = require("./rules-element-structure/get-sol-tag-for-rule-element");
+const searchRuleElement = require("./search/search-rule-element");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -227,6 +228,7 @@ const resolvers = {
     getRuleElementStateDetails,
     getAllRuleElementState,
     getSolTagForRuleElement,
+    searchRuleElement,
   },
 };
 

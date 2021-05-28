@@ -490,24 +490,6 @@ ORDER BY ${orderBy}
 SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;
 
-exports.searchSolQueryCount = (condition = "") => `
-MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)
-${condition}
-RETURN count (distinct sl) as count`;
-
-exports.searchSolQuery = (
-  condition,
-  limit = 10,
-  skip = 0,
-  orderBy = "sl.sol_date DESC"
-) => `
-MATCH (cou:Country)<-[:SOL_STEMS_FROM_COUNTRY]-(sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
-${condition}
-WITH sl, cou, lang, sls order by ${orderBy}
-RETURN sl, cou, collect({ sls: sls, lang: lang }) as sls
-SKIP toInteger(${skip})
-LIMIT toInteger(${limit})`;
-
 exports.getSolType = `
 MATCH path=(st1:Sol_Type)-[:HAS_SOL_TYPE_CHILD*0..]->(st2:Sol_Type)-[:SOL_TYPE_STEMS_FROM_COUNTRY]->(cou:Country)
 WHERE st1.sol_type_desc = 'Sol root object'
@@ -1253,39 +1235,5 @@ exports.register = (queryParams) => {
   FOREACH (_ IN CASE WHEN ${queryParams.is_cust_admin}  IS NOT NULL THEN [1] END | SET r2.user_is_cust_admin = true )
   FOREACH (_ IN CASE WHEN cou3 IS NOT NULL THEN [1] END | MERGE (cs)-[:INV_TO_ALT_COUNTRY]->(cou3) )
   RETURN c, cs, u, us`;
-  return query;
-};
-
-exports.searchNLQuery = (queryParams) => {
-  let nlCountry = "";
-  if (queryParams.country && queryParams.country.length > 0) {
-    queryParams.country.forEach((ln) => {
-      nlCountry = `${nlCountry}, "${ln.toUpperCase()}"`;
-    });
-  }
-  let query = `
-  MATCH (nls:Nl_State)<-[:HAS_NL_STATE]-(nl:Nl)-[:NL_REFERS_TO_COUNTRY]->(cou:Country)
-  MATCH (nls)-[r3:NL_LANG_IS]->(lang:Language)
-  WHERE nl.nl_active = true
-  `;
-  if (queryParams.lang) {
-    query = `${query} AND lang.iso_639_1 = "${queryParams.lang}"`;
-  }
-  if (queryParams.country) {
-    nlCountry = nlCountry.replace(/^,|,$/g, "");
-    query = `${query} AND cou.iso_3166_1_alpha_2 IN [${nlCountry}]`;
-  }
-  if (queryParams.text) {
-    query = `${query} AND (toLower(nls.nl_text) CONTAINS toLower("${queryParams.text}") OR toLower(nls.nl_title_long) CONTAINS toLower("${queryParams.text}") OR toLower(nls.nl_title_short) CONTAINS toLower("${queryParams.text}"))`;
-  }
-  query = `${query}
-  CALL {
-    WITH nls
-    MATCH (nls)-[:NL_LANG_IS]->(lang:Language)
-    RETURN collect({ nls: nls, lang: lang }) AS nlState
-  }
-  RETURN nl, nlState as nls, cou
-  ORDER BY nl.nl_date DESC, nl.nl_ord DESC`;
-
   return query;
 };

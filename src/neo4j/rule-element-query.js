@@ -492,6 +492,7 @@ MATCH (rbi)-[:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS]->(sl)-[:HAS_SOL_STATE]->(sls:Sol
 WITH sl, lang, sls order by ${queryOrderBy}
 RETURN distinct sl.sol_id as sol_id, sl.sol_date as sol_date ,collect({ sls: {sol_name_01: sls.sol_name_01}, lang: { iso_639_1: lang.iso_639_1}}) as sls
 `;
+
 exports.getRuleBookIDByRuleElement = `
 OPTIONAL MATCH (rb_1:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi_1:Rule_Book_Issue)-[r1:HAS_RULE_ELEMENT]->(re1_1:Rule_Element)
 WHERE re1_1.rule_element_doc_id = $rule_element_doc_id

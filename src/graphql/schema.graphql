@@ -1185,6 +1185,16 @@ type RuleBookStateCustomTree {
     res: [RuleElementStateCustom]
   }
 
+  type GetRuleElementWithStateList {
+    re: Rule_Element
+    res: RuleElementStateCustom
+  }
+
+  type SearchRuleElementCustom {
+    rule_element_list: [GetRuleElementWithStateList]
+    total: Int
+  }
+
   type GetRuleElementDetails {
     re: Rule_Element
     res: [RuleElementStateCustom]
@@ -1588,6 +1598,13 @@ type RuleBookStateCustomTree {
       solOrderBy: [_SolOrdering!]
       showAll: Boolean
     ): GetSolsCustom @isUnAuthenticated
+     searchRuleElement(
+      first: Int
+      offset: Int
+      lang: LanguageForUser!
+      text: String!
+      showAll: Boolean
+    ): SearchRuleElementCustom @isUnAuthenticated
     solIdExists(sol_id: Int!): Boolean
     getBlogList(
       filterByString: String

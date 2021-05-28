@@ -2,7 +2,7 @@
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
 const { common, constants } = require("../../../utils");
-const { searchNLQuery } = require("../../../neo4j/query");
+const { searchNLQuery } = require("../../../neo4j/search-query");
 
 module.exports = async (object, params, ctx) => {
   const { country, text } = params;

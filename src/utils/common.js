@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+const _ = require("lodash");
 const neo4j = require("neo4j-driver");
 const driver = require("../config/db");
 const constants = require("./constants");
@@ -310,6 +311,20 @@ const getTimestamp = (date) => {
   return d.getTime();
 };
 
+const getValue = (object, path, defaultValue = null) => {
+  try {
+    const getResult = _.get(object, path, defaultValue);
+    let value = getResult === null ? "" : getResult;
+    const result = value === "";
+    if (!result) {
+      value = defaultValue;
+    }
+    return { value, result };
+  } catch (error) {
+    return { value: "", result: false };
+  }
+};
+
 module.exports = {
   getMessage,
   asyncForEach,
@@ -329,4 +344,5 @@ module.exports = {
   nqTransform,
   removeTag,
   getTimestamp,
+  getValue,
 };

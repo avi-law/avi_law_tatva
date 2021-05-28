@@ -5,8 +5,8 @@ const { common, constants } = require("../../../utils");
 const {
   searchSolQueryCount,
   searchSolQuery,
-  getUser,
-} = require("../../../neo4j/query");
+} = require("../../../neo4j/search-query");
+const { getUser } = require("../../../neo4j/query");
 
 const getUserDetails = async (email) => {
   const session = driver.session();
