@@ -9,10 +9,29 @@ const {
 
 module.exports = async (object, params) => {
   const session = driver.session();
-  const ruleBookIssueNo = params.rule_book_issue_no;
-  const ruleBookId = params.rule_book_id;
+  const {
+    orderBy,
+    rule_book_issue_no: ruleBookIssueNo,
+    rule_book_id: ruleBookId,
+  } = params;
+  const defaultOrderBy = "sl.sol_date DESC";
+  let queryOrderBy = "";
   try {
-    const result = await session.run(getSolTagForRuleElement, {
+    if (orderBy && orderBy.length > 0) {
+      orderBy.forEach((blog) => {
+        const field = blog.slice(0, blog.lastIndexOf("_"));
+        const last = blog.split("_").pop().toUpperCase();
+        if (queryOrderBy === "") {
+          queryOrderBy = `sl.${field} ${last}`;
+        } else {
+          queryOrderBy = `${queryOrderBy}, sl.${field} ${last}`;
+        }
+      });
+    }
+    if (queryOrderBy === "") {
+      queryOrderBy = defaultOrderBy;
+    }
+    const result = await session.run(getSolTagForRuleElement(queryOrderBy), {
       rule_book_issue_no: ruleBookIssueNo,
       rule_book_id: ruleBookId,
     });
@@ -22,6 +41,7 @@ module.exports = async (object, params) => {
         result.records.forEach((record) => {
           const obj = {
             sol_id: record.get("sol_id"),
+            sol_date: record.get("sol_date"),
           };
           if (record.get("sls") && record.get("sls").length > 0) {
             record.get("sls").forEach((slState) => {

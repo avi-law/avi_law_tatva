@@ -486,13 +486,12 @@ FOREACH (_ IN CASE WHEN r4 IS NOT NULL THEN [1] END | DELETE r4)
 RETURN DISTINCT res1,res2
 `;
 
-exports.getSolTagForRuleElement = `
+exports.getSolTagForRuleElement = (queryOrderBy) => `
 MATCH (rb:Rule_Book { rule_book_id: $rule_book_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger($rule_book_issue_no) })
 MATCH (rbi)-[:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS]->(sl)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
-WITH sl, lang, sls order by toLower(sls.sol_name_01) ASC
-RETURN distinct sl.sol_id as sol_id, collect({ sls: {sol_name_01: sls.sol_name_01}, lang: { iso_639_1: lang.iso_639_1}}) as sls
+WITH sl, lang, sls order by ${queryOrderBy}
+RETURN distinct sl.sol_id as sol_id, sl.sol_date as sol_date ,collect({ sls: {sol_name_01: sls.sol_name_01}, lang: { iso_639_1: lang.iso_639_1}}) as sls
 `;
-
 exports.getRuleBookIDByRuleElement = `
 OPTIONAL MATCH (rb_1:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi_1:Rule_Book_Issue)-[r1:HAS_RULE_ELEMENT]->(re1_1:Rule_Element)
 WHERE re1_1.rule_element_doc_id = $rule_element_doc_id

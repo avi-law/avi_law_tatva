@@ -447,6 +447,7 @@ const typeDefs = gql`
 
   type GetSolTags {
     sol_id: Int
+    sol_date: _Neo4jDate
     title_en: String
     title_de: String
   }
