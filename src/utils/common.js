@@ -127,7 +127,7 @@ const cleanObject = (obj) => {
   return object;
 };
 
-const convertToTemporalDate = (date) => {
+const getDate = (date) => {
   let d;
   if (typeof date === "object") {
     const { day, month, year } = date;
@@ -138,6 +138,22 @@ const convertToTemporalDate = (date) => {
       d = new Date(date);
     }
   }
+  return d;
+};
+
+const getTimestamp = (date) => getDate(date).getTime();
+
+const convertToTemporalDate = (date) => {
+  const d = getDate(date);
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  const year = d.getFullYear();
+  return new neo4j.types.Date(year, month, day);
+};
+
+const subtractDayFromDate = (date, subtractDays = 1) => {
+  const d = getDate(date);
+  d.setDate(d.getDate() - subtractDays);
   const month = d.getMonth() + 1;
   const day = d.getDate();
   const year = d.getFullYear();
@@ -297,20 +313,6 @@ const removeTag = (html) => {
   }
 };
 
-const getTimestamp = (date) => {
-  let d;
-  if (typeof date === "object") {
-    const { day, month, year } = date;
-    d = new Date(`${year}/${month}/${day}`);
-  } else {
-    d = new Date();
-    if (date) {
-      d = new Date(date);
-    }
-  }
-  return d.getTime();
-};
-
 const getValue = (object, path, defaultValue = null) => {
   try {
     const getResult = _.get(object, path, defaultValue);
@@ -345,4 +347,5 @@ module.exports = {
   removeTag,
   getTimestamp,
   getValue,
+  subtractDayFromDate,
 };
