@@ -52,8 +52,7 @@ exports.searchNLQuery = (queryParams) => {
 
 exports.searchRuleElementQuery = (queryParams) => {
   let query = `
-  MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
-  MATCh (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]-(lang)
+  MATCH (res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]-(lang:Language)
   WHERE (toLower(res.rule_element_text) CONTAINS toLower("${queryParams.text}") OR toLower(res.rule_element_title) CONTAINS toLower("${queryParams.text}") OR toLower(res.rule_element_rmk) CONTAINS toLower("${queryParams.text}") ) `;
 
   if (queryParams.lang) {
@@ -61,8 +60,9 @@ exports.searchRuleElementQuery = (queryParams) => {
     AND lang.iso_639_1 = "${queryParams.lang}"`;
   }
   query = `${query}
+  MATCH (res)<-[:HAS_RULE_ELEMENT_STATE]-(re:Rule_Element)<-[:HAS_RULE_ELEMENT*]-(rbi:Rule_Book_Issue)
+  MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
   OPTIONAL MATCH (res)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res3)
-
   RETURN
     {
       re: {
