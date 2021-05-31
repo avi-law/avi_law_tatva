@@ -18,6 +18,14 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const { data } = params;
+  let ruleElementInForceUntilPredecessorDate = null;
+  let ruleElementAppliesUntilPredecessorDate = null;
+  const wantToSetPredecessorDate = _.get(
+    data,
+    "wantToSetPredecessorDate",
+    false
+  );
+  const ruleElementDocId = _.get(params, "rule_element_doc_id", null);
   let isValidDE = false;
   let isValidEN = false;
   try {
@@ -61,11 +69,26 @@ module.exports = async (object, params, ctx) => {
           data.res.de[element]
         );
       }
+      if (wantToSetPredecessorDate) {
+        if (element === "rule_element_in_force_from") {
+          ruleElementInForceUntilPredecessorDate = common.subtractDayFromDate(
+            data.res.de[element]
+          );
+        }
+        if (element === "rule_element_applies_from") {
+          ruleElementAppliesUntilPredecessorDate = common.subtractDayFromDate(
+            data.res.de[element]
+          );
+        }
+      }
     });
     const queryParams = {
       isValidEN,
       isValidDE,
-      rule_element_doc_id: _.get(params, "rule_element_doc_id", null),
+      wantToSetPredecessorDate,
+      ruleElementAppliesUntilPredecessorDate,
+      ruleElementInForceUntilPredecessorDate,
+      rule_element_doc_id: ruleElementDocId,
       res: data.res,
       rule_book_id: _.get(data, "rule_book_id", null),
       rule_book_issue_no: _.get(data, "rule_book_issue_no", null),
