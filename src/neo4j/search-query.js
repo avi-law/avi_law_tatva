@@ -60,13 +60,17 @@ exports.searchRuleElementQuery = (queryParams) => {
     query = `${query}
     AND lang.iso_639_1 = "${queryParams.lang}"`;
   }
-
   query = `${query}
   OPTIONAL MATCH (res)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res3)
 
   RETURN
-    collect({
-      re: properties(re),
+    {
+      re: {
+        rule_element_id: re.rule_element_id,
+        rule_element_is_rule_book: re.rule_element_is_rule_book,
+        rule_element_header_lvl: re.rule_element_header_lvl,
+        rule_element_doc_id: re.rule_element_doc_id
+      },
       rbis: {
         rule_book_issue_title_short: rbis.rule_book_issue_title_short
       },
@@ -82,6 +86,6 @@ exports.searchRuleElementQuery = (queryParams) => {
       rule_element_article: res.rule_element_article,
       rule_element_state_language_version_identity: id(res3),
       rule_element_state_langauge: lang.iso_639_1
-    }) as res`;
+    } as res`;
   return query;
 };
