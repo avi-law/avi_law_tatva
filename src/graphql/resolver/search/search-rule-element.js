@@ -82,6 +82,7 @@ module.exports = async (object, params, ctx) => {
             });
           } else if (resStatus === constants.RULE_ELEMENT_STATE_STATUS.GREEN) {
             ruleElements.push({
+              rbis,
               re,
               res: res[e],
             });

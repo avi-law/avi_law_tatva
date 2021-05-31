@@ -61,7 +61,7 @@ exports.searchRuleElementQuery = (queryParams) => {
   }
   query = `${query}
   MATCH (res)<-[:HAS_RULE_ELEMENT_STATE]-(re:Rule_Element)<-[:HAS_RULE_ELEMENT*]-(rbi:Rule_Book_Issue)
-  MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
+  MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang)
   OPTIONAL MATCH (res)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res3)
   RETURN
     {
