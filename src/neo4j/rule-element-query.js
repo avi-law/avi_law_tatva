@@ -59,7 +59,7 @@ MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
     MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
     OPTIONAL MATCH (lang)<-[:SOL_STATE_LANGUAGE_IS]-(sls:Sol_State)<-[:HAS_SOL_STATE]-(:Sol)<-[:RULE_ELEMENT_STATE_SOL_IS]-(res)
     OPTIONAL MATCH (res)-[r:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(resv:Rule_Element_State)
-    WITH id(resv) as version_of_id, res, sls, lang order by res.rule_element_in_force_from ASC
+    WITH id(resv) as version_of_id, res, sls, lang order by res.rule_element_in_force_from ASC, res.rule_element_in_force_until ASC
     RETURN collect({ res: res, lang: lang, sls: sls, version_of_id: version_of_id }) as res
   }
 RETURN re, res
