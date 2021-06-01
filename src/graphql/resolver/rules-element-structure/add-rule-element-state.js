@@ -7,6 +7,8 @@ const { defaultLanguage } = require("../../../config/application");
 const {
   addRuleElementStateQuery,
   logRuleElementState,
+  getPredecessor,
+  addPredecessorDate,
 } = require("../../../neo4j/rule-element-query");
 
 module.exports = async (object, params, ctx) => {
@@ -20,6 +22,7 @@ module.exports = async (object, params, ctx) => {
   const { data } = params;
   let ruleElementInForceUntilPredecessorDate = null;
   let ruleElementAppliesUntilPredecessorDate = null;
+  let ids = [];
   const wantToSetPredecessorDate = _.get(
     data,
     "wantToSetPredecessorDate",
@@ -85,9 +88,6 @@ module.exports = async (object, params, ctx) => {
     const queryParams = {
       isValidEN,
       isValidDE,
-      wantToSetPredecessorDate,
-      ruleElementAppliesUntilPredecessorDate,
-      ruleElementInForceUntilPredecessorDate,
       rule_element_doc_id: ruleElementDocId,
       res: data.res,
       rule_book_id: _.get(data, "rule_book_id", null),
@@ -105,7 +105,16 @@ module.exports = async (object, params, ctx) => {
         null
       ),
     };
-
+    if (
+      wantToSetPredecessorDate &&
+      (ruleElementInForceUntilPredecessorDate ||
+        ruleElementAppliesUntilPredecessorDate)
+    ) {
+      const predecessorResult = await session.run(getPredecessor(queryParams));
+      if (predecessorResult && predecessorResult.records.length > 0) {
+        ids = predecessorResult.records[0].get("ids");
+      }
+    }
     console.log(queryParams);
     console.log(addRuleElementStateQuery(queryParams));
     // return true;
@@ -129,6 +138,17 @@ module.exports = async (object, params, ctx) => {
           identity.push(deId.identity);
         }
       });
+      if (ids.length > 0) {
+        const predecessorQueryParams = {
+          wantToSetPredecessorDate,
+          ruleElementAppliesUntilPredecessorDate,
+          ruleElementInForceUntilPredecessorDate,
+          identity: ids,
+        };
+        await session.run(addPredecessorDate(predecessorQueryParams), {
+          queryParams: predecessorQueryParams,
+        });
+      }
       if (identity.length > 0) {
         common.loggingData(logRuleElementState, {
           type: constants.LOG_TYPE_ID.CREATE_RULE_ELEMENT_AND_STATE,

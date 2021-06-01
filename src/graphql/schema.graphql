@@ -298,6 +298,8 @@ const typeDefs = gql`
     sol_type_desc_de: String
     sol_type_desc_en: String
     sol_type_id: Int
+    sol_type_link: String
+    sol_type_sect: String
     country: Country
       @relation(name: "SOL_TYPE_STEMS_FROM_COUNTRY", direction: OUT)
   }
@@ -951,6 +953,7 @@ const typeDefs = gql`
     sol_type_desc_de: String
     sol_type_desc_en: String
     sol_type_id: Int
+    sol_type_link: String
     sol_type_sect: String
     sol_type_stems_from_country: [Country]
     has_sol_type_child: [CustomSolType]

@@ -7,6 +7,8 @@ const { defaultLanguage } = require("../../../config/application");
 const {
   updateRuleElementStateQuery,
   logRuleElementState,
+  getPredecessor,
+  addPredecessorDate,
 } = require("../../../neo4j/rule-element-query");
 
 module.exports = async (object, params, ctx) => {
@@ -27,6 +29,7 @@ module.exports = async (object, params, ctx) => {
   );
   let isValidDE = false;
   let isValidEN = false;
+  let ids = [];
   try {
     if (!systemAdmin && !userIsAuthor) {
       throw new APIError({
@@ -84,6 +87,7 @@ module.exports = async (object, params, ctx) => {
     });
 
     const queryParams = {
+      isUpdate: true,
       isValidEN,
       isValidDE,
       wantToSetPredecessorDate,
@@ -101,6 +105,19 @@ module.exports = async (object, params, ctx) => {
         _.get(data, "res.en.identity", null)
       ),
     };
+
+    if (
+      wantToSetPredecessorDate &&
+      (ruleElementInForceUntilPredecessorDate ||
+        ruleElementAppliesUntilPredecessorDate)
+    ) {
+      const predecessorResult = await session.run(getPredecessor(queryParams));
+      if (predecessorResult && predecessorResult.records.length > 0) {
+        const ids1 = predecessorResult.records[0].get("ids1");
+        const ids2 = predecessorResult.records[0].get("ids2");
+        ids = ids1.concat(ids2);
+      }
+    }
 
     console.log(queryParams);
     console.log(updateRuleElementStateQuery(queryParams));
@@ -130,6 +147,17 @@ module.exports = async (object, params, ctx) => {
           type: constants.LOG_TYPE_ID.UPDATE_RULE_ELEMENT_AND_STATE,
           current_user_email: userEmail,
           identity,
+        });
+      }
+      if (ids.length > 0) {
+        const predecessorQueryParams = {
+          wantToSetPredecessorDate,
+          ruleElementAppliesUntilPredecessorDate,
+          ruleElementInForceUntilPredecessorDate,
+          identity: ids,
+        };
+        await session.run(addPredecessorDate(predecessorQueryParams), {
+          queryParams: predecessorQueryParams,
         });
       }
       return true;
