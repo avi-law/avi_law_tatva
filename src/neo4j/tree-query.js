@@ -39,7 +39,7 @@ CALL {
                 CALL {
                   WITH rbi
                   OPTIONAL MATCH (rbi)-[:HAS_RULE_BOOK_TAG]->(rbt:Rule_Book_Tag)
-                  RETURN collect(rbt.rule_book_tag_id) as rbTags
+                  RETURN collect(replace(rbt.rule_book_tag_id, "/", "-") ) as rbTags
                 }
               RETURN collect(rbi {.rule_book_issue_no, title_short: rbis.rule_book_issue_title_short, title_popular:rbis.rule_book_issue_popular_title, title_long: rbis.rule_book_issue_title_long, language: lang.iso_639_1, label: labels(rbi), tags: rbTags}) AS res_rbi
             }

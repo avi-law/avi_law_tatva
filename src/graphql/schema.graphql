@@ -981,6 +981,7 @@ const typeDefs = gql`
     title_short: String
     title_popular: String
     label: [String]
+    tags: [String]
   }
 
   type CustomRuleBookIssue {
