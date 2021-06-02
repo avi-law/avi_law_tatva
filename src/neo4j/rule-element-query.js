@@ -362,7 +362,8 @@ exports.updateRuleElementStateQuery = (queryParams) => {
       WHERE id(res_de) = $queryParams.res.de.identity
       FOREACH (_ IN CASE WHEN res_de IS NOT NULL THEN [1] END | SET res_de = $queryParams.res.de )
       WITH res_de, lang1, lang2, re`;
-    } else {
+    } else if (false) {
+      // Remove if because cannot able to add state between
       query = `${query}
       OPTIONAL MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(resDe:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1)
       WHERE NOT (resDe)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(:Rule_Element_State)
@@ -396,7 +397,8 @@ exports.updateRuleElementStateQuery = (queryParams) => {
       OPTIONAL MATCH (res_en:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
       WHERE id(res_en) = $queryParams.res.en.identity
       FOREACH (_ IN CASE WHEN res_en IS NOT NULL THEN [1] END | SET res_en = $queryParams.res.en )`;
-    } else {
+    } else if (false) {
+      // Remove if because cannot able to add state between
       query = `${query}
       OPTIONAL MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(resEn:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
       WHERE NOT (resEn)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(:Rule_Element_State)

@@ -102,12 +102,16 @@ module.exports = async (object, params, ctx) => {
       sol_en: _.get(data, "sol_en", null),
       identity: _.get(
         data,
-        "res.de.identity",
-        _.get(data, "res.en.identity", null)
+        "res.en.identity",
+        _.get(data, "res.de.identity", null)
       ),
     };
 
-    if (existsPredecessor && existsPredecessor !== "both") {
+    if (
+      wantToSetPredecessorDate &&
+      existsPredecessor &&
+      existsPredecessor !== "both"
+    ) {
       queryParams.identity = _.get(
         data,
         `res.${existsPredecessor}.identity`,
@@ -128,6 +132,7 @@ module.exports = async (object, params, ctx) => {
       }
     }
 
+    console.log(ids);
     console.log(queryParams);
     console.log(updateRuleElementStateQuery(queryParams));
     // return true;
