@@ -1391,6 +1391,7 @@ type RuleBookStateCustomTree {
     rule_book_id: String!
     rule_book_issue_no: Int!
     wantToSetPredecessorDate: Boolean
+    existsPredecessor: String
   }
 
   #Tree type end

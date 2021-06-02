@@ -27,6 +27,7 @@ module.exports = async (object, params, ctx) => {
     "wantToSetPredecessorDate",
     false
   );
+  const existsPredecessor = _.get(data, "existsPredecessor", false);
   let isValidDE = false;
   let isValidEN = false;
   let ids = [];
@@ -105,6 +106,14 @@ module.exports = async (object, params, ctx) => {
         _.get(data, "res.en.identity", null)
       ),
     };
+
+    if (existsPredecessor && existsPredecessor !== "both") {
+      queryParams.identity = _.get(
+        data,
+        `res.${existsPredecessor}.identity`,
+        null
+      );
+    }
 
     if (
       wantToSetPredecessorDate &&
