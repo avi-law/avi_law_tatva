@@ -475,7 +475,8 @@ exports.getPredecessor = (queryParams) => {
   if (queryParams.isUpdate) {
     query = `${query}
     WHERE id(res) = ${queryParams.identity}
-    OPTIONAL MATCH (res)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(res_success:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res_version:Rule_Element_State)
+    OPTIONAL MATCH (res)<-[:HAS_RULE_ELEMENT_SUCCESSOR]-(res_success:Rule_Element_State)
+    OPTIONAL MATCH (res_success)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res_version:Rule_Element_State)
     RETURN collect(id(res_success)) as ids1, collect(id(res_version)) as ids2
     `;
   } else {
