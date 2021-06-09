@@ -1401,7 +1401,7 @@ type RuleBookStateCustomTree {
     login(user_email: String!, user_pwd: String!): UserCustomLogin
     acceptGTC(accept: Boolean!): UserCustomLogin @isAuthenticated
     acceptGDPR(accept: Boolean!): UserCustomLogin @isAuthenticated
-    validateUploadToken(token: String!): String
+    validateUploadToken: String
     encryptPassword(limit: Int): Boolean @isAdmin
     forgotPassword(user_email: String!): Boolean
     setNewPassword(user_pwd: String, token: String!): Boolean

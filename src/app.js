@@ -7,12 +7,6 @@ require("dotenv").config();
 const app = express();
 
 app.use(express.json({ limit: "50mb" }));
-app.use(
-  "/newsletters",
-  express.static(
-    path.join(__dirname, "..", "src", "uploads", "newsletter", "nl_create.html")
-  )
-);
 // app.use(cors(corsConfig));
 server.applyMiddleware({ app });
 

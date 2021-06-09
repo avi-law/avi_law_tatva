@@ -3,14 +3,21 @@
 const jwt = require("jsonwebtoken");
 const { jwtSecret, jwtAlgorithms } = require("../../../config/application");
 
-const verifyAndDecodeToken = (params) => {
-  const { token } = params;
+const verifyAndDecodeToken = (req) => {
   const response = false;
   try {
-    if (!token.startsWith("Bearer ")) {
+    if (
+      !req ||
+      !req.headers ||
+      (!req.headers.authorization && !req.headers.Authorization) ||
+      (!req && !req.cookies && !req.cookies.token)
+    ) {
       return response;
     }
-    const jwtToken = token.split(" ")[1];
+    if (!req.headers.authorization.startsWith("Bearer ")) {
+      return response;
+    }
+    const jwtToken = req.headers.authorization.split(" ")[1];
     if (jwtToken) {
       return jwt.verify(jwtToken, jwtSecret, {
         algorithms: jwtAlgorithms,
@@ -22,7 +29,8 @@ const verifyAndDecodeToken = (params) => {
   }
 };
 module.exports = (object, params, ctx) => {
-  const decoded = verifyAndDecodeToken(params);
+  const { req } = ctx;
+  const decoded = verifyAndDecodeToken(req);
   if (decoded) {
     return JSON.stringify({ success: true, ...decoded });
   }
