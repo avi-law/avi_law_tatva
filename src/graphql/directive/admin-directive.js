@@ -5,7 +5,11 @@ const { SchemaDirectiveVisitor } = require("apollo-server-express");
 const { DirectiveLocation, GraphQLDirective } = require("graphql");
 const _ = require("lodash");
 const jwt = require("jsonwebtoken");
-const { jwtSecret, defaultLanguage } = require("../../config/application");
+const {
+  jwtSecret,
+  jwtAlgorithms,
+  defaultLanguage,
+} = require("../../config/application");
 const driver = require("../../config/db");
 const { common, APIError } = require("../../utils");
 const { loginQuery } = require("../../neo4j/query");
@@ -71,7 +75,7 @@ const verifyAndDecodeToken = ({ context }) => {
     const token = req.headers.authorization.split(" ")[1];
     if (token) {
       return jwt.verify(token, jwtSecret, {
-        algorithms: ["HS256"],
+        algorithms: jwtAlgorithms,
       });
     }
     throw new APIError({

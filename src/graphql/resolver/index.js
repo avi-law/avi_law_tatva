@@ -112,6 +112,7 @@ const deleteRuleElementState = require("./rules-element-structure/delete-rule-el
 const getAllRuleElementState = require("./rules-element-structure/get-all-rule-element-state");
 const getSolTagForRuleElement = require("./rules-element-structure/get-sol-tag-for-rule-element");
 const searchRuleElement = require("./search/search-rule-element");
+const validateUploadToken = require("./validate-upload-token");
 
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
@@ -122,6 +123,7 @@ const resolvers = {
     acceptGTC,
     acceptGDPR,
     encryptPassword,
+    validateUploadToken,
     forgotPassword,
     setNewPassword,
     createCustomer,

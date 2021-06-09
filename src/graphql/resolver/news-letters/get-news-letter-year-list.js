@@ -166,6 +166,12 @@ module.exports = async (object, params, ctx) => {
                     nlState.lang.properties.iso_639_1
                   ];
               }
+              if (properties && !properties.nl_title_short) {
+                properties.nl_title_short =
+                  constants.NL_TITLE_NOT_AVAILABLE[
+                    nlState.lang.properties.iso_639_1
+                  ];
+              }
               nls[nlState.lang.properties.iso_639_1] = properties;
               if (!userEmail) {
                 nls[nlState.lang.properties.iso_639_1].nl_text = null;
@@ -230,6 +236,12 @@ module.exports = async (object, params, ctx) => {
                 const { properties } = nlState.nls;
                 if (properties && !properties.nl_title_long) {
                   properties.nl_title_long =
+                    constants.NL_TITLE_NOT_AVAILABLE[
+                      nlState.lang.properties.iso_639_1
+                    ];
+                }
+                if (properties && !properties.nl_title_short) {
+                  properties.nl_title_short =
                     constants.NL_TITLE_NOT_AVAILABLE[
                       nlState.lang.properties.iso_639_1
                     ];
