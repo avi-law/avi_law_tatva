@@ -355,7 +355,7 @@ const getElementBreadcrumbs = (child, segments, breadcrumbs, otherData) => {
                 "has_rule_element_state",
                 null
               );
-              if (ruleElementStateList.length > 0) {
+              if (ruleElementStateList && ruleElementStateList.length > 0) {
                 const stateList = getStatesAndUpdateStatus(
                   ruleElementStateList,
                   common.getTimestamp()
