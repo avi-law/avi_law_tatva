@@ -66,22 +66,35 @@ module.exports = async (object, params, ctx) => {
         data.res.en[element] = common.convertToTemporalDate(
           data.res.en[element]
         );
+        if (wantToSetPredecessorDate) {
+          if (element === "rule_element_in_force_from") {
+            ruleElementInForceUntilPredecessorDate = common.subtractDayFromDate(
+              data.res.en[element]
+            );
+          }
+          if (element === "rule_element_applies_from") {
+            ruleElementAppliesUntilPredecessorDate = common.subtractDayFromDate(
+              data.res.en[element]
+            );
+          }
+        }
       }
       if (data.res.de && data.res.de[element]) {
         data.res.de[element] = common.convertToTemporalDate(
           data.res.de[element]
         );
-      }
-      if (wantToSetPredecessorDate) {
-        if (element === "rule_element_in_force_from") {
-          ruleElementInForceUntilPredecessorDate = common.subtractDayFromDate(
-            data.res.de[element]
-          );
-        }
-        if (element === "rule_element_applies_from") {
-          ruleElementAppliesUntilPredecessorDate = common.subtractDayFromDate(
-            data.res.de[element]
-          );
+
+        if (wantToSetPredecessorDate) {
+          if (element === "rule_element_in_force_from") {
+            ruleElementInForceUntilPredecessorDate = common.subtractDayFromDate(
+              data.res.de[element]
+            );
+          }
+          if (element === "rule_element_applies_from") {
+            ruleElementAppliesUntilPredecessorDate = common.subtractDayFromDate(
+              data.res.de[element]
+            );
+          }
         }
       }
     });
