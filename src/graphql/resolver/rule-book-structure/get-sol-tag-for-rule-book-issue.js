@@ -42,6 +42,7 @@ module.exports = async (object, params) => {
           }
           const slResult = {
             sol_id: record.get("sol_id"),
+            sol_date: record.get("sol_date"),
             sol_state: sls,
           };
           return slResult;

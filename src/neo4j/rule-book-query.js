@@ -284,12 +284,12 @@ exports.getSolTagForRuleBookIssue = (isSort) => {
     RETURN collect({ sls: {sol_name_01: sls.sol_name_01}, lang: { iso_639_1: lang.iso_639_1}}) AS slState
   }
   WITH sl, slState order by sls.sol_date DESC
-  RETURN distinct sl.sol_id as sol_id, slState as sls
+  RETURN distinct sl.sol_id as sol_id,  sl.sol_date as sol_date, slState as sls
   `;
   if (isSort) {
     query = `MATCH (sl:Sol)-[:HAS_SOL_STATE]->(sls:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
     WITH sl, lang, sls order by toLower(sls.sol_name_01) ASC
-    RETURN distinct sl.sol_id as sol_id, collect({ sls: {sol_name_01: sls.sol_name_01}, lang: { iso_639_1: lang.iso_639_1}}) as sls`;
+    RETURN distinct sl.sol_id as sol_id, sl.sol_date as sol_date, collect({ sls: {sol_name_01: sls.sol_name_01}, lang: { iso_639_1: lang.iso_639_1}}) as sls`;
   }
   return query;
 };

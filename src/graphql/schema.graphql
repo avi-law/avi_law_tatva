@@ -1607,7 +1607,7 @@ type RuleBookStateCustomTree {
       solOrderBy: [_SolOrdering!]
       showAll: Boolean
     ): GetSolsCustom @isUnAuthenticated
-     searchRuleElement(
+    searchRuleElement(
       lang: LanguageForUser
       text: String!
       showAll: Boolean
