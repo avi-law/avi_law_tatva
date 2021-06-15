@@ -48,4 +48,7 @@ module.exports = {
   frontendURL: process.env.FRONTEND_URL,
   logo: process.env.LOGO,
   bothLogo: process.env.BOTH_LOGO,
+
+  // HiTech Customer Ids
+  hiTechCustomerIds: process.env.HITECH_CUSTOMER_IDS || 46,
 };

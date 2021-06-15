@@ -406,6 +406,7 @@ const typeDefs = gql`
     user_login_count: Int
     user_is_author: Boolean
     user_is_sys_admin: Boolean
+    user_is_hitech: Boolean
   }
 
   type UserCustomLogin {

@@ -1,7 +1,10 @@
 /* eslint-disable consistent-return */
 const _ = require("lodash");
 const driver = require("../../../config/db");
-const { defaultLanguage } = require("../../../config/application");
+const {
+  defaultLanguage,
+  hiTechCustomerIds,
+} = require("../../../config/application");
 const { constants, auth, common, APIError } = require("../../../utils");
 const {
   getUserStateInformationQUery,
@@ -16,6 +19,7 @@ module.exports = async (object, params) => {
   const session = driver.session();
   let loginStatus = false;
   let loginFailedCode = null;
+  let HitechCustomerList = [];
   try {
     const result = await session.run(loginQuery, params);
     const userState = result.records.map((record) => {
@@ -69,6 +73,15 @@ module.exports = async (object, params) => {
             return state;
           }
         });
+        if (hiTechCustomerIds && hiTechCustomerIds !== "") {
+          let ids = hiTechCustomerIds.split(",");
+          ids = ids.map((n) => +n);
+          HitechCustomerList = _.filter(customerStates, (state) => {
+            if (ids.indexOf(state.cust_id) !== -1) {
+              return state;
+            }
+          });
+        }
         if (userToCustomerValidTo.length === 0) {
           await session.run(getCommonUserStateLogginQuery(), {
             type: constants.LOG_TYPE_ID.USER_ACCOUNT_EXPIRED,
@@ -174,7 +187,7 @@ module.exports = async (object, params) => {
       });
       await session.run(manageLoginCountQuery, { ...params });
       loginStatus = true;
-      session.close();
+      userStateInformation.user_is_hitech = HitechCustomerList.length > 0;
       return {
         loginStatus,
         loginFailedCode,
@@ -193,6 +206,7 @@ module.exports = async (object, params) => {
           user_pref_country: userStateInformation.user_pref_country,
           user_is_sys_admin: userStateInformation.user_is_sys_admin,
           user_is_author: userStateInformation.user_is_author,
+          user_is_hitech: userStateInformation.user_is_hitech,
         }),
       };
     }
@@ -208,5 +222,7 @@ module.exports = async (object, params) => {
   } catch (error) {
     session.close();
     throw error;
+  } finally {
+    session.close();
   }
 };
