@@ -1190,6 +1190,18 @@ type RuleBookStateCustomTree {
     res: [RuleElementStateCustom]
   }
 
+  enum _HiTechRuleElementStateOrdering {
+    _id_asc
+    _id_desc
+    rule_element_article_asc
+    rule_element_article_desc
+  }
+
+  type GetHiTechRuleElementCustom {
+    total: Int
+    res: [RuleElementStateCustom]
+  }
+
   type GetRuleElementWithStateList {
     rbis: Rule_Book_Issue_State
     re: Rule_Element
@@ -1632,6 +1644,12 @@ type RuleBookStateCustomTree {
     getRuleElementStateDetails(rule_element_doc_id: String!, identity: [Int!]!): GetRuleElementStateList @isAdmin
     getAllRuleElementState(rule_book_id: String, rule_element_doc_id: String, current_date: _Neo4jDate): Rule_Book @isAuthenticated
     getSolTagForRuleElement(isSort: Boolean,rule_book_id: String!, rule_book_issue_no: Int!): [GetSolTags]
+    getHiTechRuleElementList(
+      filterByString: String
+      first: Int
+      offset: Int
+      orderBy: [_HiTechRuleElementStateOrdering]
+    ): GetHiTechRuleElementCustom @isAuthenticated
   }
 `;
 

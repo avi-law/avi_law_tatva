@@ -581,3 +581,21 @@ p = shortestPath((rb)-[:HAS_RULE_BOOK_ISSUE|HAS_RULE_ELEMENT*..15]-(re))
 WHERE rb.rule_book_id = $rule_book_id AND re.rule_element_doc_id = $rule_element_doc_id
 RETURN p
 `;
+
+exports.getHitechRuleElementCount = (condition = "") => `
+MATCH (re:Rule_Element)-[r1:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)
+${condition}
+RETURN count (distinct re) as count`;
+
+exports.getHitechRuleElementList = (
+  condition,
+  limit = 10,
+  skip = 0,
+  orderBy = "res._id DESC"
+) => `
+MATCH (res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
+${condition}
+WITH res, lang order by ${orderBy}
+RETURN { res: { identity: id(res),rule_element_title: res.rule_element_title, rule_element_show_anyway: res.rule_element_show_anyway,rule_element_applies_from: res.rule_element_applies_from,rule_element_in_force_until: res.rule_element_in_force_until,rule_element_applies_until: res.rule_element_applies_until,rule_element_in_force_from: res.rule_element_in_force_from,rule_element_visible_until: res.rule_element_visible_until,rule_element_visible_from: res.rule_element_visible_from,rule_element_title: res.rule_element_title, rule_element_article: res. rule_element_article }, lang: {iso_639_1: lang.iso_639_1 } } as res
+SKIP toInteger(${skip})
+LIMIT toInteger(${limit})`;
