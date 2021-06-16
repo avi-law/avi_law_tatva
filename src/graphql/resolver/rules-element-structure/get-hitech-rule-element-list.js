@@ -45,7 +45,6 @@ module.exports = async (object, params, ctx) => {
     if (queryOrderBy === "") {
       queryOrderBy = defaultOrderBy;
     }
-    console.log(queryOrderBy);
     if (filterByString) {
       const value = filterByString.replace(
         constants.SEARCH_EXCLUDE_SPECIAL_CHAR_REGEX,
