@@ -647,7 +647,7 @@ exports.getHitechRuleElementList = (
   condition,
   limit = 10,
   skip = 0,
-  orderBy = "res._id DESC"
+  orderBy = "id(res) DESC"
 ) => `
 MATCH (res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
 ${condition}

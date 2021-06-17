@@ -17,7 +17,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   const offset = params.offset || 0;
   const limit = params.first || 10;
-  const defaultOrderBy = "res._id DESC";
+  const defaultOrderBy = "id(res) DESC";
   let queryOrderBy = "";
   let total = 0;
   const { orderBy, filterByString } = params;
@@ -37,6 +37,11 @@ module.exports = async (object, params, ctx) => {
         const last = sl.split("_").pop().toUpperCase();
         if (queryOrderBy === "") {
           queryOrderBy = `res.${field} ${last}`;
+          if (field === "_id") {
+            queryOrderBy = `id(res) ${last}`;
+          }
+        } else if (field === "_id") {
+          queryOrderBy = `${queryOrderBy}, id(res) ${last}`;
         } else {
           queryOrderBy = `${queryOrderBy}, res.${field} ${last}`;
         }
