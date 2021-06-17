@@ -467,6 +467,55 @@ exports.updateRuleElementStateQuery = (queryParams) => {
   return query;
 };
 
+exports.updateHiTechRuleElementStateQuery = (queryParams) => {
+  let query = `
+  MATCH (lang1:Language {iso_639_1: "de"})
+  MATCH (lang2:Language {iso_639_1: "en"})`;
+
+  if (queryParams.isValidDE) {
+    if (queryParams.res.de.identity) {
+      query = `${query}
+      OPTIONAL MATCH (res_de:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1)
+      WHERE id(res_de) = $queryParams.res.de.identity
+      FOREACH (_ IN CASE WHEN res_de IS NOT NULL THEN [1] END | SET res_de = $queryParams.res.de )
+      WITH res_de, lang1, lang2`;
+    }
+  }
+
+  if (queryParams.isValidEN) {
+    if (queryParams.res.en.identity) {
+      query = `${query}
+      OPTIONAL MATCH (res_en:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
+      WHERE id(res_en) = $queryParams.res.en.identity
+      FOREACH (_ IN CASE WHEN res_en IS NOT NULL THEN [1] END | SET res_en = $queryParams.res.en )`;
+    }
+
+    if (queryParams.isValidDE) {
+      query = `${query}
+      WITH res_en, re, res_de, lang1, lang2`;
+    } else {
+      query = `${query}
+      WITH res_en, re, lang1, lang2`;
+    }
+  }
+
+  if (queryParams.isValidEN && queryParams.isValidDE) {
+    query = `${query}
+    RETURN res_de, res_en`;
+  } else if (queryParams.isValidEN) {
+    query = `${query}
+    RETURN res_en`;
+  } else if (queryParams.isValidDE) {
+    query = `${query}
+    RETURN res_de`;
+  } else {
+    query = `${query}
+    RETURN lang1, lang2`;
+  }
+
+  return query;
+};
+
 exports.getPredecessor = (queryParams) => {
   let query = `
   MATCH (rb:Rule_Book {rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger(${queryParams.rule_book_issue_no}) })

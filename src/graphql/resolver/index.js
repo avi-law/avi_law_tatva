@@ -115,6 +115,7 @@ const searchRuleElement = require("./search/search-rule-element");
 const validateUploadToken = require("./validate-upload-token");
 const getHiTechRuleElementList = require("./rules-element-structure/get-hitech-rule-element-list");
 const getHiTechRuleElementState = require("./rules-element-structure/get-hitech-rule-element-state");
+const updateHiTechRuleElementState = require("./rules-element-structure/update-hitech-rule-element-state");
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
 
@@ -173,6 +174,7 @@ const resolvers = {
     addRuleElementState,
     updateRuleElementState,
     deleteRuleElementState,
+    updateHiTechRuleElementState,
   },
   Query: {
     User,

@@ -1411,6 +1411,25 @@ type RuleBookStateCustomTree {
     existsPredecessor: String
   }
 
+ input HiTechRuleElementStateInput {
+    identity: Int!
+    rule_element_hitech: Boolean!
+    rule_element_work_completed: Boolean
+    rule_element_article: String
+    rule_element_title: String
+    rule_element_text: String
+    rule_element_rmk: String
+  }
+
+  input HiTechRuleElementStateCustomInput {
+    en: HiTechRuleElementStateInput
+    de: HiTechRuleElementStateInput
+  }
+
+  input CustomAddHiTechRuleElementStateInput {
+    res: HiTechRuleElementStateCustomInput
+  }
+
   #Tree type end
 
   type Mutation {
@@ -1478,6 +1497,7 @@ type RuleBookStateCustomTree {
     addRuleElementState(rule_element_doc_id: String!, data: CustomAddRuleElementStateInput ): Boolean @isAdmin
     updateRuleElementState(rule_element_doc_id: String!, data: CustomAddRuleElementStateInput ): Boolean @isAdmin
     deleteRuleElementState(rule_element_doc_id: String!, rule_book_id: String!, rule_book_issue_no: Int!, identities: [Int!]!): Boolean @isAdmin
+    updateHiTechRuleElementState(data: CustomAddHiTechRuleElementStateInput ): Boolean @isAuthenticated
   }
   type Query {
     user: User_State @isAuthenticated
