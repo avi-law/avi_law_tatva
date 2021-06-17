@@ -492,10 +492,10 @@ exports.updateHiTechRuleElementStateQuery = (queryParams) => {
 
     if (queryParams.isValidDE) {
       query = `${query}
-      WITH res_en, re, res_de, lang1, lang2`;
+      WITH res_en, res_de, lang1, lang2`;
     } else {
       query = `${query}
-      WITH res_en, re, lang1, lang2`;
+      WITH res_en, lang1, lang2`;
     }
   }
 
