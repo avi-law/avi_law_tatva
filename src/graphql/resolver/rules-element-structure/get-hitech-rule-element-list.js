@@ -21,7 +21,7 @@ module.exports = async (object, params, ctx) => {
   let queryOrderBy = "";
   let total = 0;
   const { orderBy, filterByString } = params;
-  let condition = `WHERE (res.rule_element_hitech = TRUE AND res.rule_element_work_completed = FALSE) OR res.rule_element_hitech IS NULL `;
+  let condition = `WHERE res.rule_element_hitech = TRUE OR res.rule_element_hitech IS NULL `;
   // let condition = `WHERE sl.sol_id IS NOT NULL `;
   try {
     if (!userIsHitech) {

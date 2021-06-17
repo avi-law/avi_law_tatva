@@ -565,7 +565,7 @@ RETURN res, lang, sl
 
 exports.getHitechRuleElementStateDetails = `
 MATCH (res1:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1:Language)
-WHERE id(res1) = $identity AND ((res1.rule_element_hitech = TRUE AND res1.rule_element_work_completed = FALSE) OR res1.rule_element_hitech IS NULL )
+WHERE id(res1) = $identity AND (res1.rule_element_hitech = TRUE OR res1.rule_element_hitech IS NULL )
 OPTIONAL MATCH(res1)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res2:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2:Language)
 RETURN { res: res1, lang: { iso_639_1: lang1.iso_639_1 } } as res1, { res: res2, lang: { iso_639_1: lang2.iso_639_1 } } as res2
 `;

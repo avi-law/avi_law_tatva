@@ -47,9 +47,9 @@ module.exports = async (object, params, ctx) => {
       isValidDE,
       res: data.res,
     };
-
-    console.log(updateHiTechRuleElementStateQuery(queryParams));
-    return true;
+    // console.log(queryParams);
+    // console.log(updateHiTechRuleElementStateQuery(queryParams));
+    // return true;
     const result = await session.run(
       updateHiTechRuleElementStateQuery(queryParams),
       {
