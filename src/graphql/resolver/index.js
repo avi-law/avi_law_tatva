@@ -114,7 +114,7 @@ const getSolTagForRuleElement = require("./rules-element-structure/get-sol-tag-f
 const searchRuleElement = require("./search/search-rule-element");
 const validateUploadToken = require("./validate-upload-token");
 const getHiTechRuleElementList = require("./rules-element-structure/get-hitech-rule-element-list");
-
+const getHiTechRuleElementState = require("./rules-element-structure/get-hitech-rule-element-state");
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
 
@@ -233,6 +233,7 @@ const resolvers = {
     getSolTagForRuleElement,
     searchRuleElement,
     getHiTechRuleElementList,
+    getHiTechRuleElementState,
   },
 };
 

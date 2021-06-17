@@ -514,6 +514,13 @@ OPTIONAL MATCH (res)-[:RULE_ELEMENT_STATE_SOL_IS]->(sl:Sol)
 RETURN res, lang, sl
 `;
 
+exports.getHitechRuleElementStateDetails = `
+MATCH (res1:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1:Language)
+WHERE id(res1) = $identity AND ((res1.rule_element_hitech = TRUE AND res1.rule_element_work_completed = FALSE) OR res1.rule_element_hitech IS NULL )
+OPTIONAL MATCH(res1)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res2:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2:Language)
+RETURN { res: res1, lang: { iso_639_1: lang1.iso_639_1 } } as res1, { res: res2, lang: { iso_639_1: lang2.iso_639_1 } } as res2
+`;
+
 exports.deleteRuleElementState = `
 MATCH (rb:Rule_Book {rule_book_id: $rule_book_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger($rule_book_issue_no) })
 MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[r1:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)
