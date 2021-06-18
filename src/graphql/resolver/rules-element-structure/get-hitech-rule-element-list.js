@@ -3,7 +3,6 @@
 const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const { getSolsCount, getSols } = require("../../../neo4j/query");
 const {
   getHitechRuleElementCount,
   getHitechRuleElementList,

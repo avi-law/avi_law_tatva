@@ -1,8 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
-const _ = require("lodash");
 const driver = require("../../../config/db");
-const { APIError, common } = require("../../../utils");
+const { APIError } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
   getHitechRuleElementStateDetails,

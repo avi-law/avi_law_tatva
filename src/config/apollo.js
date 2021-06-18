@@ -7,6 +7,7 @@ const formatError = require("../graphql/formatError");
 const isAuthenticatedDirective = require("../graphql/directive/auth-directive");
 const isAdminDirective = require("../graphql/directive/admin-directive");
 const isUnAuthenticated = require("../graphql/directive/unAuth-directive");
+const { playground, introspection } = require("./application");
 
 const excludeMutation = [
   "User",
@@ -98,8 +99,8 @@ module.exports = new ApolloServer({
   }),
   schema,
   formatError,
-  introspection: true,
-  playground: true,
+  introspection,
+  playground,
   plugins: [
     {
       requestDidStart() {

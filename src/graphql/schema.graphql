@@ -1206,6 +1206,17 @@ type RuleBookStateCustomTree {
     res: RuleElementStateCustom
   }
 
+  type RuleElementBackLinkCustom {
+    rule_book_issue_title_short: String
+    rule_element_article: String
+    rule_element_doc_id: String
+  }
+
+  type GetRuleElementBackLinkList {
+    de: [RuleElementBackLinkCustom]
+    en: [RuleElementBackLinkCustom]
+  }
+
   type GetRuleElementWithStateList {
     rbis: Rule_Book_Issue_State
     re: Rule_Element
@@ -1675,6 +1686,7 @@ type RuleBookStateCustomTree {
       orderBy: [_HiTechRuleElementStateOrdering]
     ): GetHiTechRuleElementCustom @isAuthenticated
     getHiTechRuleElementState(identity: Int!): GetHiTechRuleElementState @isAuthenticated
+    getRuleElementBackLinks(rule_element_doc_id: String!): GetRuleElementBackLinkList  @isAuthenticated
   }
 `;
 

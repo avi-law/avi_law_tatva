@@ -23,6 +23,9 @@ module.exports = {
   environment: process.env.NODE_ENV || "development",
 
   defaultLanguage: process.env.DEFAULT_LANGUAGE || "en",
+  playground: process.env.PLAYGROUND || "false",
+  introspection: process.env.INTROSPECTION || "true",
+
   corsConfig,
   // JWT token for authentication
   jwtSecret: process.env.JWT_SECRET || "secret",
