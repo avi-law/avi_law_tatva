@@ -20,7 +20,7 @@ module.exports = async (object, params, ctx) => {
   let queryOrderBy = "";
   let total = 0;
   const { orderBy, filterByString } = params;
-  let condition = `WHERE res.rule_element_hitech = TRUE OR res.rule_element_hitech IS NULL `;
+  let condition = `WHERE (res.rule_element_hitech = TRUE OR res.rule_element_hitech IS NULL )`;
   // let condition = `WHERE sl.sol_id IS NOT NULL `;
   try {
     if (!userIsHitech) {
@@ -55,7 +55,7 @@ module.exports = async (object, params, ctx) => {
         ""
       );
       if (/^\d+$/.test(filterByString)) {
-        condition = `${condition} AND (id(res) = ${value} OR toLower(res.rule_element_title) CONTAINS toLower("${value}") OR toLower(res.rule_element_article) CONTAINS toLower("${value}") OR toLower(res.rule_element_text) CONTAINS toLower("${value}") )`;
+        condition = `${condition} AND (toString(id(res)) CONTAINS "${value}" OR toLower(res.rule_element_title) CONTAINS toLower("${value}") OR toLower(res.rule_element_article) CONTAINS toLower("${value}") OR toLower(res.rule_element_text) CONTAINS toLower("${value}") )`;
       } else {
         condition = `${condition} AND ( toLower(res.rule_element_title) CONTAINS toLower("${value}") OR toLower(res.rule_element_article) CONTAINS toLower("${value}") OR toLower(res.rule_element_text) CONTAINS toLower("${value}") )`;
       }

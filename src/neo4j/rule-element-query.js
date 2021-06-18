@@ -641,7 +641,7 @@ RETURN p
 exports.getHitechRuleElementCount = (condition = "") => `
 MATCH (re:Rule_Element)-[r1:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)
 ${condition}
-RETURN count (distinct re) as count`;
+RETURN count (res) as count`;
 
 exports.getHitechRuleElementList = (
   condition,
