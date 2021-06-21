@@ -662,3 +662,33 @@ WHERE res.rule_element_text CONTAINS  $rule_element_doc_id AND rb.rule_book_acti
 OPTIONAL MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang)
 RETURN collect({ rule_element_doc_id: re.rule_element_doc_id , iso_639_1: lang.iso_639_1, rule_book_issue_title_short: rbis.rule_book_issue_title_short, rule_element_article: res.rule_element_article}) as res
 `;
+
+exports.getRuleElementTags = `
+MATCH (re:Rule_Element)
+WHERE re.rule_element_header_lvl = 0
+RETURN collect({ rule_element_doc_id: re.rule_element_doc_id, identity: id(re) }) as re
+`;
+
+exports.getAMCGMRuleElement = `
+MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
+  CALL {
+    WITH re
+    OPTIONAL MATCH(re)-[r1:HAS_AMC]->(re_amc)
+    WITH re, CASE WHEN re_amc IS NULL THEN null ELSE collect({identity:id(re_amc), rule_element_doc_id: re_amc.rule_element_doc_id, order: r1.order }) END as amc
+    RETURN amc
+  }
+  CALL {
+    WITH re
+    OPTIONAL MATCH(re)-[r2:HAS_GM]->(re_gm)
+    WITH re, CASE WHEN re_gm IS NULL THEN null ELSE collect({identity:id(re_gm), rule_element_doc_id: re_gm.rule_element_doc_id, order: r2.order }) END as gm
+    RETURN gm
+  }
+  CALL {
+    WITH re
+    OPTIONAL MATCH(re)-[r3:HAS_CS]->(re_cs)
+    WITH re, CASE WHEN re_cs IS NULL THEN null ELSE collect({ identity:id(re_cs), rule_element_doc_id: re_cs.rule_element_doc_id, order: r3.order }) END as cs
+    RETURN cs
+  }
+RETURN re,amc,gm,cs
+LIMIT 1
+`;
