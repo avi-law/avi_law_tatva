@@ -14,7 +14,7 @@ module.exports = async (object, params, ctx) => {
         re.amc = record.get("re");
       });
     }
-    const resultGm = await session.run(getRuleElementTags, { string: "GM" });
+    const resultGm = await session.run(getRuleElementTags, { string: "_GM" });
     if (resultGm && resultGm.records.length > 0) {
       resultGm.records.forEach((record) => {
         re.gm = record.get("re");
