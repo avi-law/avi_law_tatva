@@ -733,9 +733,12 @@ RETURN collect({ rule_element_doc_id: re.rule_element_doc_id , iso_639_1: lang.i
 `;
 
 exports.getRuleElementTags = `
-MATCH (re:Rule_Element)
-WHERE re.rule_element_header_lvl = 0 AND re.rule_element_doc_id CONTAINS $string
-RETURN collect({ rule_element_doc_id: re.rule_element_doc_id, identity: id(re) }) as re
+MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)
+WHERE re.rule_element_header_lvl = 0 AND rb.rule_book_active = TRUE AND re.rule_element_doc_id CONTAINS $string
+MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
+// WITH DISTINCT re, lang, res order by res.rule_element_in_force_from DESC
+WITH DISTINCT re, collect({ rule_element_article: res.rule_element_article, iso_639_1: lang.iso_639_1}) as res
+RETURN collect({ rule_element_doc_id: re.rule_element_doc_id, identity: id(re), res: res }) as re
 `;
 
 exports.getAMCGMRuleElement = `
@@ -744,19 +747,19 @@ MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
     WITH re
     OPTIONAL MATCH(re)-[r1:HAS_AMC]->(re_amc)
     WITH re, CASE WHEN re_amc IS NULL THEN null ELSE collect({identity:id(re_amc), rule_element_doc_id: re_amc.rule_element_doc_id, order: r1.order }) END as amc
-    RETURN amc
+    RETURN CASE WHEN amc IS NULL THEN null ELSE apoc.coll.sortMaps(amc, "^order") END as amc
   }
   CALL {
     WITH re
     OPTIONAL MATCH(re)-[r2:HAS_GM]->(re_gm)
     WITH re, CASE WHEN re_gm IS NULL THEN null ELSE collect({identity:id(re_gm), rule_element_doc_id: re_gm.rule_element_doc_id, order: r2.order }) END as gm
-    RETURN gm
+    RETURN CASE WHEN gm IS NULL THEN null ELSE apoc.coll.sortMaps(gm, "^order") END as gm
   }
   CALL {
     WITH re
     OPTIONAL MATCH(re)-[r3:HAS_CS]->(re_cs)
     WITH re, CASE WHEN re_cs IS NULL THEN null ELSE collect({ identity:id(re_cs), rule_element_doc_id: re_cs.rule_element_doc_id, order: r3.order }) END as cs
-    RETURN cs
+    RETURN CASE WHEN cs IS NULL THEN null ELSE apoc.coll.sortMaps(cs, "^order") END as cs
   }
 RETURN re,amc,gm,cs
 LIMIT 1

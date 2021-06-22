@@ -1218,6 +1218,8 @@ type RuleBookStateCustomTree {
   }
 
   type RuleElementTags {
+    rule_element_article_de: String,
+    rule_element_article_en: String,
     identity: Int
     rule_element_doc_id: String
     order: Int
