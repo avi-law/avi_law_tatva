@@ -1388,12 +1388,20 @@ type RuleBookStateCustomTree {
     rule_book_issue_no: Int!
   }
 
+  input RuleElementTagsInput {
+    identity: Int!
+    order: Int!
+  }
+
   input RuleElementInput {
     rule_element_doc_id: String!
     rule_element_header_lvl: Int
     rule_element_id: Int
     rule_element_is_rule_book: Boolean
     rule_element_parent_doc_id: String
+    amc:[RuleElementTagsInput]
+    gm:[RuleElementTagsInput]
+    cs:[RuleElementTagsInput]
   }
 
   input RuleElementCustomInput {

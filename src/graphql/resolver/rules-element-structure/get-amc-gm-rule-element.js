@@ -36,7 +36,6 @@ module.exports = async (object, params, ctx) => {
         response.cs = record.get("cs");
       });
     }
-    console.log(response);
     return response;
   } catch (error) {
     session.close();

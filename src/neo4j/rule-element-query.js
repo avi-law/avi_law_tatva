@@ -8,11 +8,36 @@ exports.addRuleElementQuery = (queryParams) => {
     query = `
     ${query}
     MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(rep:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_parent_doc_id}" })
-    MERGE (rep)-[r1:HAS_RULE_ELEMENT]->(re:Rule_Element { rule_element_doc_id: "${queryParams.re.rule_element_doc_id}" })`;
+    MERGE (rep)-[r1:HAS_RULE_ELEMENT]->(re:Rule_Element { rule_element_doc_id: "${queryParams.re.rule_element_doc_id}" })
+    WITH *`;
   } else if (queryParams.rule_book_issue_no && queryParams.rule_book_id) {
     query = `
     ${query}
-    MERGE (rbi)-[r1:HAS_RULE_ELEMENT]->(re:Rule_Element { rule_element_doc_id: "${queryParams.re.rule_element_doc_id}" })`;
+    MERGE (rbi)-[r1:HAS_RULE_ELEMENT]->(re:Rule_Element { rule_element_doc_id: "${queryParams.re.rule_element_doc_id}" })
+    WITH *`;
+  }
+
+  if (queryParams.re.amc && queryParams.re.amc.length > 0) {
+    query = `${query}
+    UNWIND $queryParams.re.amc as amc
+    OPTIONAL MATCH (re_amc:Rule_Element) WHERE id(re_amc) = amc.identity
+    FOREACH (_ IN CASE WHEN re_amc IS NOT NULL THEN [1] END | MERGE (re)-[:HAS_AMC {order: toInteger(amc.order)}]->(re_amc) )
+    WITH *`;
+  }
+  if (queryParams.re.gm && queryParams.re.gm.length > 0) {
+    query = `${query}
+    UNWIND $queryParams.re.gm as gm
+    OPTIONAL MATCH (re_gm:Rule_Element) WHERE id(re_gm) = gm.identity
+    FOREACH (_ IN CASE WHEN re_gm IS NOT NULL THEN [1] END | MERGE (re)-[:HAS_GM {order: toInteger(gm.order)}]->(re_gm) )
+    WITH *`;
+  }
+
+  if (queryParams.re.cs && queryParams.re.cs.length > 0) {
+    query = `${query}
+    UNWIND $queryParams.re.cs as cs
+    OPTIONAL MATCH (re_cs:Rule_Element) WHERE id(re_cs) = cs.identity
+    FOREACH (_ IN CASE WHEN re_cs IS NOT NULL THEN [1] END | MERGE (re)-[:HAS_CS {order: toInteger(cs.order)}]->(re_cs) )
+    WITH *`;
   }
 
   query = `${query}
