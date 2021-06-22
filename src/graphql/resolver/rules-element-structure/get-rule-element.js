@@ -12,6 +12,7 @@ const {
   logRuleElement,
   getRuleElementStateDetailsWithLog,
   getRuleElementShortestPath,
+  getAMCGMRuleElementForFE,
 } = require("../../../neo4j/rule-element-query");
 const {
   getRuleBookBreadcrumbs,
@@ -631,6 +632,67 @@ const getRuleBookBreadcrumbsByRuleElement = async (object, params, ctx) => {
   }
 };
 
+const getRuleElementStateArticle = (ruleElements) => {
+  if (ruleElements && ruleElements.length > 0) {
+    const array = ruleElements.map((e) => {
+      const r = {
+        identity: e.identity,
+        rule_element_doc_id: e.rule_element_doc_id,
+        rule_element_article_de: null,
+        rule_element_article_en: null,
+      };
+      if (e.res && e.res.length > 0) {
+        e.res.forEach((res) => {
+          r[`rule_element_article_${res.iso_639_1}`] = res.rule_element_article;
+        });
+      }
+      return r;
+    });
+    return array;
+  }
+  return null;
+};
+
+const getAMCGMRuleElementFromDB = async (
+  viewState,
+  isSingle,
+  ruleElementDocId
+) => {
+  let status = null;
+  const response = { amc: null, gm: null, cs: null };
+  if (!isSingle) {
+    status = _.get(viewState, "de.rule_element_status", null);
+  } else {
+    if (_.get(viewState, "de.rule_element_status", null)) {
+      status = _.get(viewState, "de.rule_element_status", null);
+    }
+    if (_.get(viewState, "en.rule_element_status", null)) {
+      status = _.get(viewState, "en.rule_element_status", null);
+    }
+  }
+  if (status !== constants.RULE_ELEMENT_STATE_STATUS.RED) {
+    const session = driver.session();
+    try {
+      const result = await session.run(getAMCGMRuleElementForFE, {
+        rule_element_doc_id: ruleElementDocId,
+      });
+      if (result && result.records.length > 0) {
+        result.records.forEach((record) => {
+          response.amc = getRuleElementStateArticle(record.get("amc"));
+          response.gm = getRuleElementStateArticle(record.get("gm"));
+          response.cs = getRuleElementStateArticle(record.get("cs"));
+        });
+      }
+    } catch (error) {
+      session.close();
+      throw error;
+    } finally {
+      session.close();
+    }
+  }
+  return response;
+};
+
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userEmail = user ? user.user_email : null;
@@ -873,7 +935,15 @@ module.exports = async (object, params, ctx) => {
     response.isSingle = isSingle;
     response.view = viewState;
     response.language_preference_settings = settings;
-    // console.log(response);
+    const ruleElementAMC = await getAMCGMRuleElementFromDB(
+      viewState,
+      isSingle,
+      ruleElementDocId
+    );
+    response = {
+      ...response,
+      ...ruleElementAMC,
+    };
     return response;
   } catch (error) {
     session.close();

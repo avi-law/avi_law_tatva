@@ -1,11 +1,10 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
-const _ = require("lodash");
 const driver = require("../../../config/db");
 const { getRuleElementTags } = require("../../../neo4j/rule-element-query");
 
 const getRuleElementStateArticle = (ruleElements) => {
-  if (ruleElements.length > 0) {
+  if (ruleElements && ruleElements.length > 0) {
     const array = ruleElements.map((e) => {
       const r = {
         identity: e.identity,
