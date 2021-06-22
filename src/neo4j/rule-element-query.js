@@ -665,7 +665,7 @@ RETURN collect({ rule_element_doc_id: re.rule_element_doc_id , iso_639_1: lang.i
 
 exports.getRuleElementTags = `
 MATCH (re:Rule_Element)
-WHERE re.rule_element_header_lvl = 0
+WHERE re.rule_element_header_lvl = 0 AND re.rule_element_doc_id CONTAINS $string
 RETURN collect({ rule_element_doc_id: re.rule_element_doc_id, identity: id(re) }) as re
 `;
 

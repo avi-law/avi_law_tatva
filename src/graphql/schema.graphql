@@ -1217,17 +1217,23 @@ type RuleBookStateCustomTree {
     en: [RuleElementBackLinkCustom]
   }
 
-  type GetRuleElementTags {
+  type RuleElementTags {
     identity: Int
     rule_element_doc_id: String
     order: Int
   }
 
+  type GetRuleElementTags {
+    amc:[RuleElementTags]
+    gm:[RuleElementTags]
+    cs:[RuleElementTags]
+  }
+
   type GetAMCGMRuleElement{
     re: Rule_Element
-    amc: [GetRuleElementTags]
-    gm: [GetRuleElementTags]
-    cs: [GetRuleElementTags]
+    amc: [RuleElementTags]
+    gm: [RuleElementTags]
+    cs: [RuleElementTags]
   }
 
   type GetRuleElementWithStateList {
@@ -1700,7 +1706,7 @@ type RuleBookStateCustomTree {
     ): GetHiTechRuleElementCustom @isAuthenticated
     getHiTechRuleElementState(identity: Int!): GetHiTechRuleElementState @isAuthenticated
     getRuleElementBackLinks(rule_element_doc_id: String!): GetRuleElementBackLinkList  @isAuthenticated
-    getRuleElementTags: [GetRuleElementTags] @isAuthenticated
+    getRuleElementTags: GetRuleElementTags @isAuthenticated
     getAMCGMRuleElement(rule_element_doc_id: String!): GetAMCGMRuleElement @isAdmin
   }
 `;
