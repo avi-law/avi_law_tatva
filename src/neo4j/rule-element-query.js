@@ -49,10 +49,54 @@ exports.addRuleElementQuery = (queryParams) => {
 };
 
 exports.updateRuleElementQuery = (queryParams) => {
-  const query = `
+  let query = `
   MATCH (rb:Rule_Book {rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger(${queryParams.rule_book_issue_no}) })
   MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_doc_id}" })
-  SET re = $queryParams.re
+  SET re.rule_element_doc_id = toInteger(${queryParams.re.rule_element_doc_id}), re.rule_element_id = toInteger(${queryParams.re.rule_element_id}), re.rule_element_header_lvl = toInteger(${queryParams.re.rule_element_header_lvl}), re.rule_element_is_rule_book = ${queryParams.re.rule_element_is_rule_book}
+  WITH *`;
+
+  if (queryParams.re.amc) {
+    query = `${query}
+    OPTIONAL MATCH (re)-[r1:HAS_AMC]->()
+    FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | DELETE r1)
+    WITH * `;
+  }
+  if (queryParams.re.gm) {
+    query = `${query}
+    OPTIONAL MATCH (re)-[r2:HAS_GM]->()
+    FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | DELETE r2)
+    WITH *`;
+  }
+  if (queryParams.re.cs) {
+    query = `${query}
+    OPTIONAL MATCH (re)-[r3:HAS_CS]->()
+    FOREACH (_ IN CASE WHEN r3 IS NOT NULL THEN [1] END | DELETE r3)
+    WITH *`;
+  }
+
+  if (queryParams.re.amc && queryParams.re.amc.length > 0) {
+    query = `${query}
+    UNWIND $queryParams.re.amc as amc
+    OPTIONAL MATCH (re_amc:Rule_Element) WHERE id(re_amc) = amc.identity
+    FOREACH (_ IN CASE WHEN re_amc IS NOT NULL THEN [1] END | MERGE (re)-[:HAS_AMC {order: toInteger(amc.order)}]->(re_amc) )
+    WITH *`;
+  }
+  if (queryParams.re.gm && queryParams.re.gm.length > 0) {
+    query = `${query}
+    UNWIND $queryParams.re.gm as gm
+    OPTIONAL MATCH (re_gm:Rule_Element) WHERE id(re_gm) = gm.identity
+    FOREACH (_ IN CASE WHEN re_gm IS NOT NULL THEN [1] END | MERGE (re)-[:HAS_GM {order: toInteger(gm.order)}]->(re_gm) )
+    WITH *`;
+  }
+
+  if (queryParams.re.cs && queryParams.re.cs.length > 0) {
+    query = `${query}
+    UNWIND $queryParams.re.cs as cs
+    OPTIONAL MATCH (re_cs:Rule_Element) WHERE id(re_cs) = cs.identity
+    FOREACH (_ IN CASE WHEN re_cs IS NOT NULL THEN [1] END | MERGE (re)-[:HAS_CS {order: toInteger(cs.order)}]->(re_cs) )
+    WITH *`;
+  }
+  query = `${query}
   RETURN re`;
   return query;
 };
