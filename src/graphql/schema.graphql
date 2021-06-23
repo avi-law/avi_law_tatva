@@ -1720,7 +1720,7 @@ type RuleBookStateCustomTree {
     getHiTechRuleElementState(identity: Int!): GetHiTechRuleElementState @isAuthenticated
     getRuleElementBackLinks(rule_element_doc_id: String!): GetRuleElementBackLinkList  @isAuthenticated
     getRuleElementTags: GetRuleElementTags @isAuthenticated
-    getAMCGMRuleElement(rule_element_doc_id: String!): GetAMCGMRuleElement @isAdmin
+    getAMCGMRuleElement(identity: Int!, rule_element_doc_id: String!): GetAMCGMRuleElement @isAdmin
   }
 `;
 

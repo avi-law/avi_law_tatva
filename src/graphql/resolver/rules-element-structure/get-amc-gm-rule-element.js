@@ -16,6 +16,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const ruleElementDocId = params.rule_element_doc_id;
+  const { identity } = params;
   const response = { re: null, amc: null, gm: null, cs: null };
   try {
     if (!systemAdmin && !userIsAuthor) {
@@ -26,6 +27,7 @@ module.exports = async (object, params, ctx) => {
     }
     const result = await session.run(getAMCGMRuleElement, {
       rule_element_doc_id: ruleElementDocId,
+      identity,
     });
     if (result && result.records.length > 0) {
       result.records.forEach((record) => {

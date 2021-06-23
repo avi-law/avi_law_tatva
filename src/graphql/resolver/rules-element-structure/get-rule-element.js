@@ -656,7 +656,8 @@ const getRuleElementStateArticle = (ruleElements) => {
 const getAMCGMRuleElementFromDB = async (
   viewState,
   isSingle,
-  ruleElementDocId
+  ruleElementDocId,
+  identity
 ) => {
   let status = null;
   const response = { amc: null, gm: null, cs: null };
@@ -675,6 +676,7 @@ const getAMCGMRuleElementFromDB = async (
     try {
       const result = await session.run(getAMCGMRuleElementForFE, {
         rule_element_doc_id: ruleElementDocId,
+        identity,
       });
       if (result && result.records.length > 0) {
         result.records.forEach((record) => {
@@ -840,6 +842,9 @@ module.exports = async (object, params, ctx) => {
           });
         }
         const reResult = {
+          rule_element_identity: record.get("re")
+            ? record.get("re").identity
+            : null,
           re: common.getPropertiesFromRecord(record, "re"),
           res: ruleElementStateList,
         };
@@ -938,7 +943,8 @@ module.exports = async (object, params, ctx) => {
     const ruleElementAMC = await getAMCGMRuleElementFromDB(
       viewState,
       isSingle,
-      ruleElementDocId
+      ruleElementDocId,
+      response.rule_element_identity
     );
     response = {
       ...response,

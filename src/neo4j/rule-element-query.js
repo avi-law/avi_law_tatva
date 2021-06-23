@@ -52,7 +52,7 @@ exports.updateRuleElementQuery = (queryParams) => {
   let query = `
   MATCH (rb:Rule_Book {rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger(${queryParams.rule_book_issue_no}) })
   MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_doc_id}" })
-  SET re.rule_element_doc_id = toInteger(${queryParams.re.rule_element_doc_id}), re.rule_element_id = toInteger(${queryParams.re.rule_element_id}), re.rule_element_header_lvl = toInteger(${queryParams.re.rule_element_header_lvl}), re.rule_element_is_rule_book = ${queryParams.re.rule_element_is_rule_book}
+  SET re.rule_element_doc_id = "${queryParams.re.rule_element_doc_id}", re.rule_element_id = toInteger(${queryParams.re.rule_element_id}), re.rule_element_header_lvl = toInteger(${queryParams.re.rule_element_header_lvl}), re.rule_element_is_rule_book = ${queryParams.re.rule_element_is_rule_book}
   WITH *`;
 
   if (queryParams.re.amc) {
@@ -743,7 +743,8 @@ RETURN collect({ rule_element_doc_id: re.rule_element_doc_id, identity: id(re), 
 `;
 
 exports.getAMCGMRuleElementForFE = `
-MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
+MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
+WHERE id(re) = $identity
   CALL {
     WITH re
     OPTIONAL MATCH(re)-[r1:HAS_AMC]->(re_amc)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
@@ -771,6 +772,7 @@ LIMIT 1
 
 exports.getAMCGMRuleElement = `
 MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
+WHERE id(re) = $identity
   CALL {
     WITH re
     OPTIONAL MATCH(re)-[r1:HAS_AMC]->(re_amc)
