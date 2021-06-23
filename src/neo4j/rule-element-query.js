@@ -762,7 +762,7 @@ MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_EL
     WITH re
     OPTIONAL MATCH(re)-[r3:HAS_CS]->(re_cs)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
     WITH DISTINCT re_cs, re, r3, collect({ rule_element_article: res.rule_element_article, iso_639_1: lang.iso_639_1}) as res
-    WITH re, CASE WHEN re_cs IS NULL THEN null ELSE collect({ identity:id(re_cs), rule_element_doc_id: re_cs.rule_element_doc_id, order: r3.order }) END as cs
+    WITH re, CASE WHEN re_cs IS NULL THEN null ELSE collect({ identity:id(re_cs), rule_element_doc_id: re_cs.rule_element_doc_id, order: r3.order, res: res }) END as cs
     RETURN CASE WHEN cs IS NULL THEN null ELSE apoc.coll.sortMaps(cs, "^order") END as cs
   }
 RETURN re,amc,gm,cs
