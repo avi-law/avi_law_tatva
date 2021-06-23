@@ -34,7 +34,6 @@ module.exports = async (object, params, ctx) => {
     };
     console.log(queryParams);
     console.log(updateRuleElementQuery(queryParams));
-    return false;
     const result = await session.run(updateRuleElementQuery(queryParams), {
       queryParams,
     });
