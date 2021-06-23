@@ -729,7 +729,8 @@ exports.getRuleElementBackLinks = `
 MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
 WHERE res.rule_element_text CONTAINS  $rule_element_doc_id AND rb.rule_book_active = TRUE
 OPTIONAL MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang)
-RETURN collect({ rule_element_doc_id: re.rule_element_doc_id , iso_639_1: lang.iso_639_1, rule_book_issue_title_short: rbis.rule_book_issue_title_short, rule_element_article: res.rule_element_article}) as res
+WITH collect({ rule_element_doc_id: re.rule_element_doc_id , iso_639_1: lang.iso_639_1, rule_book_issue_title_short: rbis.rule_book_issue_title_short, rule_element_article: res.rule_element_article}) as res
+RETURN apoc.coll.toSet(res) as res
 `;
 
 exports.getRuleElementTags = `
