@@ -356,6 +356,7 @@ const typeDefs = gql`
     blog_language: Language @relation(name: "BLOG_LANG_IS", direction: OUT)
   }
   type Rule_Element {
+    _id: Int
     rule_element_doc_id: String
     rule_element_header_lvl: Int
     rule_element_id: Int
