@@ -36,7 +36,7 @@ module.exports = async (object, params, ctx) => {
     queryParams.rule_element_order = _.get(data, "rule_element_order", 10);
     console.log(queryParams);
     console.log(addRuleElementQuery(queryParams));
-    return false;
+    // return false;
     const result = await session.run(addRuleElementQuery(queryParams), {
       queryParams,
     });
