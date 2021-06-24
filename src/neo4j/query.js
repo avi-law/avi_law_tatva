@@ -227,7 +227,8 @@ exports.getCustomerUsersQuery = (
 exports.getCommonUserStateLogginQuery = (otherParams = null) => {
   const params = otherParams ? `, ${otherParams}` : "";
   return `MATCH (a: Log_Type { log_type_id: $type })
-  MATCH (b:User { user_email: $user_email } )-[HAS_USER_STATE]->(:User_State)
+  MATCH (b:User { user_email: $user_email } )-[r1:HAS_USER_STATE]->(:User_State)
+  WHERE r1.to IS NULL
   MERGE (b)<-[:LOG_FOR_USER]-(:Log { log_timestamp: apoc.date.currentTimestamp() ${params} })-[:HAS_LOG_TYPE]->(a);`;
 };
 

@@ -32,7 +32,7 @@ module.exports = async (object, params) => {
     if (userState && userState[0]) {
       if (!auth.comparePassword(userState[0].user_pwd, params.user_pwd)) {
         // Log invalid password query
-        await session.run(
+        common.loggingData(
           getCommonUserStateLogginQuery("log_par_01: $user_email"),
           {
             type: constants.LOG_TYPE_ID.LOGIN_WITH_WRONG_PASSWORD,
@@ -83,7 +83,7 @@ module.exports = async (object, params) => {
           });
         }
         if (userToCustomerValidTo.length === 0) {
-          await session.run(getCommonUserStateLogginQuery(), {
+          common.loggingData(getCommonUserStateLogginQuery(), {
             type: constants.LOG_TYPE_ID.USER_ACCOUNT_EXPIRED,
             ...params,
           });
@@ -99,7 +99,7 @@ module.exports = async (object, params) => {
           }
         });
         if (validUserToCustomer.length === 0) {
-          await session.run(getCommonUserStateLogginQuery(), {
+          common.loggingData(getCommonUserStateLogginQuery(), {
             type: constants.LOG_TYPE_ID.CUSTOMER_LINKED_ACCOUNT_EXPIRED,
             ...params,
           });
@@ -142,14 +142,14 @@ module.exports = async (object, params) => {
             };
           }
           // Log for GTC not accepted user
-          await session.run(
+          common.loggingData(
             getCommonUserStateLogginQuery("log_par_01: $user_email"),
             {
               type: constants.LOG_TYPE_ID.GTC_NOT_ACCEPTED,
               ...params,
             }
           );
-          await session.run(logICustomerGTCQuery, {
+          common.loggingData(logICustomerGTCQuery, {
             type: constants.LOG_TYPE_ID.CUSTOMER_GTC_NOT_ACCEPTED,
             ...params,
           });
@@ -181,7 +181,7 @@ module.exports = async (object, params) => {
         };
       }
       // Log success login query
-      await session.run(getCommonUserStateLogginQuery(), {
+      common.loggingData(getCommonUserStateLogginQuery(), {
         type: constants.LOG_TYPE_ID.LOGIN_SUCCESS,
         ...params,
       });
@@ -211,7 +211,7 @@ module.exports = async (object, params) => {
       };
     }
     // Log invalid email query
-    await session.run(logInvalidEmailQuery, {
+    common.loggingData(logInvalidEmailQuery, {
       type: constants.LOG_TYPE_ID.LOGIN_WITH_WRONG_CREDENTIALS,
       ...params,
     });

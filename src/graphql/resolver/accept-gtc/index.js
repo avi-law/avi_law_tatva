@@ -20,11 +20,11 @@ module.exports = async (object, params, ctx) => {
   try {
     // If GTC not accept send error message to FE
     if (!accept) {
-      await session.run(getCommonUserStateLogginQuery(), {
+      common.loggingData(getCommonUserStateLogginQuery(), {
         type: constants.LOG_TYPE_ID.ADMIN_USER_GTC_NOT_ACCEPTED,
         user_email: email,
       });
-      await session.run(logICustomerGTCQuery, {
+      common.loggingData(logICustomerGTCQuery, {
         type: constants.LOG_TYPE_ID.ADMIN_CUSTOMER_GTC_NOT_ACCEPTED,
         user_email: email,
       });
@@ -34,19 +34,19 @@ module.exports = async (object, params, ctx) => {
       });
     }
     // Update status of gtc accepted and add log
-    await session.run(updateGTCAccept, { user_email: email }).then(() =>
-      session
-        .run(getCommonUserStateLogginQuery("log_par_01: $user_email"), {
+    await session.run(updateGTCAccept, { user_email: email }).then(() => {
+      common.loggingData(
+        getCommonUserStateLogginQuery("log_par_01: $user_email"),
+        {
           type: constants.LOG_TYPE_ID.GTC_ACCEPTED,
           user_email: email,
-        })
-        .then(() =>
-          session.run(logICustomerGTCQuery, {
-            type: constants.LOG_TYPE_ID.ADMIN_CUSTOMER_GTC_ACCEPTED,
-            user_email: email,
-          })
-        )
-    );
+        }
+      );
+      common.loggingData(logICustomerGTCQuery, {
+        type: constants.LOG_TYPE_ID.ADMIN_CUSTOMER_GTC_ACCEPTED,
+        user_email: email,
+      });
+    });
 
     const userStateInformation = await session
       .run(getUserStateInformationQUery, { user_email: email })
@@ -85,7 +85,7 @@ module.exports = async (object, params, ctx) => {
       };
     }
     // Log success login query
-    await session.run(getCommonUserStateLogginQuery(), {
+    common.loggingData(getCommonUserStateLogginQuery(), {
       type: constants.LOG_TYPE_ID.LOGIN_SUCCESS,
       user_email: email,
     });

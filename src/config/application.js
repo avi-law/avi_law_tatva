@@ -21,6 +21,7 @@ module.exports = {
   // Application environment configuration
   port: process.env.PORT || 4000,
   environment: process.env.NODE_ENV || "development",
+  logging: process.env.LOGGIN || "true",
 
   defaultLanguage: process.env.DEFAULT_LANGUAGE || "en",
   playground: process.env.PLAYGROUND || "false",

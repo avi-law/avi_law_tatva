@@ -3,7 +3,7 @@ const _ = require("lodash");
 const neo4j = require("neo4j-driver");
 const driver = require("../config/db");
 const constants = require("./constants");
-const { frontendURL } = require("../config/application");
+const { frontendURL, logging } = require("../config/application");
 /**
  * get message
  *
@@ -29,6 +29,9 @@ const getMessage = (messageKey, lang = "en") => {
 const loggingData = (query, data) => {
   const session = driver.session();
   try {
+    if (logging !== "true") {
+      return true;
+    }
     return session
       .run(query, data)
       .then(() => {
