@@ -1262,6 +1262,7 @@ type RuleBookStateCustomTree {
     amc:[RuleElementTags]
     gm:[RuleElementTags]
     cs:[RuleElementTags]
+    backToRuleElement:[RuleElementTags]
   }
 
   type GetRuleElementStateList {

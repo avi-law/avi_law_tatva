@@ -13,6 +13,7 @@ const {
   getRuleElementStateDetailsWithLog,
   getRuleElementShortestPath,
   getAMCGMRuleElementForFE,
+  getBackToRuleElementForFE,
 } = require("../../../neo4j/rule-element-query");
 const {
   getRuleBookBreadcrumbs,
@@ -660,7 +661,7 @@ const getAMCGMRuleElementFromDB = async (
   identity
 ) => {
   let status = null;
-  const response = { amc: null, gm: null, cs: null };
+  const response = { amc: null, gm: null, cs: null, backToRuleElement: null };
   if (!isSingle) {
     status = _.get(viewState, "de.rule_element_status", null);
   } else {
@@ -691,6 +692,28 @@ const getAMCGMRuleElementFromDB = async (
     } finally {
       session.close();
     }
+  }
+  const session = driver.session();
+  try {
+    const BackToRuleElementResult = await session.run(
+      getBackToRuleElementForFE,
+      {
+        rule_element_doc_id: ruleElementDocId,
+        identity,
+      }
+    );
+    if (BackToRuleElementResult && BackToRuleElementResult.records.length > 0) {
+      BackToRuleElementResult.records.forEach((record) => {
+        response.backToRuleElement = getRuleElementStateArticle(
+          record.get("backToRuleElement")
+        );
+      });
+    }
+  } catch (error) {
+    session.close();
+    throw error;
+  } finally {
+    session.close();
   }
   return response;
 };

@@ -770,6 +770,36 @@ RETURN re,amc,gm,cs
 LIMIT 1
 `;
 
+exports.getBackToRuleElementForFE = `
+MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
+WHERE id(re) = $identity
+CALL {
+  WITH re
+  OPTIONAL MATCH(re)<-[r1:HAS_AMC]-(re_amc)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
+  WITH DISTINCT re_amc, re, r1, collect({ rule_element_article: res.rule_element_article, iso_639_1: lang.iso_639_1}) as res
+  WITH re, CASE WHEN re_amc IS NULL THEN null ELSE collect({identity:id(re_amc), rule_element_doc_id: re_amc.rule_element_doc_id, order: r1.order, res:  apoc.coll.toSet(res) }) END as amc
+  RETURN amc
+}
+CALL {
+  WITH re
+  OPTIONAL MATCH(re)<-[r2:HAS_GM]-(re_gm)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
+  WITH DISTINCT re_gm, re, r2, collect({ rule_element_article: res.rule_element_article, iso_639_1: lang.iso_639_1}) as res
+  WITH re, CASE WHEN re_gm IS NULL THEN null ELSE collect({identity:id(re_gm), rule_element_doc_id: re_gm.rule_element_doc_id, order: r2.order, res:  apoc.coll.toSet(res) }) END as gm
+  RETURN gm
+}
+CALL {
+  WITH re
+  OPTIONAL MATCH(re)<-[r3:HAS_CS]-(re_cs)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
+  WITH DISTINCT re_cs, re, r3, collect({ rule_element_article: res.rule_element_article, iso_639_1: lang.iso_639_1}) as res
+  WITH re, CASE WHEN re_cs IS NULL THEN null ELSE collect({ identity:id(re_cs), rule_element_doc_id: re_cs.rule_element_doc_id, order: r3.order, res:  apoc.coll.toSet(res) }) END as cs
+  RETURN cs
+}
+WITH apoc.coll.union(amc,gm) as amcgm, cs
+WITH apoc.coll.union(amcgm,cs) as backToRuleElement
+RETURN apoc.coll.sortMaps(backToRuleElement, "^rule_element_doc_id") as backToRuleElement
+LIMIT 1
+`;
+
 exports.getAMCGMRuleElement = `
 MATCH (re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
 WHERE id(re) = $identity
