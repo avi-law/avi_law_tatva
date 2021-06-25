@@ -350,7 +350,7 @@ exports.addRuleElementStateQuery = (queryParams) => {
 
   if (queryParams.isValidDE) {
     query = `${query}
-    OPTIONAL MATCH (re)-[:HAS_RULE_ELEMENT_STATE]-(res_s_de2:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1)
+    OPTIONAL MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(res_s_de2:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1)
     WHERE NOT (res_s_de2)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(:Rule_Element_State)
     CREATE (re)-[:HAS_RULE_ELEMENT_STATE]->(res_de:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1)
     FOREACH (_ IN CASE WHEN res_de IS NOT NULL THEN [1] END | SET res_de = $queryParams.res.de )
@@ -366,7 +366,7 @@ exports.addRuleElementStateQuery = (queryParams) => {
 
   if (queryParams.isValidEN) {
     query = `${query}
-    OPTIONAL MATCH (re)-[:HAS_RULE_ELEMENT_STATE]-(res_s_en1:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
+    OPTIONAL MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(res_s_en1:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
     WHERE NOT (res_s_en1)-[:HAS_RULE_ELEMENT_SUCCESSOR]->(:Rule_Element_State)
     CREATE (re)-[:HAS_RULE_ELEMENT_STATE]->(res_en:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
     FOREACH (_ IN CASE WHEN res_en IS NOT NULL THEN [1] END | SET res_en = $queryParams.res.en )
@@ -589,7 +589,7 @@ exports.getPredecessor = (queryParams) => {
   let query = `
   MATCH (rb:Rule_Book {rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger(${queryParams.rule_book_issue_no}) })
   MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_doc_id}" })
-  OPTIONAL MATCH (re)-[:HAS_RULE_ELEMENT_STATE]-(res:Rule_Element_State)`;
+  OPTIONAL MATCH (re)-[:HAS_RULE_ELEMENT_STATE]->(res:Rule_Element_State)`;
   if (queryParams.isUpdate) {
     query = `${query}
     WHERE id(res) = ${queryParams.identity}

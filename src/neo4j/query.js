@@ -1034,7 +1034,7 @@ RETURN cou.country_id as countryId`;
 exports.getPreparedNewInvoiceDetails = `
 MATCH (c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
 WHERE c.cust_id = $customerId and r1.to IS NULL
-MATCH (lang:Language)<-[INV_IN_LANG]-(cs)-[:TO_BE_INVOICED_IN_CURRENCY]-(curr:Currency)
+MATCH (lang:Language)<-[INV_IN_LANG]-(cs)-[:TO_BE_INVOICED_IN_CURRENCY]->(curr:Currency)
 MATCH (cs)-[IS_LOCATED_IN_COUNTRY]->(cou2:Country)
 OPTIONAL MATCH (c)-[:TO_BE_INVOICED_FROM_COUNTRY]->(cou1:Country)
 OPTIONAL MATCH (cs)-[:INV_TO_ALT_COUNTRY]->(cou3:Country)

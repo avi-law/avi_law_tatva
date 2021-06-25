@@ -10,7 +10,7 @@ CALL {
           MATCH (rbs)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss:Rule_Book_Struct_State)
           CALL {
               WITH rbss
-              MATCH (rbss)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]-(lang:Language)
+              MATCH (rbss)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang:Language)
               RETURN lang
           }
         WITH rbss, lang
