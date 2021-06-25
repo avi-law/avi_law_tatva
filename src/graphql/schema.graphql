@@ -1274,6 +1274,11 @@ type RuleBookStateCustomTree {
     language_preference_settings: languagePreferencesettings
   }
 
+  type HistoryLogs {
+    log: Log
+    lt: Log_Type
+  }
+
   #Tree type state
   input Rule_Book_Struct {
     rule_book_struct_active: Boolean!
@@ -1723,6 +1728,7 @@ type RuleBookStateCustomTree {
     getRuleElementBackLinks(rule_element_doc_id: String!): GetRuleElementBackLinkList  @isAuthenticated
     getRuleElementTags: GetRuleElementTags @isAuthenticated
     getAMCGMRuleElement(identity: Int!, rule_element_doc_id: String!): GetAMCGMRuleElement @isAdmin
+    getUserHistoryLogs: [HistoryLogs]  @isAuthenticated
   }
 `;
 

@@ -249,7 +249,7 @@ MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (rb:Rule_Book {rule_book_id: $rule_book_id})
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(rb)
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(rb)
 `;
 
 exports.logRulebookStruct = `
@@ -257,7 +257,7 @@ MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (rbs:Rule_Book_Struct {rule_book_struct_id: $rule_book_struct_id})
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(rbs)
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(rbs)
 `;
 
 exports.getRuleBookIssue = `

@@ -107,7 +107,7 @@ MATCH (b:User {user_email: $current_user_email})
 MATCH (rb:Rule_Book {rule_book_id: $rule_book_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger($rule_book_issue_no) })
 MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(re)
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(re)
 `;
 
 exports.logRuleElementState = `
@@ -118,7 +118,7 @@ WHERE id(res) IN $identity
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
 WITH res, l1
 UNWIND res as state
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(state)
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(state)
 `;
 
 exports.getRuleElementStateList = `

@@ -1,37 +1,29 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { APIError, common, constants } = require("../../../utils");
+const { common, APIError } = require("../../../utils");
+const { getUserHistoryLogs } = require("../../../neo4j/user-query");
 const { defaultLanguage } = require("../../../config/application");
-const { paidInvoice, logInvoice } = require("../../../neo4j/invoice-query");
 
 module.exports = async (object, params, ctx) => {
+  params = JSON.parse(JSON.stringify(params));
   const { user } = ctx;
   const userSurfLang = user.user_surf_lang || defaultLanguage;
-  const userEmail = user.user_email;
-  const systemAdmin = user.user_is_sys_admin;
+  const userEmail = user.user_email || null;
   const session = driver.session();
-  params = JSON.parse(JSON.stringify(params));
-  const invoiceId = params.invoice_id;
   try {
-    if (!systemAdmin) {
+    if (!userEmail) {
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    const queryParams = {
-      invoiceId,
-      currentDate: common.convertToTemporalDate(),
-    };
-    const result = await session.run(paidInvoice, queryParams);
+    const result = await session.run(getUserHistoryLogs, {
+      user_email: userEmail,
+    });
     if (result && result.records.length > 0) {
-      common.loggingData(logInvoice, {
-        type: constants.LOG_TYPE_ID.PAID_INVOICE,
-        current_user_email: userEmail,
-        inv_id_strg: invoiceId,
-      });
-      return true;
+      const logData = result.records.map((record) => record.get("logs"));
+      return logData[0];
     }
     throw new APIError({
       lang: userSurfLang,

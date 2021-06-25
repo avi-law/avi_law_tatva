@@ -2,7 +2,7 @@
 /* eslint-disable consistent-return */
 const { defaultLanguage } = require("../../../config/application");
 const driver = require("../../../config/db");
-const { getInvoice } = require("../../../neo4j/query");
+const { getInvoice } = require("../../../neo4j/invoice-query");
 const { APIError } = require("../../../utils");
 
 module.exports = async (object, params, ctx) => {

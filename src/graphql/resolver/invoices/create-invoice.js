@@ -16,7 +16,7 @@ const { APIError, constants, common } = require("../../../utils");
 const { htmlToPdfBuffer, htmlToPdfFile } = require("../../../libs/html-to-pdf");
 const sendMail = require("../../../libs/email");
 const getPreparedNewInvoiceDetails = require("./get-prepared-new-invoice");
-const { createInvoice, logInvoice } = require("../../../neo4j/query");
+const { createInvoice, logInvoice } = require("../../../neo4j/invoice-query");
 
 const availableInvoice = [
   "INV_de_AT_CUST",

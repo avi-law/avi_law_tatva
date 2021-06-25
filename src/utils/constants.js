@@ -116,6 +116,13 @@ module.exports = {
     DELETE_RULE_ELEMENT_AND_STATE: 45,
     READ_RULE_ELEMENT_AND_STATE: 46,
   },
+  LOG_REFERS_TO_OBJECT_LABEL: {
+    RULE_BOOK: "Rule_Book",
+    RULE_BOOK_ISSUE: "Rule_Book_Issue",
+    RULE_BOOK_STRUCT: "Rule_Book_Struct",
+    RULE_ELEMENT: "Rule_Element",
+    RULE_ELEMENT_STATE: "Rule_Element_State",
+  },
   LOGIN_FAILED_STATUS: {
     GTC_NOT_ACCEPTED: "GTC_NOT_ACCEPTED",
     GDPR_NOT_ACCEPTED: "GDPR_NOT_ACCEPTED",

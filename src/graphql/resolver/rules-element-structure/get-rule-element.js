@@ -920,7 +920,9 @@ module.exports = async (object, params, ctx) => {
           identity,
         });
       }
-      if (ruleElementDocId && ruleBookId && ruleBookIssueNo) {
+      // Show duplicate log for history
+      // eslint-disable-next-line no-constant-condition
+      if (ruleElementDocId && ruleBookId && ruleBookIssueNo && 0) {
         common.loggingData(logRuleElement, {
           type: constants.LOG_TYPE_ID.READ_RULE_ELEMENT_AND_STATE,
           current_user_email: userEmail,

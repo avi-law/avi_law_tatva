@@ -92,7 +92,7 @@ MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (bl:Blog {blog_id: $blog_id})
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]-(bl);
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(bl);
 `;
 
 exports.logDeleteBlog = `

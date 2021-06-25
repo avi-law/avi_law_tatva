@@ -3,7 +3,7 @@
 const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
-const { cancelInvoice, logInvoice } = require("../../../neo4j/query");
+const { cancelInvoice, logInvoice } = require("../../../neo4j/invoice-query");
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
