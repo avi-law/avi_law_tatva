@@ -501,7 +501,7 @@ RETURN value`;
 
 // Just for future reference
 exports.getRuleBooksStructure = `
-Match path=(rbs1:Rule_Book_Struct {rule_book_struct_id:"${constants.RULE_BOOK_STRUCT_ROOT_ID}"})-[:HAS_RULE_BOOK_STRUCT_CHILD*]->(rbs2:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_STATE]-(rbss:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang:Language)
+Match path=(rbs1:Rule_Book_Struct {rule_book_struct_id:"${constants.RULE_BOOK_STRUCT_ROOT_ID}"})-[:HAS_RULE_BOOK_STRUCT_CHILD*]->(rbs2:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang:Language)
 WITH path, toString(reduce(a = 1, r in relationships(path)[0..size(relationships(path))-2] | a * 1000 + r.order)) as orders
 WITH path AS path2 order by orders
 WITH collect(path2) AS paths
@@ -633,7 +633,7 @@ CALL {
   WITH nl
   MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.CREATE_NL}})
   MATCH (nl)<-[:LOG_REFERS_TO_OBJECT]-(l1:Log)-[:HAS_LOG_TYPE]->(lt)
-  MATCH (l1)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]-(us1:User_State)
+  MATCH (l1)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]->(us1:User_State)
   WHERE r1.to IS NULL
   RETURN collect({timestamp: l1.log_timestamp, user_state: {user_first_name: us1.user_first_name, user_middle_name: us1.user_middle_name, user_last_name: us1.user_last_name} }) AS createdLog
 }
@@ -641,7 +641,7 @@ CALL {
   WITH nl
   MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.UPDATE_NL}})
   MATCH (nl)<-[:LOG_REFERS_TO_OBJECT]-(l2:Log)-[:HAS_LOG_TYPE]->(lt)
-  MATCH (l2)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]-(us1:User_State)
+  MATCH (l2)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]->(us1:User_State)
   WHERE r1.to IS NULL
   RETURN collect({timestamp: l2.log_timestamp, user_state: { user_first_name: us1.user_first_name, user_middle_name: us1.user_middle_name, user_last_name: us1.user_last_name  } }) AS updatedLog
 }
@@ -655,7 +655,7 @@ CALL {
   WITH nl
   MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.CREATE_NL}})
   MATCH (nl)<-[:LOG_REFERS_TO_OBJECT]-(l1:Log)-[:HAS_LOG_TYPE]->(lt)
-  MATCH (l1)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]-(us1:User_State)
+  MATCH (l1)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]->(us1:User_State)
   WHERE r1.to IS NULL
   RETURN collect({timestamp: l1.log_timestamp, user_state: {user_first_name: us1.user_first_name, user_middle_name: us1.user_middle_name, user_last_name: us1.user_last_name} }) AS createdLog
 }
@@ -663,7 +663,7 @@ CALL {
   WITH nl
   MATCH (lt: Log_Type {log_type_id: ${constants.LOG_TYPE_ID.UPDATE_NL}})
   MATCH (nl)<-[:LOG_REFERS_TO_OBJECT]-(l2:Log)-[:HAS_LOG_TYPE]->(lt)
-  MATCH (l2)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]-(us1:User_State)
+  MATCH (l2)-[:LOG_FOR_USER]->(editor:User)-[r1:HAS_USER_STATE]->(us1:User_State)
   WHERE r1.to IS NULL
   RETURN collect({timestamp: l2.log_timestamp, user_state: { user_first_name: us1.user_first_name, user_middle_name: us1.user_middle_name, user_last_name: us1.user_last_name  } }) AS updatedLog
 }
@@ -1028,7 +1028,7 @@ WHERE c.cust_id = $customerId
 RETURN count(inv) as count`;
 
 exports.getCustomerInvoiceFromCountryRelationship = `
-MATCH (n:Customer {cust_id: $customerId })-[r:TO_BE_INVOICED_FROM_COUNTRY]-(cou:Country)
+MATCH (n:Customer {cust_id: $customerId })-[r:TO_BE_INVOICED_FROM_COUNTRY]->(cou:Country)
 RETURN cou.country_id as countryId`;
 
 exports.getPreparedNewInvoiceDetails = `
@@ -1089,7 +1089,7 @@ FOREACH (_ IN CASE WHEN cou3 IS NOT NULL THEN [1] END | MERGE (c2)-[:TO_BE_INVOI
 RETURN cs`;
 
 exports.invite = `
-MATCH (u1:User {user_email: $user_email})-[r1:HAS_USER_STATE]-(us1:User_State)
+MATCH (u1:User {user_email: $user_email})-[r1:HAS_USER_STATE]->(us1:User_State)
 WHERE r1.to IS NULL
 OPTIONAL MATCH (us1)-[:USER_HAS_PREF_COUNTRY]->(cou1:Country)
 CALL {

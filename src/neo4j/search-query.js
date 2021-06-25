@@ -52,7 +52,7 @@ exports.searchNLQuery = (queryParams) => {
 
 exports.searchRuleElementQuery = (queryParams) => {
   let query = `
-  MATCH (res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]-(lang:Language)
+  MATCH (res:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
   WHERE (toLower(res.rule_element_text) CONTAINS toLower("${queryParams.text}") OR toLower(res.rule_element_title) CONTAINS toLower("${queryParams.text}") OR toLower(res.rule_element_rmk) CONTAINS toLower("${queryParams.text}") ) `;
 
   if (queryParams.lang) {
