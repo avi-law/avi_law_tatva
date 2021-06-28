@@ -636,9 +636,9 @@ exports.getHitechRuleElementStateDetails = `
 MATCH (re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1:Language)
 WHERE id(res1) = $identity AND res1.rule_element_hitech = TRUE
 OPTIONAL MATCH(res1)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res2:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2:Language)
-OPTIONAL MATCH (res1)-[:RULE_ELEMENT_STATE_SOL_IS]->(sl1:Sol)-[:HAS_SOL_STATE]->(sls1:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
-OPTIONAL MATCH (res2)-[:RULE_ELEMENT_STATE_SOL_IS]->(sl2:Sol)-[:HAS_SOL_STATE]->(sls2:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang:Language)
-RETURN properties(re) as re, { res: res1, lang: { iso_639_1: lang1.iso_639_1 }, sl: properties(sl1), sls: properties(sls1) } as res1, { res: res2, lang: { iso_639_1: lang2.iso_639_1 }, sl: properties(sl2), sls: properties(sls1) } as res2
+OPTIONAL MATCH (res1)-[:RULE_ELEMENT_STATE_SOL_IS]->(sl1:Sol)-[:HAS_SOL_STATE]->(sls1:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang1)
+OPTIONAL MATCH (res2)-[:RULE_ELEMENT_STATE_SOL_IS]->(sl2:Sol)-[:HAS_SOL_STATE]->(sls2:Sol_State)-[:SOL_STATE_LANGUAGE_IS]->(lang2)
+RETURN properties(re) as re, { res: res1, lang: { iso_639_1: lang1.iso_639_1 }, sl: properties(sl1), sls: properties(sls1) } as res1, { res: res2, lang: { iso_639_1: lang2.iso_639_1 }, sl: properties(sl2), sls: properties(sls2) } as res2
 `;
 
 exports.deleteRuleElementState = `
