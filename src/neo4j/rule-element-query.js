@@ -52,7 +52,7 @@ exports.updateRuleElementQuery = (queryParams) => {
   let query = `
   MATCH (rb:Rule_Book {rule_book_id: "${queryParams.rule_book_id}" })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger(${queryParams.rule_book_issue_no}) })
   MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element { rule_element_doc_id: "${queryParams.rule_element_doc_id}" })
-  SET re.rule_element_doc_id = "${queryParams.re.rule_element_doc_id}", re.rule_element_id = toInteger(${queryParams.re.rule_element_id}), re.rule_element_header_lvl = toInteger(${queryParams.re.rule_element_header_lvl}), re.rule_element_is_rule_book = ${queryParams.re.rule_element_is_rule_book}
+  SET re.rule_element_doc_id = "${queryParams.re.rule_element_doc_id}", re.rule_element_header_lvl = toInteger(${queryParams.re.rule_element_header_lvl}), re.rule_element_is_rule_book = ${queryParams.re.rule_element_is_rule_book}
   WITH *`;
 
   if (queryParams.re.amc) {
