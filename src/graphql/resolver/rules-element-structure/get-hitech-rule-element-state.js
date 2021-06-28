@@ -14,6 +14,7 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
   const { identity } = params;
+  let re = null;
   try {
     if (!userIsHitech) {
       throw new APIError({
@@ -35,18 +36,31 @@ module.exports = async (object, params, ctx) => {
       ruleStatResultDetails.records.forEach((record) => {
         const res1 = record.get("res1");
         const res2 = record.get("res2");
+        re = record.get("re");
         if (res1.res && res1.lang.iso_639_1) {
           stateObject[res1.lang.iso_639_1] = res1.res.properties;
           stateObject[res1.lang.iso_639_1].identity = res1.res.identity;
+          if (res1.sl) {
+            stateObject[res1.lang.iso_639_1].sol = res1.sl;
+            if (res1.sls) {
+              stateObject[res1.lang.iso_639_1].sol.sol_state = res1.sls;
+            }
+          }
         }
         if (res2.res && res2.lang.iso_639_1) {
           stateObject[res2.lang.iso_639_1] = res2.res.properties;
           stateObject[res2.lang.iso_639_1].identity = res2.res.identity;
+          if (res2.sl) {
+            stateObject[res2.lang.iso_639_1].sol = res2.sl;
+            if (res2.sls) {
+              stateObject[res2.lang.iso_639_1].sol.sol_state = res2.sls;
+            }
+          }
         }
         return stateObject;
       });
     }
-    return { res: stateObject };
+    return { re, res: stateObject };
   } catch (error) {
     session.close();
     throw error;
