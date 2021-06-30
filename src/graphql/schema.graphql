@@ -1278,6 +1278,7 @@ type RuleBookStateCustomTree {
   type HistoryLogs {
     log: Log
     lt: Log_Type
+    data: String
   }
 
   #Tree type state
