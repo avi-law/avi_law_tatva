@@ -167,7 +167,6 @@ module.exports = async (object, params, ctx) => {
   };
   try {
     if (!userEmail || (!ruleBookId && !ruleElementDocId)) {
-      session.close();
       throw new APIError({
         lang: userSurfLang,
         message: "INTERNAL_SERVER_ERROR",
@@ -380,5 +379,7 @@ module.exports = async (object, params, ctx) => {
     console.log(error);
     session.close();
     throw error;
+  } finally {
+    session.close();
   }
 };

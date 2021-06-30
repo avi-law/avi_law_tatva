@@ -1,7 +1,6 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
-const _ = require("lodash");
 const driver = require("../../../config/db");
 const { common, APIError } = require("../../../utils");
 const {
@@ -107,5 +106,7 @@ module.exports = async (object, params, ctx) => {
     console.log(error);
     session.close();
     throw error;
+  } finally {
+    session.close();
   }
 };

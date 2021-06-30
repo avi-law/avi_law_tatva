@@ -58,7 +58,6 @@ module.exports = async (object, params, ctx) => {
     });
     await session.run(manageLoginCountQuery, { user_email: email });
     loginStatus = true;
-    session.close();
     return {
       loginStatus,
       loginFailedCode,
@@ -82,5 +81,7 @@ module.exports = async (object, params, ctx) => {
   } catch (error) {
     session.close();
     throw error;
+  } finally {
+    session.close();
   }
 };
