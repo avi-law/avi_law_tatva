@@ -22,8 +22,11 @@ module.exports = async (object, params, ctx) => {
       user_email: userEmail,
     });
     if (result && result.records.length > 0) {
-      const logData = result.records.map((record) => record.get("logs"));
-      return logData[0];
+      const logData = [];
+      result.records.forEach((record, index) => {
+        logData.push(record.get("logs"));
+      });
+      return logData;
     }
     throw new APIError({
       lang: userSurfLang,

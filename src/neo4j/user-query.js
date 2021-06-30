@@ -12,7 +12,8 @@ CALL {
           END AS n
 }
 WITH * ORDER BY log.log_timestamp DESC
-WITH collect({ log: properties(log), lt: properties(lt), n: n }) as logs
+WITH { log: properties(log), lt: properties(lt), n: n } as logs
+// WITH collect({ log: properties(log), lt: properties(lt), n: n }) as logs
 RETURN logs
-LIMIT 10
+LIMIT 20
 `;
