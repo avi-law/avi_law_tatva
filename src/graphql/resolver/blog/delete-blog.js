@@ -24,7 +24,6 @@ module.exports = async (object, params, ctx) => {
       blog_id: Number(blogId),
     });
     if (result && result.records.length > 0) {
-      session.close();
       common.loggingData(logDeleteBlog, {
         type: constants.LOG_TYPE_ID.DELETE_BLOG,
         current_user_email: userEmail,
@@ -39,5 +38,7 @@ module.exports = async (object, params, ctx) => {
   } catch (error) {
     session.close();
     throw error;
+  } finally {
+    session.close();
   }
 };

@@ -84,5 +84,7 @@ module.exports = async (object, params, ctx) => {
   } catch (error) {
     session.close();
     throw error;
+  } finally {
+    session.close();
   }
 };

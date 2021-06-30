@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const _ = require("lodash");
-const driver = require("../../../config/db");
 const { common, constants } = require("../../../utils");
 const {
   getBlogYearList,
@@ -12,7 +11,7 @@ const {
 } = require("../../../neo4j/blog-query");
 
 module.exports = async (object, params, ctx) => {
-  const { user } = ctx;
+  const { user, driver } = ctx;
   let userEmail = null;
   if (user) {
     userEmail = user.user_email;
@@ -26,7 +25,6 @@ module.exports = async (object, params, ctx) => {
     blog_first: null,
     total: 0,
   };
-
   const session = driver.session();
   try {
     const result = await session.run(getBlogYearList({}));
@@ -191,5 +189,7 @@ module.exports = async (object, params, ctx) => {
   } catch (error) {
     session.close();
     throw error;
+  } finally {
+    session.close();
   }
 };

@@ -142,5 +142,7 @@ module.exports = async (object, params, ctx) => {
       session.close();
     }
     throw error;
+  } finally {
+    session.close();
   }
 };

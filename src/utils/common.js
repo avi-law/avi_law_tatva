@@ -30,6 +30,7 @@ const loggingData = (query, data) => {
   const session = driver.session();
   try {
     if (logging !== "true") {
+      session.close();
       return true;
     }
     return session
@@ -39,6 +40,7 @@ const loggingData = (query, data) => {
         return true;
       })
       .catch((err) => {
+        session.close();
         throw err;
       });
   } catch (error) {

@@ -46,5 +46,7 @@ module.exports = async (object, params) => {
   } catch (error) {
     session.close();
     throw error;
+  } finally {
+    session.close();
   }
 };

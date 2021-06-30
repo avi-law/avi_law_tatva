@@ -41,12 +41,13 @@ const getBlogDetails = async (blogID) => {
         };
         return blogResult;
       });
-      session.close();
       return blogs[0];
     }
   } catch (error) {
     session.close();
     return null;
+  } finally {
+    session.close();
   }
 };
 
@@ -74,7 +75,6 @@ module.exports = async (object, params, ctx) => {
       }
       const result = await session.run(tweetBlog, { blog_id: blogID });
       if (result && result.records.length > 0) {
-        session.close();
         return true;
       }
       throw new APIError({
@@ -86,5 +86,7 @@ module.exports = async (object, params, ctx) => {
   } catch (error) {
     session.close();
     throw error;
+  } finally {
+    session.close();
   }
 };
