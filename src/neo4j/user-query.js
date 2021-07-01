@@ -51,8 +51,8 @@ CALL apoc.do.case([
   lt.log_type_id = ${constants.LOG_TYPE_ID.READ_RULE_ELEMENT_AND_STATE} AND LABELS(n)[0] = "${constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_ELEMENT_STATE}",
     "MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
      MATCH(rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(n)
-     WITH collect({rule_book_issue_title_short: rbis.rule_book_issue_title_short, iso_639_1: lang.iso_639_1 }) as rbis, n
-     RETURN { identity: id(n), rule_element_title: n.rule_element_title, rule_element_article: n.rule_element_article, rbis: rbis } as data
+     WITH collect({rule_book_issue_title_short: rbis.rule_book_issue_title_short, iso_639_1: lang.iso_639_1 }) as rbis, n, re
+     RETURN { identity: id(n), rule_element_title: n.rule_element_title, rule_element_article: n.rule_element_article, rule_element_doc_id: re.rule_element_doc_id, rbis: rbis } as data
     "
 ])
 YIELD value
