@@ -23,13 +23,13 @@ module.exports = async (object, params, ctx) => {
     });
 
     if (result && result.records.length > 0) {
-      const logData = [];
+      let logData = null;
       result.records.forEach((record, index) => {
         const logs = record.get("logs");
         if (logs.data) {
           logs.data = JSON.stringify(logs.data);
         }
-        logData.push(logs);
+        logData = logs;
       });
       return logData;
     }
