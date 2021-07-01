@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { common, APIError } = require("../../../utils");
+const { APIError } = require("../../../utils");
 const { getUserHistoryLogs } = require("../../../neo4j/user-query");
 const { defaultLanguage } = require("../../../config/application");
 
@@ -11,6 +11,7 @@ module.exports = async (object, params, ctx) => {
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const userEmail = user.user_email || null;
   const session = driver.session();
+  let logData = null;
   try {
     if (!userEmail) {
       throw new APIError({
@@ -23,22 +24,19 @@ module.exports = async (object, params, ctx) => {
     });
 
     if (result && result.records.length > 0) {
-      let logData = null;
-      result.records.forEach((record, index) => {
+      result.records.forEach((record) => {
         const logs = record.get("logs");
         if (logs.data) {
           logs.data = JSON.stringify(logs.data);
         }
         logData = logs;
       });
-      return logData;
     }
-    throw new APIError({
-      lang: userSurfLang,
-      message: "INTERNAL_SERVER_ERROR",
-    });
+    return logData;
   } catch (error) {
     session.close();
     throw error;
+  } finally {
+    session.close();
   }
 };
