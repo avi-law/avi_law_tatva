@@ -106,8 +106,17 @@ MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (rb:Rule_Book {rule_book_id: $rule_book_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue {rule_book_issue_no: toInteger($rule_book_issue_no) })
 MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element {rule_element_doc_id: $rule_element_doc_id})
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(re)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))
 `;
 
 exports.logRuleElementState = `
@@ -115,7 +124,17 @@ MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (res:Rule_Element_State)
 WHERE id(res) IN $identity
+WITH collect(res) as res, b, a
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))
 WITH res, l1
 UNWIND res as state
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(state)

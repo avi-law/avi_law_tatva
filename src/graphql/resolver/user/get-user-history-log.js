@@ -21,10 +21,15 @@ module.exports = async (object, params, ctx) => {
     const result = await session.run(getUserHistoryLogs, {
       user_email: userEmail,
     });
+
     if (result && result.records.length > 0) {
       const logData = [];
       result.records.forEach((record, index) => {
-        logData.push(record.get("logs"));
+        const logs = record.get("logs");
+        if (logs.data) {
+          logs.data = JSON.stringify(logs.data);
+        }
+        logData.push(logs);
       });
       return logData;
     }

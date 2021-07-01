@@ -229,28 +229,67 @@ exports.getCommonUserStateLogginQuery = (otherParams = null) => {
   return `MATCH (a: Log_Type { log_type_id: $type })
   MATCH (b:User { user_email: $user_email } )-[r1:HAS_USER_STATE]->(:User_State)
   WHERE r1.to IS NULL
-  MERGE (b)<-[:LOG_FOR_USER]-(:Log { log_timestamp: apoc.date.currentTimestamp() ${params} })-[:HAS_LOG_TYPE]->(a);`;
+  CALL {
+    WITH b
+    OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+    WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+    WITH plog ORDER BY plog.log_timestamp DESC
+    RETURN plog
+    LIMIT 1
+  }
+  MERGE (b)<-[:LOG_FOR_USER]-(log:Log { log_timestamp: apoc.date.currentTimestamp() ${params} })-[:HAS_LOG_TYPE]->(a)
+  FOREACH (_ IN CASE WHEN plog IS NOT NULL AND log IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(log))`;
 };
 
 exports.logCustomer = `
 MATCH (a: Log_Type {log_type_id:$type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (c:Customer {cust_id: $cust_id})
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(c);`;
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(c)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))
+`;
 
 exports.logUser = `
 MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(b);`;
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(b)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))
+`;
 
 exports.logUserByAdmin = `
 MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (u:User {user_email: $user_email})
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(u);`;
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(u)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))
+`;
 
 exports.manageLoginCountQuery = `
 MATCH (us:User_State)<-[r1:HAS_USER_STATE]-(u:User {user_email: $user_email })
@@ -259,12 +298,21 @@ SET us.user_last_login = apoc.date.currentTimestamp();`;
 
 exports.logICustomerGTCQuery = `
 MATCH (a: Log_Type { log_type_id: $type })
-MATCH (c:Customer)<-[USER_TO_CUSTOMER]-(:User {user_email: $user_email})-[HAS_USER_STATE]->(:User_State)
-MERGE (c)<-[:LOG_FOR_CUSTOMER]-(:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a);`;
+MATCH (c:Customer)<-[USER_TO_CUSTOMER]-(b:User {user_email: $user_email})-[HAS_USER_STATE]->(:User_State)
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
+MERGE (c)<-[:LOG_FOR_CUSTOMER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))`;
 
 exports.logInvalidEmailQuery = `
 MATCH (n:Log_Type { log_type_id: $type } )
-MERGE(:Log { log_timestamp: apoc.date.currentTimestamp(), log_par_01: $user_email, log_par_02: $user_pwd })-[:HAS_LOG_TYPE]-> (n);`;
+MERGE(:Log { log_timestamp: apoc.date.currentTimestamp(), log_par_01: $user_email, log_par_02: $user_pwd })-[:HAS_LOG_TYPE]->(n);`;
 
 exports.updateGTCAccept = `
 MATCH (cs:Customer_State)<-[HAS_CUSTOMER_STATE]-(c:Customer)<-[r:USER_TO_CUSTOMER]-(:User { user_email:$user_email })-[r1:HAS_USER_STATE]->(:User_State)
@@ -578,27 +626,63 @@ LIMIT toInteger(${limit})`;
 
 exports.logNewsletter = `
 MATCH (lt: Log_Type {log_type_id: $type})
-MATCH (u:User {user_email: $current_user_email})
+MATCH (b:User {user_email: $current_user_email})
 MATCH (nl:Nl {nl_id: $nl_id})
-MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(nl)`;
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
+MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(nl)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))`;
 
 exports.logSol = `
 MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (sl:Sol {sol_id: $sol_id})
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(sl)`;
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(sl)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))`;
 
 exports.logDeleteSol = `
 MATCH (lt: Log_Type {log_type_id: $type})
-MATCH (u:User {user_email: $current_user_email})
-MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)`;
+MATCH (b:User {user_email: $current_user_email})
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
+MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))`;
 
 exports.logDeleteNewsletter = `
 MATCH (lt: Log_Type {log_type_id: $type})
-MATCH (u:User {user_email: $current_user_email})
-MERGE (u)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)`;
+MATCH (b:User {user_email: $current_user_email})
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
+MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(lt)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))`;
 
 exports.getMultipleNewsletterDetails = `
 MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:NL_HAS_AUTHOR]->(u:User)
@@ -1066,7 +1150,6 @@ exports.getInvoiceCustomersCount = (condition = "WHERE r1.to IS NULL") => `
 MATCH (inv:Invoice)-[:INV_FOR_CUST]->(c:Customer)-[r1:HAS_CUST_STATE]->(cs:Customer_State)
 ${condition}
 RETURN count(*) as count`;
-
 
 exports.createNewCustomer = `
 MATCH (c:Customer) WITH MAX(c.cust_id) AS max_cust_id

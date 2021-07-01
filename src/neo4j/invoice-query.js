@@ -10,8 +10,17 @@ exports.logInvoice = `
 MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (inv:Invoice {inv_id_strg: $inv_id_strg})
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
-MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(inv);`;
+MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(inv)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))`;
 
 exports.cancelInvoice = `
 MATCH (inv: Invoice {inv_id_strg: $inv_id_strg})

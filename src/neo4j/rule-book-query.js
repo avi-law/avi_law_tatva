@@ -248,16 +248,34 @@ exports.logRulebook = `
 MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (rb:Rule_Book {rule_book_id: $rule_book_id})
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(rb)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))
 `;
 
 exports.logRulebookStruct = `
 MATCH (a: Log_Type {log_type_id: $type})
 MATCH (b:User {user_email: $current_user_email})
 MATCH (rbs:Rule_Book_Struct {rule_book_struct_id: $rule_book_struct_id})
+CALL {
+  WITH b
+  OPTIONAL MATCH(b)<-[:LOG_FOR_USER]-(plog:Log)
+  WHERE NOT (plog)<-[:USER_LOG_PREDECESSOR]-()
+  WITH plog ORDER BY plog.log_timestamp DESC
+  RETURN plog
+  LIMIT 1
+}
 MERGE (b)<-[:LOG_FOR_USER]-(l1:Log{log_timestamp: apoc.date.currentTimestamp()})-[:HAS_LOG_TYPE]->(a)
 MERGE (l1)-[:LOG_REFERS_TO_OBJECT]->(rbs)
+FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE (plog)<-[:USER_LOG_PREDECESSOR]-(l1))
 `;
 
 exports.getRuleBookIssue = `
