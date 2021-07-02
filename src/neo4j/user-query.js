@@ -45,7 +45,7 @@ LIMIT 1
 `;
 exports.getUserHistoryLogs = `
 MATCH (lt:Log_Type)<-[:HAS_LOG_TYPE]-(l:Log)-[:LOG_FOR_USER]->(u:User {user_email: $user_email})
-// WHERE NOT (l)-[:USER_LOG_PREDECESSOR]->(:Log)
+WHERE NOT (l)<-[:USER_LOG_PREDECESSOR]-(:Log)
 OPTIONAL MATCH (l)-[:LOG_REFERS_TO_OBJECT]->(n)
 CALL apoc.do.case([
   lt.log_type_id = ${constants.LOG_TYPE_ID.READ_RULE_ELEMENT_AND_STATE} AND LABELS(n)[0] = "${constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_ELEMENT_STATE}",
@@ -58,5 +58,4 @@ CALL apoc.do.case([
 YIELD value
 WITH { log: properties(l), lt: properties(lt), data: value.data } as logs
 RETURN logs
-LIMIT 1
 `;
