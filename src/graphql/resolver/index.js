@@ -120,6 +120,7 @@ const getRuleElementBackLinks = require("./rules-element-structure/get-rule-elem
 const getRuleElementTags = require("./rules-element-structure/get-rule-element-tags");
 const getAMCGMRuleElement = require("./rules-element-structure/get-amc-gm-rule-element");
 const getUserHistoryLogs = require("./user/get-user-history-log");
+const getRuleBookWarningType = require("./rule-book/get-rule-book-warning-type");
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
 
@@ -244,6 +245,7 @@ const resolvers = {
     getRuleElementTags,
     getAMCGMRuleElement,
     getUserHistoryLogs,
+    getRuleBookWarningType,
   },
 };
 

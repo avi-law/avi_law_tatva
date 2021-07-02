@@ -339,6 +339,12 @@ const typeDefs = gql`
     rule_book_tag_order: Int
   }
 
+  type Rule_Book_Warning {
+    rule_book_warning_id: String
+    rule_book_warning_desc_de: String
+    rule_book_warning_desc_en: String
+  }
+
   type Blog {
     blog_active: Boolean
     blog_date: _Neo4jDate
@@ -959,6 +965,13 @@ const typeDefs = gql`
     sol_type_sect: String
     sol_type_stems_from_country: [Country]
     has_sol_type_child: [CustomSolType]
+  }
+
+  type CustomRuleBookWarningType {
+    rule_book_warning_id: String
+    rule_book_warning_desc_de: String
+    rule_book_warning_desc_en: String
+    has_rule_book_warning_child: [CustomRuleBookWarningType]
   }
 
   type RuleBookStructureStateCustom {
@@ -1629,6 +1642,7 @@ type RuleBookStateCustomTree {
     getSolId: Int!
     getSol(sol_id: Int!): GetCustomSol @isAuthenticated
     getSolType: CustomSolType
+    getRuleBookWarningType: [CustomRuleBookWarningType]
     getRuleBookStructure: CustomRuleBookStructure @isUnAuthenticated
     getRuleBookTreeStructure: CustomRuleBookTreeStructure @isAdmin
     getRuleElementTreeStructure(rule_book_issue_no: Int!, rule_book_id: String!): Rule_Book @isAdmin

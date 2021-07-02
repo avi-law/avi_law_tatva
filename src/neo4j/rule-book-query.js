@@ -547,3 +547,16 @@ Match (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)
 WHERE toLower(rb.rule_book_id) CONTAINS toLower($rule_book_id)
 RETURN count (rb) as count
 `;
+
+exports.getRuleBookWarningTypeGroup = `
+MATCH path=(rbwt1:Rule_Book_Warning)-[:HAS_RULE_BOOK_WARNING_CHILD*0..]->(rbwt2:Rule_Book_Warning)
+WHERE rbwt1.rule_book_warning_desc_de = 'Rule Book Warning root object'
+WITH COLLECT(path) AS paths
+CALL apoc.convert.toTree(paths) YIELD value
+RETURN value`;
+
+exports.getRuleBookWarningType = `
+MATCH (rbwt1:Rule_Book_Warning)
+WHERE rbwt1.rule_book_warning_id > 0
+WITH rbwt1 ORDER BY rbwt1.rule_book_warning_id ASC
+RETURN collect(properties(rbwt1)) as value`;

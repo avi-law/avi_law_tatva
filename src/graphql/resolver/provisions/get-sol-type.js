@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { getSolType } = require("../../../neo4j/query");
+const { getSolType } = require("../../../neo4j/sol-query");
 
 module.exports = async () => {
   const session = driver.session();

@@ -532,13 +532,6 @@ ORDER BY ${orderBy}
 SKIP toInteger(${skip})
 LIMIT toInteger(${limit})`;
 
-exports.getSolType = `
-MATCH path=(st1:Sol_Type)-[:HAS_SOL_TYPE_CHILD*0..]->(st2:Sol_Type)-[:SOL_TYPE_STEMS_FROM_COUNTRY]->(cou:Country)
-WHERE st1.sol_type_desc = 'Sol root object'
-WITH COLLECT(path) AS paths
-CALL apoc.convert.toTree(paths) YIELD value
-RETURN value`;
-
 // Just for future reference
 exports.getRuleBooksStructureOld = `
 MATCH path=(rbs1:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_CHILD*0..]->(rbs2:Rule_Book_Struct)-[:HAS_RULE_BOOK_STRUCT_STATE]->(rbss:Rule_Book_Struct_State)-[:RULE_BOOK_STRUCT_LANGUAGE_IS]->(lang:Language)
