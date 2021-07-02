@@ -340,7 +340,7 @@ const typeDefs = gql`
   }
 
   type Rule_Book_Warning {
-    rule_book_warning_id: String
+    rule_book_warning_id: Int
     rule_book_warning_desc_de: String
     rule_book_warning_desc_en: String
   }
@@ -968,7 +968,7 @@ const typeDefs = gql`
   }
 
   type CustomRuleBookWarningType {
-    rule_book_warning_id: String
+    rule_book_warning_id: Int
     rule_book_warning_desc_de: String
     rule_book_warning_desc_en: String
     has_rule_book_warning_child: [CustomRuleBookWarningType]
@@ -1352,6 +1352,7 @@ type RuleBookStateCustomTree {
     rbis: CustomRuleBookIssueStateInput
     rule_book_parent_id: String!
     sl_tags:[Int]
+    rule_book_warning_id: Int
   }
   enum DragAndDropType {
     ROOT

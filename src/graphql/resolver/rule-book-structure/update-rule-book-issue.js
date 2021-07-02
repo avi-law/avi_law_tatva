@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-
+const _ = require("lodash");
 const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
@@ -38,7 +38,8 @@ module.exports = async (object, params, ctx) => {
       ruleBookIssueNo,
       rbi: data.rbi,
       rbis: data.rbis,
-      rule_book_parent_id: data.rule_book_parent_id,
+      rule_book_parent_id: _.get(data, "rule_book_parent_id", null),
+      rule_book_warning_id: _.get(data, "rule_book_warning_id", null),
       isValidDE,
       isValidEN,
     };

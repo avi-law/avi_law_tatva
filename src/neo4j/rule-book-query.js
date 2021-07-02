@@ -215,11 +215,26 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
     DETACH DELETE rbis_en`;
   }
 
+  if (queryParams.rule_book_warning_id) {
+    query = `${query}
+    WITH rbi
+    OPTIONAL MATCH (rbi)-[r3:HAS_RULE_BOOK_WARNING_STATE]->()
+    DELETE r3
+    WITH rbi
+    OPTIONAL MATCH (rbwt:Rule_Book_Warning {rule_book_warning_id: ${queryParams.rule_book_warning_id}})
+    FOREACH (_ IN CASE WHEN rbwt IS NOT NULL THEN [1] END | MERGE (rbi)-[:HAS_RULE_BOOK_WARNING_STATE]->(rbwt))`;
+  } else {
+    query = `${query}
+    WITH rbi
+    OPTIONAL MATCH (rbi)-[r3:HAS_RULE_BOOK_WARNING_STATE]->()
+    DELETE r3`;
+  }
+
   if (slTags.length > 0) {
     query = `${query}
     WITH rbi
     OPTIONAL MATCH (rbi)-[r2:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS]->()
-    DETACH DELETE r2
+    DELETE r2
     WITH rbi
     UNWIND [${slTags}] as slTags
     OPTIONAL MATCH (sl:Sol {sol_id: slTags.sol_id})
@@ -229,7 +244,7 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
     query = `${query}
     WITH rbi
     OPTIONAL MATCH (rbi)-[r2:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS]->()
-    DETACH DELETE r2
+    DELETE r2
     RETURN rbi`;
   }
   return query;
