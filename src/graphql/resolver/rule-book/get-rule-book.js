@@ -345,6 +345,7 @@ module.exports = async (object, params, ctx) => {
         }
         const rbiResult = {
           rbi: common.getPropertiesFromRecord(record, "rbi"),
+          rbw: common.getPropertiesFromRecord(record, "rbw"),
           rbis: Object.keys(rbis).length > 0 ? rbis : null,
           sol_list: solList,
         };

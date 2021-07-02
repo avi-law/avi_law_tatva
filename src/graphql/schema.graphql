@@ -1058,6 +1058,7 @@ const typeDefs = gql`
    breadcrumbs: [nodeType]
    isSingle: Boolean
    language_preference_settings: languagePreferencesettings
+   rbw: Rule_Book_Warning
   }
 
   type SearchRuleBookWithIssue {
