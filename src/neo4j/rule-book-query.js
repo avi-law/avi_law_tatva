@@ -163,6 +163,16 @@ exports.addruleBookIssueQuery = (queryParams) => {
     MERGE (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis_en:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang2)
     SET rbis_en = $queryParams.rbis.en`;
   }
+  if (
+    queryParams.rule_book_warning_id &&
+    queryParams.rule_book_warning_id > 0
+  ) {
+    query = `${query}
+    WITH rbi, rbp
+    OPTIONAL MATCH (rbw:Rule_Book_Warning {rule_book_warning_id: ${queryParams.rule_book_warning_id}})
+    FOREACH (_ IN CASE WHEN rbw IS NOT NULL THEN [1] END | MERGE (rbi)-[:HAS_RULE_BOOK_WARNING_STATE]->(rbw))
+    WITH rbi, rbp`;
+  }
   if (slTags.length > 0) {
     query = `${query}
     MERGE (rbp)-[:HAS_RULE_BOOK_ISSUE]->(rbi)
@@ -215,14 +225,17 @@ exports.updateRuleBookIssueQuery = (queryParams) => {
     DETACH DELETE rbis_en`;
   }
 
-  if (queryParams.rule_book_warning_id) {
+  if (
+    queryParams.rule_book_warning_id &&
+    queryParams.rule_book_warning_id > 0
+  ) {
     query = `${query}
     WITH rbi
     OPTIONAL MATCH (rbi)-[r3:HAS_RULE_BOOK_WARNING_STATE]->()
     DELETE r3
     WITH rbi
-    OPTIONAL MATCH (rbwt:Rule_Book_Warning {rule_book_warning_id: ${queryParams.rule_book_warning_id}})
-    FOREACH (_ IN CASE WHEN rbwt IS NOT NULL THEN [1] END | MERGE (rbi)-[:HAS_RULE_BOOK_WARNING_STATE]->(rbwt))`;
+    OPTIONAL MATCH (rbw:Rule_Book_Warning {rule_book_warning_id: ${queryParams.rule_book_warning_id}})
+    FOREACH (_ IN CASE WHEN rbw IS NOT NULL THEN [1] END | MERGE (rbi)-[:HAS_RULE_BOOK_WARNING_STATE]->(rbw))`;
   } else {
     query = `${query}
     WITH rbi
