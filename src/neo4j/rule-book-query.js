@@ -295,6 +295,7 @@ FOREACH (_ IN CASE WHEN plog IS NOT NULL AND l1 IS NOT NULL THEN [1] END | MERGE
 
 exports.getRuleBookIssue = `
 MATCH (rb:Rule_Book {rule_book_id: $rule_book_parent_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue { rule_book_issue_no: toInteger($rule_book_issue_no)})
+OPTIONAL MATCH (rbi)-[:HAS_RULE_BOOK_WARNING_STATE]-(rbw:Rule_Book_Warning)
 CALL {
   WITH rbi
   MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
@@ -305,7 +306,7 @@ CALL {
   MATCH (rbi)-[r1:RULE_BOOK_ISSUE_CONSISTS_OF_SOLS]->(sl:Sol)
   RETURN collect({sol_id:sl.sol_id, order: r1.sol_ord}) AS sl
 }
-RETURN rbi, rbis, sl
+RETURN rbi, rbis, sl, rbw
 `;
 
 exports.getSolTagForRuleBookIssue = (isSort) => {
@@ -564,14 +565,14 @@ RETURN count (rb) as count
 `;
 
 exports.getRuleBookWarningTypeGroup = `
-MATCH path=(rbwt1:Rule_Book_Warning)-[:HAS_RULE_BOOK_WARNING_CHILD*0..]->(rbwt2:Rule_Book_Warning)
-WHERE rbwt1.rule_book_warning_desc_de = 'Rule Book Warning root object'
+MATCH path=(rbw1:Rule_Book_Warning)-[:HAS_RULE_BOOK_WARNING_CHILD*0..]->(rbw2:Rule_Book_Warning)
+WHERE rbw1.rule_book_warning_desc_de = 'Rule Book Warning root object'
 WITH COLLECT(path) AS paths
 CALL apoc.convert.toTree(paths) YIELD value
 RETURN value`;
 
 exports.getRuleBookWarningType = `
-MATCH (rbwt1:Rule_Book_Warning)
-WHERE rbwt1.rule_book_warning_id > 0
-WITH rbwt1 ORDER BY rbwt1.rule_book_warning_id ASC
-RETURN collect(properties(rbwt1)) as value`;
+MATCH (rbw:Rule_Book_Warning)
+WHERE rbw.rule_book_warning_id > 0
+WITH rbw ORDER BY rbw.rule_book_warning_id ASC
+RETURN collect(properties(rbw)) as value`;

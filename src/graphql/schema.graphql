@@ -1021,6 +1021,7 @@ const typeDefs = gql`
     rbi: Rule_Book_Issue
     rbis:GetRuleBookIssueStateCustom
     sl_tags: [Int]
+    rbw: Rule_Book_Warning
   }
 
   type CustomRuleBook {

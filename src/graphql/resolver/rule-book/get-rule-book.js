@@ -6,7 +6,6 @@ const driver = require("../../../config/db");
 const { common, APIError, constants } = require("../../../utils");
 const { getUser } = require("../../../neo4j/query");
 const {
-  getRuleBookIssue,
   getRuleBookBreadcrumbs,
   getRuleBookStructChildNode,
   getRuleBook,

@@ -60,6 +60,7 @@ module.exports = async (object, params) => {
           rbi: common.getPropertiesFromRecord(record, "rbi"),
           rbis,
           sl_tags: solIds,
+          rbw: common.getPropertiesFromRecord(record, "rbw"),
         };
         return rbiResult;
       });
