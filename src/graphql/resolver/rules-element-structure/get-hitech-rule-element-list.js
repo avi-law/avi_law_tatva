@@ -22,6 +22,11 @@ const getSuccessorRuleElement = (array, list) => {
     stateListDE.length > stateListEN.length
   ) {
     stateListDE.forEach((deObject) => {
+      if (deObject.rule_element_title !== "") {
+        deObject.rule_element_title_display = common.removeTag(
+          deObject.rule_element_title
+        );
+      }
       const object = { de: deObject };
       let enObject = null;
       if (deObject.rule_element_state_language_version_identity) {
@@ -51,6 +56,11 @@ const getSuccessorRuleElement = (array, list) => {
   }
   if (stateListDE.length < stateListEN.length) {
     stateListEN.forEach((enObject) => {
+      if (enObject.rule_element_title !== "") {
+        enObject.rule_element_title_display = common.removeTag(
+          enObject.rule_element_title
+        );
+      }
       const object = { en: enObject };
       let deObject = null;
       if (enObject.rule_element_state_language_version_identity) {
