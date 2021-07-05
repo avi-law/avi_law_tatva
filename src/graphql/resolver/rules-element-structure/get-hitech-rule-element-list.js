@@ -1,12 +1,85 @@
+/* eslint-disable no-shadow */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
+const _ = require("lodash");
 const driver = require("../../../config/db");
 const { APIError, common, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
-  getHitechRuleElementCount,
   getHitechRuleElementList,
 } = require("../../../neo4j/rule-element-query");
+
+const getSuccessorRuleElement = (array, list) => {
+  const ruleElementStateList = list;
+  // let rootIdentityDE = _.get(ruleElementStateList, "[0]de.identity", null);
+  // let rootIdentityEN = _.get(ruleElementStateList, "[0]en.identity", null);
+  const stateListDE = _.filter(array, { rule_element_state_langauge: "de" });
+  const stateListEN = _.filter(array, { rule_element_state_langauge: "en" });
+  // console.log("stateListDE.length", stateListDE.length);
+  // console.log("stateListEN.length", stateListEN.length);
+  if (
+    stateListDE.length === stateListEN.length ||
+    stateListDE.length > stateListEN.length
+  ) {
+    stateListDE.forEach((deObject) => {
+      const object = { de: deObject };
+      let enObject = null;
+      if (deObject.rule_element_state_language_version_identity) {
+        const versionOf = _.get(
+          deObject,
+          "rule_element_state_language_version_identity",
+          null
+        );
+        if (versionOf) {
+          enObject = _.find(stateListDE, {
+            identity: versionOf,
+          });
+        }
+        if (enObject) {
+          if (enObject.rule_element_title !== "") {
+            enObject.rule_element_title_display = common.removeTag(
+              enObject.rule_element_title
+            );
+          }
+          object.de = deObject;
+        }
+      }
+      if (Object.keys(object).length > 0) {
+        ruleElementStateList.push(object);
+      }
+    });
+  }
+  if (stateListDE.length < stateListEN.length) {
+    stateListEN.forEach((enObject) => {
+      const object = { en: enObject };
+      let deObject = null;
+      if (enObject.rule_element_state_language_version_identity) {
+        const versionOf = _.get(
+          enObject,
+          "rule_element_state_language_version_identity",
+          null
+        );
+        if (versionOf) {
+          deObject = _.find(stateListDE, {
+            identity: versionOf,
+          });
+        }
+        if (deObject) {
+          if (deObject.rule_element_title !== "") {
+            deObject.rule_element_title_display = common.removeTag(
+              deObject.rule_element_title
+            );
+          }
+          object.de = deObject;
+        }
+      }
+      if (Object.keys(object).length > 0) {
+        ruleElementStateList.push(object);
+      }
+    });
+  }
+  return ruleElementStateList;
+};
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
@@ -18,7 +91,7 @@ module.exports = async (object, params, ctx) => {
   const limit = params.first || 10;
   const defaultOrderBy = "id(res) DESC";
   let queryOrderBy = "";
-  let total = 0;
+  let ruleElementStateList = [];
   const { orderBy, filterByString } = params;
   let condition = `WHERE res.rule_element_hitech = TRUE`;
   // let condition = `WHERE sl.sol_id IS NOT NULL `;
@@ -60,41 +133,23 @@ module.exports = async (object, params, ctx) => {
         condition = `${condition} AND ( toLower(res.rule_element_title) CONTAINS toLower("${value}") OR toLower(res.rule_element_article) CONTAINS toLower("${value}") OR toLower(res.rule_element_text) CONTAINS toLower("${value}") )`;
       }
     }
-    const countResult = await session.run(getHitechRuleElementCount(condition));
-    if (countResult && countResult.records.length > 0) {
-      const singleRecord = countResult.records[0];
-      total = singleRecord.get("count");
-    }
+
     const result = await session.run(
-      getHitechRuleElementList(condition, limit, offset, queryOrderBy)
+      getHitechRuleElementList(condition, queryOrderBy)
     );
     if (result && result.records.length > 0) {
-      const ruleElementStates = result.records.map((record) => {
-        const reState = record.get("res");
-        const res = {
-          de: null,
-          en: null,
-        };
-        if (reState.lang && reState.res && reState.lang.iso_639_1) {
-          res[reState.lang.iso_639_1] = reState.res;
-          if (res[reState.lang.iso_639_1].rule_element_title !== "") {
-            res[
-              reState.lang.iso_639_1
-            ].rule_element_title_display = common.removeTag(
-              res[reState.lang.iso_639_1].rule_element_title
-            );
-          }
+      result.records.forEach((record) => {
+        const resState = record.get("res");
+        if (resState.length > 0) {
+          ruleElementStateList = getSuccessorRuleElement(resState, []);
         }
-        return res;
       });
-      return {
-        res: ruleElementStates,
-        total,
-      };
+      // limit, offset
+      // console.log(ruleElementStateList);
     }
     return {
-      res: [],
-      total,
+      res: ruleElementStateList,
+      total: ruleElementStateList.length,
     };
   } catch (error) {
     session.close();

@@ -1203,7 +1203,7 @@ type RuleBookStateCustomTree {
 
   type GetRuleElementCustom {
     re: Rule_Element
-    res: [RuleElementStateCustom]
+    res: RuleElementStateCustom
   }
 
   enum _HiTechRuleElementStateOrdering {
