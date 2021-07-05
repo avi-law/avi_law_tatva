@@ -558,25 +558,60 @@ RETURN MAX(rbi.rule_book_issue_no) as issue_no,  rbi, rbis, sl, rbw
 ORDER BY issue_no DESC
 LIMIT 1
 `;
+exports.searchRuleBook = (filterByHiTech) => {
+  let query = `
+  Match (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)
+  WHERE toLower(rb.rule_book_id) CONTAINS toLower($rule_book_id)
+  OPTIONAL MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)`;
+  if (constants.RULE_ELEMENT_FILTER_BY_HITECH.HITECH === filterByHiTech) {
+    query = `
+    ${query}
+    MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[r1:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)
+    WHERE res1.rule_element_hitech = TRUE`;
+  } else if (
+    constants.RULE_ELEMENT_FILTER_BY_HITECH.HITECH_COMPLETED === filterByHiTech
+  ) {
+    query = `
+    ${query}
+    MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[r1:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)
+    WHERE res1.rule_element_work_completed = TRUE`;
+  }
+  query = `
+  ${query}
+  WITH distinct rb, collect({ rbis: rbis, lang: lang }) AS rbis, rbi`;
 
-exports.searchRuleBook = `
-Match (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)
-WHERE toLower(rb.rule_book_id) CONTAINS toLower($rule_book_id)
-CALL {
-  WITH rbi
-  MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
-  RETURN collect({ rbis: rbis, lang: lang }) AS rbis
-}
-RETURN rb, rbi, rbis
-ORDER BY $queryOrderBy
-SKIP toInteger($skip)
-LIMIT toInteger($limit)
-`;
-exports.searchRuleBookCount = `
-Match (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)
-WHERE toLower(rb.rule_book_id) CONTAINS toLower($rule_book_id)
-RETURN count (rb) as count
-`;
+  query = `
+  ${query}
+  RETURN rb, rbi, rbis
+  ORDER BY $queryOrderBy
+  SKIP toInteger($skip)
+  LIMIT toInteger($limit)`;
+  return query;
+};
+
+exports.searchRuleBookCount = (filterByHiTech) => {
+  let query = `
+  Match (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)
+  WHERE toLower(rb.rule_book_id) CONTAINS toLower($rule_book_id)`;
+  if (constants.RULE_ELEMENT_FILTER_BY_HITECH.HITECH === filterByHiTech) {
+    query = `
+    ${query}
+    MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[r1:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)
+    WHERE res1.rule_element_hitech = TRUE`;
+  } else if (
+    constants.RULE_ELEMENT_FILTER_BY_HITECH.HITECH_COMPLETED === filterByHiTech
+  ) {
+    query = `
+    ${query}
+    MATCH (rbi)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[r1:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)
+    WHERE res1.rule_element_work_completed = TRUE`;
+  }
+  query = `
+  ${query}
+  WITH distinct rb as rb
+  RETURN count (rb) as count`;
+  return query;
+};
 
 exports.getRuleBookWarningTypeGroup = `
 MATCH path=(rbw1:Rule_Book_Warning)-[:HAS_RULE_BOOK_WARNING_CHILD*0..]->(rbw2:Rule_Book_Warning)

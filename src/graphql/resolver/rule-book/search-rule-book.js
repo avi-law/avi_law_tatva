@@ -20,7 +20,7 @@ module.exports = async (object, params, ctx) => {
   const defaultOrderBy = "rb.rule_book_id ASC";
   let queryOrderBy = "";
   let total = 0;
-  const { orderBy, filterByString } = params;
+  const { orderBy, filterByString, filterByHiTech } = params;
   const response = {
     rule_book: [],
     total,
@@ -46,7 +46,7 @@ module.exports = async (object, params, ctx) => {
     if (queryOrderBy === "") {
       queryOrderBy = defaultOrderBy;
     }
-    const countResult = await session.run(searchRuleBookCount, {
+    const countResult = await session.run(searchRuleBookCount(filterByHiTech), {
       rule_book_id: filterByString,
     });
     if (countResult && countResult.records.length > 0) {
@@ -59,7 +59,10 @@ module.exports = async (object, params, ctx) => {
       limit,
       queryOrderBy,
     };
-    const searchRuleBookResult = await session.run(searchRuleBook, queryParams);
+    const searchRuleBookResult = await session.run(
+      searchRuleBook(filterByHiTech),
+      queryParams
+    );
     if (searchRuleBookResult && searchRuleBookResult.records.length > 0) {
       const ruleBooks = searchRuleBookResult.records.map((record) => {
         const rbis = {

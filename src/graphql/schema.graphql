@@ -594,6 +594,11 @@ const typeDefs = gql`
     DE
     CH
   }
+  enum Hi_Tech_Filter {
+    none
+    hitech
+    hitech_completed
+  }
 
   input UserCustomInput {
     user: UserInput
@@ -1653,6 +1658,7 @@ type RuleBookStateCustomTree {
     getRuleBook(rule_book_id: String, rule_element_doc_id:String ): GetRuleBookCustom @isAuthenticated
     searchRuleBook(
      filterByString: String!,
+     filterByHiTech: Hi_Tech_Filter,
      first: Int
      offset: Int
      orderBy:[_CustomRuleBookOrdering]

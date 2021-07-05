@@ -209,6 +209,11 @@ module.exports = {
     BLUE: 2,
     GREEN_BLUE: 3,
   },
+  RULE_ELEMENT_FILTER_BY_HITECH: {
+    NONE: "none",
+    HITECH: "hitech",
+    HITECH_COMPLETED: "hitech_completed",
+  },
   EMAIL: {
     EN: {
       SALUTATION: {

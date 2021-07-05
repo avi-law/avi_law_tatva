@@ -143,7 +143,6 @@ module.exports = async (object, params, ctx) => {
         condition = `${condition} AND ( toLower(res.rule_element_title) CONTAINS toLower("${value}") OR toLower(res.rule_element_article) CONTAINS toLower("${value}") OR toLower(res.rule_element_text) CONTAINS toLower("${value}") )`;
       }
     }
-
     const result = await session.run(
       getHitechRuleElementList(condition, queryOrderBy)
     );
