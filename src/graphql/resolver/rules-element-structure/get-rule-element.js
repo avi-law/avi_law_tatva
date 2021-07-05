@@ -76,12 +76,7 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate) => {
         );
       }
       const status = getRuleElementStateStatus(_.cloneDeep(obj[lang]), nowDate);
-      if (status === constants.RULE_ELEMENT_STATE_STATUS.GREEN) {
-        obj[lang].identity = stateElement["_id"];
-        obj[lang].rule_element_status = status;
-        delete obj[lang].rule_element_state_language_is;
-        stateObject.push(obj);
-      } else if (status === constants.RULE_ELEMENT_STATE_STATUS.BLUE) {
+      if (status !== constants.RULE_ELEMENT_STATE_STATUS.RED) {
         obj[lang].identity = stateElement["_id"];
         obj[lang].rule_element_status = status;
         delete obj[lang].rule_element_state_language_is;
