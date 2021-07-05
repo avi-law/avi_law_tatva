@@ -46,7 +46,7 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate, existsStatus) => {
               _.cloneDeep(obj[lang]),
               nowDate
             );
-            if (status === constants.RULE_ELEMENT_STATE_STATUS.GREEN) {
+            if (status !== constants.RULE_ELEMENT_STATE_STATUS.RED) {
               obj[lang].rule_element_status = status;
               obj[lang].identity = stateElement["_id"];
               delete obj[lang].rule_element_state_language_is;
@@ -109,7 +109,7 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate, existsStatus) => {
           _.cloneDeep(obj[lang]),
           nowDate
         );
-        if (status === constants.RULE_ELEMENT_STATE_STATUS.GREEN) {
+        if (status !== constants.RULE_ELEMENT_STATE_STATUS.RED) {
           obj[lang].identity = stateElement["_id"];
           obj[lang].rule_element_status = status;
           delete obj[lang].rule_element_state_language_is;

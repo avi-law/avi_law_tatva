@@ -735,6 +735,7 @@ module.exports = async (object, params, ctx) => {
   const identity = [];
   let ruleBookId = null;
   let ruleBookIssueNo = null;
+  let ruleElementAMC = null;
   if (currentDate) {
     nowDate = common.getTimestamp(currentDate);
   }
@@ -965,12 +966,15 @@ module.exports = async (object, params, ctx) => {
     response.isSingle = isSingle;
     response.view = viewState;
     response.language_preference_settings = settings;
-    const ruleElementAMC = await getAMCGMRuleElementFromDB(
-      viewState,
-      isSingle,
-      ruleElementDocId,
-      response.rule_element_identity
-    );
+    if (response && response.rule_element_identity) {
+      ruleElementAMC = await getAMCGMRuleElementFromDB(
+        viewState,
+        isSingle,
+        ruleElementDocId,
+        response.rule_element_identity
+      );
+    }
+
     response = {
       ...response,
       ...ruleElementAMC,
