@@ -862,6 +862,28 @@ module.exports = async (object, params, ctx) => {
                 }
               }
             }
+            if (!viewState) {
+              if (Object.keys(res[e]).length === 2) {
+                const deActive = _.get(res[e], "de.rule_element_status", null);
+                const enActive = _.get(res[e], "en.rule_element_status", null);
+                if (
+                  enActive === constants.RULE_ELEMENT_STATE_STATUS.GREEN_BLUE &&
+                  deActive === constants.RULE_ELEMENT_STATE_STATUS.GREEN_BLUE
+                ) {
+                  viewState = res[e];
+                }
+              } else if (Object.keys(res[e]).length === 1) {
+                const deActive = _.get(res[e], "de.rule_element_status", null);
+                const enActive = _.get(res[e], "en.rule_element_status", null);
+                if (
+                  enActive === constants.RULE_ELEMENT_STATE_STATUS.GREEN_BLUE ||
+                  deActive === constants.RULE_ELEMENT_STATE_STATUS.GREEN_BLUE
+                ) {
+                  viewState = res[e];
+                  isSingle = true;
+                }
+              }
+            }
             ruleElementStateList.push(res[e]);
           });
         }
