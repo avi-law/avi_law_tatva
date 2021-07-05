@@ -663,6 +663,14 @@ OPTIONAL MATCH (res)-[:RULE_ELEMENT_STATE_SOL_IS]->(sl:Sol)
 RETURN res, lang, sl
 `;
 
+exports.getLogRefersToRuleElementStateDetails = `
+MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1:Language)
+WHERE id(res1) IN $array_of_identity
+OPTIONAL MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(rbi_lang:Language)
+OPTIONAL MATCH(res1)-[:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(res2:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2:Language)
+RETURN res1, lang1, collect({ rule_book_issue_title_short: rbis.rule_book_issue_title_short, iso_639_1: rbi_lang.iso_639_1 }) as rbis, res2, lang2, re
+`;
+
 exports.getHitechRuleElementStateDetails = `
 MATCH (re:Rule_Element)-[:HAS_RULE_ELEMENT_STATE]->(res1:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1:Language)
 WHERE id(res1) = $identity AND res1.rule_element_hitech = TRUE
