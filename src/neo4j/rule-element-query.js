@@ -565,7 +565,13 @@ exports.updateHiTechRuleElementStateQuery = (queryParams) => {
       query = `${query}
       OPTIONAL MATCH (res_de:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang1)
       WHERE id(res_de) = $queryParams.res.de.identity
-      FOREACH (_ IN CASE WHEN res_de IS NOT NULL THEN [1] END | SET res_de = $queryParams.res.de )
+      FOREACH (_ IN CASE WHEN res_de IS NOT NULL THEN [1] END |
+        SET res_de.rule_element_hitech = $queryParams.res.de.rule_element_hitech,
+        res_de.rule_element_work_completed = $queryParams.res.de.rule_element_work_completed,
+        res_de.rule_element_article = $queryParams.res.de.rule_element_article,
+        res_de.rule_element_title = $queryParams.res.de.rule_element_title,
+        res_de.rule_element_text = $queryParams.res.de.rule_element_text
+      )
       WITH res_de, lang1, lang2`;
     }
   }
@@ -575,7 +581,13 @@ exports.updateHiTechRuleElementStateQuery = (queryParams) => {
       query = `${query}
       OPTIONAL MATCH (res_en:Rule_Element_State)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang2)
       WHERE id(res_en) = $queryParams.res.en.identity
-      FOREACH (_ IN CASE WHEN res_en IS NOT NULL THEN [1] END | SET res_en = $queryParams.res.en )`;
+      FOREACH (_ IN CASE WHEN res_en IS NOT NULL THEN [1] END |
+        SET res_en.rule_element_hitech = $queryParams.res.en.rule_element_hitech,
+        res_en.rule_element_work_completed = $queryParams.res.en.rule_element_work_completed,
+        res_en.rule_element_article = $queryParams.res.en.rule_element_article,
+        res_en.rule_element_title = $queryParams.res.en.rule_element_title,
+        res_en.rule_element_text = $queryParams.res.en.rule_element_text
+      )`;
     }
 
     if (queryParams.isValidDE) {
