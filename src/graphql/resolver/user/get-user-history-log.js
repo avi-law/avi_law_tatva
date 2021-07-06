@@ -92,13 +92,17 @@ module.exports = async (object, params, ctx) => {
     if (result && result.records.length > 0) {
       result.records.forEach((record) => {
         const logs = record.get("logs");
+        logs.forEach((element) => {
+          element.data = JSON.stringify(element.data);
+        });
         logData = logs;
       });
     }
-    if (logData.data) {
-      const lData = await getLogData(logData);
-      logData.data = JSON.stringify(lData);
-    }
+    // console.log(logData);
+    // if (logData.data) {
+    //   const lData = await getLogData(logData);
+    //   logData.data = JSON.stringify(lData);
+    // }
     return logData;
   } catch (error) {
     session.close();
