@@ -9,6 +9,7 @@ const {
   logRuleElementState,
   getPredecessor,
   addPredecessorDate,
+  updateBacklink,
 } = require("../../../neo4j/rule-element-query");
 
 module.exports = async (object, params, ctx) => {
@@ -22,6 +23,10 @@ module.exports = async (object, params, ctx) => {
   const { data } = params;
   let ruleElementInForceUntilPredecessorDate = null;
   let ruleElementAppliesUntilPredecessorDate = null;
+  const backlink = {
+    de: null,
+    en: null,
+  };
   const wantToSetPredecessorDate = _.get(
     data,
     "wantToSetPredecessorDate",
@@ -45,6 +50,12 @@ module.exports = async (object, params, ctx) => {
       data.res.de.identity // If you want to create new now at a time of update please remove this but need to change query
     ) {
       isValidDE = true;
+      backlink.de = {
+        identity: _.get(data, "res.de.identity", null),
+        rule_element_doc_id: common.getRuleElementDocIdFromState(
+          _.get(data, "res.de.rule_element_text", "")
+        ),
+      };
     }
     if (
       data.res &&
@@ -53,6 +64,12 @@ module.exports = async (object, params, ctx) => {
       data.res.en.identity // If you want to create new now at a time of update please remove this but need to change query
     ) {
       isValidEN = true;
+      backlink.en = {
+        identity: _.get(data, "res.en.identity", null),
+        rule_element_doc_id: common.getRuleElementDocIdFromState(
+          _.get(data, "res.en.rule_element_text", "")
+        ),
+      };
     }
     const convertDateToNeo4jFields = [
       "rule_element_applies_from",
@@ -100,7 +117,6 @@ module.exports = async (object, params, ctx) => {
         }
       }
     });
-
     const queryParams = {
       isUpdate: true,
       isValidEN,
@@ -145,11 +161,8 @@ module.exports = async (object, params, ctx) => {
         ids = ids1.concat(ids2);
       }
     }
-
-    console.log(ids);
     console.log(queryParams);
     console.log(updateRuleElementStateQuery(queryParams));
-    // return true;
     const result = await session.run(updateRuleElementStateQuery(queryParams), {
       queryParams,
     });
@@ -186,6 +199,11 @@ module.exports = async (object, params, ctx) => {
         };
         await session.run(addPredecessorDate(predecessorQueryParams), {
           queryParams: predecessorQueryParams,
+        });
+      }
+      if (backlink.de || backlink.en) {
+        session.run(updateBacklink(backlink), {
+          queryParams: backlink,
         });
       }
       return true;

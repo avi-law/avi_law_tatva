@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const { constants } = require("../utils");
 
 exports.addRuleElementQuery = (queryParams) => {
@@ -788,6 +789,38 @@ OPTIONAL MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-
 WITH collect({ rule_element_doc_id: re.rule_element_doc_id , iso_639_1: lang.iso_639_1, rule_book_issue_title_short: rbis.rule_book_issue_title_short, rule_element_article: res.rule_element_article}) as res
 RETURN apoc.coll.toSet(res) as res
 `;
+
+exports.updateBacklink = (backlink) => {
+  let query = "";
+  const deBacklinks = _.get(backlink, "de.rule_element_doc_id", []);
+  const enBacklinks = _.get(backlink, "de.rule_element_doc_id", []);
+  if (_.get(backlink, "de.identity", null) && deBacklinks.length > 0) {
+    query = `${query}
+    MATCH (res_de:Rule_Element_State)
+    WHERE id(res_de) = ${backlink.de.identity}
+    OPTIONAL MATCH (res_de)<-[r1:IS_BACKLINKED_FROM]->()
+    FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | DELETE r1)
+    WITH *
+    UNWIND $queryParams.de.rule_element_doc_id as re1
+    MATCH (re_de:Rule_Element { rule_element_doc_id: re1 })
+    FOREACH (_ IN CASE WHEN re_de IS NOT NULL AND res_de IS NOT NULL THEN [1] END | MERGE (re_de)-[:IS_BACKLINKED_FROM]->(res_de))`;
+  }
+  if (_.get(backlink, "en.identity", null) && enBacklinks.length > 0) {
+    query = `${query}
+    WITH *
+    MATCH (res_en:Rule_Element_State)
+    WHERE id(res_en) = ${backlink.en.identity}
+    OPTIONAL MATCH (res_en)<-[r2:IS_BACKLINKED_FROM]->()
+    FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | DELETE r2)
+    WITH *
+    UNWIND $queryParams.en.rule_element_doc_id as re2
+    MATCH (re_en:Rule_Element { rule_element_doc_id: re2 })
+    FOREACH (_ IN CASE WHEN re_en IS NOT NULL AND res_en IS NOT NULL THEN [1] END | MERGE (re_en)-[r1:IS_BACKLINKED_FROM]->(res_en))`;
+  }
+  query = `${query}
+  RETURN true`;
+  return query;
+};
 
 exports.getRuleElementTags = `
 MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_ELEMENT*]->(re:Rule_Element)

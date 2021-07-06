@@ -287,6 +287,23 @@ const nlContentTransformLink = (
   return final;
 };
 
+const getRuleElementDocIdFromState = (state) => {
+  const pattern = /\[\*(.*?)\*\]/gm; // ex. [*Rule_Element*]:[*VO_EU_2012_0965_0010*]
+  const final = [];
+  const matchedArray =
+    state && state.toString() ? state.toString().match(pattern) || [] : "";
+  if (state.length > 0 && matchedArray && matchedArray.length > 0) {
+    matchedArray.forEach((data) => {
+      const matchedData = data.toString().match(/\[\*(.*?)\*\]/); // [*Rule_Element*]
+      if (matchedData && matchedData.length > 1) {
+        const ruleBookDocId = matchedData[1];
+        final.push(ruleBookDocId);
+      }
+    });
+  }
+  return _.uniq(final);
+};
+
 const nqTransform = (value) => {
   let final = value;
   const ids = [];
@@ -361,4 +378,5 @@ module.exports = {
   getTimestamp,
   getValue,
   subtractDayFromDate,
+  getRuleElementDocIdFromState,
 };
