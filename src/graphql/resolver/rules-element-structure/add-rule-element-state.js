@@ -9,6 +9,7 @@ const {
   logRuleElementState,
   getPredecessor,
   addPredecessorDate,
+  createBacklink,
 } = require("../../../neo4j/rule-element-query");
 
 module.exports = async (object, params, ctx) => {
@@ -28,6 +29,10 @@ module.exports = async (object, params, ctx) => {
     "wantToSetPredecessorDate",
     false
   );
+  const backlink = {
+    de: null,
+    en: null,
+  };
   const ruleElementDocId = _.get(params, "rule_element_doc_id", null);
   let isValidDE = false;
   let isValidEN = false;
@@ -45,6 +50,11 @@ module.exports = async (object, params, ctx) => {
       (data.res.de.rule_element_title || data.res.de.rule_element_article)
     ) {
       isValidDE = true;
+      backlink.de = {
+        rule_element_doc_id: common.getRuleElementDocIdFromState(
+          _.get(data, "res.de.rule_element_text", "")
+        ),
+      };
     }
     if (
       data.res &&
@@ -52,6 +62,11 @@ module.exports = async (object, params, ctx) => {
       (data.res.en.rule_element_title || data.res.en.rule_element_article)
     ) {
       isValidEN = true;
+      backlink.en = {
+        rule_element_doc_id: common.getRuleElementDocIdFromState(
+          _.get(data, "res.en.rule_element_text", "")
+        ),
+      };
     }
     const convertDateToNeo4jFields = [
       "rule_element_applies_from",
@@ -130,7 +145,6 @@ module.exports = async (object, params, ctx) => {
     }
     console.log(queryParams);
     console.log(addRuleElementStateQuery(queryParams));
-    // return true;
     const result = await session.run(addRuleElementStateQuery(queryParams), {
       queryParams,
     });
@@ -141,13 +155,17 @@ module.exports = async (object, params, ctx) => {
         if (queryParams.isValidEN && queryParams.isValidDE) {
           const enId = record.get("res_en");
           const deId = record.get("res_de");
+          backlink.en.identity = _.get(enId, "identity", null);
+          backlink.de.identity = _.get(deId, "identity", null);
           identity.push(deId.identity);
           identity.push(enId.identity);
         } else if (queryParams.isValidEN) {
           const enId = record.get("res_en");
+          backlink.en.identity = _.get(enId, "identity", null);
           identity.push(enId.identity);
         } else if (queryParams.isValidDE) {
           const deId = record.get("res_de");
+          backlink.de.identity = _.get(deId, "identity", null);
           identity.push(deId.identity);
         }
       });
@@ -160,6 +178,11 @@ module.exports = async (object, params, ctx) => {
         };
         await session.run(addPredecessorDate(predecessorQueryParams), {
           queryParams: predecessorQueryParams,
+        });
+      }
+      if (backlink.de || backlink.en) {
+        session.run(createBacklink(backlink), {
+          queryParams: backlink,
         });
       }
       if (identity.length > 0) {

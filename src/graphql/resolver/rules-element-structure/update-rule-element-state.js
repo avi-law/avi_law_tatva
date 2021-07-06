@@ -9,7 +9,7 @@ const {
   logRuleElementState,
   getPredecessor,
   addPredecessorDate,
-  updateBacklink,
+  createBacklink,
 } = require("../../../neo4j/rule-element-query");
 
 module.exports = async (object, params, ctx) => {
@@ -202,7 +202,7 @@ module.exports = async (object, params, ctx) => {
         });
       }
       if (backlink.de || backlink.en) {
-        session.run(updateBacklink(backlink), {
+        session.run(createBacklink(backlink), {
           queryParams: backlink,
         });
       }

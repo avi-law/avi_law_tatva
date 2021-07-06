@@ -790,7 +790,7 @@ WITH collect({ rule_element_doc_id: re.rule_element_doc_id , iso_639_1: lang.iso
 RETURN apoc.coll.toSet(res) as res
 `;
 
-exports.updateBacklink = (backlink) => {
+exports.createBacklink = (backlink) => {
   let query = "";
   const deBacklinks = _.get(backlink, "de.rule_element_doc_id", []);
   const enBacklinks = _.get(backlink, "de.rule_element_doc_id", []);
