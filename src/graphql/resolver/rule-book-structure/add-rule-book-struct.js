@@ -67,14 +67,14 @@ module.exports = async (object, params, ctx) => {
     });
     if (result && result.records.length > 0) {
       /**
-       const rulebookStructs = result.records.map((record) => {
+      const rulebookStructs = result.records.map((record) => {
         const rulebookStructResult = {
           ...common.getPropertiesFromRecord(record, "rbs"),
         };
-        return rulebookStructs;
+        return rulebookStructResult;
       });
       common.loggingData(logRulebookStruct, {
-        type: constants.LOG_TYPE_ID.CREATE_RULE_BOOK,
+        type: constants.LOG_TYPE_ID.CREATE_RULE_BOOK_STRUCTURE,
         current_user_email: userEmail,
         rule_book_struct_id: rulebookStructs[0].rule_book_struct_id || null,
       });

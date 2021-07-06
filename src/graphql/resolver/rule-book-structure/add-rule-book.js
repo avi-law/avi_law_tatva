@@ -46,7 +46,7 @@ module.exports = async (object, params, ctx) => {
     });
     if (result && result.records.length > 0) {
       /**
-       const rulebooks = result.records.map((record) => {
+      const rulebooks = result.records.map((record) => {
         const rulebookResult = {
           ...common.getPropertiesFromRecord(record, "rb"),
         };

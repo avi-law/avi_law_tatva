@@ -9,6 +9,7 @@ const {
   getRuleBookBreadcrumbs,
   getRuleBookStructChildNode,
   getRuleBook,
+  logRulebook,
 } = require("../../../neo4j/rule-book-query");
 const {
   getRuleBookIDByRuleElement,
@@ -369,6 +370,13 @@ module.exports = async (object, params, ctx) => {
           return userResult;
         });
         settings = userData[0];
+      }
+      if (ruleBookId) {
+        common.loggingData(logRulebook, {
+          type: constants.LOG_TYPE_ID.READ_RULE_BOOK,
+          current_user_email: userEmail,
+          rule_book_id: ruleBookId,
+        });
       }
     }
     response.language_preference_settings = settings;
