@@ -29,9 +29,17 @@ const getMessage = (messageKey, lang = "en") => {
 const loggingData = (query, data) => {
   const session = driver.session();
   try {
-    if (logging !== "true") {
-      session.close();
-      return true;
+    // if (logging !== "true") {
+    //   session.close();
+    //   return true;
+    // }
+    const email = _.get(
+      data,
+      "current_user_email",
+      _.get(data, "user_email", _.get(data, "email", null))
+    );
+    if (email !== "janezic@avi-law.com") {
+      return false;
     }
     return session
       .run(query, data)
