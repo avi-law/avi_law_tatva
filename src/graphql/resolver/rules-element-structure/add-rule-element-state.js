@@ -181,7 +181,7 @@ module.exports = async (object, params, ctx) => {
         });
       }
       if (backlink.de || backlink.en) {
-        session.run(createBacklink(backlink), {
+        await session.run(createBacklink(backlink), {
           queryParams: backlink,
         });
       }
