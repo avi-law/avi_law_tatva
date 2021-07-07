@@ -93,7 +93,25 @@ module.exports = async (object, params, ctx) => {
       result.records.forEach((record) => {
         const logs = record.get("logs");
         logs.forEach((element) => {
-          element.data = JSON.stringify(element.data);
+          const data = {
+            en: null,
+            de: null,
+          };
+          data.de = _.filter(element.data, {
+            iso_639_1: "de",
+          });
+          data.en = _.filter(element.data, {
+            iso_639_1: "en",
+          });
+          data.en = _.unionBy(
+            _.orderBy(data.en, ["rule_element_doc_id"], ["asc"]),
+            "rule_element_doc_id"
+          );
+          data.de = _.unionBy(
+            _.orderBy(data.de, ["rule_element_doc_id"], ["asc"]),
+            "rule_element_doc_id"
+          );
+          element.data = JSON.stringify(data);
         });
         logData = logs;
       });
