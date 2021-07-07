@@ -14,6 +14,7 @@ const {
   getRuleElementShortestPath,
   getAMCGMRuleElementForFE,
   getBackToRuleElementForFE,
+  getRuleElementStateBackLink,
 } = require("../../../neo4j/rule-element-query");
 const {
   getRuleBookBreadcrumbs,
@@ -713,6 +714,61 @@ const getAMCGMRuleElementFromDB = async (
   return response;
 };
 
+const getRuleElementBackLinks = async (
+  ruleElementDocId,
+  deIdentity,
+  enIdentity
+) => {
+  const session = driver.session();
+  const identity = [];
+  const backlinks = {
+    en: null,
+    de: null,
+  };
+  if (deIdentity) identity.push(deIdentity);
+  if (enIdentity) identity.push(enIdentity);
+  try {
+    if (identity.length > 0) {
+      const result = await session.run(getRuleElementStateBackLink, {
+        identity,
+        ruleElementDocId,
+      });
+      if (result && result.records.length > 0) {
+        result.records.forEach((record) => {
+          const reState = record.get("res");
+          backlinks.de = _.filter(reState, {
+            iso_639_1: "de",
+          });
+          backlinks.en = _.filter(reState, {
+            iso_639_1: "en",
+          });
+        });
+      }
+    }
+
+    backlinks.de =
+      backlinks.de.length > 0
+        ? _.unionBy(
+            _.orderBy(backlinks.de, ["rule_element_doc_id"], ["asc"]),
+            "rule_element_doc_id"
+          )
+        : null;
+    backlinks.en =
+      backlinks.en.length > 0
+        ? _.unionBy(
+            _.orderBy(backlinks.en, ["rule_element_doc_id"], ["asc"]),
+            "rule_element_doc_id"
+          )
+        : null;
+    return backlinks;
+  } catch (error) {
+    session.close();
+    throw error;
+  } finally {
+    session.close();
+  }
+};
+
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
   const userEmail = user ? user.user_email : null;
@@ -734,6 +790,10 @@ module.exports = async (object, params, ctx) => {
   if (currentDate) {
     nowDate = common.getTimestamp(currentDate);
   }
+  let backlinks = {
+    en: null,
+    de: null,
+  };
   let viewState = null;
   try {
     if (!userEmail || !ruleElementDocId) {
@@ -990,11 +1050,18 @@ module.exports = async (object, params, ctx) => {
         ruleElementDocId,
         response.rule_element_identity
       );
+      const deIdentity = _.get(viewState, "de.identity", null);
+      const enIdentity = _.get(viewState, "en.identity", null);
+      backlinks = await getRuleElementBackLinks(
+        ruleElementDocId,
+        deIdentity,
+        enIdentity
+      );
     }
-
     response = {
       ...response,
       ...ruleElementAMC,
+      backlinks,
     };
     return response;
   } catch (error) {
