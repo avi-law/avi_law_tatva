@@ -746,20 +746,21 @@ const getRuleElementBackLinks = async (
       }
     }
 
-    backlinks.de =
-      backlinks.de.length > 0
-        ? _.unionBy(
-            _.orderBy(backlinks.de, ["rule_element_doc_id"], ["asc"]),
-            "rule_element_doc_id"
-          )
-        : null;
-    backlinks.en =
-      backlinks.en.length > 0
-        ? _.unionBy(
-            _.orderBy(backlinks.en, ["rule_element_doc_id"], ["asc"]),
-            "rule_element_doc_id"
-          )
-        : null;
+    // backlinks.de =
+    //   backlinks.de.length > 0
+    //     ? _.unionBy(
+    //         _.orderBy(backlinks.de, ["rule_element_doc_id"], ["asc"]),
+    //         "rule_element_doc_id"
+    //       )
+    //     : null;
+    // backlinks.en =
+    //   backlinks.en.length > 0
+    //     ? _.unionBy(
+    //         _.orderBy(backlinks.en, ["rule_element_doc_id"], ["asc"]),
+    //         "rule_element_doc_id"
+    //       )
+    //     : null;
+    console.log(backlinks);
     return backlinks;
   } catch (error) {
     session.close();

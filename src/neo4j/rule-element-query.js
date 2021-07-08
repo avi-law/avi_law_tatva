@@ -791,11 +791,23 @@ RETURN apoc.coll.toSet(res) as res
 `;
 
 exports.getRuleElementStateBackLink = `
-MATCH (re1:Rule_Element)-[:IS_BACKLINKED_FROM]->(res:Rule_Element_State)<-[:HAS_RULE_ELEMENT_STATE]-(re:Rule_Element)<-[:HAS_RULE_ELEMENT*]-(rbi:Rule_Book_Issue)<-[:HAS_RULE_BOOK_ISSUE]-(rb:Rule_Book)
-WHERE re1.rule_element_doc_id = $ruleElementDocId AND rb.rule_book_active = TRUE
-MATCH (res)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
-OPTIONAL MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang)
-WITH collect({ rule_element_doc_id: re.rule_element_doc_id , iso_639_1: lang.iso_639_1, rule_book_issue_title_short: rbis.rule_book_issue_title_short, rule_element_article: res.rule_element_article}) as res_new
+MATCH (re1:Rule_Element)-[:IS_BACKLINKED_FROM]->(res:Rule_Element_State)<-[:HAS_RULE_ELEMENT_STATE]-(re:Rule_Element)
+WHERE re1.rule_element_doc_id = $ruleElementDocId
+WITH *, collect(res) as res
+MATCH (re),(rbi:Rule_Book_Issue),
+path = shortestPath((re)<-[:HAS_RULE_ELEMENT*]-(rbi))
+WITH *, re, path, MIN(length(path)) as minLength ORDER BY minLength ASC LIMIT 1
+WITH *, nodes(path)[minLength] as rbi
+MATCH (rbi)<-[:HAS_RULE_BOOK_ISSUE]-(rb:Rule_Book)
+WHERE rb.rule_book_active = TRUE
+CALL {
+  WITH *
+  UNWIND res as state
+  MATCH (state)-[:RULE_ELEMENT_STATE_LANGUAGE_IS]->(lang:Language)
+  OPTIONAL MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang)
+  WITH collect({ identity: id(state), rule_element_doc_id: re.rule_element_doc_id , iso_639_1: lang.iso_639_1, rule_book_issue_title_short: rbis.rule_book_issue_title_short, rule_element_article: state.rule_element_article}) as res_new
+  RETURN res_new
+}
 WITH apoc.coll.toSet(res_new) as res
 return res`;
 
