@@ -65,8 +65,10 @@ module.exports = async (object, params, ctx) => {
     //   const lData = await getLogData(logData);
     //   logData.data = JSON.stringify(lData);
     // }
-    logData.total = total;
-    return logData;
+    return {
+      logs: logData,
+      total,
+    };
   } catch (error) {
     session.close();
     throw error;

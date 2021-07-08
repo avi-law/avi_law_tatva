@@ -1296,10 +1296,14 @@ type RuleBookStateCustomTree {
     language_preference_settings: languagePreferencesettings
   }
 
-  type HistoryLogs {
+  type CustomLogList {
     log: Log
     lt: Log_Type
     data: String
+  }
+
+  type HistoryLogs {
+    logs: [CustomLogList]
     total: Int
   }
 
@@ -1758,7 +1762,7 @@ type RuleBookStateCustomTree {
     getUserHistoryLogs(
       first: Int
       offset: Int
-    ): [HistoryLogs]  @isAuthenticated
+    ): HistoryLogs  @isAuthenticated
   }
 `;
 
