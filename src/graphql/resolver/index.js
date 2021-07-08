@@ -123,6 +123,7 @@ const getUserHistoryLogs = require("./user/get-user-history-log");
 const getRuleBookWarningType = require("./rule-book/get-rule-book-warning-type");
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
+const createBackLinForExistsRuleElement = require("./backlink");
 
 const resolvers = {
   Mutation: {
@@ -180,6 +181,7 @@ const resolvers = {
     updateRuleElementState,
     deleteRuleElementState,
     updateHiTechRuleElementState,
+    createBackLinForExistsRuleElement,
   },
   Query: {
     User,

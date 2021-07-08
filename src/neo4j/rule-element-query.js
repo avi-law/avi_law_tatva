@@ -819,7 +819,7 @@ exports.createBacklink = (backlink) => {
     query = `${query}
     MATCH (res_de:Rule_Element_State)
     WHERE id(res_de) = ${backlink.de.identity}
-    OPTIONAL MATCH (res_de)<-[r1:IS_BACKLINKED_FROM]->()
+    OPTIONAL MATCH (res_de)<-[r1:IS_BACKLINKED_FROM]-()
     FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | DELETE r1)
     WITH *
     UNWIND $queryParams.de.rule_element_doc_id as re1
@@ -831,7 +831,7 @@ exports.createBacklink = (backlink) => {
     WITH *
     MATCH (res_en:Rule_Element_State)
     WHERE id(res_en) = ${backlink.en.identity}
-    OPTIONAL MATCH (res_en)<-[r2:IS_BACKLINKED_FROM]->()
+    OPTIONAL MATCH (res_en)<-[r2:IS_BACKLINKED_FROM]-()
     FOREACH (_ IN CASE WHEN r2 IS NOT NULL THEN [1] END | DELETE r2)
     WITH *
     UNWIND $queryParams.en.rule_element_doc_id as re2
