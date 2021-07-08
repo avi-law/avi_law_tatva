@@ -1,12 +1,10 @@
 const { constants } = require("../utils");
 
 exports.getUserHistoryLogs = `
-MATCH (log:Log)-[:LOG_FOR_USER]->(u:User {user_email: $user_email})
-WHERE NOT (log)<-[:USER_LOG_PREDECESSOR]-(:Log)
-WITH log
-MATCH (log:Log)-[:USER_LOG_PREDECESSOR*0..20]->(log3:Log)-[:LOG_REFERS_TO_OBJECT]-(obj)
-MATCH (lt:Log_Type)<-[:HAS_LOG_TYPE]-(log3)
+MATCH (lt:Log_Type)<-[:HAS_LOG_TYPE]-(log:Log)-[:LOG_FOR_USER]->(u:User {user_email: $user_email}), (log:Log)-[:LOG_REFERS_TO_OBJECT]-(obj)
+WHERE lt.log_type_id IN [${constants.LOG_TYPE_ID.READ_RULE_BOOK},${constants.LOG_TYPE_ID.READ_RULE_ELEMENT_AND_STATE},${constants.LOG_TYPE_ID.READ_NL}]
 WITH *, collect(obj) as obj
+WITH *,  apoc.coll.toSet(obj) as obj ORDER BY log.log_timestamp DESC LIMIT 20
 CALL apoc.do.case([
   lt.log_type_id = ${constants.LOG_TYPE_ID.READ_RULE_ELEMENT_AND_STATE} AND LABELS(obj[0])[0] = "${constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_ELEMENT_STATE}",
     'MATCH (res:Rule_Element_State)<-[:HAS_RULE_ELEMENT_STATE]-(re:Rule_Element)
@@ -31,6 +29,6 @@ CALL apoc.do.case([
 "",
 { obj: obj })
 YIELD value
-WITH collect({ log: properties(log3), lt: properties(lt), data: value.data }) as logs
+WITH collect({ log: properties(log), lt: properties(lt), data: value.data }) as logs
 RETURN logs
 `;
