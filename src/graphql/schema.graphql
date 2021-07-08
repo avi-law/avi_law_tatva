@@ -1300,6 +1300,7 @@ type RuleBookStateCustomTree {
     log: Log
     lt: Log_Type
     data: String
+    total: Int
   }
 
   #Tree type state
