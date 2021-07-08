@@ -125,6 +125,7 @@ module.exports = {
     RULE_BOOK_STRUCT: "Rule_Book_Struct",
     RULE_ELEMENT: "Rule_Element",
     RULE_ELEMENT_STATE: "Rule_Element_State",
+    NL: "Nl",
   },
   LOGIN_FAILED_STATUS: {
     GTC_NOT_ACCEPTED: "GTC_NOT_ACCEPTED",

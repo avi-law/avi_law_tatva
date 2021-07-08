@@ -17,6 +17,11 @@ CALL apoc.do.case([
   lt.log_type_id = ${constants.LOG_TYPE_ID.READ_RULE_BOOK} AND LABELS(obj[0])[0] = "${constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_BOOK}",
     'MATCH (rb:Rule_Book { rule_book_id: obj[0].rule_book_id})-[:HAS_RULE_BOOK_ISSUE]->(rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
     WITH collect({ identity: id(obj[0]), rule_book_id: rb.rule_book_id, rule_book_issue_title_short: rbis.rule_book_issue_title_short, iso_639_1: lang.iso_639_1 }) as data
+    RETURN data',
+  lt.log_type_id = ${constants.LOG_TYPE_ID.READ_NL} AND LABELS(obj[0])[0] = "${constants.LOG_REFERS_TO_OBJECT_LABEL.NL}",
+    'MATCH (cou:Country)<-[:NL_REFERS_TO_COUNTRY]-(nl:Nl)-[:HAS_NL_STATE]->(nls:Nl_State)-[:NL_LANG_IS]->(lang:Language)
+    WHERE id(nl) = id(obj[0])
+    WITH collect({ nl: properties(nl), nls: { nl_title_short: nl.nl_title_short, nl_title_long: nl.nl_title_long }, iso_639_1: lang.iso_639_1 }) as data
     RETURN data'
 ],
 "",
