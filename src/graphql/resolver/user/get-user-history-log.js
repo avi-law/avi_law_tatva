@@ -17,6 +17,8 @@ module.exports = async (object, params, ctx) => {
   const session = driver.session();
   let logData = null;
   let total = 0;
+  const offset = params.offset || 0;
+  const limit = params.first || 20;
   try {
     if (!userEmail) {
       throw new APIError({
@@ -33,6 +35,8 @@ module.exports = async (object, params, ctx) => {
     }
     const result = await session.run(getUserHistoryLogs, {
       user_email: userEmail,
+      limit,
+      skip: offset,
     });
 
     if (result && result.records.length > 0) {
@@ -62,7 +66,6 @@ module.exports = async (object, params, ctx) => {
     //   logData.data = JSON.stringify(lData);
     // }
     logData.total = total;
-    console.log(logData);
     return logData;
   } catch (error) {
     session.close();

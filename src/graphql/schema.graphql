@@ -1755,7 +1755,10 @@ type RuleBookStateCustomTree {
     getRuleElementBackLinks(rule_element_doc_id: String!): GetRuleElementBackLinkList  @isAuthenticated
     getRuleElementTags: GetRuleElementTags @isAuthenticated
     getAMCGMRuleElement(identity: Int!, rule_element_doc_id: String!): GetAMCGMRuleElement @isAdmin
-    getUserHistoryLogs: [HistoryLogs]  @isAuthenticated
+    getUserHistoryLogs(
+      first: Int
+      offset: Int
+    ): [HistoryLogs]  @isAuthenticated
   }
 `;
 
