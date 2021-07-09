@@ -823,6 +823,7 @@ module.exports = async (object, params, ctx) => {
     }
     const result = await session.run(getRuleElementStateList, {
       rule_element_doc_id: ruleElementDocId,
+      userEmail,
     });
     if (result && result.records.length > 0) {
       const ruleElement = result.records.map((record) => {
@@ -875,6 +876,10 @@ module.exports = async (object, params, ctx) => {
                     sol_state: solState,
                   };
                   res[uniqueKey][stateLang].sol = solObject;
+                }
+                res[uniqueKey][stateLang].isFavorite = false;
+                if (_.get(reState, "isFavorite", false)) {
+                  res[uniqueKey][stateLang].isFavorite = true;
                 }
               }
             }
