@@ -777,6 +777,8 @@ const getRuleElementBackLinks = async (
       });
       backlinks.en = _.values(obj);
     }
+    backlinks.en = backlinks.en.length > 0 ? backlinks.en : null;
+    backlinks.de = backlinks.de.length > 0 ? backlinks.de : null;
     return backlinks;
   } catch (error) {
     session.close();
