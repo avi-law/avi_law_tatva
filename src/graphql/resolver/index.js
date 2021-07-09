@@ -121,6 +121,7 @@ const getRuleElementTags = require("./rules-element-structure/get-rule-element-t
 const getAMCGMRuleElement = require("./rules-element-structure/get-amc-gm-rule-element");
 const getUserHistoryLogs = require("./user/get-user-history-log");
 const getRuleBookWarningType = require("./rule-book/get-rule-book-warning-type");
+const userFavorite = require("./user/user-favorite");
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
 const createBackLinForExistsRuleElement = require("./backlink");
@@ -182,6 +183,7 @@ const resolvers = {
     deleteRuleElementState,
     updateHiTechRuleElementState,
     createBackLinForExistsRuleElement,
+    userFavorite,
   },
   Query: {
     User,

@@ -1581,6 +1581,7 @@ type RuleBookStateCustomTree {
       first: Int
       offset: Int
     ): Boolean @isAdmin
+    userFavorite(isCreate: Boolean!, identity: [Int!]!): Boolean @isAuthenticated
   }
   type Query {
     user: User_State @isAuthenticated

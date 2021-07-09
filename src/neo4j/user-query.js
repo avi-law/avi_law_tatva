@@ -49,3 +49,18 @@ WITH *, collect(obj) as obj
 WITH *,  apoc.coll.toSet(obj) as obj ORDER BY log.log_timestamp DESC
 RETURN count(log) as count
 `;
+
+exports.userCreateFavorite = `
+MATCH (u:User {user_email: $user_email })
+MATCH (res:Rule_Element_State) WHERE id(res) IN $identity
+FOREACH (_ IN CASE WHEN res IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE]->(res))
+RETURN res, u
+`;
+
+exports.userDeleteFavorite = `
+MATCH (u:User {user_email: $user_email })
+MATCH (res:Rule_Element_State) WHERE id(res) IN $identity
+OPTIONAL MATCH (u)-[r1:USER_HAS_FAVORITE]->(res)
+FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | DELETE r1)
+RETURN res, u
+`;
