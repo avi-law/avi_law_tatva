@@ -747,12 +747,12 @@ const getRuleElementBackLinks = async (
     }
     const deBacklink = _.orderBy(
       backlinks.de,
-      ["rule_element_doc_id"],
+      ["rule_element_article"],
       ["asc"]
     );
     const enBacklink = _.orderBy(
       backlinks.en,
-      ["rule_element_doc_id"],
+      ["rule_element_article"],
       ["asc"]
     );
     if (deBacklink.length > 0) {
