@@ -745,22 +745,38 @@ const getRuleElementBackLinks = async (
         });
       }
     }
-
-    backlinks.de =
-      backlinks.de.length > 0
-        ? _.unionBy(
-            _.orderBy(backlinks.de, ["rule_element_doc_id"], ["asc"]),
-            "rule_element_doc_id"
-          )
-        : null;
-    backlinks.en =
-      backlinks.en.length > 0
-        ? _.unionBy(
-            _.orderBy(backlinks.en, ["rule_element_doc_id"], ["asc"]),
-            "rule_element_doc_id"
-          )
-        : null;
-    console.log(backlinks);
+    const deBacklink = _.orderBy(
+      backlinks.de,
+      ["rule_element_doc_id"],
+      ["asc"]
+    );
+    const enBacklink = _.orderBy(
+      backlinks.en,
+      ["rule_element_doc_id"],
+      ["asc"]
+    );
+    if (deBacklink.length > 0) {
+      const obj = {};
+      deBacklink.forEach((link) => {
+        if (!obj[link.rule_element_doc_id]) {
+          obj[link.rule_element_doc_id] = link;
+        } else if (obj[link.rule_element_doc_id].minLength > link.minLength) {
+          obj[link.rule_element_doc_id] = link;
+        }
+      });
+      backlinks.de = _.values(obj);
+    }
+    if (enBacklink.length > 0) {
+      const obj = {};
+      enBacklink.forEach((link) => {
+        if (!obj[link.rule_element_doc_id]) {
+          obj[link.rule_element_doc_id] = link;
+        } else if (obj[link.rule_element_doc_id].minLength > link.minLength) {
+          obj[link.rule_element_doc_id] = link;
+        }
+      });
+      backlinks.en = _.values(obj);
+    }
     return backlinks;
   } catch (error) {
     session.close();
