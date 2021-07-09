@@ -809,7 +809,8 @@ CALL {
   RETURN res_new
 }
 WITH apoc.coll.toSet(res_new) as res
-return res`;
+return res
+`;
 
 exports.getRuleElementStateBackLink = `
 MATCH (re1:Rule_Element)-[:IS_BACKLINKED_FROM]->(res:Rule_Element_State)<-[:HAS_RULE_ELEMENT_STATE]-(re:Rule_Element)
@@ -835,7 +836,18 @@ CALL {
   RETURN { identity: id(state), rule_element_doc_id: re.rule_element_doc_id , iso_639_1: lang.iso_639_1, rule_book_issue_title_short: rbis.rule_book_issue_title_short, rule_element_article: state.rule_element_article} as res_new
 }
 WITH collect(res_new) as res
-RETURN res`;
+RETURN res
+`;
+
+exports.createBacklinkByRuleElement = `
+MATCH (res:Rule_Element_State)
+WHERE res.rule_element_text CONTAINS $ruleElementDocId
+MATCH (re:Rule_Element {rule_element_doc_id: $ruleElementDocId })
+OPTIONAL MATCH (re)-[r1:IS_BACKLINKED_FROM]->()
+FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | DELETE r1)
+FOREACH (_ IN CASE WHEN res IS NOT NULL AND re IS NOT NULL THEN [1] END | MERGE (re)-[:IS_BACKLINKED_FROM]->(res))
+RETURN TRUE
+`;
 
 exports.createBacklink = (backlink) => {
   let query = "";

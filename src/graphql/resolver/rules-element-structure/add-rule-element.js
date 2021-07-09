@@ -7,7 +7,28 @@ const { defaultLanguage } = require("../../../config/application");
 const {
   addRuleElementQuery,
   logRuleElement,
+  createBacklinkByRuleElement,
 } = require("../../../neo4j/rule-element-query");
+
+const createBacklink = (ruleElementDocId) => {
+  const session = driver.session();
+  try {
+    return session
+      .run(createBacklinkByRuleElement, { ruleElementDocId })
+      .then(() => {
+        session.close();
+        return true;
+      })
+      .catch((err) => {
+        session.close();
+        throw err;
+      });
+  } catch (error) {
+    session.close();
+    console.log("add create backlink Error", error.message);
+    return false;
+  }
+};
 
 module.exports = async (object, params, ctx) => {
   const { user } = ctx;
@@ -47,13 +68,21 @@ module.exports = async (object, params, ctx) => {
         };
         return ruleElementResult;
       });
-      common.loggingData(logRuleElement, {
-        type: constants.LOG_TYPE_ID.CREATE_RULE_ELEMENT_AND_STATE,
-        current_user_email: userEmail,
-        rule_book_issue_no: data.rule_book_issue_no,
-        rule_book_id: data.rule_book_id,
-        rule_element_doc_id: ruleElement[0].rule_element_doc_id || null,
-      });
+      const ruleElementDocId = _.get(
+        ruleElement,
+        "[0].rule_element_doc_id",
+        null
+      );
+      if (ruleElementDocId) {
+        common.loggingData(logRuleElement, {
+          type: constants.LOG_TYPE_ID.CREATE_RULE_ELEMENT_AND_STATE,
+          current_user_email: userEmail,
+          rule_book_issue_no: data.rule_book_issue_no,
+          rule_book_id: data.rule_book_id,
+          rule_element_doc_id: ruleElementDocId,
+        });
+        createBacklink(ruleElementDocId);
+      }
       return true;
     }
     throw new APIError({
