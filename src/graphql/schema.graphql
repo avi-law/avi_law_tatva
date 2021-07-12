@@ -305,6 +305,7 @@ const typeDefs = gql`
   }
 
   type Rule_Book {
+    identity: Int
     rule_book_id: String
     rule_book_active: Boolean
   }
@@ -1057,6 +1058,7 @@ const typeDefs = gql`
   }
 
   type GetRuleBookCustom {
+   rb: Rule_Book
    rbi: Rule_Book_Issue
    rbis:GetRuleBookIssueStateCustom
    sol_list: [GetCustomSol]
