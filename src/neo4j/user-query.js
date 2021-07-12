@@ -56,7 +56,8 @@ OPTIONAL MATCH (u)-[r1:USER_HAS_FAVORITE]->()
 WHERE r1.order IS NOT NULL
 WITH u, MAX( r1.order) + 1 AS next_order
 MATCH (res:Rule_Element_State) WHERE id(res) IN $identity
-FOREACH (_ IN CASE WHEN res IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE { order: next_order, timestamp: apoc.date.currentTimestamp() }]->(res))
+FOREACH (_ IN CASE WHEN next_order IS NULL AND res IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE { order: 1, timestamp: apoc.date.currentTimestamp() }]->(res))
+FOREACH (_ IN CASE WHEN next_order IS NOT NULL AND res IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE { order: next_order, timestamp: apoc.date.currentTimestamp() }]->(res))
 RETURN res, u
 `;
 
@@ -74,7 +75,8 @@ OPTIONAL MATCH (u)-[r1:USER_HAS_FAVORITE]->()
 WHERE r1.order IS NOT NULL
 WITH u, MAX( r1.order) + 1 AS next_order
 MATCH (rb:Rule_Book) WHERE id(rb) IN $identity
-FOREACH (_ IN CASE WHEN rb IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE { order: next_order, timestamp: apoc.date.currentTimestamp() }]->(rb))
+FOREACH (_ IN CASE WHEN next_order IS NULL AND rb IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE { order: 1, timestamp: apoc.date.currentTimestamp() }]->(rb))
+FOREACH (_ IN CASE WHEN next_order IS NOT NULL AND rb IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE { order: next_order, timestamp: apoc.date.currentTimestamp() }]->(rb))
 RETURN rb, u
 `;
 
@@ -103,7 +105,7 @@ CALL apoc.do.case([
     RETURN data',
   LABELS(obj[0]) = ["${constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_BOOK}"],
     'MATCH (rb:Rule_Book { rule_book_id: obj[0].rule_book_id})-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
-    WITH collect({ favIdentity: id(r1), favOrder: r1.order, favTimestamp: r1.timestamp, favoriteType: LABELS(obj[0])[0], identity: id(obj[0]), rb: {rule_book_id: rb.rule_book_id, rule_book_issue_title_short: rbis.rule_book_issue_title_short}, iso_639_1: lang.iso_639_1 }) as data
+    WITH collect({ favIdentity: id(r1), favOrder: r1.order, favTimestamp: r1.timestamp, favoriteType: LABELS(obj[0])[0], identity: id(obj[0]), rb: {rule_book_id: rb.rule_book_id, rule_book_issue_title_long: rbis.rule_book_issue_title_long, rule_book_issue_title_short: rbis.rule_book_issue_title_short}, iso_639_1: lang.iso_639_1 }) as data
     RETURN data'
 ],
 "",

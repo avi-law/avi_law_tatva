@@ -1320,6 +1320,7 @@ type RuleBookStateCustomTree {
   type CustomFavRuleBook {
     rule_book_id:  String
     rule_book_issue_title_short: String
+    rule_book_issue_title_long: String
   }
   type CustomFav {
     res: CustomFavRuleElementState,
