@@ -52,8 +52,11 @@ RETURN count(log) as count
 
 exports.userCreateFavorite = `
 MATCH (u:User {user_email: $user_email })
+OPTIONAL MATCH (u)-[r1:USER_HAS_FAVORITE]->()
+WHERE r1.order IS NOT NULL
+WITH u, MAX( r1.order) + 1 AS next_order
 MATCH (res:Rule_Element_State) WHERE id(res) IN $identity
-FOREACH (_ IN CASE WHEN res IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE]->(res))
+FOREACH (_ IN CASE WHEN res IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE { order: next_order }]->(res))
 RETURN res, u
 `;
 
