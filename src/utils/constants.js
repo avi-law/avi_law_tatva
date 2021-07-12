@@ -218,6 +218,10 @@ module.exports = {
     HITECH: "hitech",
     HITECH_COMPLETED: "hitech_completed",
   },
+  FAVORITE_TYPE: {
+    RULE_BOOK: "Rule_Book",
+    RULE_ELEMENT_STATE: "Rule_Element_State"
+  },
   EMAIL: {
     EN: {
       SALUTATION: {

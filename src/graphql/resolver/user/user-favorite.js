@@ -1,11 +1,13 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const driver = require("../../../config/db");
-const { APIError } = require("../../../utils");
+const { APIError, constants } = require("../../../utils");
 const { defaultLanguage } = require("../../../config/application");
 const {
   userCreateFavorite,
   userDeleteFavorite,
+  userCreateFavoriteRuleBook,
+  userDeleteFavoriteRuleBook,
 } = require("../../../neo4j/user-query");
 
 module.exports = async (object, params, ctx) => {
@@ -14,7 +16,7 @@ module.exports = async (object, params, ctx) => {
   const userSurfLang = user.user_surf_lang || defaultLanguage;
   const session = driver.session();
   params = JSON.parse(JSON.stringify(params));
-  const { identity, isCreate } = params;
+  const { identity, isCreate, favoriteType } = params;
   try {
     if (!userEmail) {
       throw new APIError({
@@ -22,7 +24,14 @@ module.exports = async (object, params, ctx) => {
         message: "INTERNAL_SERVER_ERROR",
       });
     }
-    const query = isCreate ? userCreateFavorite : userDeleteFavorite;
+    let query = "";
+    if (constants.FAVORITE_TYPE.RULE_BOOK === favoriteType) {
+      query = isCreate
+        ? userCreateFavoriteRuleBook
+        : userDeleteFavoriteRuleBook;
+    } else if (constants.FAVORITE_TYPE.RULE_ELEMENT_STATE === favoriteType) {
+      query = isCreate ? userCreateFavorite : userDeleteFavorite;
+    }
     const favoriteResult = await session.run(query, {
       user_email: userEmail,
       identity,

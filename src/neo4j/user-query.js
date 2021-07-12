@@ -67,3 +67,26 @@ OPTIONAL MATCH (u)-[r1:USER_HAS_FAVORITE]->(res)
 FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | DELETE r1)
 RETURN res, u
 `;
+
+exports.userCreateFavoriteRuleBook = `
+MATCH (u:User {user_email: $user_email })
+OPTIONAL MATCH (u)-[r1:USER_HAS_FAVORITE]->()
+WHERE r1.order IS NOT NULL
+WITH u, MAX( r1.order) + 1 AS next_order
+MATCH (rb:Rule_Book) WHERE id(rb) IN $identity
+FOREACH (_ IN CASE WHEN rb IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE { order: next_order }]->(rb))
+RETURN rb, u
+`;
+
+exports.userDeleteFavoriteRuleBook = `
+MATCH (u:User {user_email: $user_email })
+MATCH (rb:Rule_Book) WHERE id(rb) IN $identity
+OPTIONAL MATCH (u)-[r1:USER_HAS_FAVORITE]->(rb)
+FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | DELETE r1)
+RETURN rb, u
+`;
+
+exports.getUserFavorites = `
+MATCH (u:User {user_email: $user_email })-[r1:USER_HAS_FAVORITE]->(fav)
+RETURN {identity: id(fav), rule_element_article: fav.rule_element_article, rule_element_title: fav.rule_element_title } as fav, r1
+`;
