@@ -1328,6 +1328,7 @@ type RuleBookStateCustomTree {
     identity: Int,
     favIdentity: Int,
     favOrder: Int,
+    favTimestamp: Float,
   }
 
   type UserFavoriteList {

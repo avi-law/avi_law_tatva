@@ -99,11 +99,11 @@ CALL apoc.do.case([
     WITH *, re, path, MIN(length(path)) as minLength ORDER BY minLength ASC LIMIT 1
     WITH *, nodes(path)[minLength] as rbi
     MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang)
-    WITH collect({ favIdentity: id(r1), favOrder: r1.order, minLength: minLength, favoriteType: LABELS(obj[0])[0], identity: id(obj[0]), version_of_id: id(resv), res:{ rule_element_title: obj[0].rule_element_title, rule_element_article: obj[0].rule_element_article, rule_element_doc_id: re.rule_element_doc_id, rule_book_issue_title_short: rbis.rule_book_issue_title_short }, iso_639_1: lang.iso_639_1}) as data
+    WITH collect({ favIdentity: id(r1), favOrder: r1.order, favTimestamp: r1.timestamp, minLength: minLength, favoriteType: LABELS(obj[0])[0], identity: id(obj[0]), version_of_id: id(resv), res:{ rule_element_title: obj[0].rule_element_title, rule_element_article: obj[0].rule_element_article, rule_element_doc_id: re.rule_element_doc_id, rule_book_issue_title_short: rbis.rule_book_issue_title_short }, iso_639_1: lang.iso_639_1}) as data
     RETURN data',
   LABELS(obj[0]) = ["${constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_BOOK}"],
     'MATCH (rb:Rule_Book { rule_book_id: obj[0].rule_book_id})-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
-    WITH collect({ favIdentity: id(r1), favOrder: r1.order, favoriteType: LABELS(obj[0])[0], identity: id(obj[0]), rb: {rule_book_id: rb.rule_book_id, rule_book_issue_title_short: rbis.rule_book_issue_title_short}, iso_639_1: lang.iso_639_1 }) as data
+    WITH collect({ favIdentity: id(r1), favOrder: r1.order, favTimestamp: r1.timestamp, favoriteType: LABELS(obj[0])[0], identity: id(obj[0]), rb: {rule_book_id: rb.rule_book_id, rule_book_issue_title_short: rbis.rule_book_issue_title_short}, iso_639_1: lang.iso_639_1 }) as data
     RETURN data'
 ],
 "",
