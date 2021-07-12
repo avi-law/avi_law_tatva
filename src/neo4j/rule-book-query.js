@@ -554,7 +554,7 @@ CALL {
   RETURN collect({sol:sl, order: r1.sol_ord, sls: slState}) AS sl
 
 }
-RETURN MAX(rbi.rule_book_issue_no) as issue_no,  rbi, rbis, sl, rbw
+RETURN MAX(rbi.rule_book_issue_no) as issue_no,  rbi, rbis, sl, rbw, rb
 ORDER BY issue_no DESC
 LIMIT 1
 `;
