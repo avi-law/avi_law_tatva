@@ -537,6 +537,7 @@ RETURN rbs2, rbsState`;
 exports.getRuleBook = `
 MATCH (rb:Rule_Book {rule_book_id: $rule_book_id })-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)
 OPTIONAL MATCH (rbi)-[:HAS_RULE_BOOK_WARNING_STATE]-(rbw:Rule_Book_Warning)
+OPTIONAL MATCH (u:User {user_email: $user_email })-[r1:USER_HAS_FAVORITE]->(rb)
 CALL {
   WITH rbi
   MATCH (rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
@@ -554,7 +555,7 @@ CALL {
   RETURN collect({sol:sl, order: r1.sol_ord, sls: slState}) AS sl
 
 }
-RETURN MAX(rbi.rule_book_issue_no) as issue_no,  rbi, rbis, sl, rbw, rb
+RETURN MAX(rbi.rule_book_issue_no) as issue_no,  rbi, rbis, sl, rbw, rb, id(r1) as isFavorite
 ORDER BY issue_no DESC
 LIMIT 1
 `;

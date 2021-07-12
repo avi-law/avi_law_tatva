@@ -286,6 +286,7 @@ module.exports = async (object, params, ctx) => {
     }
     const getRuleBookResult = await session.run(getRuleBook, {
       rule_book_id: ruleBookId,
+      user_email: userEmail,
     });
     if (getRuleBookResult && getRuleBookResult.records.length > 0) {
       const ruleBooks = getRuleBookResult.records.map((record) => {
@@ -350,6 +351,7 @@ module.exports = async (object, params, ctx) => {
           rb: common.getPropertiesFromRecord(record, "rb"),
           rbi: common.getPropertiesFromRecord(record, "rbi"),
           rbw: common.getPropertiesFromRecord(record, "rbw"),
+          isFavorite: record.get("isFavorite"),
           rbis: Object.keys(rbis).length > 0 ? rbis : null,
           sol_list: solList,
         };
