@@ -1450,6 +1450,11 @@ type RuleBookStateCustomTree {
     drag_rule_book_order: [RuleBookOrderArray]
   }
 
+  input ChangeUserFavoriteOrderInput {
+    identity: [Int!]!
+    order: Int!
+  }
+
   input ChangeRuleElementOrderInput {
     drag_type: DragAndDropRuleElementType!
     drag_parent_type: DragAndDropRuleElementType!
@@ -1616,6 +1621,7 @@ type RuleBookStateCustomTree {
       offset: Int
     ): Boolean @isAdmin
     userFavorite(isCreate: Boolean!, identity: [Int!]!, favoriteType: FavoriteType! ): Boolean @isAuthenticated
+    changeUserFavoriteOrder(change_order: [ChangeUserFavoriteOrderInput]! ): Boolean @isAuthenticated
   }
   type Query {
     user: User_State @isAuthenticated

@@ -123,6 +123,7 @@ const getUserHistoryLogs = require("./user/get-user-history-log");
 const getRuleBookWarningType = require("./rule-book/get-rule-book-warning-type");
 const userFavorite = require("./user/user-favorite");
 const getUserFavorites = require("./user/get-user-favorites");
+const changeUserFavoriteOrder = require("./user/change-user-favorite-order");
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
 const createBackLinForExistsRuleElement = require("./backlink");
@@ -185,6 +186,7 @@ const resolvers = {
     updateHiTechRuleElementState,
     createBackLinForExistsRuleElement,
     userFavorite,
+    changeUserFavoriteOrder,
   },
   Query: {
     User,

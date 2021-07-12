@@ -50,6 +50,13 @@ WITH *,  apoc.coll.toSet(obj) as obj ORDER BY log.log_timestamp DESC
 RETURN count(log) as count
 `;
 
+exports.getUserHistoryLogsCountNew = `
+MATCH (obj)<-[:LOG_REFERS_TO_OBJECT]-(log:Log)-[:LOG_FOR_USER]->(u:User {user_email: $user_email})
+MATCH  (lt:Log_Type)<-[:HAS_LOG_TYPE]-(log)
+WHERE lt.log_type_id IN [${constants.LOG_TYPE_ID.READ_RULE_BOOK},${constants.LOG_TYPE_ID.READ_RULE_ELEMENT_AND_STATE},${constants.LOG_TYPE_ID.READ_NL}]
+RETURN count(distinct id(obj)) as count
+`;
+
 exports.userCreateFavorite = `
 MATCH (u:User {user_email: $user_email })
 OPTIONAL MATCH (u)-[r1:USER_HAS_FAVORITE]->()
@@ -112,4 +119,12 @@ CALL apoc.do.case([
 { obj: obj, r1: r1})
 YIELD value as favorites
 RETURN favorites.data as favorites
+`;
+
+exports.changeRuleElementOrderQuery = `
+UNWIND $changeOrderData as favOrder
+MATCH (u:User {user_email: $user_email })-[r1:USER_HAS_FAVORITE]->()
+WHERE id(r1) IN favOrder.identity
+FOREACH (_ IN CASE WHEN r1 IS NOT NULL THEN [1] END | SET r1.order= toInteger(favOrder.order) )
+RETURN TRUE
 `;
