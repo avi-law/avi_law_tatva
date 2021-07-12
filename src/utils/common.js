@@ -297,7 +297,7 @@ const getRuleElementDocIdFromState = (state) => {
       const matchedData = data.toString().match(/\[\*(.*?)\*\]/); // [*Rule_Element*]
       if (matchedData && matchedData.length > 1) {
         const ruleBookDocId = matchedData[1];
-        final.push(ruleBookDocId);
+        final.push(ruleBookDocId.trim());
       }
     });
   }

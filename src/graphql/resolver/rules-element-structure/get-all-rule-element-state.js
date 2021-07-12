@@ -18,7 +18,18 @@ const { defaultLanguage } = require("../../../config/application");
 const getRuleElementStateStatus = require("./get-rule-element-state-status");
 const { getUser } = require("../../../neo4j/query");
 
-const getStatesAndUpdateStatus = (ruleElementState, nowDate, existsStatus) => {
+const findFavorite = (stateId, favorite) => {
+  const fav = _.filter(favorite, { identity: stateId });
+  if (fav.length > 0) return true;
+  return null;
+};
+
+const getStatesAndUpdateStatus = (
+  ruleElementState,
+  nowDate,
+  existsStatus,
+  favorite
+) => {
   ruleElementState.forEach((element) => {
     if (element.has_rule_element) {
       if (
@@ -47,8 +58,11 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate, existsStatus) => {
               nowDate
             );
             if (status !== constants.RULE_ELEMENT_STATE_STATUS.RED) {
+              const stateId = stateElement["_id"];
+
               obj[lang].rule_element_status = status;
-              obj[lang].identity = stateElement["_id"];
+              obj[lang].identity = stateId;
+              obj[lang].isFavorite = findFavorite(stateId, favorite);
               delete obj[lang].rule_element_state_language_is;
               stateObject.push(obj);
             }
@@ -81,7 +95,8 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate, existsStatus) => {
         getStatesAndUpdateStatus(
           element.has_rule_element,
           nowDate,
-          existsStatus
+          existsStatus,
+          favorite
         );
       } else {
         _.set(element, "has_rule_element", []);
@@ -110,8 +125,10 @@ const getStatesAndUpdateStatus = (ruleElementState, nowDate, existsStatus) => {
           nowDate
         );
         if (status !== constants.RULE_ELEMENT_STATE_STATUS.RED) {
-          obj[lang].identity = stateElement["_id"];
+          const stateId = stateElement["_id"];
+          obj[lang].identity = stateId;
           obj[lang].rule_element_status = status;
+          obj[lang].isFavorite = findFavorite(stateId, favorite);
           delete obj[lang].rule_element_state_language_is;
           stateObject.push(obj);
         }
@@ -156,6 +173,7 @@ module.exports = async (object, params, ctx) => {
   const ruleBookIssueNo = params.rule_book_issue_no;
   const currentDate = _.get(params, "current_date", null);
   const ruleElementDocId = _.get(params, "rule_element_doc_id", null);
+  let favorite = [];
   let nowDate = common.getTimestamp();
   if (currentDate) {
     nowDate = common.getTimestamp(currentDate);
@@ -183,6 +201,7 @@ module.exports = async (object, params, ctx) => {
     }
     const queryParams = {
       rule_book_id: ruleBookId,
+      user_email: userEmail,
     };
     if (ruleElementDocId) {
       queryParams.rule_element_doc_id = ruleElementDocId;
@@ -195,6 +214,7 @@ module.exports = async (object, params, ctx) => {
       ruleElementStructureList = result.records.map((record) => {
         const ruleBook = record.get("rule_book");
         const rbis = record.get("rbis");
+        favorite = record.get("fav");
         const ruleBookResponse = {
           rule_book_active: ruleBook.rule_book_active,
           rule_book_id: ruleBook.rule_book_id,
@@ -224,7 +244,12 @@ module.exports = async (object, params, ctx) => {
           isExistsElementStateEN: false,
           isExistsElementStateDE: false,
         };
-        getStatesAndUpdateStatus(ruleElementState, nowDate, existsStatus);
+        getStatesAndUpdateStatus(
+          ruleElementState,
+          nowDate,
+          existsStatus,
+          favorite
+        );
         _.set(
           ruleElementStructureList,
           "[0].is_exists_rule_element_state_de",
@@ -235,21 +260,18 @@ module.exports = async (object, params, ctx) => {
           "[0].is_exists_rule_element_state_en",
           existsStatus.isExistsElementStateEN
         );
-        if (userEmail) {
-          const settingResult = await session.run(getUser, {
-            user_email: userEmail,
+        const settingResult = await session.run(getUser, {
+          user_email: userEmail,
+        });
+        if (settingResult && settingResult.records.length > 0) {
+          const userData = settingResult.records.map((record) => {
+            const userResult = {
+              left: common.getPropertiesFromRecord(record, "lang2").iso_639_1,
+              right: common.getPropertiesFromRecord(record, "lang3").iso_639_1,
+            };
+            return userResult;
           });
-          if (settingResult && settingResult.records.length > 0) {
-            const userData = settingResult.records.map((record) => {
-              const userResult = {
-                left: common.getPropertiesFromRecord(record, "lang2").iso_639_1,
-                right: common.getPropertiesFromRecord(record, "lang3")
-                  .iso_639_1,
-              };
-              return userResult;
-            });
-            settings = userData[0];
-          }
+          settings = userData[0];
         }
         _.set(
           ruleElementStructureList,
