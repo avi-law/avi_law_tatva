@@ -122,6 +122,7 @@ const getAMCGMRuleElement = require("./rules-element-structure/get-amc-gm-rule-e
 const getUserHistoryLogs = require("./user/get-user-history-log");
 const getRuleBookWarningType = require("./rule-book/get-rule-book-warning-type");
 const userFavorite = require("./user/user-favorite");
+const getUserFavorites = require("./user/get-user-favorites");
 // For Website Owner Resolver
 const encryptPassword = require("./encrypt-password");
 const createBackLinForExistsRuleElement = require("./backlink");
@@ -250,6 +251,7 @@ const resolvers = {
     getAMCGMRuleElement,
     getUserHistoryLogs,
     getRuleBookWarningType,
+    getUserFavorites,
   },
 };
 

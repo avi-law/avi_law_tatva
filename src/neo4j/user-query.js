@@ -87,6 +87,27 @@ RETURN rb, u
 `;
 
 exports.getUserFavorites = `
-MATCH (u:User {user_email: $user_email })-[r1:USER_HAS_FAVORITE]->(fav)
-RETURN {identity: id(fav), rule_element_article: fav.rule_element_article, rule_element_title: fav.rule_element_title } as fav, r1
+MATCH (u:User {user_email: $user_email })-[r1:USER_HAS_FAVORITE]->(obj)
+WITH *, collect(obj) as obj ORDER BY r1.order DESC
+CALL apoc.do.case([
+  LABELS(obj[0]) = ["${constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_ELEMENT_STATE}"],
+    'MATCH (lang:Language)<-[:RULE_ELEMENT_STATE_LANGUAGE_IS]-(res:Rule_Element_State)<-[:HAS_RULE_ELEMENT_STATE]-(re:Rule_Element)
+    WHERE id(res) = id(obj[0])
+    OPTIONAL MATCH (res)-[r:RULE_ELEMENT_STATE_LANGUAGE_VERSION_OF]->(resv:Rule_Element_State)
+    MATCH (re),(rbi:Rule_Book_Issue),
+    path = shortestPath((re)<-[:HAS_RULE_ELEMENT*]-(rbi))
+    WITH *, re, path, MIN(length(path)) as minLength ORDER BY minLength ASC LIMIT 1
+    WITH *, nodes(path)[minLength] as rbi
+    MATCH (rb:Rule_Book)-[:HAS_RULE_BOOK_ISSUE]->(rbi)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang)
+    WITH collect({ favIdentity: id(r1), favOrder: r1.order, minLength: minLength, favoriteType: LABELS(obj[0])[0], identity: id(obj[0]), version_of_id: id(resv), res:{ rule_element_title: obj[0].rule_element_title, rule_element_article: obj[0].rule_element_article, rule_element_doc_id: re.rule_element_doc_id, rule_book_issue_title_short: rbis.rule_book_issue_title_short }, iso_639_1: lang.iso_639_1}) as data
+    RETURN data',
+  LABELS(obj[0]) = ["${constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_BOOK}"],
+    'MATCH (rb:Rule_Book { rule_book_id: obj[0].rule_book_id})-[:HAS_RULE_BOOK_ISSUE]->(rbi:Rule_Book_Issue)-[:HAS_RULE_BOOK_ISSUE_STATE]->(rbis:Rule_Book_Issue_State)-[:RULE_BOOK_ISSUE_LANGUAGE_IS]->(lang:Language)
+    WITH collect({ favIdentity: id(r1), favOrder: r1.order, favoriteType: LABELS(obj[0])[0], identity: id(obj[0]), rb: {rule_book_id: rb.rule_book_id, rule_book_issue_title_short: rbis.rule_book_issue_title_short}, iso_639_1: lang.iso_639_1 }) as data
+    RETURN data'
+],
+"",
+{ obj: obj, r1: r1})
+YIELD value as favorites
+RETURN favorites.data as favorites
 `;

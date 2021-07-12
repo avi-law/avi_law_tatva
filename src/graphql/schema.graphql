@@ -1311,6 +1311,30 @@ type RuleBookStateCustomTree {
     total: Int
   }
 
+  type CustomFavRuleElementState {
+    rule_element_title:  String
+    rule_element_article: String
+    rule_element_doc_id: String
+    rule_book_issue_title_short: String
+  }
+  type CustomFavRuleBook {
+    rule_book_id:  String
+    rule_book_issue_title_short: String
+  }
+  type CustomFav {
+    res: CustomFavRuleElementState,
+    rb: CustomFavRuleBook,
+    favoriteType: FavoriteType,
+    identity: Int,
+    favIdentity: Int,
+    favOrder: Int,
+  }
+
+  type UserFavoriteList {
+    de: CustomFav
+    en: CustomFav
+  }
+
   #Tree type state
   input Rule_Book_Struct {
     rule_book_struct_active: Boolean!
@@ -1775,7 +1799,8 @@ type RuleBookStateCustomTree {
     getUserHistoryLogs(
       first: Int
       offset: Int
-    ): HistoryLogs  @isAuthenticated
+    ): HistoryLogs @isAuthenticated
+    getUserFavorites: [UserFavoriteList] @isAuthenticated
   }
 `;
 
