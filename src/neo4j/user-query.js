@@ -56,7 +56,7 @@ OPTIONAL MATCH (u)-[r1:USER_HAS_FAVORITE]->()
 WHERE r1.order IS NOT NULL
 WITH u, MAX( r1.order) + 1 AS next_order
 MATCH (res:Rule_Element_State) WHERE id(res) IN $identity
-FOREACH (_ IN CASE WHEN res IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE { order: next_order }]->(res))
+FOREACH (_ IN CASE WHEN res IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE { order: next_order, timestamp: apoc.date.currentTimestamp() }]->(res))
 RETURN res, u
 `;
 
@@ -74,7 +74,7 @@ OPTIONAL MATCH (u)-[r1:USER_HAS_FAVORITE]->()
 WHERE r1.order IS NOT NULL
 WITH u, MAX( r1.order) + 1 AS next_order
 MATCH (rb:Rule_Book) WHERE id(rb) IN $identity
-FOREACH (_ IN CASE WHEN rb IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE { order: next_order }]->(rb))
+FOREACH (_ IN CASE WHEN rb IS NOT NULL AND u IS NOT NULL THEN [1] END | MERGE (u)-[:USER_HAS_FAVORITE { order: next_order, timestamp: apoc.date.currentTimestamp() }]->(rb))
 RETURN rb, u
 `;
 
