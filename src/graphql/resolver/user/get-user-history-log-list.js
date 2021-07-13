@@ -65,25 +65,14 @@ const getUniqueNl = (allNl) => {
   return _.values(uniqueObject);
 };
 
-module.exports = async (object, params, ctx) => {
-  params = JSON.parse(JSON.stringify(params));
-  const { user } = ctx;
-  const userSurfLang = user.user_surf_lang || defaultLanguage;
-  const userEmail = user.user_email || null;
-  const session = driver.session();
-  const logData = [];
+const getLogs = async (listlog, lastLogId, limit, userEmail) => {
+  const logData = listlog;
   let finalArray = [];
-  const limit = params.first || 20;
+  const session = driver.session();
   try {
-    if (!userEmail) {
-      throw new APIError({
-        lang: userSurfLang,
-        message: "INTERNAL_SERVER_ERROR",
-      });
-    }
-    const result = await session.run(getUserHistoryLogList(), {
+    const result = await session.run(getUserHistoryLogList(lastLogId), {
       user_email: userEmail,
-      limit: limit * 3,
+      limit: limit * 2,
     });
     if (result && result.records.length > 0) {
       result.records.forEach((record) => {
@@ -91,6 +80,7 @@ module.exports = async (object, params, ctx) => {
         logData.push(...logs);
       });
     }
+    lastLogId = _.get(logData, `[${logData.length - 1}].log.identity`, null);
     const allRuleElementState = _.orderBy(
       _.filter(logData, {
         label: constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_ELEMENT_STATE,
@@ -128,8 +118,71 @@ module.exports = async (object, params, ctx) => {
       ["desc", "desc"]
     );
     const sliceArray = _.chunk(finalArray, limit);
+    if (
+      sliceArray.length > 0 &&
+      sliceArray[0].length !== limit &&
+      result.records > 0
+    ) {
+      finalArray = await getLogs(logData, lastLogId, limit, userEmail);
+    }
+    return finalArray;
+  } catch (error) {
+    session.close();
+    throw error;
+  } finally {
+    session.close();
+  }
+};
+
+const firstLogId = async (userEmail) => {
+  const session = driver.session();
+  let identity = null;
+  try {
+    const query = `
+    MATCH (lt:Log_Type)<-[:HAS_LOG_TYPE]-(log:Log)-[:LOG_FOR_USER]->(u:User {user_email: "${userEmail}" }), (log)-[:LOG_REFERS_TO_OBJECT]-(obj)
+    WHERE lt.log_type_id IN [${constants.LOG_TYPE_ID.READ_RULE_BOOK},${constants.LOG_TYPE_ID.READ_RULE_ELEMENT_AND_STATE},${constants.LOG_TYPE_ID.READ_NL}]
+    WITH log ORDER BY log.log_timestamp DESC LIMIT 1
+    RETURN id(log) as identity`;
+    console.log(query);
+    const result = await session.run(query);
+    if (result && result.records.length > 0) {
+      const singleRecord = result.records[0];
+      identity = singleRecord.get("identity");
+    }
+    return identity;
+  } catch (error) {
+    session.close();
+    throw error;
+  } finally {
+    session.close();
+  }
+};
+
+module.exports = async (object, params, ctx) => {
+  params = JSON.parse(JSON.stringify(params));
+  const { user } = ctx;
+  const userSurfLang = user.user_surf_lang || defaultLanguage;
+  const userEmail = user.user_email || null;
+  const session = driver.session();
+  let finalArray = [];
+  const limit = params.first || 20;
+  try {
+    if (!userEmail) {
+      throw new APIError({
+        lang: userSurfLang,
+        message: "INTERNAL_SERVER_ERROR",
+      });
+    }
+    finalArray = await getLogs(finalArray, null, limit, userEmail);
+    const fistLogId = await firstLogId(userEmail);
     return {
-      logs: sliceArray[0],
+      logs: finalArray,
+      fistLogId,
+      nextLogId: _.get(
+        finalArray,
+        `[${finalArray.length - 1}].log.identity`,
+        null
+      ),
     };
   } catch (error) {
     session.close();
