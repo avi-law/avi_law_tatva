@@ -113,6 +113,7 @@ const typeDefs = gql`
   }
 
   type Log {
+    identity: Int
     log_par_02: String
     log_par_01: String
     log_timestamp: Float
@@ -819,19 +820,15 @@ const typeDefs = gql`
     nl_tags: [Int!]!
   }
 
-  type NLStateEN {
+  type NLState {
     nl_text: String
     nl_title_long: String
     nl_title_short: String
   }
-  type NLStateDE {
-    nl_text: String
-    nl_title_long: String
-    nl_title_short: String
-  }
+
   type CustomNLState {
-    de: NLStateDE
-    en: NLStateEN
+    de: NLState
+    en: NLState
   }
 
   type CustomNL {
@@ -1309,6 +1306,42 @@ type RuleBookStateCustomTree {
   type HistoryLogs {
     logs: [CustomLogList]
     total: Int
+  }
+
+  type CustomUserHistoryRuleElementState {
+    identity: Int
+    rule_element_title:  String
+    rule_element_article: String
+    rule_element_doc_id: String
+    rule_book_issue_title_short: String
+  }
+  type CustomUserHistoryRuleBook {
+    identity: Int
+    rule_book_id:  String
+    rule_book_issue_title_short: String
+    rule_book_issue_title_long: String
+  }
+  type CustomUserHistoryNL {
+    nl: NL,
+    nls: NLState
+  }
+
+  type CustomUserHistory {
+    res: CustomUserHistoryRuleElementState,
+    rb: CustomUserHistoryRuleBook,
+    nl: CustomUserHistoryNL,
+    lt: Log_Type,
+    log: Log
+    label: String
+  }
+
+  type UserHistoryList {
+    de: CustomUserHistory
+    en: CustomUserHistory
+  }
+
+  type HistoryLogList {
+    logs: [UserHistoryList]
   }
 
   type CustomFavRuleElementState {
@@ -1808,6 +1841,10 @@ type RuleBookStateCustomTree {
       first: Int
       offset: Int
     ): HistoryLogs @isAuthenticated
+    getUserHistoryLogList(
+      first: Int
+      offset: Int
+    ): HistoryLogList @isAuthenticated
     getUserFavorites: [UserFavoriteList] @isAuthenticated
   }
 `;

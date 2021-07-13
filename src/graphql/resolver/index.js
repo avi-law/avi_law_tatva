@@ -120,6 +120,7 @@ const getRuleElementBackLinks = require("./rules-element-structure/get-rule-elem
 const getRuleElementTags = require("./rules-element-structure/get-rule-element-tags");
 const getAMCGMRuleElement = require("./rules-element-structure/get-amc-gm-rule-element");
 const getUserHistoryLogs = require("./user/get-user-history-log");
+const getUserHistoryLogList = require("./user/get-user-history-log-list");
 const getRuleBookWarningType = require("./rule-book/get-rule-book-warning-type");
 const userFavorite = require("./user/user-favorite");
 const getUserFavorites = require("./user/get-user-favorites");
@@ -252,6 +253,7 @@ const resolvers = {
     getRuleElementTags,
     getAMCGMRuleElement,
     getUserHistoryLogs,
+    getUserHistoryLogList,
     getRuleBookWarningType,
     getUserFavorites,
   },
