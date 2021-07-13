@@ -47,6 +47,24 @@ const getUniqueRuleBook = (allRuleBook) => {
   return _.values(uniqueObject);
 };
 
+const getUniqueNl = (allNl) => {
+  if (allNl.length === 0) {
+    return allNl;
+  }
+  const uniqueObject = {};
+  if (allNl.length > 0) {
+    allNl.forEach((element) => {
+      const { nl_id: nlId } = element.nl.nl;
+      if (!uniqueObject[nlId]) {
+        uniqueObject[nlId] = { de: null, en: null };
+        uniqueObject[nlId][element.iso_639_1] = null;
+      }
+      uniqueObject[nlId][element.iso_639_1] = element;
+    });
+  }
+  return _.values(uniqueObject);
+};
+
 module.exports = async (object, params, ctx) => {
   params = JSON.parse(JSON.stringify(params));
   const { user } = ctx;
@@ -65,37 +83,48 @@ module.exports = async (object, params, ctx) => {
     }
     const result = await session.run(getUserHistoryLogList(), {
       user_email: userEmail,
-      limit: limit * 2,
+      limit: limit * 3,
     });
-
     if (result && result.records.length > 0) {
       result.records.forEach((record) => {
         const logs = record.get("logs");
         logData.push(...logs);
       });
     }
-    const allRuleElementState = _.filter(logData, {
-      label: constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_ELEMENT_STATE,
-    });
-    const allRuleBook = _.filter(logData, {
-      label: constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_BOOK,
-    });
-    const allNl = _.filter(logData, {
-      label: constants.LOG_REFERS_TO_OBJECT_LABEL.NL,
-    });
-
+    const allRuleElementState = _.orderBy(
+      _.filter(logData, {
+        label: constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_ELEMENT_STATE,
+      }),
+      ["log.log_timestamp", "log.identity"],
+      ["asc", "asc"]
+    );
+    const allRuleBook = _.orderBy(
+      _.filter(logData, {
+        label: constants.LOG_REFERS_TO_OBJECT_LABEL.RULE_BOOK,
+      }),
+      ["log.log_timestamp", "log.identity"],
+      ["asc", "asc"]
+    );
+    const allNl = _.orderBy(
+      _.filter(logData, {
+        label: constants.LOG_REFERS_TO_OBJECT_LABEL.NL,
+      }),
+      ["log.log_timestamp", "log.identity"],
+      ["asc", "asc"]
+    );
     const uniqueRuleElementState = getUniqueRuleElementState(
       allRuleElementState
     );
     const uniqueRuleBook = getUniqueRuleBook(allRuleBook);
+    const uniqueNL = getUniqueNl(allNl);
 
     finalArray = finalArray.concat(uniqueRuleElementState);
     finalArray = finalArray.concat(uniqueRuleBook);
-    finalArray = finalArray.concat(allNl);
+    finalArray = finalArray.concat(uniqueNL);
 
     finalArray = _.orderBy(
       finalArray,
-      ["log.log_timestamp", "log.identity"],
+      ["de.log.log_timestamp", "en.log.identity"],
       ["desc", "desc"]
     );
     const sliceArray = _.chunk(finalArray, limit);
