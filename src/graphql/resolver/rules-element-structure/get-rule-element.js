@@ -1087,6 +1087,11 @@ module.exports = async (object, params, ctx) => {
       ...ruleElementAMC,
       backlinks,
     };
+
+    if (ruleBookId && ruleBookIssueNo) {
+      response.rule_book_issue_no = ruleBookIssueNo;
+      response.rule_book_id = ruleBookId;
+    }
     return response;
   } catch (error) {
     session.close();

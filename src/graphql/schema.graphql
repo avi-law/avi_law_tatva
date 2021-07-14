@@ -1286,6 +1286,8 @@ type RuleBookStateCustomTree {
     cs:[RuleElementTags]
     backToRuleElement:[RuleElementTags]
     backlinks: GetRuleElementBackLinkList
+    rule_book_issue_no: Int
+    rule_book_id: String
   }
 
   type GetRuleElementStateList {
