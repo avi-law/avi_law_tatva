@@ -39,7 +39,10 @@ module.exports = async (object, params, ctx) => {
     if (favoriteResult && favoriteResult.records.length > 0) {
       return true;
     }
-    return false;
+    throw new APIError({
+      lang: userSurfLang,
+      message: "INTERNAL_SERVER_ERROR",
+    });
   } catch (error) {
     session.close();
     throw error;
