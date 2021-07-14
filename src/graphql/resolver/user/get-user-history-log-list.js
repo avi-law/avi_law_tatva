@@ -36,7 +36,7 @@ const getUniqueRuleBook = (allRuleBook) => {
   const uniqueObject = {};
   if (allRuleBook.length > 0) {
     allRuleBook.forEach((element) => {
-      const { identity } = element;
+      const { identity } = element.rb;
       if (!uniqueObject[identity]) {
         uniqueObject[identity] = { de: null, en: null };
         uniqueObject[identity][element.iso_639_1] = null;
@@ -95,6 +95,7 @@ const getLogs = async (listlog, lastLogId, limit, userEmail) => {
       ["log.log_timestamp", "log.identity"],
       ["asc", "asc"]
     );
+
     const allNl = _.orderBy(
       _.filter(logData, {
         label: constants.LOG_REFERS_TO_OBJECT_LABEL.NL,
@@ -143,7 +144,6 @@ const firstLogId = async (userEmail) => {
     WHERE lt.log_type_id IN [${constants.LOG_TYPE_ID.READ_RULE_BOOK},${constants.LOG_TYPE_ID.READ_RULE_ELEMENT_AND_STATE},${constants.LOG_TYPE_ID.READ_NL}]
     WITH log ORDER BY log.log_timestamp DESC LIMIT 1
     RETURN id(log) as identity`;
-    console.log(query);
     const result = await session.run(query);
     if (result && result.records.length > 0) {
       const singleRecord = result.records[0];
